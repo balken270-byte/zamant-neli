@@ -2689,7 +2689,17 @@ async function loadMessages(who){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return;
   let convId=_convId[who];
-  if(!convId) return; // henüz sohbet açılmamış (ilk mesajla oluşacak)
+  // conv id bilinmiyorsa: karşı kullanıcının id'sinden sohbeti bul
+  if(!convId){
+    const uid=await idOfUsername(who);
+    if(!uid) return;
+    const lo = me.id<uid ? me.id : uid;
+    const hi = me.id<uid ? uid : me.id;
+    const {data:conv}=await sb.from('conversations').select('id')
+      .eq('user_a',lo).eq('user_b',hi).maybeSingle();
+    if(conv){ convId=conv.id; _convId[who]=conv.id; }
+    else return; // henüz hiç mesajlaşılmamış
+  }
   try{
     const {data,error}=await sb.rpc('get_messages',{conv:convId});
     if(error){ console.warn('messages:',error.message); return; }
@@ -2796,8 +2806,9 @@ async function sendMsg(){
       return;
     }
     localMsg.id=data; localMsg._pending=false;
-    // conv id'yi öğren (ilk mesajsa)
-    if(!_convId[who]) await loadConversations();
+    // conv id'yi öğren ve mesajları tazele (ilk mesajsa sohbet yeni oluştu)
+    if(!_convId[who]){ await loadMessages(who); }
+    if(chatWho===who) renderChat();
   }catch(e){ toast("Mesaj hatası"); }
 }
 ms.addEventListener("click",sendMsg);
@@ -3082,9 +3093,16 @@ window.__onNewNotification = () => {
 window.__onNewMessage = async (m) => {
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return;
-  // bu mesajın hangi sohbete ait olduğunu ve göndereni öğren
-  // açık olan sohbetin conv id'si ile eşleşiyorsa doğrudan ekle
-  const openConv = chatWho ? _convId[chatWho] : null;
+  // açık sohbetin conv id'si (gerekirse çözülür)
+  let openConv = chatWho ? _convId[chatWho] : null;
+  if(chatWho && !openConv){
+    const uid=await idOfUsername(chatWho);
+    if(uid){
+      const lo=me.id<uid?me.id:uid, hi=me.id<uid?uid:me.id;
+      const {data:conv}=await sb.from('conversations').select('id').eq('user_a',lo).eq('user_b',hi).maybeSingle();
+      if(conv){ openConv=conv.id; _convId[chatWho]=conv.id; }
+    }
+  }
   if(openConv && m.conv_id===openConv){
     const c=chatOf(chatWho);
     if(!c.msgs.some(x=>x.id===m.id)){
@@ -3095,11 +3113,9 @@ window.__onNewMessage = async (m) => {
       });
       renderChat();
       const b=$("#msgList"); if(b) b.scrollTop=b.scrollHeight;
-      // okundu işaretle
       sb.rpc('get_messages',{conv:openConv}).catch(()=>{});
     }
   }else{
-    // başka sohbete geldi: listeyi ve rozeti tazele
     loadConversations();
     toast("Yeni mesaj");
   }

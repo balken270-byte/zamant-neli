@@ -1429,20 +1429,23 @@ async function loadFeed(){
 }
 
 /* ---------- bildirimler ---------- */
-let notifs=(function(){
-  const out=[];
-  MINE.forEach((idx,j)=>{
-    const p=items[idx]; if(!p) return;
-    const base=Date.now()-p.ts;
-    for(let k=0;k<3+j;k++){
-      const type=Math.random()<.45?"comment":"like";
-      out.push({id:"n"+j+"_"+k,type,who:KISI[(idx*4+k*5)%KISI.length],postId:p.id,
-        text:type==="comment"?YORUM[(idx+k*4)%YORUM.length]:null,
-        ts:p.ts+Math.random()*base*.85,seen:Math.random()<.4});
-    }
-  });
-  return out.sort((a,b)=>b.ts-a.ts);
-})();
+let notifs=[];
+async function loadNotifs(){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  try{
+    const {data,error}=await sb.rpc('get_notifications');
+    if(error){ console.warn('notif:',error.message); return; }
+    notifs=(data||[]).map(r=>({
+      id:r.id, type:r.kind, who:r.actor_username, avatar:r.actor_avatar,
+      postId:r.moment_id, postMedia:r.moment_media,
+      text:r.comment_body||null,
+      ts:new Date(r.created_at).getTime(), seen:r.is_seen
+    }));
+    paintDot();
+    if($("#notif").classList.contains("open")) renderNotifs();
+  }catch(e){ console.warn(e); }
+}
 function paintDot(){
   const d=$("#nDot"),n=notifs.filter(x=>!x.seen).length;
   d.textContent=n>99?"99+":n;d.classList.toggle("hide",n===0);
@@ -1461,32 +1464,41 @@ function renderNotifs(){
   });
 }
 function notifRow(n){
-  const p=byId(n.postId);
   const b=document.createElement("button");
   b.className="nrow"+(n.seen?"":" unseen");
-  const av=document.createElement("span");av.className="nav-av";paintAv(av,n.who);
+  const av=document.createElement("span");av.className="nav-av";
+  if(n.avatar){av.style.backgroundImage="url("+n.avatar+")";}
+  else{av.textContent=(n.who||"?")[0].toUpperCase();}
   b.appendChild(av);
   const t=document.createElement("span");t.className="ntext";
   if(n.type==="like"){
     t.innerHTML='<b></b> karene bir beğeni bıraktı.<span class="ntime">'+rel(n.ts)+'</span>';
     t.querySelector("b").textContent=n.who;
+  }else if(n.type==="follow"){
+    t.innerHTML='<b></b> seni takip etmeye başladı.<span class="ntime">'+rel(n.ts)+'</span>';
+    t.querySelector("b").textContent=n.who;
   }else{
     t.innerHTML='<b></b> yorum yaptı: <span class="q"></span><span class="ntime">'+rel(n.ts)+'</span>';
     t.querySelector("b").textContent=n.who;
-    t.querySelector(".q").textContent=n.text;
+    t.querySelector(".q").textContent=n.text||"";
   }
   b.appendChild(t);
-  if(p){const th=document.createElement("span");th.className="nthumb";
-    th.style.backgroundImage="url("+p.src+")";b.appendChild(th);}
+  if(n.postMedia){
+    const th=document.createElement("span");th.className="nthumb";
+    const url=window.__sb ? window.__sb.storage.from('moments').getPublicUrl(n.postMedia).data.publicUrl : n.postMedia;
+    th.style.backgroundImage="url("+url+")";b.appendChild(th);
+  }
   b.addEventListener("click",()=>{
     n.seen=true;paintDot();renderNotifs();
-    if(p){close("notif");goToPost(p.id);
-      if(n.type==="comment") setTimeout(()=>openComments(p.id),420);}
+    if(n.type==="follow"){ close("notif"); openProfile(n.who); return; }
+    if(n.postId){close("notif");goToPost(n.postId);
+      if(n.type==="comment") setTimeout(()=>openComments(n.postId),420);}
   });
   return b;
 }
 $("#markRead").addEventListener("click",()=>{
   notifs.forEach(n=>n.seen=true);paintDot();renderNotifs();toast("Tüm bildirimler okundu");
+  if(window.__sb&&window.__me) window.__sb.rpc('mark_all_seen').catch(()=>{});
 });
 
 /* ---------- gönderi (tam ekran) ---------- */
@@ -1624,10 +1636,15 @@ function build(it){
       const sb=window.__sb, uid=window.__me.id;
       if(it.liked){
         sb.from('likes').insert({moment_id:it.id, user_id:uid}).then(({error})=>{
-          if(error && !/duplicate/i.test(error.message)) { it.liked=false;it.likes--;refreshLike(); }
+          if(error && !/duplicate/i.test(error.message)) {
+            it.liked=false;it.likes--;refreshLike();
+            toast("Beğeni kaydedilemedi: "+error.message);
+          }
         });
       }else{
-        sb.from('likes').delete().eq('moment_id',it.id).eq('user_id',uid).then(()=>{});
+        sb.from('likes').delete().eq('moment_id',it.id).eq('user_id',uid).then(({error})=>{
+          if(error) toast("Beğeni kaldırılamadı: "+error.message);
+        });
       }
     }
     return true;
@@ -2014,7 +2031,7 @@ const overlayOpen=()=>["comments","timeSheet","notif","cam","compose","profile",
 function setTab(el){$$(".tab").forEach(t=>t.classList.toggle("on",t===el));}
 $("#tabFeed").addEventListener("click",()=>{setTab($("#tabFeed"));close("notif");
   feed.scrollTo({top:0,behavior:"smooth"});});
-$("#tabNotif").addEventListener("click",()=>{setTab($("#tabNotif"));renderNotifs();open("notif");});
+$("#tabNotif").addEventListener("click",()=>{setTab($("#tabNotif"));renderNotifs();open("notif");loadNotifs();});
 $("#notifBack").addEventListener("click",()=>{close("notif");setTab($("#tabFeed"));});
 $("#tabTime").addEventListener("click",()=>open("timeSheet"));
 $("#tabProfile").addEventListener("click",()=>{setTab($("#tabProfile"));openProfile(ME);});
@@ -2300,10 +2317,27 @@ const IC={
 };
 
 let profName=null;
-function openProfile(name){
+const _idCache={};
+async function idOfUsername(name){
+  if(_idCache[name]) return _idCache[name];
+  if(!window.__sb) return null;
+  const {data}=await window.__sb.from('profiles').select('id').eq('username',name).single();
+  if(data){ _idCache[name]=data.id; return data.id; }
+  return null;
+}
+async function openProfile(name){
   profName=name;
   renderProfile();
   open("profile");
+  // gerçek takip durumunu çek
+  if(name!==ME && window.__sb && window.__me){
+    const uid=await idOfUsername(name);
+    if(uid){
+      const {data}=await window.__sb.rpc('is_following',{target:uid});
+      if(data===true && !following.has(name)){ following.add(name); if(profName===name) renderProfile(); }
+      else if(data===false && following.has(name)){ following.delete(name); if(profName===name) renderProfile(); }
+    }
+  }
 }
 $("#profBack").addEventListener("click",()=>{close("profile");setTab($("#tabFeed"));});
 
@@ -2363,10 +2397,23 @@ function renderProfile(){
     const b=document.createElement("button");
     b.className="profbtn"+(on?" ghost":"");b.style.marginBottom="0";
     b.innerHTML=(on?IC.check+" Takip ediliyor":IC.plus+" Takip et");
-    b.addEventListener("click",()=>{
-      if(following.has(profName)){following.delete(profName);toast("Takipten çıkıldı");}
-      else{following.add(profName);toast(profName+" takip ediliyor");}
+    b.addEventListener("click",async ()=>{
+      const target=profName;
+      const wasFollowing=following.has(target);
+      if(wasFollowing){following.delete(target);toast("Takipten çıkıldı");}
+      else{following.add(target);toast(target+" takip ediliyor");}
       renderProfile();
+      // Supabase'e yaz
+      if(window.__sb && window.__me){
+        const uid=await idOfUsername(target);
+        if(uid){
+          if(wasFollowing){
+            await window.__sb.from('follows').delete().eq('follower_id',window.__me.id).eq('followee_id',uid);
+          }else{
+            await window.__sb.from('follows').insert({follower_id:window.__me.id, followee_id:uid});
+          }
+        }
+      }
     });
     const dm=document.createElement("button");
     dm.className="profbtn ghost";dm.style.marginBottom="0";
@@ -2913,6 +2960,13 @@ activeIdx=-1;
 syncActive();
 nextAt=Date.now()+HOLD;
 loadFeed();   // gerçek akışı Supabase'ten çek
+loadNotifs(); // bildirimleri çek
+
+// canlı bildirim: yeni bildirim düşünce zil güncellenir + haber verilir
+window.__onNewNotification = () => {
+  loadNotifs();
+  toast("Yeni bildirim");
+};
 setInterval(()=>{
   list.querySelectorAll(".post").forEach(el=>{if(el._sync) el._sync();});
   syncActive();
@@ -3077,6 +3131,15 @@ async function enterApp(){
   window.__me = { id:user.id, username: prof?.username||'kullanici', avatar_url: prof?.avatar_url||null };
   gate.classList.add('off');
   if(window.__startApp) window.__startApp();
+
+  // canlı bildirim: notifications tablosuna bana yeni satır düşünce
+  try{
+    sb.channel('notif-'+user.id)
+      .on('postgres_changes',
+        { event:'INSERT', schema:'public', table:'notifications', filter:'user_id=eq.'+user.id },
+        () => { if(window.__onNewNotification) window.__onNewNotification(); })
+      .subscribe();
+  }catch(e){ console.warn('realtime notif:',e); }
 }
 window.__logout = async () => {
   await sb.auth.signOut();

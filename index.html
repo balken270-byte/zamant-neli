@@ -2429,13 +2429,23 @@ function renderProfile(){
       renderProfile();
       if(window.__sb && window.__me){
         const uid=await idOfUsername(target);
-        if(uid){
-          if(wasFollowing){
-            await window.__sb.from('follows').delete().eq('follower_id',window.__me.id).eq('followee_id',uid);
-          }else{
-            await window.__sb.from('follows').insert({follower_id:window.__me.id, followee_id:uid});
-          }
+        if(!uid){ toast("Kullanıcı bulunamadı"); return; }
+        let err=null;
+        if(wasFollowing){
+          const r=await window.__sb.from('follows').delete().eq('follower_id',window.__me.id).eq('followee_id',uid);
+          err=r.error;
+        }else{
+          const r=await window.__sb.from('follows').insert({follower_id:window.__me.id, followee_id:uid});
+          err=r.error;
         }
+        if(err && !/duplicate/i.test(err.message)){
+          toast("Takip hatası: "+err.message);
+        }
+        // sunucudan gerçek sayıları tazeleyip göster
+        const fresh=await loadProfileData(target);
+        if(fresh && profName===target) renderProfile();
+        await loadProfileData(ME);
+        if(profName===target) renderProfile();
       }
     });
     const dm=document.createElement("button");
@@ -2581,39 +2591,19 @@ const MSGS_A=["Bunu görünce seni hatırladım.","Bugün hava inanılmazdı.","
 const MSGS_B=["Cidden çok güzelmiş.","Ben de tam çıkıyordum.","Yolda mısın?","Bayıldım buna.",
   "Olur, saat kaçta?","Şimdi baktım, harika."];
 
-let chats=(function(){
-  const now=Date.now();
-  return [
-    {who:"deniz.k",unread:2,msgs:[
-      {me:false,text:MSGS_A[0],ts:now-8400000},
-      {me:true, text:MSGS_B[0],ts:now-8200000},
-      {me:false,text:MSGS_A[3],ts:now-1800000},
-      {me:false,text:MSGS_A[2],ts:now-900000}
-    ]},
-    {who:"meltem",unread:0,msgs:[
-      {me:true, text:MSGS_A[4],ts:now-172800000},
-      {me:false,text:MSGS_B[4],ts:now-171000000},
-      {me:true, text:"20:00 iyi mi?",ts:now-170400000},
-      {me:false,text:"Tamamdır.",ts:now-169800000}
-    ]},
-    {who:"efe",unread:1,msgs:[
-      {me:false,text:MSGS_A[5],ts:now-259200000},
-      {me:true, text:MSGS_B[3],ts:now-258000000},
-      {me:false,text:MSGS_A[1],ts:now-90000000}
-    ]},
-    {who:"zeyno",unread:0,msgs:[
-      {me:true, text:"Selam! Akışta gördüm, neredeydi o?",ts:now-604800000},
-      {me:false,text:"Amasra, sahil tarafı.",ts:now-600000000}
-    ]}
-  ];
-})();
+let chats=[];
+const _convId={};  // who -> conv_id
 
 function chatOf(who){
   let c=chats.find(x=>x.who===who);
   if(!c){c={who,unread:0,msgs:[]};chats.unshift(c);}
   return c;
 }
-function lastOf(c){ return c.msgs.length?c.msgs[c.msgs.length-1]:null; }
+function lastOf(c){
+  if(c.msgs.length) return c.msgs[c.msgs.length-1];
+  if(c._last && c._last.ts) return {text:c._last.text, ts:c._last.ts, me:false, kind:c._last.kind};
+  return null;
+}
 function sortChats(){
   chats.sort((a,b)=>{
     const la=lastOf(a),lb=lastOf(b);
@@ -2628,7 +2618,7 @@ function paintDmDot(){
 function preview(c){
   const m=lastOf(c);
   if(!m) return "Henüz mesaj yok";
-  const body=m.moment?"Bir an gönderildi":(m.media?"Fotoğraf":m.text);
+  const body=m.moment||m.kind==="moment"?"Bir an gönderildi":((m.media||m.kind==="media")?"Fotoğraf":(m.text||""));
   return (m.me?"Sen: ":"")+body;
 }
 
@@ -2662,8 +2652,27 @@ function renderChats(){
 }
 
 let chatWho=null;
-function openChats(){renderChats();open("chats");}
-function openChat(who){
+async function loadConversations(){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  try{
+    const {data,error}=await sb.rpc('get_conversations');
+    if(error){ console.warn('convos:',error.message); return; }
+    chats=(data||[]).map(r=>{
+      _convId[r.other_username]=r.conv_id;
+      return {
+        who:r.other_username, avatar:r.other_avatar,
+        convId:r.conv_id, unread:r.unread||0,
+        msgs:[],
+        _last:{text:r.last_body, kind:r.last_kind, ts:r.last_at?new Date(r.last_at).getTime():0}
+      };
+    });
+    paintDmDot();
+    if($("#chats").classList.contains("open")) renderChats();
+  }catch(e){ console.warn(e); }
+}
+function openChats(){renderChats();open("chats");loadConversations();}
+async function openChat(who){
   chatWho=who;
   const c=chatOf(who);
   c.unread=0;paintDmDot();
@@ -2673,6 +2682,27 @@ function openChat(who){
   renderChat();
   open("chat");
   setTimeout(()=>{const m=$("#msgList");m.scrollTop=m.scrollHeight;},60);
+  // gerçek mesajları çek
+  await loadMessages(who);
+}
+async function loadMessages(who){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  let convId=_convId[who];
+  if(!convId) return; // henüz sohbet açılmamış (ilk mesajla oluşacak)
+  try{
+    const {data,error}=await sb.rpc('get_messages',{conv:convId});
+    if(error){ console.warn('messages:',error.message); return; }
+    const c=chatOf(who);
+    c.msgs=(data||[]).map(m=>({
+      id:m.id, me:m.sender_id===me.id,
+      text:m.body||"", media:m.media_path?sb.storage.from('moments').getPublicUrl(m.media_path).data.publicUrl:null,
+      moment:m.moment_id||null,
+      kind:m.kind, ts:new Date(m.created_at).getTime()
+    }));
+    c.unread=0;paintDmDot();
+    if(chatWho===who){ renderChat(); const b=$("#msgList"); if(b) b.scrollTop=b.scrollHeight; }
+  }catch(e){ console.warn(e); }
 }
 function dayLabel(ts){
   const d=new Date(ts),n=new Date();
@@ -2740,17 +2770,35 @@ function pushMsg(who,msg,silent){
 }
 const mi=$("#msgInput"),ms=$("#msgSend");
 mi.addEventListener("input",()=>ms.classList.toggle("on",mi.value.trim().length>0));
-function sendMsg(){
+async function sendMsg(){
   const v=mi.value.trim(); if(!v||!chatWho) return;
-  pushMsg(chatWho,{me:true,text:v,ts:Date.now()});
-  mi.value="";ms.classList.remove("on");
-  const box=$("#msgList");box.scrollTop=box.scrollHeight;
-  /* karşı taraftan kısa bir yanıt */
   const who=chatWho;
-  setTimeout(()=>{
-    pushMsg(who,{me:false,text:MSGS_B[Math.floor(Math.random()*MSGS_B.length)],ts:Date.now()});
-    if(chatWho===who){const b=$("#msgList");b.scrollTop=b.scrollHeight;}
-  },1400+Math.random()*1200);
+  mi.value="";ms.classList.remove("on");
+  // iyimser göster
+  const localMsg={me:true,text:v,ts:Date.now(),_pending:true};
+  pushMsg(who,localMsg);
+  const box=$("#msgList");box.scrollTop=box.scrollHeight;
+
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me){ return; }
+  try{
+    const uid=await idOfUsername(who);
+    if(!uid){ toast("Kullanıcı bulunamadı"); return; }
+    const {data,error}=await sb.rpc('send_message',{
+      to_user:uid, msg_kind:'text', msg_body:v
+    });
+    if(error){
+      localMsg._failed=true;
+      if(/karşılıklı|mutual/i.test(error.message))
+        toast("Sadece karşılıklı takipleştiğin kişilere mesaj atabilirsin");
+      else toast("Mesaj gönderilemedi: "+error.message);
+      if(chatWho===who) renderChat();
+      return;
+    }
+    localMsg.id=data; localMsg._pending=false;
+    // conv id'yi öğren (ilk mesajsa)
+    if(!_convId[who]) await loadConversations();
+  }catch(e){ toast("Mesaj hatası"); }
 }
 ms.addEventListener("click",sendMsg);
 mi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}});
@@ -2759,11 +2807,35 @@ $("#chatBack").addEventListener("click",()=>{close("chat");chatWho=null;renderCh
 $("#chatsBack").addEventListener("click",()=>{close("chats");setTab($("#tabFeed"));});
 $("#dmBtn").addEventListener("click",openChats);
 
-function sendMedia(src){
+async function sendMedia(src){
   if(!chatWho) return;
-  pushMsg(chatWho,{me:true,media:src,ts:Date.now()});
+  const who=chatWho;
+  const localMsg={me:true,media:src,ts:Date.now(),_pending:true};
+  pushMsg(who,localMsg);
   const b=$("#msgList");if(b) b.scrollTop=b.scrollHeight;
-  toast("Kare gönderildi");
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  try{
+    const uid=await idOfUsername(who);
+    if(!uid){ toast("Kullanıcı bulunamadı"); return; }
+    // medyayı yükle
+    const blob=dataURLtoBlob(src);
+    const path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+".jpg";
+    const up=await sb.storage.from('moments').upload(path,blob,{contentType:"image/jpeg"});
+    if(up.error) throw up.error;
+    const {data,error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'media',msg_media:path});
+    if(error){
+      localMsg._failed=true;
+      if(/karşılıklı|mutual/i.test(error.message)) toast("Sadece karşılıklı takipleştiğin kişilere gönderebilirsin");
+      else toast("Gönderilemedi");
+      if(chatWho===who) renderChat();
+      return;
+    }
+    localMsg.id=data; localMsg._pending=false;
+    localMsg.media=sb.storage.from('moments').getPublicUrl(path).data.publicUrl;
+    if(chatWho===who) renderChat();
+    if(!_convId[who]) await loadConversations();
+  }catch(e){ toast("Gönderim hatası"); }
 }
 
 /* bir anı gönder */
@@ -2771,17 +2843,30 @@ let shareId=null;
 function openShare(id){
   shareId=id;
   const box=$("#shList");box.innerHTML="";
-  const names=[...new Set([...chats.map(c=>c.who),...KISI])].filter(n=>n!==ME).slice(0,14);
+  // yalnızca sohbet ettiğin (mesajlaşabildiğin) kişiler
+  const names=chats.map(c=>c.who).filter(n=>n!==ME);
+  if(!names.length){
+    box.innerHTML='<div class="chatEmpty">Anı gönderebilmek için önce karşılıklı takipleştiğin biriyle sohbetin olmalı.</div>';
+    open("shareSheet");return;
+  }
   names.forEach(n=>{
     const b=document.createElement("button");b.className="shrow";
     const av=document.createElement("span");av.className="av";paintAv(av,n);
     const nm=document.createElement("span");nm.className="nm";nm.textContent=n;
     const go=document.createElement("span");go.className="go2";go.textContent="Gönder";
     b.append(av,nm,go);
-    b.addEventListener("click",()=>{
+    b.addEventListener("click",async ()=>{
       if(b.classList.contains("done")) return;
-      pushMsg(n,{me:true,moment:shareId,ts:Date.now()},true);
-      b.classList.add("done");go.textContent="Gönderildi";
+      b.classList.add("done");go.textContent="Gönderiliyor…";
+      const sb=window.__sb, me=window.__me;
+      if(sb&&me){
+        const uid=await idOfUsername(n);
+        if(uid && isReal(shareId)){
+          const {error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'moment',msg_moment:shareId});
+          if(error){ go.textContent="Hata"; b.classList.remove("done"); toast("Gönderilemedi"); return; }
+        }
+      }
+      go.textContent="Gönderildi";
       toast(n+" kişisine gönderildi");
     });
     box.appendChild(b);
@@ -2985,11 +3070,39 @@ nextAt=Date.now()+HOLD;
 loadFeed();   // gerçek akışı Supabase'ten çek
 loadNotifs(); // bildirimleri çek
 loadProfileData(ME); // kendi profil sayılarım
+loadConversations(); // sohbet listesi + okunmamış rozeti
 
 // canlı bildirim: yeni bildirim düşünce zil güncellenir + haber verilir
 window.__onNewNotification = () => {
   loadNotifs();
   toast("Yeni bildirim");
+};
+
+// canlı mesaj: yeni mesaj düşünce
+window.__onNewMessage = async (m) => {
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  // bu mesajın hangi sohbete ait olduğunu ve göndereni öğren
+  // açık olan sohbetin conv id'si ile eşleşiyorsa doğrudan ekle
+  const openConv = chatWho ? _convId[chatWho] : null;
+  if(openConv && m.conv_id===openConv){
+    const c=chatOf(chatWho);
+    if(!c.msgs.some(x=>x.id===m.id)){
+      c.msgs.push({
+        id:m.id, me:false, text:m.body||"",
+        media:m.media_path?sb.storage.from('moments').getPublicUrl(m.media_path).data.publicUrl:null,
+        moment:m.moment_id||null, kind:m.kind, ts:new Date(m.created_at).getTime()
+      });
+      renderChat();
+      const b=$("#msgList"); if(b) b.scrollTop=b.scrollHeight;
+      // okundu işaretle
+      sb.rpc('get_messages',{conv:openConv}).catch(()=>{});
+    }
+  }else{
+    // başka sohbete geldi: listeyi ve rozeti tazele
+    loadConversations();
+    toast("Yeni mesaj");
+  }
 };
 setInterval(()=>{
   list.querySelectorAll(".post").forEach(el=>{if(el._sync) el._sync();});
@@ -3164,6 +3277,18 @@ async function enterApp(){
         () => { if(window.__onNewNotification) window.__onNewNotification(); })
       .subscribe();
   }catch(e){ console.warn('realtime notif:',e); }
+
+  // canlı mesaj: yeni mesaj düşünce (kendi gönderdiğim hariç)
+  try{
+    sb.channel('msg-'+user.id)
+      .on('postgres_changes',
+        { event:'INSERT', schema:'public', table:'messages' },
+        (payload) => {
+          const m=payload.new;
+          if(m && m.sender_id!==user.id && window.__onNewMessage) window.__onNewMessage(m);
+        })
+      .subscribe();
+  }catch(e){ console.warn('realtime msg:',e); }
 }
 window.__logout = async () => {
   await sb.auth.signOut();

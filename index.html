@@ -2282,19 +2282,39 @@ $("#cpShare").addEventListener("click",()=>{
 const following=new Set();
 const USERS={};
 function userOf(name){
+  // önbellekte gerçek veri varsa onu, yoksa geçici boş kayıt (yükleme gelene kadar)
   if(!USERS[name]){
-    const h=hash(name);
-    USERS[name]={
-      name,
-      followers: 60+(h%9400),
-      follows: 30+((h>>7)%720),
-      moments: 4+((h>>13)%180),
-      joined: Date.now()-(30+(h%520))*86400000
-    };
+    USERS[name]={ name, followers:0, follows:0, moments:0, joined:Date.now() };
   }
   return USERS[name];
 }
-const meUser={name:ME, followers:128, follows:0, joined:Date.now()-52*86400000};
+// gerçek profil verisini Supabase'ten çek
+async function loadProfileData(name){
+  if(!window.__sb) return null;
+  try{
+    const {data}=await window.__sb.from('profiles')
+      .select('id, username, avatar_url, moment_count, follower_count, following_count, created_at')
+      .eq('username',name).single();
+    if(data){
+      _idCache[name]=data.id;
+      USERS[name]={
+        name:data.username, id:data.id, avatar:data.avatar_url,
+        followers:data.follower_count, follows:data.following_count,
+        moments:data.moment_count, joined:new Date(data.created_at).getTime()
+      };
+      if(name===ME){
+        meUser.followers=data.follower_count;
+        meUser.follows=data.following_count;
+        meUser.moments=data.moment_count;
+        meUser.joined=new Date(data.created_at).getTime();
+        if(data.avatar_url) myAvatar=data.avatar_url;
+      }
+      return USERS[name];
+    }
+  }catch(e){ console.warn('profil:',e); }
+  return null;
+}
+const meUser={name:ME, followers:0, follows:0, moments:0, joined:Date.now()};
 if(window.__me&&window.__me.avatar_url){myAvatar=window.__me.avatar_url;}
 
 function joinedText(ts){
@@ -2329,6 +2349,9 @@ async function openProfile(name){
   profName=name;
   renderProfile();
   open("profile");
+  // gerçek profil verisini çek (an/takipçi/takip sayıları)
+  const pdata=await loadProfileData(name);
+  if(pdata && profName===name) renderProfile();
   // gerçek takip durumunu çek
   if(name!==ME && window.__sb && window.__me){
     const uid=await idOfUsername(name);
@@ -2370,9 +2393,9 @@ function renderProfile(){
   jn.innerHTML=IC.clock+"<span></span>";
   jn.querySelector("span").textContent=joinedText(u.joined);
 
-  const moments=own?myMoments().length:u.moments;
-  const fw=own?meUser.followers:(u.followers+(following.has(profName)?1:0));
-  const fo=own?following.size:u.follows;
+  const moments=own?(meUser.moments||myMoments().length):(u.moments||0);
+  const fw=own?(meUser.followers||0):(u.followers||0);
+  const fo=own?(meUser.follows||0):(u.follows||0);
   const st=document.createElement("div");st.className="profstats";
   [["An",moments],["Takipçi",fw],["Takip",fo]].forEach(([lb,v],i)=>{
     if(i){const s=document.createElement("i");s.className="sep";st.appendChild(s);}
@@ -2400,10 +2423,10 @@ function renderProfile(){
     b.addEventListener("click",async ()=>{
       const target=profName;
       const wasFollowing=following.has(target);
-      if(wasFollowing){following.delete(target);toast("Takipten çıkıldı");}
-      else{following.add(target);toast(target+" takip ediliyor");}
+      const tu=userOf(target);
+      if(wasFollowing){following.delete(target);tu.followers=Math.max(0,(tu.followers||0)-1);meUser.follows=Math.max(0,(meUser.follows||0)-1);toast("Takipten çıkıldı");}
+      else{following.add(target);tu.followers=(tu.followers||0)+1;meUser.follows=(meUser.follows||0)+1;toast(target+" takip ediliyor");}
       renderProfile();
-      // Supabase'e yaz
       if(window.__sb && window.__me){
         const uid=await idOfUsername(target);
         if(uid){
@@ -2961,6 +2984,7 @@ syncActive();
 nextAt=Date.now()+HOLD;
 loadFeed();   // gerçek akışı Supabase'ten çek
 loadNotifs(); // bildirimleri çek
+loadProfileData(ME); // kendi profil sayılarım
 
 // canlı bildirim: yeni bildirim düşünce zil güncellenir + haber verilir
 window.__onNewNotification = () => {

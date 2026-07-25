@@ -1388,7 +1388,9 @@ function seed(){
 let items=[];
 const MOOD_BY_KEY={};MOODS.forEach(m=>MOOD_BY_KEY[m.k]=m);
 const byId=id=>items.find(x=>x.id===id);
-const commCount=it=>it.comments.reduce((n,c)=>n+1+c.replies.length,0);
+const commCount=it=>it.comments.length?it.comments.reduce((n,c)=>n+1+c.replies.length,0):(it.cc||0);
+// gerçek Supabase kaydı mı (UUID) yoksa yerel geçici mi?
+const isReal=id=>typeof id==="string" && id.length>=32 && id.includes("-");
 
 // Supabase akışını çek ve items'a doldur
 async function loadFeed(){
@@ -1405,12 +1407,24 @@ async function loadFeed(){
       note:r.note||"",
       kind:r.media_kind,
       src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
-      likes:r.like_count, views:r.view_count,
+      likes:r.like_count, views:r.view_count, cc:r.comment_count,
       saved:false, liked:false,
       mine: me && r.author_id===me.id,
       comments:[]
     }));
     render(); activeIdx=-1; syncActive();
+    // kullanıcının beğendiği ve kaydettiği kareleri işaretle
+    if(me && items.length){
+      const ids=items.map(x=>x.id);
+      const [lk,sv]=await Promise.all([
+        sb.from('likes').select('moment_id').eq('user_id',me.id).in('moment_id',ids),
+        sb.from('saves').select('moment_id').eq('user_id',me.id).in('moment_id',ids)
+      ]);
+      const likedSet=new Set((lk.data||[]).map(x=>x.moment_id));
+      const savedSet=new Set((sv.data||[]).map(x=>x.moment_id));
+      items.forEach(it=>{ it.liked=likedSet.has(it.id); it.saved=savedSet.has(it.id); });
+      list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
+    }
   }catch(e){ console.warn(e); }
 }
 
@@ -1604,7 +1618,19 @@ function build(it){
   function toggleLike(force){
     if(force&&it.liked) return false;
     it.liked=!it.liked;it.likes+=it.liked?1:-1;
-    refreshLike();return true;
+    refreshLike();
+    // Supabase'e yaz (gerçek kayıtsa)
+    if(isReal(it.id) && window.__sb && window.__me){
+      const sb=window.__sb, uid=window.__me.id;
+      if(it.liked){
+        sb.from('likes').insert({moment_id:it.id, user_id:uid}).then(({error})=>{
+          if(error && !/duplicate/i.test(error.message)) { it.liked=false;it.likes--;refreshLike(); }
+        });
+      }else{
+        sb.from('likes').delete().eq('moment_id',it.id).eq('user_id',uid).then(()=>{});
+      }
+    }
+    return true;
   }
   like.addEventListener("click",()=>toggleLike(false));
   chat.addEventListener("click",()=>openComments(it.id));
@@ -1614,6 +1640,11 @@ function build(it){
     it.saved=!it.saved;
     save.classList.toggle("saved",it.saved);
     toast(it.saved?"Kaydedilenlere eklendi":"Kaydedilenlerden çıkarıldı");
+    if(isReal(it.id) && window.__sb && window.__me){
+      const sb=window.__sb, uid=window.__me.id;
+      if(it.saved) sb.from('saves').insert({moment_id:it.id, user_id:uid}).then(()=>{});
+      else sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',uid).then(()=>{});
+    }
     if($("#profile").classList.contains("open")) renderProfile();
   });
   av.addEventListener("click",()=>openProfile(it.who));
@@ -1755,7 +1786,7 @@ function syncActive(){
   if(seenIt&&!seenIds.has(seenIt.id)){
     seenIds.add(seenIt.id);
     seenIt.views++;
-    if(window.__sb && !seenIt._pending && String(seenIt.id).length>20){
+    if(window.__sb && isReal(seenIt.id)){
       window.__sb.rpc('mark_view',{target:seenIt.id}).catch(()=>{});
     }
     const node=list.querySelectorAll(".post")[idx];
@@ -1887,13 +1918,39 @@ function openComments(id){
   clearReply();
   paintAv($("#commAv"),ME);
   renderComments();
-  /* görsel üstte kalsın: aktif karenin medyası panelin üstüne sığar */
   const el=list.querySelector('[data-id="'+id+'"]');
   if(el) el.querySelector(".pmedia").style.bottom="var(--sheetH)";
   $("#tabbar").classList.add("away");
   feed.classList.add("locked");
   open("comments");
   $("#commList").scrollTop=0;
+  loadComments(id);
+}
+async function loadComments(id){
+  const it=byId(id); if(!it) return;
+  if(!isReal(id) || !window.__sb) return;
+  try{
+    const {data,error}=await window.__sb.rpc('get_comments',{target:id});
+    if(error){ console.warn('comments:',error.message); return; }
+    // düz listeyi ana yorum + yanıt ağacına çevir
+    const map={};
+    const roots=[];
+    (data||[]).forEach(r=>{
+      const node={id:r.id, who:r.username, text:r.body, ts:new Date(r.created_at).getTime(),
+        liked:false, open:false, replies:[], parent:r.parent_id};
+      map[r.id]=node;
+    });
+    (data||[]).forEach(r=>{
+      const node=map[r.id];
+      if(r.parent_id && map[r.parent_id]) map[r.parent_id].replies.push(node);
+      else roots.push(node);
+    });
+    it.comments=roots;
+    it.cc=(data||[]).length;
+    if(commId===id) renderComments();
+    const el=list.querySelector('[data-id="'+id+'"]');
+    if(el&&el._sync) el._sync();
+  }catch(e){ console.warn(e); }
 }
 function closeComments(){
   const el=commId?list.querySelector('[data-id="'+commId+'"]'):null;
@@ -1904,20 +1961,31 @@ function closeComments(){
 }
 const ci=$("#commInput"),cs=$("#commSend");
 ci.addEventListener("input",()=>cs.classList.toggle("on",ci.value.trim().length>0));
-function sendComment(){
+async function sendComment(){
   const v=ci.value.trim(); if(!v) return;
   const it=byId(commId); if(!it) return;
-  if(replyTarget){
-    replyTarget.replies.push({who:ME,text:v,ts:Date.now(),liked:false});
-    replyTarget.open=true;clearReply();
-  }else{
-    it.comments.push({id:"c"+Date.now(),who:ME,text:v,ts:Date.now(),liked:false,open:false,replies:[]});
-  }
+  const parent=replyTarget;
   ci.value="";cs.classList.remove("on");
+
+  // yerel iyimser ekleme
+  const localNode={id:"c"+Date.now(),who:ME,text:v,ts:Date.now(),liked:false,open:false,replies:[]};
+  if(parent){ parent.replies.push(localNode); parent.open=true; clearReply(); }
+  else it.comments.push(localNode);
+  it.cc=(it.cc||0)+1;
   renderComments();
   const el=list.querySelector('[data-id="'+it.id+'"]');
   if(el&&el._sync) el._sync();
   const box=$("#commList");box.scrollTop=box.scrollHeight;
+
+  // Supabase'e kaydet
+  if(isReal(it.id) && window.__sb && window.__me){
+    try{
+      const row={ moment_id:it.id, author_id:window.__me.id, body:v };
+      if(parent && isReal(parent.id)) row.parent_id=parent.id;
+      const {data,error}=await window.__sb.from('comments').insert(row).select('id').single();
+      if(!error && data) localNode.id=data.id;
+    }catch(e){ console.warn(e); }
+  }
 }
 cs.addEventListener("click",sendComment);
 ci.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendComment();}});

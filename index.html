@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>Zaman Tüneli</title>
+<title>Zaman Tüneli v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -921,7 +921,7 @@ svg{display:block}
       </div>
       <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giris yap</span></button>
       <div class="gmsg" id="gMsg"></div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.</div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Zaman Tüneli v2</span></div>
     </div>
   </section>
 </div>
@@ -1093,6 +1093,15 @@ svg{display:block}
       <div class="shlist" id="shList"></div>
     </div>
   </section>
+
+  <section class="sheet" id="followSheet" aria-hidden="true">
+    <div class="scrim" data-close="followSheet"></div>
+    <div class="shbox">
+      <h3 id="flTitle">Takipçiler</h3>
+      <div class="shlist" id="flList"></div>
+    </div>
+  </section>
+
 
   <section class="panel" id="profile" aria-hidden="true">
     <div class="head">
@@ -1325,7 +1334,13 @@ function avatarImage(name){
   return AVCACHE[name]=c.toDataURL("image/jpeg",.78);
 }
 let myAvatar=null;
-function avSrc(n){return n===ME?myAvatar:avatarImage(n);}
+const REALAV={};  // username -> gerçek avatar url
+function setRealAvatar(name,url){ if(url) REALAV[name]=url; }
+function avSrc(n){
+  if(n===ME && myAvatar) return myAvatar;
+  if(REALAV[n]) return REALAV[n];
+  return avatarImage(n);
+}
 function paintAv(el,name){
   const src=avSrc(name);
   if(src){el.style.backgroundImage="url("+src+")";el.textContent="";}
@@ -1399,7 +1414,9 @@ async function loadFeed(){
     const {data,error}=await sb.rpc('get_feed',{page_size:30});
     if(error){ console.warn('feed:',error.message); return; }
     const me=window.__me;
-    items = (data||[]).map(r=>({
+    items = (data||[]).map(r=>{
+      if(r.avatar_url) setRealAvatar(r.username, r.avatar_url);
+      return {
       id:r.id, ts:new Date(r.created_at).getTime(),
       who:r.username, avatar:r.avatar_url,
       where:r.place_label||"Konum yok",
@@ -1411,7 +1428,7 @@ async function loadFeed(){
       saved:false, liked:false,
       mine: me && r.author_id===me.id,
       comments:[]
-    }));
+    };});
     render(); activeIdx=-1; syncActive();
     // kullanıcının beğendiği ve kaydettiği kareleri işaretle
     if(me && items.length){
@@ -1856,9 +1873,11 @@ function commentRow(c){
   const frag=document.createDocumentFragment();
   const row=document.createElement("div");row.className="crow";
   const av=document.createElement("span");av.className="cav";paintAv(av,c.who);
+  if(c.who!==ME){ av.style.cursor="pointer"; av.addEventListener("click",()=>{close("comments");openProfile(c.who);}); }
   const body=document.createElement("div");body.className="cbody";
   const line=document.createElement("div");line.className="cline";
   const b=document.createElement("b");b.textContent=c.who;
+  if(c.who!==ME){ b.style.cursor="pointer"; b.addEventListener("click",()=>{close("comments");openProfile(c.who);}); }
   line.append(b,document.createTextNode(c.text));
   const meta=document.createElement("div");meta.className="cmeta";
   const tm=document.createElement("span");tm.textContent=rel(c.ts);
@@ -1953,6 +1972,7 @@ async function loadComments(id){
     const map={};
     const roots=[];
     (data||[]).forEach(r=>{
+      if(r.avatar_url) setRealAvatar(r.username, r.avatar_url);
       const node={id:r.id, who:r.username, text:r.body, ts:new Date(r.created_at).getTime(),
         liked:false, open:false, replies:[], parent:r.parent_id};
       map[r.id]=node;
@@ -2297,6 +2317,7 @@ async function loadProfileData(name){
       .eq('username',name).single();
     if(data){
       _idCache[name]=data.id;
+      if(data.avatar_url) setRealAvatar(data.username, data.avatar_url);
       USERS[name]={
         name:data.username, id:data.id, avatar:data.avatar_url,
         followers:data.follower_count, follows:data.following_count,
@@ -2345,6 +2366,81 @@ async function idOfUsername(name){
   if(data){ _idCache[name]=data.id; return data.id; }
   return null;
 }
+async function openFollowList(name, kind){
+  const sb=window.__sb;
+  const title = kind==="followers" ? "Takipçiler" : "Takip edilenler";
+  $("#flTitle").textContent=title;
+  const box=$("#flList");
+  box.innerHTML='<div class="chatEmpty">Yükleniyor…</div>';
+  open("followSheet");
+  if(!sb){ box.innerHTML='<div class="chatEmpty">Bağlantı yok.</div>'; return; }
+  try{
+    const uid=await idOfUsername(name);
+    if(!uid){ box.innerHTML='<div class="chatEmpty">Kullanıcı bulunamadı.</div>'; return; }
+    // önce id listesini al, sonra profilleri çek (FK adından bağımsız, güvenli)
+    let idQ;
+    if(kind==="followers") idQ=sb.from('follows').select('follower_id').eq('followee_id',uid);
+    else                    idQ=sb.from('follows').select('followee_id').eq('follower_id',uid);
+    const {data:rows,error:e1}=await idQ;
+    if(e1){ box.innerHTML='<div class="chatEmpty">Liste alınamadı.</div>'; console.warn(e1); return; }
+    const ids=(rows||[]).map(r=> kind==="followers" ? r.follower_id : r.followee_id );
+    if(!ids.length){
+      box.innerHTML='<div class="chatEmpty">'+(kind==="followers"?"Henüz takipçi yok.":"Henüz kimseyi takip etmiyor.")+'</div>';
+      return;
+    }
+    const {data:profs,error:e2}=await sb.from('profiles').select('username,avatar_url').in('id',ids);
+    if(e2){ box.innerHTML='<div class="chatEmpty">Liste alınamadı.</div>'; console.warn(e2); return; }
+    const people=profs||[];
+    if(!people.length){
+      box.innerHTML='<div class="chatEmpty">'+(kind==="followers"?"Henüz takipçi yok.":"Henüz kimseyi takip etmiyor.")+'</div>';
+      return;
+    }
+    box.innerHTML="";
+    const me=window.__me;
+    const own = name===ME; // kendi listem mi
+    people.forEach(p=>{
+      if(p.avatar_url) setRealAvatar(p.username,p.avatar_url);
+      const b=document.createElement("button");b.className="shrow";
+      const av=document.createElement("span");av.className="av";paintAv(av,p.username);
+      const nm=document.createElement("span");nm.className="nm";nm.textContent=p.username;
+      b.append(av,nm);
+      b.addEventListener("click",()=>{ close("followSheet"); openProfile(p.username); });
+
+      // kendi listemdeyse çıkarma düğmesi
+      if(own && p.username!==ME){
+        const act=document.createElement("span");
+        act.className="go2";
+        act.textContent = kind==="following" ? "Bırak" : "Çıkar";
+        act.addEventListener("click",async (ev)=>{
+          ev.stopPropagation(); // profile gitmesin
+          if(!sb||!me) return;
+          const puid=await idOfUsername(p.username);
+          if(!puid){ toast("Kullanıcı bulunamadı"); return; }
+          if(kind==="following"){
+            // ben onu takip etmeyi bırakıyorum
+            const {error}=await sb.from('follows').delete().eq('follower_id',me.id).eq('followee_id',puid);
+            if(error){ toast("İşlem başarısız"); return; }
+            following.delete(p.username);
+            toast(p.username+" artık takip edilmiyor");
+          }else{
+            // takipçiyi çıkar (o beni takip etmeyi bırakmış olur)
+            const {error}=await sb.rpc('remove_follower',{follower:puid});
+            if(error){ toast("İşlem başarısız: "+error.message); return; }
+            toast(p.username+" takipçilerinden çıkarıldı");
+          }
+          // satırı listeden kaldır + sayıları tazele
+          b.style.transition="opacity .2s";b.style.opacity="0";
+          setTimeout(()=>b.remove(),200);
+          await loadProfileData(ME);
+          if($("#profile").classList.contains("open") && profName===ME) renderProfile();
+        });
+        b.appendChild(act);
+      }
+      box.appendChild(b);
+    });
+  }catch(e){ box.innerHTML='<div class="chatEmpty">Bir hata oluştu.</div>'; console.warn(e); }
+}
+
 async function openProfile(name){
   profName=name;
   renderProfile();
@@ -2397,10 +2493,14 @@ function renderProfile(){
   const fw=own?(meUser.followers||0):(u.followers||0);
   const fo=own?(meUser.follows||0):(u.follows||0);
   const st=document.createElement("div");st.className="profstats";
-  [["An",moments],["Takipçi",fw],["Takip",fo]].forEach(([lb,v],i)=>{
+  [["An",moments,null],["Takipçi",fw,"followers"],["Takip",fo,"following"]].forEach(([lb,v,kind],i)=>{
     if(i){const s=document.createElement("i");s.className="sep";st.appendChild(s);}
     const c=document.createElement("div");c.className="stat";
     c.innerHTML="<b>"+nf(v)+"</b><span>"+lb+"</span>";
+    if(kind){
+      c.style.cursor="pointer";
+      c.addEventListener("click",()=>openFollowList(profName,kind));
+    }
     st.appendChild(c);
   });
 
@@ -2691,19 +2791,17 @@ async function loadMessages(who){
   let convId=_convId[who];
   if(!convId){
     const uid=await idOfUsername(who);
-    if(!uid){ toast("TEŞHİS: kullanıcı id bulunamadı"); return; }
+    if(!uid) return;
     const lo = me.id<uid ? me.id : uid;
     const hi = me.id<uid ? uid : me.id;
-    const {data:conv,error:cErr}=await sb.from('conversations').select('id')
+    const {data:conv}=await sb.from('conversations').select('id')
       .eq('user_a',lo).eq('user_b',hi).maybeSingle();
-    if(cErr){ toast("TEŞHİS: sohbet sorgu hatası: "+cErr.message); return; }
     if(conv){ convId=conv.id; _convId[who]=conv.id; }
-    else { toast("TEŞHİS: sohbet kaydı bulunamadı (RLS?)"); return; }
+    else return;
   }
   try{
     const {data,error}=await sb.rpc('get_messages',{conv:convId});
-    if(error){ toast("TEŞHİS: get_messages hatası: "+error.message); return; }
-    toast("TEŞHİS: "+((data||[]).length)+" mesaj çekildi");
+    if(error){ console.warn('messages:',error.message); return; }
     const c=chatOf(who);
     c.msgs=(data||[]).map(m=>({
       id:m.id, me:m.sender_id===me.id,
@@ -2713,7 +2811,7 @@ async function loadMessages(who){
     }));
     c.unread=0;paintDmDot();
     if(chatWho===who){ renderChat(); const b=$("#msgList"); if(b) b.scrollTop=b.scrollHeight; }
-  }catch(e){ toast("TEŞHİS: hata "+e.message); }
+  }catch(e){ console.warn(e); }
 }
 function dayLabel(ts){
   const d=new Date(ts),n=new Date();
@@ -3004,11 +3102,30 @@ async function post(src,kind,mood,where,note,extra){
     local._failed=true;
   }
 }
-function setAvatar(src){
+async function setAvatar(src){
   myAvatar=src;paintAv($("#tabAv"),ME);
-  toast("Profil fotoğrafın güncellendi");render();
+  render();
   if($("#profile").classList.contains("open")){
     setTab($("#tabProfile"));renderProfile();
+  }
+  // Supabase'e yükle
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me){ toast("Profil fotoğrafın güncellendi"); return; }
+  toast("Profil fotoğrafı yükleniyor…");
+  try{
+    const blob=dataURLtoBlob(src);
+    const path=me.id+"/avatar_"+Date.now()+".jpg";
+    const up=await sb.storage.from('avatars').upload(path,blob,{contentType:"image/jpeg",upsert:true});
+    if(up.error) throw up.error;
+    const url=sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+    const {error}=await sb.from('profiles').update({avatar_url:url, avatar_taken_at:new Date().toISOString()}).eq('id',me.id);
+    if(error) throw error;
+    myAvatar=url; me.avatar_url=url; setRealAvatar(ME,url);
+    paintAv($("#tabAv"),ME);
+    if($("#profile").classList.contains("open")) renderProfile();
+    toast("Profil fotoğrafın güncellendi");
+  }catch(e){
+    toast("Fotoğraf yüklenemedi: "+(e.message||"hata"));
   }
 }
 function startRec(){

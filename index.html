@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>Zaman Tüneli v2</title>
+<title>Zaman Tüneli v3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -587,6 +587,39 @@ svg{display:block}
   padding-bottom:calc(var(--sab) + 10px);
   transform:translateY(102%);transition:transform .34s var(--ease)}
 #shareSheet.open .shbox{transform:translateY(0)}
+#followSheet.open .shbox{transform:translateY(0)}
+
+/* mini profil kartı */
+.mpcard{position:absolute;left:14px;right:14px;bottom:calc(var(--sab) + 16px);
+  background:rgba(18,18,24,.96);border:1px solid var(--edge-hi);border-radius:26px;
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  box-shadow:0 -20px 60px -20px #000, inset 0 1px 0 rgba(255,255,255,.14);
+  padding:0 0 14px;overflow:hidden;
+  transform:translateY(120%);transition:transform .36s var(--ease)}
+#miniProfile.open .mpcard{transform:translateY(0)}
+.mpHero{position:relative;padding:26px 22px 18px;text-align:center;
+  background:linear-gradient(160deg,rgba(255,59,107,.22),rgba(123,91,255,.18) 60%,transparent)}
+.mpAv{width:86px;height:86px;border-radius:99px;margin:0 auto 12px;display:block;
+  background:#22222A center/cover no-repeat;border:2.5px solid rgba(255,255,255,.92);
+  box-shadow:0 10px 30px -8px #000;display:grid;place-items:center;
+  font-size:30px;font-weight:600;color:var(--t2)}
+.mpName{font-size:20px;font-weight:700;letter-spacing:-.03em}
+.mpHandle{font-size:13.5px;color:var(--t3);margin-top:1px}
+.mpStats{display:flex;justify-content:center;gap:0;margin-top:16px}
+.mpStats .s{flex:1;max-width:110px}
+.mpStats .s b{display:block;font-size:17px;font-weight:700;letter-spacing:-.03em}
+.mpStats .s span{display:block;font-size:11px;color:var(--t3);margin-top:1px}
+.mpStats .s.tap{cursor:pointer}
+.mpActions{display:flex;gap:9px;padding:16px 18px 4px}
+.mpActions button{flex:1;height:46px;border-radius:14px;font-size:14px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .12s}
+.mpActions button:active{transform:scale(.97)}
+.mpActions .follow{background:linear-gradient(145deg,#FF3B6B,#7B5BFF);color:#fff;
+  border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+.mpActions .ghost{background:rgba(255,255,255,.08);border:1px solid var(--edge);color:var(--t1)}
+.mpFull{width:calc(100% - 36px);margin:8px 18px 0;height:42px;border-radius:13px;
+  background:transparent;border:1px solid var(--edge-soft);color:var(--t2);
+  font-size:13px;font-weight:600}
 .shbox h3{font-size:15.5px;font-weight:600;letter-spacing:-.024em;padding:14px 16px 2px}
 .shbox p{font-size:12.5px;color:var(--t3);padding:0 16px 10px}
 .shlist{overflow-y:auto;padding:0 8px 6px;scrollbar-width:none}
@@ -921,7 +954,7 @@ svg{display:block}
       </div>
       <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giris yap</span></button>
       <div class="gmsg" id="gMsg"></div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Zaman Tüneli v2</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Zaman Tüneli v3</span></div>
     </div>
   </section>
 </div>
@@ -1099,6 +1132,20 @@ svg{display:block}
     <div class="shbox">
       <h3 id="flTitle">Takipçiler</h3>
       <div class="shlist" id="flList"></div>
+    </div>
+  </section>
+
+  <section class="sheet" id="miniProfile" aria-hidden="true">
+    <div class="scrim" data-close="miniProfile"></div>
+    <div class="mpcard" id="mpCard">
+      <div class="mpHero" id="mpHero">
+        <span class="mpAv" id="mpAv"></span>
+        <div class="mpName" id="mpName">—</div>
+        <div class="mpHandle" id="mpHandle">—</div>
+        <div class="mpStats" id="mpStats"></div>
+      </div>
+      <div class="mpActions" id="mpActions"></div>
+      <button class="mpFull" id="mpFull">Profilin tamamını gör</button>
     </div>
   </section>
 
@@ -1681,7 +1728,7 @@ function build(it){
     }
     if($("#profile").classList.contains("open")) renderProfile();
   });
-  av.addEventListener("click",()=>openProfile(it.who));
+  av.addEventListener("click",()=>{ if(it.who===ME) openProfile(ME); else openMiniProfile(it.who); });
 
   let sc=1,tx=0,ty=0,pts=new Map(),sd=0,ss=1,lastTap=0,drag=false,px=0,py=0,ox=0,oy=0,tapT=null;
   function apply(anim){
@@ -1873,11 +1920,11 @@ function commentRow(c){
   const frag=document.createDocumentFragment();
   const row=document.createElement("div");row.className="crow";
   const av=document.createElement("span");av.className="cav";paintAv(av,c.who);
-  if(c.who!==ME){ av.style.cursor="pointer"; av.addEventListener("click",()=>{close("comments");openProfile(c.who);}); }
+  if(c.who!==ME){ av.style.cursor="pointer"; av.addEventListener("click",()=>openMiniProfile(c.who)); }
   const body=document.createElement("div");body.className="cbody";
   const line=document.createElement("div");line.className="cline";
   const b=document.createElement("b");b.textContent=c.who;
-  if(c.who!==ME){ b.style.cursor="pointer"; b.addEventListener("click",()=>{close("comments");openProfile(c.who);}); }
+  if(c.who!==ME){ b.style.cursor="pointer"; b.addEventListener("click",()=>openMiniProfile(c.who)); }
   line.append(b,document.createTextNode(c.text));
   const meta=document.createElement("div");meta.className="cmeta";
   const tm=document.createElement("span");tm.textContent=rel(c.ts);
@@ -2366,6 +2413,64 @@ async function idOfUsername(name){
   if(data){ _idCache[name]=data.id; return data.id; }
   return null;
 }
+async function openMiniProfile(name){
+  if(name===ME){ openProfile(ME); return; }
+  // kartı geçici doldur
+  const av=$("#mpAv");
+  paintAv(av,name);
+  $("#mpName").textContent=name;
+  $("#mpHandle").textContent="@"+name;
+  $("#mpStats").innerHTML="";
+  $("#mpActions").innerHTML="";
+  open("miniProfile");
+  $("#mpFull").onclick=()=>{ close("miniProfile"); openProfile(name); };
+
+  // gerçek veriyi çek
+  const u=await loadProfileData(name);
+  const uid=await idOfUsername(name);
+  let isFollowing=following.has(name);
+  if(uid && window.__sb){
+    const {data}=await window.__sb.rpc('is_following',{target:uid});
+    if(data===true){ isFollowing=true; following.add(name); }
+    else if(data===false){ isFollowing=false; following.delete(name); }
+  }
+  paintAv(av,name);
+  if(u){
+    $("#mpStats").innerHTML=
+      '<div class="s"><b>'+nf(u.moments||0)+'</b><span>An</span></div>'+
+      '<div class="s tap" data-k="followers"><b>'+nf(u.followers||0)+'</b><span>Takipçi</span></div>'+
+      '<div class="s tap" data-k="following"><b>'+nf(u.follows||0)+'</b><span>Takip</span></div>';
+    $("#mpStats").querySelectorAll(".s.tap").forEach(el=>{
+      el.addEventListener("click",()=>{ close("miniProfile"); openFollowList(name, el.dataset.k); });
+    });
+  }
+  // eylemler
+  const acts=$("#mpActions");
+  const fBtn=document.createElement("button");
+  fBtn.className=isFollowing?"ghost":"follow";
+  fBtn.innerHTML=isFollowing?"Takip ediliyor":"Takip et";
+  fBtn.addEventListener("click",async ()=>{
+    const target=name;
+    const was=following.has(target);
+    const tu=userOf(target);
+    if(was){following.delete(target);tu.followers=Math.max(0,(tu.followers||0)-1);meUser.follows=Math.max(0,(meUser.follows||0)-1);}
+    else{following.add(target);tu.followers=(tu.followers||0)+1;meUser.follows=(meUser.follows||0)+1;}
+    fBtn.className=following.has(target)?"ghost":"follow";
+    fBtn.innerHTML=following.has(target)?"Takip ediliyor":"Takip et";
+    if(u){ $("#mpStats").querySelector('[data-k="followers"] b').textContent=nf(tu.followers||0); }
+    if(window.__sb && window.__me && uid){
+      if(was) await window.__sb.from('follows').delete().eq('follower_id',window.__me.id).eq('followee_id',uid);
+      else await window.__sb.from('follows').insert({follower_id:window.__me.id, followee_id:uid});
+      await loadProfileData(ME);
+    }
+  });
+  const mBtn=document.createElement("button");
+  mBtn.className="ghost";
+  mBtn.innerHTML="Mesaj";
+  mBtn.addEventListener("click",()=>{ close("miniProfile"); openChats(); openChat(name); });
+  acts.append(fBtn,mBtn);
+}
+
 async function openFollowList(name, kind){
   const sb=window.__sb;
   const title = kind==="followers" ? "Takipçiler" : "Takip edilenler";

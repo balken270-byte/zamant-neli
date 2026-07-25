@@ -2689,20 +2689,21 @@ async function loadMessages(who){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return;
   let convId=_convId[who];
-  // conv id bilinmiyorsa: karşı kullanıcının id'sinden sohbeti bul
   if(!convId){
     const uid=await idOfUsername(who);
-    if(!uid) return;
+    if(!uid){ toast("TEŞHİS: kullanıcı id bulunamadı"); return; }
     const lo = me.id<uid ? me.id : uid;
     const hi = me.id<uid ? uid : me.id;
-    const {data:conv}=await sb.from('conversations').select('id')
+    const {data:conv,error:cErr}=await sb.from('conversations').select('id')
       .eq('user_a',lo).eq('user_b',hi).maybeSingle();
+    if(cErr){ toast("TEŞHİS: sohbet sorgu hatası: "+cErr.message); return; }
     if(conv){ convId=conv.id; _convId[who]=conv.id; }
-    else return; // henüz hiç mesajlaşılmamış
+    else { toast("TEŞHİS: sohbet kaydı bulunamadı (RLS?)"); return; }
   }
   try{
     const {data,error}=await sb.rpc('get_messages',{conv:convId});
-    if(error){ console.warn('messages:',error.message); return; }
+    if(error){ toast("TEŞHİS: get_messages hatası: "+error.message); return; }
+    toast("TEŞHİS: "+((data||[]).length)+" mesaj çekildi");
     const c=chatOf(who);
     c.msgs=(data||[]).map(m=>({
       id:m.id, me:m.sender_id===me.id,
@@ -2712,7 +2713,7 @@ async function loadMessages(who){
     }));
     c.unread=0;paintDmDot();
     if(chatWho===who){ renderChat(); const b=$("#msgList"); if(b) b.scrollTop=b.scrollHeight; }
-  }catch(e){ console.warn(e); }
+  }catch(e){ toast("TEŞHİS: hata "+e.message); }
 }
 function dayLabel(ts){
   const d=new Date(ts),n=new Date();

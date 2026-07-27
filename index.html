@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v47</title>
+<title>Klipsy v48</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -1214,6 +1214,26 @@ svg{display:block}
   background:linear-gradient(145deg,#FF3B6B,#7B5BFF);
   box-shadow:0 16px 40px -12px rgba(255,59,107,.6), inset 0 1px 0 rgba(255,255,255,.3)}
 
+#onboard{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(120% 90% at 50% 0%,#1a1a28,#08080c)}
+#onboard.open{display:flex;animation:fadeIn .25s ease}
+#onboard .obBox{width:100%;max-width:400px}
+#onboard h2{font-size:26px;font-weight:800;letter-spacing:-.03em;text-align:center}
+#onboard p{font-size:14px;color:var(--t2);text-align:center;margin:8px 0 26px;line-height:1.5}
+#onboard .obField{margin-bottom:18px}
+#onboard .obField label{display:block;font-size:11.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin:0 2px 7px}
+#onboard .obField input{width:100%;height:52px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:0 16px;font-size:16px;color:#fff;-webkit-text-fill-color:#fff;outline:none;font-family:inherit;letter-spacing:-.01em;transition:all .18s}
+#onboard .obField input:focus{border-color:rgba(255,59,107,.55);background:rgba(255,255,255,.09)}
+#onboard .obUwrap{display:flex;align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding-left:16px;transition:all .18s}
+#onboard .obUwrap:focus-within{border-color:rgba(255,59,107,.55);background:rgba(255,255,255,.09)}
+#onboard .obUwrap span{font-size:16px;color:var(--t3);font-weight:500}
+#onboard .obUwrap input{background:transparent;border:0;height:52px;flex:1;padding:0 12px;font-size:16px;color:#fff;-webkit-text-fill-color:#fff;outline:none;font-family:inherit}
+#onboard .obHint{font-size:12px;color:var(--t3);margin:7px 0 0 2px;min-height:15px}
+#onboard .obHint.ok{color:#5FD69A}
+#onboard .obHint.err{color:#FF6B8A}
+#onboard .obSave{width:100%;height:54px;border-radius:14px;margin-top:10px;border:0;background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;font-size:16px;font-weight:700;letter-spacing:-.016em;box-shadow:0 10px 26px -10px rgba(255,59,107,.6);transition:transform .12s,opacity .18s}
+#onboard .obSave:active{transform:scale(.98)}
+#onboard .obSave:disabled{opacity:.5}
 </style>
 </head>
 <body>
@@ -1303,7 +1323,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v47</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v48</span></div>
     </div>
   </section>
 </div>
@@ -3584,7 +3604,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v47";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v48";
   box.appendChild(ver);
 }
 
@@ -4778,10 +4798,66 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
 });
 
 /* --- uygulamaya gir --- */
+// Google/ilk giriş: kullanıcı adı + isim seçme ekranı
+function showOnboarding(user, prof){
+  let ob=document.getElementById('onboard');
+  if(!ob){
+    ob=document.createElement('div');ob.id='onboard';
+    ob.innerHTML=
+      '<div class="obBox">'+
+      '<h2>Hoş geldin! 👋</h2>'+
+      '<p>Klipsy\'de görünecek adını ve kullanıcı adını seç.</p>'+
+      '<div class="obField"><label>Ad</label><input id="obName" type="text" maxlength="40" placeholder="Adın" autocomplete="off"></div>'+
+      '<div class="obField"><label>Kullanıcı adı</label><div class="obUwrap"><span>@</span><input id="obUser" type="text" maxlength="20" placeholder="kullaniciadi" autocapitalize="none" autocomplete="off" spellcheck="false"></div><div class="obHint" id="obHint">3-20 karakter, küçük harf ve rakam</div></div>'+
+      '<button class="obSave" id="obSave">Devam et</button>'+
+      '</div>';
+    document.body.appendChild(ob);
+  }
+  ob.classList.add('open');
+  const nameI=document.getElementById('obName');
+  const userI=document.getElementById('obUser');
+  const hint=document.getElementById('obHint');
+  const save=document.getElementById('obSave');
+  // varsayılan doldur
+  nameI.value = prof.display_name || (user.user_metadata && (user.user_metadata.full_name||user.user_metadata.name)) || '';
+  userI.value = '';
+  // kullanıcı adı canlı doğrulama
+  userI.addEventListener('input',()=>{
+    let v=userI.value.toLowerCase().replace(/[^a-z0-9_]/g,'');
+    userI.value=v;
+    if(v.length<3){ hint.textContent='En az 3 karakter'; hint.className='obHint'; }
+    else{ hint.textContent='Kullanılabilir görünüyor'; hint.className='obHint ok'; }
+  });
+  save.onclick=async ()=>{
+    const nm=(nameI.value||'').trim();
+    const un=(userI.value||'').trim().toLowerCase();
+    if(un.length<3||un.length>20){ hint.textContent='Kullanıcı adı 3-20 karakter olmalı'; hint.className='obHint err'; return; }
+    if(!/^[a-z0-9_]+$/.test(un)){ hint.textContent='Sadece küçük harf, rakam, alt çizgi'; hint.className='obHint err'; return; }
+    save.disabled=true; save.textContent='Kaydediliyor…';
+    // kullanıcı adı müsait mi
+    const {data:taken}=await sb.from('profiles').select('id').eq('username',un).neq('id',user.id).maybeSingle();
+    if(taken){ hint.textContent='Bu kullanıcı adı alınmış'; hint.className='obHint err'; save.disabled=false; save.textContent='Devam et'; return; }
+    const {error}=await sb.from('profiles').update({
+      username:un, display_name:nm||null, onboarded:true
+    }).eq('id',user.id);
+    if(error){ hint.textContent='Hata: '+error.message; hint.className='obHint err'; save.disabled=false; save.textContent='Devam et'; return; }
+    ob.classList.remove('open');
+    // uygulamaya gir
+    window.__me = { id:user.id, username:un, avatar_url:prof.avatar_url||null, email:user.email||null };
+    gate.classList.add('off');
+    if(window.__startApp) window.__startApp();
+  };
+}
+
 async function enterApp(){
   const {data:{user}}=await sb.auth.getUser();
   if(!user){return;}
-  const {data:prof}=await sb.from('profiles').select('username, avatar_url').eq('id',user.id).single();
+  const {data:prof}=await sb.from('profiles').select('username, avatar_url, onboarded, display_name').eq('id',user.id).single();
+  // kullanıcı adını seçmemişse önce onboarding ekranı
+  if(prof && prof.onboarded===false){
+    showOnboarding(user, prof);
+    return;
+  }
   window.__me = { id:user.id, username: prof?.username||'kullanici', avatar_url: prof?.avatar_url||null, email:user.email||null };
   gate.classList.add('off');
   if(window.__startApp) window.__startApp();

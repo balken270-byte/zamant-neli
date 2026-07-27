@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v48</title>
+<title>Klipsy v49</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -1323,7 +1323,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v48</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v49</span></div>
     </div>
   </section>
 </div>
@@ -1688,6 +1688,7 @@ if(window.__APP_STARTED)return;window.__APP_STARTED=true;
 const _ph=document.getElementById("phone");if(_ph)_ph.style.visibility="visible";
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 const feed=$("#feed"), list=$("#list");
+let _savedCache=null; // kaydedilenler önbelleği (kalıcı)
 const ME=(window.__me&&window.__me.username)?window.__me.username:"sen";
 
 // --- aşağı çekince yenile (pull-to-refresh) ---
@@ -2302,6 +2303,7 @@ function build(it){
       if(it.saved) sb.from('saves').insert({moment_id:it.id, user_id:uid}).then(()=>{});
       else sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',uid).then(()=>{});
     }
+    _savedCache=null; // kaydedilenler listesini tazele
     if($("#profile").classList.contains("open")) renderProfile();
   });
   av.addEventListener("click",()=>openProfile(it.who));
@@ -3604,7 +3606,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v48";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v49";
   box.appendChild(ver);
 }
 
@@ -3856,15 +3858,41 @@ function openArchiveView(it){
 }
 
 /* kaydedilenler */
+// kaydedilenler önbelleği (veritabanından, akıştan bağımsız kalıcı)
+async function loadSaved(){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me){ _savedCache=[]; return _savedCache; }
+  try{
+    const {data,error}=await sb.rpc('get_saved');
+    if(error){ console.warn('get_saved:',error.message); _savedCache=[]; return _savedCache; }
+    _savedCache=(data||[]).map(r=>({
+      id:r.id, who:r.author_username,
+      src: r.media_path ? sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl : null,
+      kind:r.media_kind, mood:MOOD_BY_KEY[r.mood]||null,
+      where:r.place_label||"Konum yok", ts:new Date(r.created_at).getTime(),
+      note:r.note||""
+    }));
+  }catch(e){ console.warn(e); _savedCache=[]; }
+  return _savedCache;
+}
+
 function renderSaved(box){
-  const saved=items.filter(x=>x.saved);
   const h=document.createElement("div");h.className="arcHead";h.style.marginTop="26px";
-  h.innerHTML='<h4>Kaydedilenler</h4><span class="lock">'+IC.bookmark+(saved.length?saved.length:"0")+'</span>';
+  const cnt=_savedCache?_savedCache.length:0;
+  h.innerHTML='<h4>Kaydedilenler</h4><span class="lock">'+IC.bookmark+cnt+'</span>';
   box.appendChild(h);
   const s=document.createElement("div");s.className="arcSub";
-  s.textContent="Akışta kaydettiğin anlar. Bu liste de yalnızca sana görünür.";
+  s.textContent="Kaydettiğin anlar. Akıştan çıksa bile burada kalır, yalnızca sana görünür.";
   box.appendChild(s);
 
+  if(_savedCache===null){
+    const l=document.createElement("div");l.className="arcEmpty";
+    l.innerHTML='<b>Yükleniyor…</b>';
+    box.appendChild(l);
+    loadSaved().then(()=>{ if($("#profile").classList.contains("open")) renderProfile(); });
+    return;
+  }
+  const saved=_savedCache;
   if(!saved.length){
     const e=document.createElement("div");e.className="arcEmpty";
     e.innerHTML='<b>Henüz bir an kaydetmedin</b><span>Akışta beğendiğin bir kareyi yer imi simgesiyle kaydet, burada birikir.</span>';
@@ -3882,7 +3910,7 @@ function renderSaved(box){
       const pl=document.createElement("div");pl.className="arcPlay";
       pl.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
       c.appendChild(pl);
-    }else{
+    }else if(it.src){
       c.style.backgroundImage="url("+it.src+")";
     }
     const g=document.createElement("div");g.className="grad";
@@ -3894,11 +3922,17 @@ function renderSaved(box){
     }
     const un=document.createElement("button");un.className="del save";un.innerHTML=IC.bookmarkOn;
     un.setAttribute("aria-label","Kayıttan çıkar");
-    un.addEventListener("click",e=>{
+    un.addEventListener("click",async e=>{
       e.stopPropagation();
-      it.saved=false;
-      const node=list.querySelector('[data-id="'+it.id+'"]');
-      if(node&&node._sync) node._sync();
+      // veritabanından kaldır
+      if(window.__sb && window.__me){
+        await window.__sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',window.__me.id);
+      }
+      // önbellekten çıkar
+      if(_savedCache) _savedCache=_savedCache.filter(x=>x.id!==it.id);
+      // akıştaki kareyi de senkronla
+      const feedItem=items.find(x=>x.id===it.id);
+      if(feedItem){ feedItem.saved=false; const node=list.querySelector('[data-id="'+it.id+'"]'); if(node&&node._sync) node._sync(); }
       renderProfile();toast("Kayıttan çıkarıldı");
     });
     c.appendChild(un);

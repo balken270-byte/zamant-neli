@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Zaman Tüneli v29</title>
+<title>Zaman Tüneli v30</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1177,7 +1177,7 @@ svg{display:block}
       <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giris yap</span></button>
       <div class="gmsg" id="gMsg"></div>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Zaman Tüneli v29</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Zaman Tüneli v30</span></div>
     </div>
   </section>
 </div>
@@ -3357,13 +3357,24 @@ function askDelete(it){
   open("confirm");
 }
 $("#cfNo").addEventListener("click",()=>{delTarget=null;close("confirm");});
-$("#cfYes").addEventListener("click",()=>{
+$("#cfYes").addEventListener("click",async ()=>{
   if(delTarget){
-    const i=items.findIndex(x=>x.id===delTarget.id);
+    const target=delTarget;
+    const i=items.findIndex(x=>x.id===target.id);
     if(i>=0) items.splice(i,1);
     delTarget=null;
     render();activeIdx=-1;syncActive();renderProfile();
     toast("An silindi");
+    close("confirm");
+    // Supabase'ten gerçekten sil
+    if(window.__sb && window.__me && isReal(target.id)){
+      try{
+        const {error}=await window.__sb.from('moments').delete().eq('id',target.id).eq('author_id',window.__me.id);
+        if(error){ toast("Silinemedi: "+error.message); }
+        else{ await loadProfileData(ME); }
+      }catch(e){ toast("Silme hatası"); }
+    }
+    return;
   }
   close("confirm");
 });

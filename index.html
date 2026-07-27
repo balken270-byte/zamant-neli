@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v41</title>
+<title>Klipsy v47</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -445,13 +445,26 @@ svg{display:block}
   text-shadow:0 1px 6px rgba(0,0,0,.8)}
 /* alttan kayan an listesi */
 .exSheet{position:absolute;left:0;right:0;bottom:0;z-index:1000;
-  max-height:44%;display:flex;flex-direction:column;
+  height:44%;display:flex;flex-direction:column;
   background:rgba(15,15,21,.96);border-radius:24px 24px 0 0;
   border-top:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   box-shadow:0 -18px 50px -20px #000;padding-bottom:calc(var(--sab) + 8px);
-  transition:transform .3s var(--ease)}
-.exHandle{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.24);margin:10px auto 4px}
+  transition:height .3s var(--ease), transform .4s cubic-bezier(.22,1,.36,1), opacity .3s ease}
+.exSheet.closed{transform:translateY(100%);opacity:0;pointer-events:none}
+.exSheet.dragging{transition:none}
+/* artı buton (FAB) */
+.exFab{position:absolute;left:16px;bottom:calc(var(--sab) + 20px);z-index:1001;
+  width:56px;height:56px;border-radius:99px;border:0;display:grid;place-items:center;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  box-shadow:0 10px 28px -6px rgba(255,59,107,.6), inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.exFab:active{transform:scale(.9)}
+.exFab.open{transform:rotate(135deg)}
+.exFab svg{transition:transform .3s}
+.exGrip{padding:6px 0 2px;cursor:grab;touch-action:none;flex:none}
+.exGrip:active{cursor:grabbing}
+.exHandle{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.24);margin:6px auto 4px}
 .exSheetHead{padding:4px 18px 10px}
 .exSheetHead b{font-size:16px;font-weight:700;letter-spacing:-.025em;display:block}
 .exSheetHead span{font-size:12.5px;color:var(--t3);margin-top:1px;display:block}
@@ -477,11 +490,16 @@ svg{display:block}
 .leaflet-control-zoom a{background:rgba(15,15,21,.9)!important;color:#fff!important;
   border-color:rgba(255,255,255,.14)!important;backdrop-filter:blur(10px)}
 .zt-pin{background:transparent;border:0}
-.zt-pin>div{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+/* damla pin — içinde fotoğraf ya da emoji */
+.zt-pin .ztDrop{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);margin:0 auto;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);border:2.5px solid #fff;
-  box-shadow:0 5px 14px -3px rgba(0,0,0,.7);display:grid;place-items:center}
-.zt-pin>div>span{transform:rotate(45deg);font-size:15px}
-.zt-pin.active>div{animation:pinbounce .5s ease}
+  box-shadow:0 5px 14px -3px rgba(0,0,0,.7);display:grid;place-items:center;overflow:hidden;position:relative}
+.zt-pin .ztDrop .ztImg{position:absolute;inset:0;transform:rotate(45deg) scale(1.5);
+  background:#22222a center/cover no-repeat}
+.zt-pin .ztDrop .ztE{transform:rotate(45deg);font-size:15px;position:relative;z-index:1}
+.zt-pin .ztPlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(45deg);z-index:2;
+  width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.5);display:grid;place-items:center}
+.zt-pin.active .ztDrop{animation:pinbounce .5s ease}
 @keyframes pinbounce{0%,100%{transform:rotate(-45deg) scale(1)}50%{transform:rotate(-45deg) scale(1.25)}}
 .tbox h2{font-size:15.5px;font-weight:600;letter-spacing:-.024em;padding:16px 18px 4px}
 .tbox p{font-size:12.5px;color:var(--t3);padding:0 18px 10px;line-height:1.5}
@@ -656,6 +674,17 @@ svg{display:block}
 .profbtn:active{transform:scale(.985)}
 .profbtn.ghost{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.14);
   box-shadow:none;color:var(--t1)}
+/* modern profil eylem butonları — bloksuz satır */
+.profActs{display:flex;align-items:center;margin-bottom:20px;
+  border-top:1px solid rgba(255,255,255,.09);border-bottom:1px solid rgba(255,255,255,.09)}
+.pAct{flex:1;height:52px;border:0;background:transparent;color:#fff;
+  font-size:14.5px;font-weight:600;letter-spacing:-.016em;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;position:relative;transition:color .15s}
+.pAct svg{width:17px;height:17px}
+.pAct:active{opacity:.6}
+.pAct+.pAct::before{content:"";position:absolute;left:0;top:15px;bottom:15px;width:1px;background:rgba(255,255,255,.1)}
+.pFollow.on{color:#FF6B8A}
+.pMsg{color:#fff}
 
 .profnote{display:flex;gap:10px;padding:0 3px;margin-bottom:22px}
 .profdetail{margin:0 4px 18px}
@@ -1172,6 +1201,14 @@ svg{display:block}
 .gmsg.err{background:rgba(255,59,107,.14);border:1px solid rgba(255,59,107,.3);color:#FFB3C4}
 .gmsg.ok{background:rgba(95,214,154,.14);border:1px solid rgba(95,214,154,.3);color:#A8E6C4}
 .gfoot{margin-top:20px;text-align:center;font-size:12px;color:var(--t3);line-height:1.6}
+.gOr{display:flex;align-items:center;gap:12px;margin:18px 0}
+.gOr::before,.gOr::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}
+.gOr span{font-size:12px;color:var(--t3);font-weight:500}
+.gGoogle{width:100%;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:11px;
+  background:#fff;color:#1f1f1f;border:0;font-size:15px;font-weight:600;letter-spacing:-.01em;
+  box-shadow:0 6px 18px -8px rgba(0,0,0,.5);transition:transform .12s,opacity .18s}
+.gGoogle:active{transform:scale(.98)}
+.gGoogle svg{flex:none}
 .gsplash{align-items:center;justify-content:center;gap:20px;background:var(--bg)}
 .gsplash .glogo{width:74px;height:74px;border-radius:24px;display:grid;place-items:center;
   background:linear-gradient(145deg,#FF3B6B,#7B5BFF);
@@ -1260,8 +1297,13 @@ svg{display:block}
       </div>
       <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giris yap</span></button>
       <div class="gmsg" id="gMsg"></div>
+      <div class="gOr"><span>veya</span></div>
+      <button class="gGoogle" id="gGoogle">
+        <svg width="19" height="19" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <span>Google ile devam et</span>
+      </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v41</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v47</span></div>
     </div>
   </section>
 </div>
@@ -1370,8 +1412,12 @@ svg{display:block}
         <div class="tlEnds"><span>şimdi</span><span>geçmiş</span></div>
       </div>
 
-      <div class="exSheet" id="exSheet">
-        <div class="exHandle"></div>
+      <button class="exFab" id="exFab" aria-label="Anları göster">
+        <svg id="exFabIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+
+      <div class="exSheet closed" id="exSheet">
+        <div class="exGrip" id="exGrip"><div class="exHandle"></div></div>
         <div class="exSheetHead">
           <b id="exCount">Tüm anlar</b>
           <span id="exSub">haritada gez, zamanı seç</span>
@@ -2634,11 +2680,67 @@ $("#tabTime").addEventListener("click",()=>{
   setTab($("#tabTime"));
   open("timeSheet");
   buildTimeline();
+  // liste kapalı başlasın (harita açık)
+  const sheet=$("#exSheet"), fab=$("#exFab");
+  if(sheet){ sheet.classList.add("closed"); sheet.style.height="44%"; }
+  if(fab){ fab.classList.remove("open"); fab.setAttribute("aria-label","Anları göster"); }
   setTimeout(()=>{ initMap(); refreshExplore(); },80);
 });
 
 // --- kaydırmalı zaman çizgisi ---
+// alt liste sürükleme (küçük / orta / büyük)
+let _exSheetWired=false;
+const EX_SNAP=[0.16, 0.44, 0.82]; // ekran yüksekliği oranları
+let _exFabWired=false;
+function setupExFab(){
+  const fab=$("#exFab"), sheet=$("#exSheet");
+  if(!fab||!sheet||_exFabWired) return; _exFabWired=true;
+  fab.addEventListener("click",()=>{
+    const willOpen=sheet.classList.contains("closed");
+    sheet.classList.toggle("closed",!willOpen);
+    fab.classList.toggle("open",willOpen);
+    fab.setAttribute("aria-label", willOpen?"Anları gizle":"Anları göster");
+    if(willOpen){ sheet.style.height="44%"; }
+  });
+}
+function setupExSheetDrag(){
+  const sheet=$("#exSheet"), grip=$("#exGrip");
+  if(!sheet||!grip||_exSheetWired) return; _exSheetWired=true;
+  let startY=0, startH=0, dragging=false;
+  const H=()=>window.innerHeight;
+  function setH(px){
+    const min=H()*EX_SNAP[0], max=H()*EX_SNAP[2];
+    const clamped=Math.max(min,Math.min(max,px));
+    sheet.style.height=clamped+"px";
+  }
+  function nearest(px){
+    const ratios=EX_SNAP.map(r=>r*H());
+    let best=ratios[0],bd=Infinity;
+    ratios.forEach(v=>{const d=Math.abs(v-px);if(d<bd){bd=d;best=v;}});
+    return best;
+  }
+  grip.addEventListener("pointerdown",e=>{
+    dragging=true;startY=e.clientY;startH=sheet.getBoundingClientRect().height;
+    sheet.classList.add("dragging");grip.setPointerCapture&&grip.setPointerCapture(e.pointerId);
+  });
+  grip.addEventListener("pointermove",e=>{
+    if(!dragging) return;
+    const dy=startY-e.clientY; // yukarı çekince büyüsün
+    setH(startH+dy);
+  });
+  function end(){
+    if(!dragging) return; dragging=false;
+    sheet.classList.remove("dragging");
+    const cur=sheet.getBoundingClientRect().height;
+    sheet.style.height=nearest(cur)+"px";
+  }
+  grip.addEventListener("pointerup",end);
+  grip.addEventListener("pointercancel",end);
+}
+
 function buildTimeline(){
+  setupExSheetDrag();
+  setupExFab();
   const ticks=$("#tlTicks");ticks.innerHTML="";
   TIME_FILTERS.forEach(()=>{ const t=document.createElement("i");t.className="tlTick";ticks.appendChild(t); });
   paintTimeline();
@@ -2759,9 +2861,20 @@ function initMap(){
   }).addTo(_map);
   setTimeout(()=>{ _map.invalidateSize(); drawMomentPins(); },120);
 }
-function momentIcon(mood){
-  return L.divIcon({className:"zt-pin",html:'<div><span>'+(mood||"📍")+'</span></div>',
-    iconSize:[34,34],iconAnchor:[17,34]});
+function momentIcon(g){
+  // fotoğraf varsa yuvarlak önizleme, yoksa duygu emojisi
+  const mood = (typeof g==="string") ? g : (g&&g.moodEmoji);
+  const thumb = (g&&typeof g==="object") ? g.thumb : null;
+  const isVid = (g&&typeof g==="object") ? (g.kind==="video") : false;
+  let inner;
+  if(thumb){
+    inner='<div class="ztDrop"><div class="ztImg" style="background-image:url('+thumb+')"></div>'+
+      (isVid?'<div class="ztPlay"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>':'')+
+      '</div>';
+  }else{
+    inner='<div class="ztDrop"><span class="ztE">'+(mood||"📍")+'</span></div>';
+  }
+  return L.divIcon({className:"zt-pin",html:inner,iconSize:[34,34],iconAnchor:[17,34]});
 }
 async function drawMomentPins(){
   if(!_map) return;
@@ -2772,7 +2885,7 @@ async function drawMomentPins(){
   const bounds=[];
   geos.forEach(g=>{
     if(_exFilter!=="all" && !okIds.has(g.id)) return;
-    const mk=L.marker([g.lat,g.lng],{icon:momentIcon(g.moodEmoji)}).addTo(_map);
+    const mk=L.marker([g.lat,g.lng],{icon:momentIcon(g)}).addTo(_map);
     mk.on("click",()=>{ close("timeSheet"); resumeAt=Date.now()+RESUME*2; goToPost(g.id); });
     mk.bindTooltip((g.label||"An"),{direction:"top",offset:[0,-30]});
     _mapMarkers.push(mk);bounds.push([g.lat,g.lng]);
@@ -2785,12 +2898,17 @@ async function fetchMomentGeos(){
   if(window.__sb){
     try{
       const {data}=await window.__sb.from('moments')
-        .select('id, geo_lat, geo_lng, place_label, mood')
+        .select('id, geo_lat, geo_lng, place_label, mood, media_path, media_kind')
         .not('geo_lat','is',null).order('created_at',{ascending:false}).limit(300);
       (data||[]).forEach(r=>{
         if(r.geo_lat!=null&&r.geo_lng!=null){
           const mo=MOOD_BY_KEY[r.mood];
-          out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,moodEmoji:mo?mo.em:"📍"});
+          let thumb=null;
+          if(r.media_path){
+            try{ thumb=window.__sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl; }catch(e){}
+          }
+          out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,
+            moodEmoji:mo?mo.em:"📍", thumb:thumb, kind:r.media_kind});
         }
       });
     }catch(e){ console.warn('geo:',e); }
@@ -3466,7 +3584,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v41";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v47";
   box.appendChild(ver);
 }
 
@@ -3555,11 +3673,11 @@ function renderProfile(){
   /* eylem */
   if(!own){
     const row=document.createElement("div");
-    row.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px";
+    row.className="profActs";
     const on=following.has(profName);
     const b=document.createElement("button");
-    b.className="profbtn"+(on?" ghost":"");b.style.marginBottom="0";
-    b.innerHTML=(on?IC.check+" Takip ediliyor":IC.plus+" Takip et");
+    b.className="pAct pFollow"+(on?" on":"");
+    b.innerHTML=(on?IC.check+"<span>Takip ediliyor</span>":IC.plus+"<span>Takip et</span>");
     b.addEventListener("click",async ()=>{
       const target=profName;
       const wasFollowing=following.has(target);
@@ -3581,7 +3699,6 @@ function renderProfile(){
         if(err && !/duplicate/i.test(err.message)){
           toast("Takip hatası: "+err.message);
         }
-        // sunucudan gerçek sayıları tazeleyip göster
         const fresh=await loadProfileData(target);
         if(fresh && profName===target) renderProfile();
         await loadProfileData(ME);
@@ -3589,8 +3706,8 @@ function renderProfile(){
       }
     });
     const dm=document.createElement("button");
-    dm.className="profbtn ghost";dm.style.marginBottom="0";
-    dm.innerHTML=IC.chat+" Mesaj";
+    dm.className="pAct pMsg";
+    dm.innerHTML=IC.chat+"<span>Mesaj</span>";
     dm.addEventListener("click",()=>{const n=profName;close("profile");openChats();openChat(n);});
     row.append(b,dm);
     box.appendChild(row);
@@ -4646,6 +4763,19 @@ function cevir(m){
 }
 $('#gSubmit').addEventListener('click',submit);
 $('#gPassword').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
+
+// Google ile giriş
+const gGoogleBtn=$('#gGoogle');
+if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
+  gclearMsg();
+  try{
+    const {error}=await sb.auth.signInWithOAuth({
+      provider:'google',
+      options:{ redirectTo: location.origin + location.pathname }
+    });
+    if(error){ gmsg(error.message||'Google girişi başarısız','err'); }
+  }catch(e){ gmsg('Google girişi başlatılamadı','err'); }
+});
 
 /* --- uygulamaya gir --- */
 async function enterApp(){

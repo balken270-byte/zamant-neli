@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v49</title>
+<title>Klipsy v51</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -649,11 +649,10 @@ svg{display:block}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   text-shadow:0 2px 12px rgba(0,0,0,.6)}
 .heroTxt .handle{font-size:12.5px;color:rgba(255,255,255,.66);margin-top:1px;letter-spacing:-.01em}
-.heroTxt .joined{display:inline-flex;align-items:center;gap:5px;margin-top:7px;
-  height:23px;padding:0 10px;border-radius:99px;
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);
-  font-size:11px;font-weight:500;color:rgba(255,255,255,.84);letter-spacing:-.008em}
-.heroTxt .joined svg{width:11px;height:11px}
+.heroTxt .joined{display:inline-flex;align-items:center;gap:5px;margin-top:8px;
+  font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);letter-spacing:-.008em;
+  text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.heroTxt .joined svg{width:12px;height:12px;opacity:.75}
 
 .profstats{display:flex;align-items:stretch;width:100%;margin-top:13px;
   border-radius:15px;padding:9px 2px;
@@ -804,6 +803,20 @@ svg{display:block}
 .crow2 .nm{font-size:14.5px;font-weight:600;letter-spacing:-.018em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2 .tm{margin-left:auto;font-size:11.5px;color:var(--t3);white-space:nowrap}
+.reqTag{display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;padding:2px 8px;
+  border-radius:99px;margin-right:6px;letter-spacing:-.01em}
+.reqTag.in{background:rgba(255,59,107,.16);color:#FF8AA3}
+.reqTag.me{background:rgba(255,255,255,.08);color:var(--t3);margin-right:0}
+#chatReqBar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 16px;background:rgba(255,59,107,.08);border-bottom:1px solid rgba(255,59,107,.18)}
+#chatReqBar span{font-size:12.5px;color:var(--t1);line-height:1.4;flex:1}
+#chatReqBar.mine{background:rgba(255,255,255,.05);border-bottom-color:rgba(255,255,255,.1)}
+#chatReqBar.mine span{color:var(--t3)}
+.chatReqBtns{display:flex;gap:8px;flex:none}
+.chatReqBtns button{height:32px;padding:0 14px;border-radius:99px;border:0;font-size:12.5px;font-weight:600;
+  white-space:nowrap}
+#chatReqAccept{background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff}
+#chatReqDecline{background:rgba(255,255,255,.08);color:var(--t2)}
 .crow2 .pv{font-size:13px;color:var(--t3);margin-top:3px;letter-spacing:-.01em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2.unread .nm{font-weight:700}
@@ -1323,7 +1336,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v49</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v51</span></div>
     </div>
   </section>
 </div>
@@ -3606,7 +3619,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v49";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v51";
   box.appendChild(ver);
 }
 
@@ -4028,7 +4041,16 @@ function renderChats(){
     const tm=document.createElement("span");tm.className="tm";
     const l=lastOf(c);tm.textContent=l?rel(l.ts):"";
     top.append(nm,tm);
-    const pv=document.createElement("div");pv.className="pv";pv.textContent=preview(c);
+    const pv=document.createElement("div");pv.className="pv";
+    const isPending = c.requestState==='pending';
+    const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
+    if(isPending){
+      pv.innerHTML = iAmRequester
+        ? '<span class="reqTag me">İstek gönderildi</span>'
+        : '<span class="reqTag in">Mesaj isteği</span> '+esc(preview(c));
+    }else{
+      pv.textContent=preview(c);
+    }
     mid.append(top,pv);
     b.append(av,mid);
     if(c.unread){
@@ -4077,6 +4099,7 @@ async function loadConversations(){
         who:r.other_username, avatar:r.other_avatar,
         convId:r.conv_id, unread:r.unread||0,
         msgs:[],
+        requestState:r.request_state||'none', requesterId:r.requester_id||null,
         _last:{text:r.last_body, kind:r.last_kind, ts:r.last_at?new Date(r.last_at).getTime():0}
       };
     });
@@ -4087,17 +4110,66 @@ async function loadConversations(){
 function openChats(){renderChats();open("chats");loadConversations();}
 async function openChat(who){
   chatWho=who;
+  // sohbeti açmadan önce istek durumunu güncel çekelim (bayat veri kalmasın)
+  await loadConversations();
   const c=chatOf(who);
   c.unread=0;paintDmDot();
   paintAv($("#chatAv"),who);
   $("#chatName").textContent=who;
   $("#chatSt").textContent=following.has(who)?"Takip ediyorsun":"Klipsy kullanıcısı";
   renderChat();
+  renderChatRequestBar(c);
   open("chat");
   setTimeout(()=>{const m=$("#msgList");m.scrollTop=m.scrollHeight;},60);
   // gerçek mesajları çek
   await loadMessages(who);
 }
+
+function renderChatRequestBar(c){
+  let bar=$("#chatReqBar");
+  const isPending = c.requestState==='pending';
+  const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
+  if(!isPending){ if(bar) bar.remove(); return; }
+  if(!bar){
+    bar=document.createElement("div");bar.id="chatReqBar";
+    const chatPanel=$("#chat");
+    const head=chatPanel.querySelector(".chatHead");
+    if(head&&head.nextSibling) chatPanel.insertBefore(bar, head.nextSibling);
+    else if(chatPanel) chatPanel.appendChild(bar);
+  }
+  if(iAmRequester){
+    bar.className="chatReqBar mine";
+    bar.innerHTML='<span>İstek gönderildi, '+esc(who_or(c))+' kabul edene kadar sohbet burada bekler.</span>';
+  }else{
+    bar.className="chatReqBar";
+    bar.innerHTML='<span>'+esc(c.who)+' sana mesaj göndermek istiyor.</span>'+
+      '<div class="chatReqBtns"><button id="chatReqAccept">Kabul et</button><button id="chatReqDecline">Sil</button></div>';
+    const accBtn=bar.querySelector('#chatReqAccept');
+    const decBtn=bar.querySelector('#chatReqDecline');
+    accBtn.addEventListener('click',async ()=>{
+      accBtn.disabled=true; accBtn.textContent='Kabul ediliyor…';
+      if(window.__sb && c.convId){
+        const {error}=await window.__sb.rpc('accept_conversation',{conv:c.convId});
+        if(error){ toast('Kabul edilemedi: '+error.message); accBtn.disabled=false; accBtn.textContent='Kabul et'; return; }
+      }
+      c.requestState='accepted';
+      bar.remove();
+      toast(c.who+' ile artık sohbet edebilirsin');
+      loadConversations();
+    });
+    decBtn.addEventListener('click',async ()=>{
+      if(!confirm(c.who+' isteğini silmek istiyor musun?')) return;
+      if(window.__sb && c.convId){
+        await window.__sb.rpc('delete_conversation',{conv:c.convId});
+      }
+      chats=chats.filter(x=>x!==c);
+      close('chat');
+      renderChats();
+      loadConversations();
+    });
+  }
+}
+function who_or(c){ return c.who; }
 async function loadMessages(who){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return;

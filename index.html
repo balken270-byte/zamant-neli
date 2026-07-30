@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v51</title>
+<title>Klipsy v52</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -807,6 +807,17 @@ svg{display:block}
   border-radius:99px;margin-right:6px;letter-spacing:-.01em}
 .reqTag.in{background:rgba(255,59,107,.16);color:#FF8AA3}
 .reqTag.me{background:rgba(255,255,255,.08);color:var(--t3);margin-right:0}
+.reqRow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 12px;
+  margin-bottom:6px;border-radius:16px;background:rgba(255,59,107,.08);
+  border:1px solid rgba(255,59,107,.18);transition:background .15s;color:#fff}
+.reqRow:active{background:rgba(255,59,107,.14)}
+.reqIcon{width:38px;height:38px;flex:none;border-radius:99px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff}
+.reqIcon svg{width:18px;height:18px}
+.reqRowTxt{flex:1;font-size:14.5px;font-weight:600;letter-spacing:-.016em}
+.reqCount{min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#FF3B6B;color:#fff;
+  font-size:12px;font-weight:700;display:grid;place-items:center}
+.reqRow>svg{color:var(--t3);flex:none}
 #chatReqBar{display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:12px 16px;background:rgba(255,59,107,.08);border-bottom:1px solid rgba(255,59,107,.18)}
 #chatReqBar span{font-size:12.5px;color:var(--t1);line-height:1.4;flex:1}
@@ -1336,7 +1347,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v51</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v52</span></div>
     </div>
   </section>
 </div>
@@ -3619,7 +3630,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v51";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v52";
   box.appendChild(ver);
 }
 
@@ -4027,46 +4038,85 @@ function preview(c){
 function renderChats(){
   sortChats();
   const box=$("#chatList");box.innerHTML="";
-  if(!chats.length){
-    box.innerHTML='<div class="chatEmpty">Henüz mesajın yok.<br>Bir profile gidip mesaj gönderebilirsin.</div>';
+
+  const incomingRequests = chats.filter(c=>c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id));
+  const mainList = chats.filter(c=>!(c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id)));
+
+  // İstekler satırı (varsa)
+  if(incomingRequests.length){
+    const reqRow=document.createElement("button");
+    reqRow.className="reqRow";
+    reqRow.innerHTML='<span class="reqIcon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3-.5L3 21l1.5-4.5A8.4 8.4 0 1 1 21 11.5z"/></svg></span>'+
+      '<span class="reqRowTxt">Mesaj istekleri</span>'+
+      '<span class="reqCount">'+incomingRequests.length+'</span>'+
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+    reqRow.addEventListener("click",()=>openRequestsList(incomingRequests));
+    box.appendChild(reqRow);
+  }
+
+  if(!mainList.length){
+    const e=document.createElement("div");e.className="chatEmpty";
+    e.innerHTML= chats.length
+      ? "Henüz kabul edilmiş bir sohbetin yok."
+      : "Henüz mesajın yok.<br>Bir profile gidip mesaj gönderebilirsin.";
+    box.appendChild(e);
     return;
   }
-  chats.forEach(c=>{
-    const b=document.createElement("button");
-    b.className="crow2"+(c.unread?" unread":"");
-    const av=document.createElement("span");av.className="av";paintAv(av,c.who);
-    const mid=document.createElement("div");mid.className="mid";
-    const top=document.createElement("div");top.className="top";
-    const nm=document.createElement("span");nm.className="nm";nm.textContent=c.who;
-    const tm=document.createElement("span");tm.className="tm";
-    const l=lastOf(c);tm.textContent=l?rel(l.ts):"";
-    top.append(nm,tm);
-    const pv=document.createElement("div");pv.className="pv";
-    const isPending = c.requestState==='pending';
-    const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
-    if(isPending){
-      pv.innerHTML = iAmRequester
-        ? '<span class="reqTag me">İstek gönderildi</span>'
-        : '<span class="reqTag in">Mesaj isteği</span> '+esc(preview(c));
-    }else{
-      pv.textContent=preview(c);
-    }
-    mid.append(top,pv);
-    b.append(av,mid);
-    if(c.unread){
-      const bd=document.createElement("span");bd.className="badge2";bd.textContent=c.unread;
-      b.appendChild(bd);
-    }
-    b.addEventListener("click",()=>openChat(c.who));
-    // sohbete uzun bas → sil
-    let clpT=null, cmoved=false;
-    b.addEventListener("pointerdown",()=>{ cmoved=false; clpT=setTimeout(()=>{ if(!cmoved) askDeleteConv(c); },480); });
-    b.addEventListener("pointerup",()=>clearTimeout(clpT));
-    b.addEventListener("pointermove",()=>{cmoved=true;clearTimeout(clpT);});
-    b.addEventListener("pointercancel",()=>clearTimeout(clpT));
-    b.addEventListener("contextmenu",e=>e.preventDefault());
-    box.appendChild(b);
+  mainList.forEach(c=>box.appendChild(buildChatRow(c)));
+}
+
+function buildChatRow(c){
+  const b=document.createElement("button");
+  b.className="crow2"+(c.unread?" unread":"");
+  const av=document.createElement("span");av.className="av";paintAv(av,c.who);
+  const mid=document.createElement("div");mid.className="mid";
+  const top=document.createElement("div");top.className="top";
+  const nm=document.createElement("span");nm.className="nm";nm.textContent=c.who;
+  const tm=document.createElement("span");tm.className="tm";
+  const l=lastOf(c);tm.textContent=l?rel(l.ts):"";
+  top.append(nm,tm);
+  const pv=document.createElement("div");pv.className="pv";
+  const isPending = c.requestState==='pending';
+  const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
+  if(isPending && iAmRequester){
+    pv.innerHTML = '<span class="reqTag me">İstek gönderildi</span>';
+  }else{
+    pv.textContent=preview(c);
+  }
+  mid.append(top,pv);
+  b.append(av,mid);
+  if(c.unread){
+    const bd=document.createElement("span");bd.className="badge2";bd.textContent=c.unread;
+    b.appendChild(bd);
+  }
+  b.addEventListener("click",()=>openChat(c.who));
+  // sohbete uzun bas → sil
+  let clpT=null, cmoved=false;
+  b.addEventListener("pointerdown",()=>{ cmoved=false; clpT=setTimeout(()=>{ if(!cmoved) askDeleteConv(c); },480); });
+  b.addEventListener("pointerup",()=>clearTimeout(clpT));
+  b.addEventListener("pointermove",()=>{cmoved=true;clearTimeout(clpT);});
+  b.addEventListener("pointercancel",()=>clearTimeout(clpT));
+  b.addEventListener("contextmenu",e=>e.preventDefault());
+  return b;
+}
+
+// İstekler alt listesi
+function openRequestsList(reqs){
+  let panel=$("#reqPanel");
+  if(!panel){
+    panel=document.createElement("section");panel.className="panel";panel.id="reqPanel";
+    panel.innerHTML='<div class="chatHead"><button class="iconbtn" id="reqBack"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg></button><h2>Mesaj istekleri</h2><div class="spacer"></div></div><div class="setbody" id="reqBody"></div>';
+    document.body.appendChild(panel);
+    panel.querySelector("#reqBack").addEventListener("click",()=>close("reqPanel"));
+  }
+  const body=panel.querySelector("#reqBody");body.innerHTML="";
+  reqs.forEach(c=>{
+    const row=buildChatRow(c);
+    // isteklerde sohbeti açtıktan sonra listeyi tazele
+    row.addEventListener("click",()=>{ close("reqPanel"); },{once:false});
+    body.appendChild(row);
   });
+  open("reqPanel");
 }
 
 async function askDeleteConv(c){

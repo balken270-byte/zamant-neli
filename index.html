@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v59</title>
+<title>Klipsy v60</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -646,9 +646,7 @@ svg{display:block}
 .profbody::-webkit-scrollbar{display:none}
 
 /* --- profil kartı --- */
-.hero{position:relative;overflow:hidden;border-radius:22px;margin:12px 0 16px;
-  border:1px solid var(--edge);
-  box-shadow:0 18px 40px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.14)}
+.hero{position:relative;margin:12px 0 16px;padding:2px 2px 0}
 .heroSet{position:absolute;top:12px;right:12px;z-index:5;width:36px;height:36px;border-radius:99px;
   display:grid;place-items:center;background:rgba(0,0,0,.32);color:#fff;border:1px solid rgba(255,255,255,.16);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .15s,background .15s}
@@ -667,6 +665,7 @@ svg{display:block}
     radial-gradient(150% 110% at 12% -10%, rgba(255,59,107,.16), transparent 60%),
     radial-gradient(140% 110% at 96% 112%, rgba(123,91,255,.16), transparent 64%),
     linear-gradient(rgba(255,255,255,.42), rgba(246,246,249,.92))}
+.heroBg,.heroTint{display:none}
 .heroIn{position:relative;z-index:2;padding:14px 14px 12px}
 .heroTop{display:flex;align-items:center;gap:13px;min-width:0}
 
@@ -686,33 +685,28 @@ svg{display:block}
 .profav .cam:active{transform:scale(.9)}
 
 .heroTxt{min-width:0;flex:1}
-.heroTxt h3{font-size:19px;font-weight:700;letter-spacing:-.032em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  text-shadow:0 2px 12px rgba(0,0,0,.6)}
-.heroTxt .handle{font-size:12.5px;color:rgba(255,255,255,.66);margin-top:1px;letter-spacing:-.01em}
+.heroTxt h3{font-size:19px;font-weight:700;letter-spacing:-.032em;color:var(--t1);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heroTxt .handle{font-size:12.5px;color:var(--t3);margin-top:1px;letter-spacing:-.01em}
 .heroTxt .joined{display:inline-flex;align-items:center;gap:5px;margin-top:8px;
-  font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);letter-spacing:-.008em;
-  text-shadow:0 1px 4px rgba(0,0,0,.4)}
+  font-size:11.5px;font-weight:500;color:var(--t3);letter-spacing:-.008em}
 .heroTxt .joined svg{width:12px;height:12px;opacity:.75}
+[data-theme="light"] .hero .heroTxt h3{color:var(--t1)}
+[data-theme="light"] .hero .heroTxt .handle{color:var(--t3)}
+[data-theme="light"] .hero .heroTxt .joined{color:var(--t3)}
 [data-theme="light"] .hero .heroTxt h3{color:#141418;text-shadow:none}
 [data-theme="light"] .hero .heroTxt .handle{color:rgba(20,20,24,.55)}
 [data-theme="light"] .hero .heroTxt .joined{color:rgba(20,20,24,.6);text-shadow:none}
 
 .profstats{display:flex;align-items:stretch;width:100%;margin-top:13px;
   border-radius:15px;padding:9px 2px;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+  background:var(--surf1);border:1px solid var(--edge-soft)}
 .stat{flex:1;text-align:center;min-width:0}
 .stat b{display:block;font-size:17px;font-weight:700;letter-spacing:-.032em;
-  font-variant-numeric:tabular-nums;text-shadow:0 1px 8px rgba(0,0,0,.5)}
-.stat span{display:block;font-size:10.5px;color:rgba(255,255,255,.64);margin-top:1px;
+  font-variant-numeric:tabular-nums;color:var(--t1)}
+.stat span{display:block;font-size:10.5px;color:var(--t3);margin-top:1px;
   letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sep{flex:none;width:1px;align-self:center;height:22px;background:rgba(255,255,255,.16)}
-[data-theme="light"] .hero .profstats{background:rgba(20,20,24,.05);border:1px solid rgba(20,20,24,.09);
-  box-shadow:none}
-[data-theme="light"] .hero .stat b{color:#141418;text-shadow:none}
-[data-theme="light"] .hero .stat span{color:rgba(20,20,24,.5)}
-[data-theme="light"] .hero .sep{background:rgba(20,20,24,.12)}
+.sep{flex:none;width:1px;align-self:center;height:22px;background:var(--edge)}
 
 .profbtn{width:100%;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
   gap:8px;font-size:14.5px;font-weight:600;letter-spacing:-.016em;margin-bottom:12px;
@@ -856,7 +850,8 @@ svg{display:block}
   border-radius:99px;margin-right:6px;letter-spacing:-.01em}
 .reqTag.in{background:rgba(255,59,107,.16);color:#FF8AA3}
 .reqTag.me{background:rgba(255,255,255,.08);color:var(--t3);margin-right:0}
-.chatTabs{display:flex;gap:26px;padding:2px 18px 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px}
+.chatTabs{display:flex;align-items:center;gap:26px;padding:2px 18px 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px}
+.chatTabs #chatTabReq{margin-left:auto}
 .chatTab{position:relative;padding:12px 0 13px;font-size:14.5px;font-weight:600;color:var(--t3);
   letter-spacing:-.015em;display:flex;align-items:center;gap:7px}
 .chatTab.active{color:var(--t1)}
@@ -1422,7 +1417,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v59</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v60</span></div>
     </div>
   </section>
 </div>
@@ -3771,7 +3766,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v59";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v60";
   box.appendChild(ver);
 }
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v65</title>
+<title>Klipsy v68</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
   --surf1:rgba(255,255,255,.05); --surf2:rgba(255,255,255,.06); --surf3:rgba(255,255,255,.09); --surf4:rgba(255,255,255,.12);
   --input-bg:rgba(255,255,255,.06); --input-bg-msg:rgba(255,255,255,.1); --input-bg-focus:rgba(255,255,255,.1);
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
-  --top:52px; --tab:64px;
+  --top:52px; --tab:56px;
   --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
@@ -278,7 +278,13 @@ svg{display:block}
 .tabbar{position:absolute;bottom:0;left:0;right:0;z-index:var(--z-tab);
   height:calc(var(--tab) + var(--sab));padding:0 6px var(--sab);display:flex;align-items:stretch;
   background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.35) 70%,transparent);
-  transition:opacity .25s,transform .3s var(--ease)}
+  transition:opacity .25s,transform .3s var(--ease),background .2s}
+[data-theme="light"] .tabbar.onLight{
+  background:rgba(255,255,255,.97);border-top:0}
+[data-theme="light"] .tabbar.onLight .tab{color:rgba(20,20,24,.5)}
+[data-theme="light"] .tabbar.onLight .tab span{text-shadow:none}
+[data-theme="light"] .tabbar.onLight .tab svg{filter:none}
+[data-theme="light"] .tabbar.onLight .tab.on{color:#141418}
 .tabbar.away{opacity:0;transform:translateY(100%);pointer-events:none}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   color:rgba(255,255,255,.55);position:relative;transition:color .16s,transform .12s;padding-top:3px}
@@ -302,6 +308,8 @@ svg{display:block}
 
 /* ============ paneller ============ */
 .panel,.sheet{position:absolute;inset:0;display:none;flex-direction:column}
+/* alt navigasyon çubuğu bu üç ekranda da görünsün diye altta yer bırakıyoruz */
+#profile,#chats,#timeSheet{bottom:var(--tab)}
 .panel.open,.sheet.open{display:flex}
 .scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);opacity:0;animation:fadeIn .2s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
@@ -1459,7 +1467,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v65</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v68</span></div>
     </div>
   </section>
 </div>
@@ -2900,8 +2908,19 @@ const overlayOpen=()=>["comments","timeSheet","notif","cam","compose","profile",
   .some(id=>document.getElementById(id).classList.contains("open"));
 
 /* ---------- sekmeler ---------- */
-function setTab(el){$$(".tab").forEach(t=>t.classList.toggle("on",t===el));}
-$("#tabFeed").addEventListener("click",()=>{setTab($("#tabFeed"));close("notif");
+function setTab(el){
+  $$(".tab").forEach(t=>t.classList.toggle("on",t===el));
+  const lightScreens=["tabMsg","tabProfile","tabTime"];
+  $("#tabbar").classList.toggle("onLight", el && lightScreens.includes(el.id));
+}
+// sekmeler arası geçişte açık kalan ana panelleri kapat (tabbar artık her ekranda görünür olduğu için gerekli)
+function closeMainPanels(){
+  ["profile","chats","timeSheet","notif"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.classList.contains("open")) close(id);
+  });
+}
+$("#tabFeed").addEventListener("click",()=>{closeMainPanels();setTab($("#tabFeed"));
   feed.scrollTo({top:0,behavior:"smooth"});});
 $("#notifBtn").addEventListener("click",()=>{renderNotifs();open("notif");loadNotifs();});
 $("#notifBack").addEventListener("click",()=>{close("notif");setTab($("#tabFeed"));});
@@ -2918,6 +2937,7 @@ let _exFilter="all", _map=null, _mapMarkers=[], _searchMarker=null, _geoCache=nu
 let _tlIndex=0; // 0=Tümü ... son=Bu yıl
 
 $("#tabTime").addEventListener("click",()=>{
+  closeMainPanels();
   setTab($("#tabTime"));
   open("timeSheet");
   buildTimeline();
@@ -3199,9 +3219,7 @@ $("#exInput").addEventListener("input",e=>{
   refreshExplore();
   _exSearchT=setTimeout(()=>exSearch(v),700);
 });
-$("#tabProfile").addEventListener("click",()=>{setTab($("#tabProfile"));openProfile(ME);});
-
-$("#tabProfile").addEventListener("click",()=>{setTab($("#tabProfile"));openProfile(ME);});
+$("#tabProfile").addEventListener("click",()=>{closeMainPanels();setTab($("#tabProfile"));openProfile(ME);});
 
 function jump(sec){
   const target=Date.now()-sec*1000;
@@ -3734,6 +3752,7 @@ async function openFollowList(name, kind){
 
 async function openProfile(name){
   // arkada açık kalabilecek panelleri kapat
+  closeMainPanels();
   if($("#comments").classList.contains("open")) close("comments");
   if($("#miniProfile").classList.contains("open")) close("miniProfile");
   if($("#followSheet").classList.contains("open")) close("followSheet");
@@ -3955,7 +3974,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v65";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v68";
   box.appendChild(ver);
 }
 
@@ -3985,7 +4004,7 @@ async function resetPassword(){
 function renderProfile(){
   const own=profName===ME;
   const u=own?meUser:userOf(profName);
-  $("#profTitle").textContent=own?"Profilin":profName;
+  $("#profTitle").textContent=profName;
   const box=$("#profBody");box.innerHTML="";
 
   /* başlık kartı */
@@ -4007,7 +4026,7 @@ function renderProfile(){
 
   const dispName=(u&&u.display_name)?u.display_name:profName;
   const h3=document.createElement("h3");h3.textContent=dispName;
-  const hd=document.createElement("div");hd.className="handle";hd.textContent="@"+profName;
+  const hd=document.createElement("div");hd.className="handle";hd.textContent="";
   const jn=document.createElement("div");jn.className="joined";
   jn.innerHTML=IC.clock+"<span></span>";
   jn.querySelector("span").textContent=joinedText(u.joined);
@@ -4481,7 +4500,11 @@ async function loadConversations(){
     if($("#chats").classList.contains("open")) renderChats();
   }catch(e){ console.warn(e); }
 }
-function openChats(){renderChats();open("chats");loadConversations();}
+function openChats(){
+  if($("#profile").classList.contains("open")) close("profile");
+  if($("#timeSheet").classList.contains("open")) close("timeSheet");
+  renderChats();open("chats");loadConversations();
+}
 async function openChat(who){
   chatWho=who;
   // sohbeti açmadan önce istek durumunu güncel çekelim (bayat veri kalmasın)
@@ -4771,7 +4794,7 @@ mi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendMsg
 $("#msgCam").addEventListener("click",()=>openCam("dm"));
 $("#chatBack").addEventListener("click",()=>{close("chat");chatWho=null;renderChats();});
 $("#chatsBack").addEventListener("click",()=>{close("chats");setTab($("#tabFeed"));});
-$("#tabMsg").addEventListener("click",()=>{setTab($("#tabMsg"));openChats();});
+$("#tabMsg").addEventListener("click",()=>{closeMainPanels();setTab($("#tabMsg"));openChats();});
 
 async function sendMedia(src){
   if(!chatWho) return;

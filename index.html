@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v60</title>
+<title>Klipsy v65</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -35,7 +35,10 @@
 [data-theme="light"] #timeSheet,
 [data-theme="light"] #comments,
 [data-theme="light"] #reportSheet,
-[data-theme="light"] #msgMenu{
+[data-theme="light"] #msgMenu,
+[data-theme="light"] #postMenu,
+[data-theme="light"] #songSheet,
+[data-theme="light"] #followSheet{
   --bg:#F2F2F5;
   --t1:#0C0C10; --t2:rgba(12,12,16,.62); --t3:rgba(12,12,16,.42);
   --edge:rgba(0,0,0,.10); --edge-soft:rgba(0,0,0,.07); --edge-hi:rgba(0,0,0,.15);
@@ -172,6 +175,14 @@ svg{display:block}
 /* --- ne hissettirdi: alt blok --- */
 .pbottom{position:absolute;left:0;right:0;bottom:calc(var(--tab) + var(--sab) + 12px);
   z-index:3;padding:0 16px;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.ab.abSong{padding:0}
+.ab.abSong.empty{opacity:0;pointer-events:none}
+.abSong .songDisc{width:24px;height:24px;border-radius:99px;background:#181820 center/cover no-repeat;
+  border:1.5px solid rgba(255,255,255,.7);box-shadow:0 2px 8px -2px rgba(0,0,0,.6);position:relative;display:block}
+.abSong .songDisc::after{content:"";position:absolute;top:50%;left:50%;width:5px;height:5px;
+  border-radius:99px;background:rgba(255,255,255,.85);transform:translate(-50%,-50%)}
+.abSong.playing .songDisc{animation:songSpin 3.2s linear infinite}
+@keyframes songSpin{to{transform:rotate(360deg)}}
 .moodtag{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 15px 0 12px;
   border-radius:99px;background:rgba(0,0,0,.42);
   border:1px solid var(--mc,rgba(255,255,255,.3));
@@ -188,15 +199,19 @@ svg{display:block}
 /* --- eylem çubuğu: kutusuz, genişliğe yayılmış --- */
 .actbar{display:flex;align-items:center;justify-content:space-between;
   width:100%;margin-top:7px}
-.pmore{position:absolute;top:calc(var(--sat) + 52px);right:15px;z-index:12;
+.pmore{position:absolute;top:calc(var(--sat) + 52px);right:15px;z-index:25;
   width:30px;height:34px;border:0;display:grid;place-items:center;padding:0;
-  background:transparent;color:#fff;
+  background:transparent;color:#fff;pointer-events:auto;
   filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));transition:transform .12s}
 .pmore:active{transform:scale(.9)}
 .post.bare .pmore{opacity:0;pointer-events:none}
 #reportSheet{z-index:250}
+#postMenu{z-index:250}
+#songSheet{z-index:250}
 #reportSheet .scrim{background:rgba(0,0,0,.68)}
 #reportSheet.open .shbox{transform:translateY(0)}
+#postMenu.open .shbox{transform:translateY(0)}
+#songSheet.open .shbox{transform:translateY(0)}
 #msgMenu{z-index:250}
 #msgMenu .scrim{background:rgba(0,0,0,.68)}
 #msgMenu.open .shbox{transform:translateY(0)}
@@ -1043,6 +1058,12 @@ svg{display:block}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .shrow .go2{flex:none;font-size:12.5px;font-weight:600;color:var(--t2);
   padding:8px 14px;border-radius:99px;background:var(--surf3);border:1px solid var(--edge-soft)}
+.pmIcon{width:22px;height:22px;flex:none;display:grid;place-items:center;color:var(--t2)}
+.pmIcon.danger{color:#FF6B8A}
+.pmIcon svg{width:19px;height:19px}
+#cpSongRow{background:transparent;border:0;border-top:1px solid rgba(255,255,255,.1);
+  border-bottom:1px solid rgba(255,255,255,.1);border-radius:0;padding:14px 4px}
+#cpSongRow.picked .ic{width:38px;height:38px;border-radius:9px;background:transparent;border:0}
 .shrow.done .go2{background:rgba(95,214,154,.18);border-color:rgba(95,214,154,.4);color:#8FE3B4}
 
 /* ============ paylaşım ekranı ============ */
@@ -1123,7 +1144,28 @@ svg{display:block}
 .cpcount{font-size:11px;color:var(--t3);text-align:right;margin-top:6px;font-variant-numeric:tabular-nums}
 
 /* konum */
+.songSearchWrap{display:flex;align-items:center;gap:9px;margin:2px 16px 10px;height:44px;
+  padding:0 14px;border-radius:99px;background:var(--surf1,rgba(255,255,255,.06));
+  border:1px solid var(--edge-soft,rgba(255,255,255,.1));color:var(--t3)}
+.songSearchWrap input{flex:1;background:transparent;border:0;outline:0;color:var(--t1);
+  font-size:14.5px;font-family:inherit}
+.songSearchWrap input::placeholder{color:var(--t3)}
+.songRow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 10px;
+  border-radius:14px;transition:background .15s}
+.songRow:active{background:var(--surf1,rgba(255,255,255,.06))}
+.songRow .songArt{width:44px;height:44px;border-radius:9px;flex:none;background:var(--avatar-bg,#22222A) center/cover no-repeat;
+  border:1px solid var(--edge,rgba(255,255,255,.1))}
+.songRow .songTx{flex:1;min-width:0}
+.songRow .songTx b{display:block;font-size:14px;font-weight:600;letter-spacing:-.016em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.songRow .songTx span{display:block;font-size:12px;color:var(--t3);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.songEmpty{padding:40px 24px;text-align:center;color:var(--t3);font-size:13px;line-height:1.6}
+#cpSongRow.picked .ic{background:transparent;border:0;padding:0;overflow:hidden}
+#cpSongRow.picked .ic img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+#cpSongRow .again.remove{color:#FF6B8A}
 .cprow{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:20px;
+  width:100%;text-align:left;font:inherit;color:inherit;
   background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);transition:opacity .2s}
 .cprow.mute{opacity:.45}
 .cprow .ic{width:38px;height:38px;border-radius:13px;flex:none;display:grid;place-items:center;
@@ -1417,7 +1459,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v60</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v65</span></div>
     </div>
   </section>
 </div>
@@ -1615,6 +1657,27 @@ svg{display:block}
     </div>
   </section>
 
+  <section class="sheet" id="postMenu" aria-hidden="true">
+    <div class="scrim" data-close="postMenu"></div>
+    <div class="shbox">
+      <h3>Seçenekler</h3>
+      <div class="shlist" id="postMenuList"></div>
+    </div>
+  </section>
+
+  <section class="sheet" id="songSheet" aria-hidden="true">
+    <div class="scrim" data-close="songSheet"></div>
+    <div class="shbox" id="songBox">
+      <div class="grip"></div>
+      <h3>Şarkı ekle</h3>
+      <div class="songSearchWrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="songSearchInput" type="text" placeholder="Şarkı ya da sanatçı ara…" autocomplete="off">
+      </div>
+      <div class="shlist" id="songResults"></div>
+    </div>
+  </section>
+
   <section class="sheet" id="reportSheet" aria-hidden="true">
     <div class="scrim" data-close="reportSheet"></div>
     <div class="shbox">
@@ -1765,6 +1828,20 @@ svg{display:block}
         </button>
         <button class="sw on" id="cpLocSw" role="switch" aria-checked="true" aria-label="Konumu paylaş"><i></i></button>
       </div>
+
+      <div class="cpsec"><h2>Müzik</h2><em>isteğe bağlı</em></div>
+      <button class="cprow" id="cpSongRow">
+        <span class="ic" id="cpSongIcon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </span>
+        <span class="tx">
+          <b id="cpSongText">Bir şarkı ekle</b>
+          <small id="cpSongSub">Anına eşlik etsin</small>
+        </span>
+        <span class="again" id="cpSongGo" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </span>
+      </button>
     </div>
 
     <div class="cpfoot">
@@ -2065,7 +2142,8 @@ async function loadFeed(){
       likes:r.like_count, views:r.view_count, cc:r.comment_count,
       saved:false, liked:false,
       mine: me && r.author_id===me.id,
-      comments:[]
+      comments:[],
+      song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
     };});
     render(); activeIdx=-1; syncActive();
     // kullanıcının beğendiği ve kaydettiği kareleri işaretle
@@ -2310,12 +2388,12 @@ function build(it){
   auth.append(av,ident);
   plate.appendChild(auth);
 
-  /* başkasının anı: sağ üstte şikayet menüsü */
-  if(!it.mine){
+  /* sağ üstte seçenekler menüsü — herkes için: Paylaş (+ başkasınınsa Şikayet et) */
+  {
     const moreBtn=document.createElement("button");moreBtn.className="pmore";
     moreBtn.setAttribute("aria-label","Seçenekler");
     moreBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
-    moreBtn.addEventListener("click",ev=>{ ev.stopPropagation(); openReport(it.id); });
+    moreBtn.addEventListener("click",ev=>{ ev.stopPropagation(); openPostMenu(it); });
     el.appendChild(moreBtn);
   }
 
@@ -2354,11 +2432,25 @@ function build(it){
   save.innerHTML=I.save;
   save.setAttribute("aria-label","Kaydet");
   const send=document.createElement("button");
-  send.className="ab";send.innerHTML=I.send;
-  send.setAttribute("aria-label","Gönder");
+  if(it.song && it.song.preview){
+    send.className="ab abSong";
+    send.innerHTML='<span class="songDisc" style="background-image:url('+esc(it.song.art)+')"></span>';
+    send.setAttribute("aria-label","Şarkı: "+it.song.title+" — "+it.song.artist);
+  }else{
+    send.className="ab abSong empty";
+    send.setAttribute("aria-hidden","true");send.tabIndex=-1;
+  }
   bar.append(like,chat,eyes,save,send);
   bot.appendChild(bar);
   plate.appendChild(bot);
+
+  // --- eklenmiş şarkı (varsa): arkaplanda önizleme sesi, baştan döngülü ---
+  let songAudio=null;
+  if(it.song && it.song.preview){
+    songAudio=document.createElement("audio");
+    songAudio.src=it.song.preview;songAudio.preload="none";songAudio.loop=true;songAudio.muted=true;
+    el.appendChild(songAudio);
+  }
 
   el.appendChild(plate);
 
@@ -2391,7 +2483,12 @@ function build(it){
   }
   like.addEventListener("click",()=>toggleLike(false));
   chat.addEventListener("click",()=>openComments(it.id));
-  send.addEventListener("click",()=>openShare(it.id));
+  send.addEventListener("click",()=>{
+    if(!(it.song&&it.song.preview)) return;
+    soundOn=!soundOn;
+    applySound();
+    toast(soundOn?"Ses açıldı":"Ses kapatıldı");
+  });
   eyes.addEventListener("click",()=>toast(nf(it.views)+" kişi bu anı gördü"));
   save.addEventListener("click",()=>{
     it.saved=!it.saved;
@@ -2504,6 +2601,8 @@ function build(it){
     mediaEl.style.filter=agingFilter(it.ts);
   };
   el._video=(it.kind==="video")?mediaEl:null;
+  el._songAudio=songAudio;
+  el._songBadge=(it.song&&it.song.preview)?send:null;
   return el;
 }
 
@@ -2540,9 +2639,22 @@ function syncActive(){
     posts.forEach((p,i)=>{
       if(p._video){
         if(i===idx){
-          p._video.muted=!soundOn;
+          // şarkı eklenmişse videonun kendi sesi kısılır, şarkı çalar
+          p._video.muted = p._songAudio ? true : !soundOn;
           p._video.play().catch(()=>{p._video.muted=true;p._video.play().catch(()=>{});});
         }else{try{p._video.pause()}catch(e){}p._video.muted=true;}
+      }
+      if(p._songAudio){
+        if(i===idx){
+          p._songAudio.muted=!soundOn;
+          p._songAudio.currentTime=0;
+          p._songAudio.play().catch(()=>{p._songAudio.muted=true;p._songAudio.play().catch(()=>{});});
+          if(p._songBadge) p._songBadge.classList.toggle("playing", soundOn);
+        }else{
+          try{p._songAudio.pause()}catch(e){}
+          p._songAudio.muted=true;
+          if(p._songBadge) p._songBadge.classList.remove("playing");
+        }
       }
       p.classList.toggle("active",i===idx);
       if(i!==idx) p.classList.remove("bare","paused","vctrl");
@@ -2584,12 +2696,20 @@ function applySound(){
   const posts=list.querySelectorAll(".post");
   posts.forEach((p,i)=>{
     if(p._sound) p._sound();
-    if(p._video) p._video.muted=!(soundOn&&i===activeIdx);
+    if(p._video) p._video.muted = p._songAudio ? true : !(soundOn&&i===activeIdx);
+    if(p._songAudio){
+      p._songAudio.muted=!(soundOn&&i===activeIdx);
+      if(p._songBadge) p._songBadge.classList.toggle("playing", soundOn&&i===activeIdx);
+    }
   });
   const cur=list.querySelectorAll(".post")[activeIdx];
-  if(cur&&cur._video&&soundOn){
+  if(cur&&cur._video&&soundOn&&!cur._songAudio){
     cur._video.muted=false;
     cur._video.play().catch(()=>{});
+  }
+  if(cur&&cur._songAudio&&soundOn){
+    cur._songAudio.muted=false;
+    cur._songAudio.play().catch(()=>{});
   }
 }
 
@@ -3123,7 +3243,7 @@ function toast(m){
 }
 
 /* ---------- paylaşım ekranı ---------- */
-let draft=null, pickedMood=null, place=null, shareLoc=true;
+let draft=null, pickedMood=null, place=null, shareLoc=true, pickedSong=null;
 
 (function buildMoods(){
   const box=$("#cpMoods");
@@ -3263,6 +3383,8 @@ cpNote.addEventListener("blur",()=>$("#cpNoteBox").classList.remove("focus"));
 function openCompose(src,kind,blob,durationMs){
   draft={src,kind,blob:blob||null,durationMs:durationMs||null};
   pickedMood=null;
+  pickedSong=null;
+  renderSongRow();
   shareLoc=true;
   $("#cpLocSw").classList.add("on");
   $("#cpLoc").classList.remove("mute");
@@ -3290,6 +3412,72 @@ function openCompose(src,kind,blob,durationMs){
   $(".cpscroll").scrollTop=0;
   getLocation();
 }
+function fmtSec(s){ s=Math.round(s||0); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+function renderSongRow(){
+  const icon=$("#cpSongIcon"), text=$("#cpSongText"), sub=$("#cpSongSub"), go=$("#cpSongGo"), row=$("#cpSongRow");
+  if(pickedSong){
+    row.classList.add("picked");
+    icon.innerHTML='<img src="'+esc(pickedSong.art)+'" alt="">';
+    text.textContent=pickedSong.title;
+    sub.textContent=pickedSong.artist;
+    go.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+    go.classList.add("remove");
+    go.setAttribute("aria-label","Şarkıyı kaldır");
+  }else{
+    row.classList.remove("picked");
+    icon.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+    text.textContent="Bir şarkı ekle";
+    sub.textContent="Anına eşlik etsin";
+    go.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+    go.classList.remove("remove");
+    go.setAttribute("aria-label","Şarkı ekle");
+  }
+}
+$("#cpSongRow").addEventListener("click",e=>{
+  if(pickedSong){ pickedSong=null; renderSongRow(); return; }
+  openSongSheet();
+});
+
+let _songSearchT=null;
+function openSongSheet(){
+  $("#songResults").innerHTML='<div class="songEmpty">Bir şarkı ya da sanatçı ara…</div>';
+  $("#songSearchInput").value="";
+  open("songSheet");
+  setTimeout(()=>$("#songSearchInput").focus(),260);
+}
+$("#songSearchInput").addEventListener("input",e=>{
+  clearTimeout(_songSearchT);
+  const q=e.target.value.trim();
+  if(q.length<2){ $("#songResults").innerHTML='<div class="songEmpty">Bir şarkı ya da sanatçı ara…</div>'; return; }
+  $("#songResults").innerHTML='<div class="songEmpty">Aranıyor…</div>';
+  _songSearchT=setTimeout(()=>searchSongs(q),380);
+});
+async function searchSongs(q){
+  try{
+    const url="https://itunes.apple.com/search?term="+encodeURIComponent(q)+"&media=music&entity=song&limit=18";
+    const res=await fetch(url);
+    if(!res.ok) throw new Error("arama başarısız");
+    const data=await res.json();
+    const box=$("#songResults");box.innerHTML="";
+    const list=(data.results||[]).filter(t=>t.previewUrl);
+    if(!list.length){ box.innerHTML='<div class="songEmpty">Sonuç bulunamadı ya da önizleme mevcut değil.</div>'; return; }
+    list.forEach(t=>{
+      const b=document.createElement("button");b.className="songRow";
+      const art=(t.artworkUrl100||"").replace("100x100bb","300x300bb");
+      b.innerHTML='<div class="songArt" style="background-image:url('+art+')"></div>'+
+        '<div class="songTx"><b>'+esc(t.trackName)+'</b><span>'+esc(t.artistName)+'</span></div>';
+      b.addEventListener("click",()=>{
+        pickedSong={title:t.trackName, artist:t.artistName, art:art, preview:t.previewUrl};
+        renderSongRow();
+        close("songSheet");
+      });
+      box.appendChild(b);
+    });
+  }catch(e){
+    $("#songResults").innerHTML='<div class="songEmpty">Arama yapılamadı, bağlantını kontrol et.</div>';
+  }
+}
+
 function closeCompose(back){
   const c=$("#compose");
   c.classList.remove("open");c.setAttribute("aria-hidden","true");
@@ -3307,7 +3495,8 @@ $("#cpShare").addEventListener("click",()=>{
     la: place?place.la:null,
     lo: place?place.lo:null,
     blob: d.blob||null,
-    durationMs: d.durationMs||null
+    durationMs: d.durationMs||null,
+    song: pickedSong||null
   };
   closeCompose(false);
   post(d.src,d.kind,m,where,note,extra);
@@ -3766,7 +3955,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v60";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v65";
   box.appendChild(ver);
 }
 
@@ -4627,6 +4816,27 @@ const REPORT_REASONS=[
   ["telif","Telif hakkı"],
   ["diger","Diğer"]
 ];
+function openPostMenu(it){
+  try{
+    const box=$("#postMenuList");box.innerHTML="";
+    const mkRow=(icon,label,danger,fn)=>{
+      const b=document.createElement("button");b.className="shrow";
+      b.innerHTML='<span class="pmIcon'+(danger?" danger":"")+'">'+icon+'</span><span class="nm">'+label+'</span>';
+      b.addEventListener("click",()=>{ close("postMenu"); fn(); });
+      box.appendChild(b);
+    };
+    mkRow(I.send,"Paylaş",false,()=>openShare(it.id));
+    if(!it.mine){
+      mkRow('<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
+        "Şikayet et",true,()=>openReport(it.id));
+    }
+    open("postMenu");
+  }catch(e){
+    console.error("postMenu hata:",e);
+    toast("Menü açılamadı, tekrar dene");
+  }
+}
+
 function openReport(momentId){
   const box=$("#reportList");box.innerHTML="";
   REPORT_REASONS.forEach(([code,label])=>{
@@ -4751,11 +4961,12 @@ function dataURLtoBlob(durl){
 // Supabase'e yükle + moments'e kaydet + akışa ekle
 async function post(src,kind,mood,where,note,extra){
   const sb=window.__sb, me=window.__me;
+  const song=(extra&&extra.song)?extra.song:null;
   // yerel önizleme: hemen akışa koy (iyimser)
   const tmpId="u"+Date.now();
   const local={id:tmpId,ts:Date.now(),who:ME,
     where:where||"Konum yok",mood:mood||null,note:note||"",kind,src,
-    likes:0,views:0,saved:false,liked:false,mine:true,comments:[],_pending:true};
+    likes:0,views:0,saved:false,liked:false,mine:true,comments:[],_pending:true,song:song};
   items.unshift(local);
   render();
   requestAnimationFrame(()=>{feed.scrollTop=0;activeIdx=-1;syncActive();resumeAt=Date.now()+RESUME*2;});
@@ -4784,7 +4995,11 @@ async function post(src,kind,mood,where,note,extra){
       place_label: (extra && extra.shareLoc===false) ? null : (where && where!=="Konum yok" ? where : null),
       geo_lat: (extra && extra.la!=null && extra.shareLoc!==false) ? extra.la : null,
       geo_lng: (extra && extra.lo!=null && extra.shareLoc!==false) ? extra.lo : null,
-      duration_ms: (extra && extra.durationMs) ? extra.durationMs : null
+      duration_ms: (extra && extra.durationMs) ? extra.durationMs : null,
+      song_title: song ? song.title : null,
+      song_artist: song ? song.artist : null,
+      song_art: song ? song.art : null,
+      song_preview: song ? song.preview : null
     };
     const ins = await sb.from('moments').insert(row).select('id, created_at').single();
     if(ins.error) throw ins.error;

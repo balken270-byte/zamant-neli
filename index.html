@@ -5,7 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v90</title>
+<title>Klipsy v91</title>
+
+<!-- ===== PWA: uygulama gibi kurulabilsin ===== -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#08080C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Klipsy">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="description" content="Yaşadığın anı, olduğu gibi paylaş.">
+
+<script>
+// iOS PWA açılış ekranı: iPhone manifest'teki splash'i desteklemiyor,
+// bu yüzden ekran boyutuna uygun bir görsel çalışma anında üretilir.
+(function(){
+  try{
+    var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if(!isiOS) return;
+    var w = screen.width, h = screen.height, r = window.devicePixelRatio || 2;
+    var cw = w*r, ch = h*r;
+    var img = new Image();
+    img.onload = function(){
+      var cv = document.createElement('canvas');
+      cv.width = cw; cv.height = ch;
+      var ctx = cv.getContext('2d');
+      // arka plan
+      ctx.fillStyle = '#08080C';
+      ctx.fillRect(0,0,cw,ch);
+      // hafif renk parlaması (marka hissi)
+      var g = ctx.createRadialGradient(cw*0.5, ch*0.34, 0, cw*0.5, ch*0.34, cw*0.85);
+      g.addColorStop(0, 'rgba(255,59,107,0.16)');
+      g.addColorStop(1, 'rgba(255,59,107,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,cw,ch);
+      // ortada logo
+      var size = Math.min(cw,ch) * 0.26;
+      var x = (cw - size)/2, y = (ch - size)/2 - ch*0.06;
+      var rad = size*0.24;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x+rad,y);
+      ctx.arcTo(x+size,y,x+size,y+size,rad);
+      ctx.arcTo(x+size,y+size,x,y+size,rad);
+      ctx.arcTo(x,y+size,x,y,rad);
+      ctx.arcTo(x,y,x+size,y,rad);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img,x,y,size,size);
+      ctx.restore();
+      // uygulama adı
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.font = '600 ' + Math.round(size*0.28) + 'px -apple-system,BlinkMacSystemFont,sans-serif';
+      ctx.fillText('Klipsy', cw/2, y + size + size*0.42);
+
+      var link = document.createElement('link');
+      link.rel = 'apple-touch-startup-image';
+      link.href = cv.toDataURL('image/png');
+      document.head.appendChild(link);
+    };
+    img.src = 'icon.png';
+  }catch(e){}
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -1353,6 +1418,10 @@ svg{display:block}
   padding:calc(var(--sat) + 30px) 26px calc(var(--sab) + 24px);scrollbar-width:none;position:relative;z-index:2}
 .gauth::-webkit-scrollbar{display:none}
 .gbrand{display:flex;flex-direction:column;align-items:center;gap:11px;margin-bottom:30px}
+.gbrand .glogoImg{width:76px;height:76px;border-radius:20px;object-fit:cover;
+  box-shadow:0 14px 34px -12px rgba(255,59,107,.55), 0 0 0 1px rgba(255,255,255,.08);
+  animation:logoIn .5s cubic-bezier(.22,1,.36,1)}
+@keyframes logoIn{from{opacity:0;transform:scale(.82) translateY(8px)}to{opacity:1;transform:none}}
 .gbrand .glogo{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;
   background:linear-gradient(145deg,#FF3B6B,#7B5BFF);
   box-shadow:0 12px 30px -12px rgba(255,59,107,.65), inset 0 1px 0 rgba(255,255,255,.3)}
@@ -1504,6 +1573,7 @@ svg{display:block}
     <div class="gveil"></div>
     <div class="gauth">
       <div class="gbrand">
+        <img class="glogoImg" src="icon.png" alt="Klipsy" onerror="this.style.display='none'">
         <h1>Klipsy</h1>
         <p>Yasadigin ani, oldugu gibi paylas.</p>
       </div>
@@ -1536,7 +1606,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v90</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v91</span></div>
     </div>
   </section>
 </div>
@@ -4339,7 +4409,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v90";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v91";
   box.appendChild(ver);
 }
 

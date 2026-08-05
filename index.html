@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v89</title>
+<title>Klipsy v90</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -1447,6 +1447,7 @@ svg{display:block}
   }catch(e){}
 })();
 </script>
+
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
@@ -1535,7 +1536,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v89</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v90</span></div>
     </div>
   </section>
 </div>
@@ -4338,7 +4339,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v89";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v90";
   box.appendChild(ver);
 }
 
@@ -5702,12 +5703,53 @@ requestAnimationFrame(tick);
 };
 </script>
 <script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// Supabase kütüphanesini yükle: yavaş/erişilemez kaynakta takılmasın diye
+// birden fazla CDN sırayla denenir, her biri için zaman aşımı vardır.
+async function loadSupabase(){
+  const sources=[
+    'https://esm.sh/@supabase/supabase-js@2',
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm',
+    'https://unpkg.com/@supabase/supabase-js@2/dist/module/index.js'
+  ];
+  let lastErr=null;
+  for(const url of sources){
+    try{
+      const mod = await Promise.race([
+        import(/* @vite-ignore */ url),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('zaman asimi')), 8000))
+      ]);
+      if(mod && mod.createClient) return mod.createClient;
+    }catch(e){ lastErr=e; }
+  }
+  throw lastErr || new Error('Supabase yuklenemedi');
+}
+
+let createClient;
+try{
+  createClient = await loadSupabase();
+}catch(e){
+  // hiçbiri yüklenemedi: kullanıcıyı bilgilendir, sonsuz bekleme olmasın
+  const g=document.getElementById('gate');
+  if(g){
+    const box=document.createElement('div');
+    box.style.cssText='position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 24px);'+
+      'z-index:99;padding:14px 16px;border-radius:14px;background:rgba(255,59,107,.14);'+
+      'border:1px solid rgba(255,59,107,.35);color:#fff;font-size:13px;line-height:1.5;text-align:center';
+    box.innerHTML='Bağlantı kurulamadı. İnternetini kontrol edip sayfayı yenile.'+
+      '<br><button id="__retry" style="margin-top:10px;height:38px;padding:0 18px;border-radius:99px;border:0;'+
+      'background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;font-weight:600;font-size:13.5px">Tekrar dene</button>';
+    g.appendChild(box);
+    const rb=box.querySelector('#__retry');
+    if(rb) rb.addEventListener('click',()=>location.reload());
+  }
+  throw e;
+}
 
 const SUPABASE_URL = 'https://jovynigyzcrabvjvxyxv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_fXx5-1exau3TfXtmhzXcKQ_YGGsBQ_I';
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 window.__sb = sb;  // uygulama da kullanabilsin
+window.__gateReady = true;  // Supabase yüklendi işareti
 const $ = s => document.querySelector(s);
 
 const gate = $('#gate');

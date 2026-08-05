@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v94</title>
+<title>Klipsy v95</title>
 
 <!-- ===== PWA: uygulama gibi kurulabilsin ===== -->
 <link rel="manifest" href="./manifest.json">
@@ -27,48 +27,7 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-<script>
-// ===== Mini durum çubuğu (tam ekran PWA'da saat + pil) =====
-(function(){
-  function tick(){
-    var el=document.getElementById('msClock');
-    if(!el) return;
-    var d=new Date();
-    el.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-  }
-  tick();
-  setInterval(tick, 15000);
-  // dakika başına denk gelsin
-  setTimeout(function(){ tick(); setInterval(tick, 60000); }, (60-new Date().getSeconds())*1000);
 
-  function paintBattery(b){
-    var bar=document.getElementById('miniStatus');
-    var fill=document.getElementById('msBatFill');
-    var txt=document.getElementById('msBatTxt');
-    if(!bar||!fill) return;
-    var pct=Math.round((b.level||0)*100);
-    fill.style.width=Math.max(2, Math.round(18*(b.level||0)))+'px';
-    if(txt) txt.textContent=pct+'%';
-    bar.classList.toggle('low', pct<=20 && !b.charging);
-    bar.classList.toggle('charging', !!b.charging);
-  }
-
-  if(navigator.getBattery){
-    navigator.getBattery().then(function(b){
-      paintBattery(b);
-      b.addEventListener('levelchange', function(){ paintBattery(b); });
-      b.addEventListener('chargingchange', function(){ paintBattery(b); });
-    }).catch(function(){
-      // pil bilgisi yoksa göstergeyi gizle
-      var r=document.querySelector('#miniStatus .msRight');
-      if(r) r.style.display='none';
-    });
-  }else{
-    var r=document.querySelector('#miniStatus .msRight');
-    if(r) r.style.display='none';
-  }
-})();
-</script>
 
 <script>
 // iOS PWA açılış ekranı: iPhone manifest'teki splash'i desteklemiyor,
@@ -167,29 +126,7 @@ if ('serviceWorker' in navigator) {
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
-/* PWA tam ekran: kendi mini durum çubuğumuz */
-#miniStatus{display:none}
-@media all and (display-mode: fullscreen){
-  :root{--sat:26px}
-  #miniStatus{
-    display:flex;align-items:center;justify-content:space-between;
-    position:fixed;top:0;left:0;right:0;height:26px;z-index:9999;
-    padding:0 16px;pointer-events:none;
-    font-size:12px;font-weight:600;letter-spacing:.01em;
-    font-variant-numeric:tabular-nums;
-    color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
-  html[data-theme="light"] #miniStatus{color:#141418;text-shadow:none}
-  #miniStatus .msRight{display:flex;align-items:center;gap:6px}
-  #miniStatus .msBat{width:22px;height:11px;border-radius:3px;position:relative;
-    border:1.3px solid currentColor;opacity:.9}
-  #miniStatus .msBat::after{content:"";position:absolute;right:-3.5px;top:3px;
-    width:2px;height:5px;border-radius:0 1.5px 1.5px 0;background:currentColor}
-  #miniStatus .msBat i{position:absolute;left:1.2px;top:1.2px;bottom:1.2px;
-    border-radius:1.5px;background:currentColor;transition:width .4s ease}
-  #miniStatus.low .msBat i{background:#FF6B6B}
-  #miniStatus.low #msBatTxt{color:#FF6B6B}
-  #miniStatus.charging .msBat i{background:#5FD69A}
-}
+
 body{background:#000;font-family:var(--font);color:var(--t1);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
 button,input{font-family:inherit}
 button{cursor:pointer;border:0;background:none;color:inherit}
@@ -1596,13 +1533,6 @@ svg{display:block}
 
 </head>
 <body>
-<div id="miniStatus" aria-hidden="true">
-  <span id="msClock">--:--</span>
-  <span class="msRight">
-    <span id="msBatTxt"></span>
-    <span class="msBat" id="msBat"><i id="msBatFill"></i></span>
-  </span>
-</div>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
   <section class="gscreen gsplash" id="gSplash">
     <div class="glogo">
@@ -1695,7 +1625,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v94</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v95</span></div>
     </div>
   </section>
 </div>
@@ -3187,6 +3117,7 @@ function open(id){
   const el=document.getElementById(id);
   el.classList.add("open");el.setAttribute("aria-hidden","false");
   if(AUDIO_BLOCKERS.includes(id) && typeof pauseFeedMedia==="function") pauseFeedMedia();
+  if(typeof syncStatusBar==="function") syncStatusBar();
 }
 function close(id){
   const el=document.getElementById(id);
@@ -3197,6 +3128,7 @@ function close(id){
   if(AUDIO_BLOCKERS.includes(id) && !anyBlockerOpen() && typeof resumeFeedMedia==="function"){
     setTimeout(()=>{ if(!anyBlockerOpen()) resumeFeedMedia(); },80);
   }
+  if(typeof syncStatusBar==="function") syncStatusBar();
 }
 $$("[data-close]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.close)));
 document.addEventListener("keydown",e=>{
@@ -3909,6 +3841,7 @@ function openCompose(src,kind,blob,durationMs){
     box.style.backgroundImage="url("+src+")";
   }
   $("#compose").classList.add("open");
+  if(typeof syncStatusBar==="function") syncStatusBar();
   $("#compose").setAttribute("aria-hidden","false");
   const bodyEl=$(".cpBody"); if(bodyEl) bodyEl.scrollTop=0;
   getLocation();
@@ -4022,6 +3955,7 @@ function closeCompose(back){
   const c=$("#compose");
   cpStopPreview();
   c.classList.remove("open");c.setAttribute("aria-hidden","true");
+  if(typeof syncStatusBar==="function") syncStatusBar();
   $("#cpMedia").innerHTML="";$("#cpMedia").style.backgroundImage="";
   draft=null;pickedMood=null;
   if(back) openCam("post"); else setTab($("#tabFeed"));
@@ -4374,12 +4308,40 @@ function resolveTheme(t){
   }
   return t;
 }
+// üstteki sistem şeridinin rengini o an açık olan ekrana göre ayarla
+// (Instagram mantığı: akış siyah, profil/mesajlar beyaz temada beyaz)
+function syncStatusBar(){
+  const tc=document.getElementById('__themeColor');
+  if(!tc) return;
+  const isLight = document.documentElement.getAttribute('data-theme')==='light';
+  // akış, kamera, paylaşım, harita = her zaman koyu (fotoğraf/video üstü)
+  const darkScreens=["cam","compose","timeSheet"];
+  const onDarkScreen = darkScreens.some(id=>{
+    const el=document.getElementById(id);
+    return el && el.classList.contains("open");
+  });
+  // panel açık mı (profil, mesajlar, ayarlar, bildirimler...)
+  const panelIds=["profile","chats","chat","settings","editProfile","notif"];
+  const onPanel = panelIds.some(id=>{
+    const el=document.getElementById(id);
+    return el && el.classList.contains("open");
+  });
+  // giriş ekranı hâlâ açıksa her zaman koyu
+  const gateEl=document.getElementById('gate');
+  const onGate = gateEl && !gateEl.classList.contains('off');
+
+  let color;
+  if(onGate || onDarkScreen) color='#08080C';
+  else if(onPanel) color = isLight ? '#FFFFFF' : '#0A0A0E';
+  else color='#08080C';   // akış
+  tc.setAttribute('content', color);
+}
+
+window.syncStatusBar = syncStatusBar;  // modül kapsamından da erişilebilsin
 function applyTheme(t){
   const resolved=resolveTheme(t);
   document.documentElement.setAttribute('data-theme', resolved);
-  // üstteki sistem şeridi de temaya uysun
-  const tc=document.getElementById('__themeColor');
-  if(tc) tc.setAttribute('content', resolved==='light' ? '#F2F2F5' : '#08080C');
+  syncStatusBar();
 }
 let _klipsyTheme = getStoredTheme();
 applyTheme(_klipsyTheme);
@@ -4518,7 +4480,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v94";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v95";
   box.appendChild(ver);
 }
 
@@ -5564,6 +5526,7 @@ async function openCam(which){
   if(which==="profile"){camMode="photo";facing="user";}
   $("#camTitle").textContent=which==="profile"?"Profil fotoğrafı":(which==="dm"?"Mesaj olarak gönder":"Şu anı çek");
   $("#cam").classList.add("open");$("#cam").setAttribute("aria-hidden","false");
+  if(typeof syncStatusBar==="function") syncStatusBar();
   $("#camFail").classList.remove("on");
   setMode(camMode);await start();
 }
@@ -5592,6 +5555,7 @@ function closeCam(){
   stopCam();
   $("#cam").classList.remove("open");$("#cam").setAttribute("aria-hidden","true");
   if(target!=="dm") setTab($("#tabFeed"));
+  if(typeof syncStatusBar==="function") syncStatusBar();
 }
 function setMode(m){camMode=m;$$(".mode").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));}
 $$(".mode").forEach(b=>b.addEventListener("click",()=>{if(camMode!==b.dataset.mode){setMode(b.dataset.mode);start();}}));
@@ -6122,6 +6086,8 @@ function showOnboarding(user, prof){
     // uygulamaya gir
     window.__me = { id:user.id, username:un, avatar_url:prof.avatar_url||null, email:user.email||null };
     gate.classList.add('off');
+  setTimeout(()=>{ if(typeof window.syncStatusBar==='function') window.syncStatusBar(); },60);
+    setTimeout(()=>{ if(typeof window.syncStatusBar==='function') window.syncStatusBar(); },60);
     if(window.__startApp) window.__startApp();
   };
 }

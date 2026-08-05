@@ -2,30 +2,22 @@
   "name": "Klipsy",
   "short_name": "Klipsy",
   "description": "Yaşadığın anı, olduğu gibi paylaş.",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#08080C",
   "theme_color": "#08080C",
   "lang": "tr",
-  "dir": "ltr",
-  "categories": ["social", "photo", "lifestyle"],
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon.png",
+      "src": "./icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon.png",
+      "src": "./icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

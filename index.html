@@ -5,18 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#08080C">
 <style>html,body{margin:0;background:#08080C}</style>
-<title>Klipsy v91</title>
+<title>Klipsy v92</title>
 
 <!-- ===== PWA: uygulama gibi kurulabilsin ===== -->
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#08080C">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Klipsy">
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="./icon.png">
+<link rel="apple-touch-icon" href="./icon.png">
 <meta name="description" content="Yaşadığın anı, olduğu gibi paylaş.">
+
+<script>
+// Service Worker kaydı — Android'in uygulamayı kurulabilir sayması için gerekli
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
 
 <script>
 // iOS PWA açılış ekranı: iPhone manifest'teki splash'i desteklemiyor,
@@ -67,7 +76,7 @@
       link.href = cv.toDataURL('image/png');
       document.head.appendChild(link);
     };
-    img.src = 'icon.png';
+    img.src = './icon.png';
   }catch(e){}
 })();
 </script>
@@ -1573,7 +1582,12 @@ svg{display:block}
     <div class="gveil"></div>
     <div class="gauth">
       <div class="gbrand">
-        <img class="glogoImg" src="icon.png" alt="Klipsy" onerror="this.style.display='none'">
+        <img class="glogoImg" src="./icon.png" alt="Klipsy"
+          onerror="this.style.display='none';var w=document.getElementById('__iconWarn');if(w)w.style.display='block'">
+        <div id="__iconWarn" style="display:none;font-size:11.5px;color:#FF8AA3;text-align:center;
+          padding:6px 12px;border-radius:10px;background:rgba(255,59,107,.12);margin-bottom:2px">
+          icon.png bulunamadı — dosyanın index.html ile aynı klasörde olduğundan emin ol
+        </div>
         <h1>Klipsy</h1>
         <p>Yasadigin ani, oldugu gibi paylas.</p>
       </div>
@@ -1606,7 +1620,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v91</span></div>
+      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v92</span></div>
     </div>
   </section>
 </div>
@@ -4409,7 +4423,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v91";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v92";
   box.appendChild(ver);
 }
 

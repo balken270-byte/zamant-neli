@@ -6,7 +6,691 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v98</title>
+<title>Klipsy v99</title>
+<script>
+/* ============================================================
+   KLİPSY — ÇOK DİLLİ DESTEK (i18n)
+   Cihaz dilini otomatik algılar, desteklenmiyorsa İngilizce'ye düşer.
+   Kullanıcı Ayarlar'dan değiştirebilir, seçimi kaydedilir.
+   ============================================================ */
+(function(){
+  const DICT = {
+    tr:{
+      _name:"Türkçe",
+      // sekmeler
+      tab_feed:"Akış", tab_msg:"Mesajlar", tab_time:"Zaman", tab_profile:"Profil",
+      // ortak
+      cancel:"Vazgeç", delete:"Sil", save:"Kaydet", send:"Gönder", close:"Kapat",
+      back:"Geri", done:"Tamam", retry:"Tekrar dene", loading:"Yükleniyor…",
+      // giriş
+      login:"Giriş yap", signup:"Kayıt ol", email:"E-posta", password:"Parola",
+      username:"Kullanıcı adı", google_continue:"Google ile devam et",
+      terms:"Devam ederek kullanım koşullarını kabul etmiş olursun.",
+      tagline:"Yaşadığın anı, olduğu gibi paylaş.",
+      forgot:"Parolanı mı unuttun?",
+      // paylaşım
+      note_ph:"Bu an ne anlatıyor?", mood_q:"Ne hissettin?", mood:"Duygu",
+      location:"Konum", song:"Şarkı", cover:"Kapak", saved_phone:"Kaydedildi",
+      send_feed:"Akışa gönder", shot_now:"o an çekildi",
+      loc_searching:"Aranıyor", loc_none:"Konum yok",
+      cover_pick:"Kapak seç", cover_q:"Videonun hangi karesi kapak olsun?",
+      cover_use:"Bu kareyi kullan",
+      song_add:"Şarkı ekle", song_search:"Şarkı ya da sanatçı ara…",
+      song_empty:"Bir şarkı ya da sanatçı ara…", song_none:"Sonuç bulunamadı.",
+      // akış
+      today:"BUGÜN", photo:"FOTOĞRAF", comments:"Yorumlar",
+      comment_ph:"Yorum yaz…", no_comments:"İlk yorumu sen yaz.",
+      options:"Seçenekler", share:"Paylaş", report:"Şikayet et",
+      report_title:"Bu anı şikayet et", report_sub:"Sebebini seç. İncelenmek üzere iletilir.",
+      delete_moment:"Bu anı sil?", irreversible:"Bu işlem geri alınamaz.",
+      send_moment:"Bu anı gönder", send_moment_sub:"Seçtiğin kişiye mesaj olarak iletilir.",
+      // profil
+      profile_edit:"Profili Düzenle", settings:"Ayarlar", bio:"Biyografi",
+      edit:"Düzenle", follow:"Takip et", following:"Takip ediliyor", message:"Mesaj",
+      moments:"An", followers:"Takipçi", follows:"Takip",
+      my_moments:"Anılarım", private:"Gizli", saved:"Kaydedilenler",
+      joined:"'de katıldı", see_profile:"Profilin tamamını gör →",
+      no_moments:"Henüz bir an paylaşmadın", no_saved:"Henüz bir an kaydetmedin",
+      // mesajlar
+      msg_requests:"Mesaj istekleri", msg_ph:"Mesaj yaz…",
+      no_msgs:"Henüz mesajın yok.", accept:"Kabul et",
+      req_pending:"İstek gönderildi", req_new:"Mesaj isteği",
+      locked_msg:"Kabul etmeden mesajları göremezsin.",
+      // bildirimler
+      notifications:"Bildirimler", mark_read:"Okundu yap",
+      no_notifs:"Henüz bildirim yok.",
+      // ayarlar
+      appearance:"Görünüm", theme_system:"Sistem", theme_light:"Açık", theme_dark:"Koyu",
+      language:"Dil", sound:"Sesli içerik", sound_sub:"Videolar sesli başlasın",
+      fullscreen:"Tam ekran", fullscreen_sub:"Durum çubuğunu gizle",
+      notifs_setting:"Bildirimler", share_loc:"Konum paylaşımı",
+      change_username:"Kullanıcı adını değiştir", change_pass:"Parola değiştir",
+      blocked:"Engellenenler", logout:"Çıkış yap", about:"Klipsy hakkında",
+      features:"Özellikler", account:"Hesap", privacy:"Gizlilik",
+      // zaman
+      now:"ŞİMDİ", past:"GEÇMİŞ", search_place:"Şehir, ülke ya da mahalle ara…",
+      moments_count:"an", map_hint:"haritada gez ya da listeden seç",
+      // zaman ifadeleri
+      just_now:"az önce", min_ago:"dk", hour_ago:"sa", day_ago:"g",
+      // duygular
+      mood_huzur:"Huzurlu", mood_mutlu:"Mutlu", mood_heyecan:"Heyecanlı",
+      mood_asik:"Aşık", mood_huzun:"Hüzünlü", mood_ozlem:"Özlemli",
+      mood_saskin:"Şaşkın", mood_sakin:"Sakin", mood_yorgun:"Yorgun",
+      mood_dusunce:"Düşünceli",
+      // bildirimler/mesajlar
+      t_refreshed:"Akış yenilendi", t_saved:"Kaydedilenlere eklendi",
+      t_unsaved:"Kaydedilenlerden çıkarıldı", t_copied:"Kopyalandı",
+      t_sent:"Gönderildi", t_deleted:"Silindi", t_reported:"Şikayetin iletildi, teşekkürler",
+      t_sound_on:"Ses açıldı", t_sound_off:"Ses kapatıldı",
+      t_gallery_saved:"Galerine kaydedildi", t_cover_set:"Kapak seçildi",
+      t_loc_on:"Konum paylaşılacak", t_loc_off:"Konum paylaşılmayacak",
+      welcome:"Hoş geldin!", pick_name:"Klipsy'de görünecek adını ve kullanıcı adını seç.",
+      name:"Ad", continue:"Devam et"
+    },
+    en:{
+      _name:"English",
+      tab_feed:"Feed", tab_msg:"Messages", tab_time:"Time", tab_profile:"Profile",
+      cancel:"Cancel", delete:"Delete", save:"Save", send:"Send", close:"Close",
+      back:"Back", done:"Done", retry:"Try again", loading:"Loading…",
+      login:"Log in", signup:"Sign up", email:"Email", password:"Password",
+      username:"Username", google_continue:"Continue with Google",
+      terms:"By continuing you agree to the terms of use.",
+      tagline:"Share the moment, exactly as it is.",
+      forgot:"Forgot your password?",
+      note_ph:"What does this moment say?", mood_q:"How did you feel?", mood:"Mood",
+      location:"Location", song:"Song", cover:"Cover", saved_phone:"Saved",
+      send_feed:"Share to feed", shot_now:"shot just now",
+      loc_searching:"Searching", loc_none:"No location",
+      cover_pick:"Pick cover", cover_q:"Which frame should be the cover?",
+      cover_use:"Use this frame",
+      song_add:"Add song", song_search:"Search song or artist…",
+      song_empty:"Search for a song or artist…", song_none:"No results found.",
+      today:"TODAY", photo:"PHOTO", comments:"Comments",
+      comment_ph:"Write a comment…", no_comments:"Be the first to comment.",
+      options:"Options", share:"Share", report:"Report",
+      report_title:"Report this moment", report_sub:"Choose a reason. It will be reviewed.",
+      delete_moment:"Delete this moment?", irreversible:"This cannot be undone.",
+      send_moment:"Send this moment", send_moment_sub:"It will be sent as a message.",
+      profile_edit:"Edit Profile", settings:"Settings", bio:"Bio",
+      edit:"Edit", follow:"Follow", following:"Following", message:"Message",
+      moments:"Moments", followers:"Followers", follows:"Following",
+      my_moments:"My Moments", private:"Private", saved:"Saved",
+      joined:"joined on", see_profile:"See full profile →",
+      no_moments:"You haven't shared a moment yet", no_saved:"You haven't saved a moment yet",
+      msg_requests:"Message requests", msg_ph:"Write a message…",
+      no_msgs:"No messages yet.", accept:"Accept",
+      req_pending:"Request sent", req_new:"Message request",
+      locked_msg:"You can't see messages before accepting.",
+      notifications:"Notifications", mark_read:"Mark as read",
+      no_notifs:"No notifications yet.",
+      appearance:"Appearance", theme_system:"System", theme_light:"Light", theme_dark:"Dark",
+      language:"Language", sound:"Sound", sound_sub:"Start videos with sound",
+      fullscreen:"Fullscreen", fullscreen_sub:"Hide the status bar",
+      notifs_setting:"Notifications", share_loc:"Share location",
+      change_username:"Change username", change_pass:"Change password",
+      blocked:"Blocked", logout:"Log out", about:"About Klipsy",
+      features:"Features", account:"Account", privacy:"Privacy",
+      now:"NOW", past:"PAST", search_place:"Search city, country or area…",
+      moments_count:"moments", map_hint:"explore the map or pick from the list",
+      just_now:"just now", min_ago:"m", hour_ago:"h", day_ago:"d",
+      mood_huzur:"Peaceful", mood_mutlu:"Happy", mood_heyecan:"Excited",
+      mood_asik:"In love", mood_huzun:"Sad", mood_ozlem:"Longing",
+      mood_saskin:"Amazed", mood_sakin:"Calm", mood_yorgun:"Tired",
+      mood_dusunce:"Thoughtful",
+      t_refreshed:"Feed refreshed", t_saved:"Added to saved",
+      t_unsaved:"Removed from saved", t_copied:"Copied",
+      t_sent:"Sent", t_deleted:"Deleted", t_reported:"Report sent, thank you",
+      t_sound_on:"Sound on", t_sound_off:"Sound off",
+      t_gallery_saved:"Saved to your gallery", t_cover_set:"Cover selected",
+      t_loc_on:"Location will be shared", t_loc_off:"Location won't be shared",
+      welcome:"Welcome!", pick_name:"Choose your name and username on Klipsy.",
+      name:"Name", continue:"Continue"
+    },
+    es:{
+      _name:"Español",
+      tab_feed:"Inicio", tab_msg:"Mensajes", tab_time:"Tiempo", tab_profile:"Perfil",
+      cancel:"Cancelar", delete:"Eliminar", save:"Guardar", send:"Enviar", close:"Cerrar",
+      back:"Atrás", done:"Listo", retry:"Reintentar", loading:"Cargando…",
+      login:"Iniciar sesión", signup:"Registrarse", email:"Correo", password:"Contraseña",
+      username:"Usuario", google_continue:"Continuar con Google",
+      terms:"Al continuar aceptas los términos de uso.",
+      tagline:"Comparte el momento, tal como es.",
+      forgot:"¿Olvidaste tu contraseña?",
+      note_ph:"¿Qué cuenta este momento?", mood_q:"¿Cómo te sentiste?", mood:"Ánimo",
+      location:"Ubicación", song:"Canción", cover:"Portada", saved_phone:"Guardado",
+      send_feed:"Compartir", shot_now:"tomada ahora",
+      loc_searching:"Buscando", loc_none:"Sin ubicación",
+      cover_pick:"Elegir portada", cover_q:"¿Qué fotograma será la portada?",
+      cover_use:"Usar este fotograma",
+      song_add:"Añadir canción", song_search:"Buscar canción o artista…",
+      song_empty:"Busca una canción o artista…", song_none:"Sin resultados.",
+      today:"HOY", photo:"FOTO", comments:"Comentarios",
+      comment_ph:"Escribe un comentario…", no_comments:"Sé el primero en comentar.",
+      options:"Opciones", share:"Compartir", report:"Reportar",
+      report_title:"Reportar este momento", report_sub:"Elige un motivo. Será revisado.",
+      delete_moment:"¿Eliminar este momento?", irreversible:"Esto no se puede deshacer.",
+      send_moment:"Enviar este momento", send_moment_sub:"Se enviará como mensaje.",
+      profile_edit:"Editar perfil", settings:"Ajustes", bio:"Biografía",
+      edit:"Editar", follow:"Seguir", following:"Siguiendo", message:"Mensaje",
+      moments:"Momentos", followers:"Seguidores", follows:"Siguiendo",
+      my_moments:"Mis momentos", private:"Privado", saved:"Guardados",
+      joined:"se unió", see_profile:"Ver perfil completo →",
+      no_moments:"Aún no has compartido un momento", no_saved:"Aún no has guardado nada",
+      msg_requests:"Solicitudes", msg_ph:"Escribe un mensaje…",
+      no_msgs:"Aún no tienes mensajes.", accept:"Aceptar",
+      req_pending:"Solicitud enviada", req_new:"Solicitud de mensaje",
+      locked_msg:"No puedes ver los mensajes sin aceptar.",
+      notifications:"Notificaciones", mark_read:"Marcar como leído",
+      no_notifs:"Sin notificaciones.",
+      appearance:"Apariencia", theme_system:"Sistema", theme_light:"Claro", theme_dark:"Oscuro",
+      language:"Idioma", sound:"Sonido", sound_sub:"Iniciar videos con sonido",
+      fullscreen:"Pantalla completa", fullscreen_sub:"Ocultar la barra de estado",
+      notifs_setting:"Notificaciones", share_loc:"Compartir ubicación",
+      change_username:"Cambiar usuario", change_pass:"Cambiar contraseña",
+      blocked:"Bloqueados", logout:"Cerrar sesión", about:"Acerca de Klipsy",
+      features:"Funciones", account:"Cuenta", privacy:"Privacidad",
+      now:"AHORA", past:"PASADO", search_place:"Buscar ciudad, país o zona…",
+      moments_count:"momentos", map_hint:"explora el mapa o elige de la lista",
+      just_now:"ahora", min_ago:"min", hour_ago:"h", day_ago:"d",
+      mood_huzur:"En paz", mood_mutlu:"Feliz", mood_heyecan:"Emocionado",
+      mood_asik:"Enamorado", mood_huzun:"Triste", mood_ozlem:"Nostálgico",
+      mood_saskin:"Asombrado", mood_sakin:"Tranquilo", mood_yorgun:"Cansado",
+      mood_dusunce:"Pensativo",
+      t_refreshed:"Actualizado", t_saved:"Añadido a guardados",
+      t_unsaved:"Quitado de guardados", t_copied:"Copiado",
+      t_sent:"Enviado", t_deleted:"Eliminado", t_reported:"Reporte enviado, gracias",
+      t_sound_on:"Sonido activado", t_sound_off:"Sonido desactivado",
+      t_gallery_saved:"Guardado en tu galería", t_cover_set:"Portada elegida",
+      t_loc_on:"Se compartirá la ubicación", t_loc_off:"No se compartirá la ubicación",
+      welcome:"¡Bienvenido!", pick_name:"Elige tu nombre y usuario en Klipsy.",
+      name:"Nombre", continue:"Continuar"
+    },
+    ar:{
+      _name:"العربية", _rtl:true,
+      tab_feed:"الرئيسية", tab_msg:"الرسائل", tab_time:"الوقت", tab_profile:"الملف",
+      cancel:"إلغاء", delete:"حذف", save:"حفظ", send:"إرسال", close:"إغلاق",
+      back:"رجوع", done:"تم", retry:"إعادة المحاولة", loading:"جارٍ التحميل…",
+      login:"تسجيل الدخول", signup:"إنشاء حساب", email:"البريد الإلكتروني", password:"كلمة المرور",
+      username:"اسم المستخدم", google_continue:"المتابعة عبر Google",
+      terms:"بالمتابعة فإنك توافق على شروط الاستخدام.",
+      tagline:"شارك اللحظة كما هي.",
+      forgot:"نسيت كلمة المرور؟",
+      note_ph:"ماذا تقول هذه اللحظة؟", mood_q:"بماذا شعرت؟", mood:"الشعور",
+      location:"الموقع", song:"أغنية", cover:"الغلاف", saved_phone:"تم الحفظ",
+      send_feed:"مشاركة", shot_now:"التقطت الآن",
+      loc_searching:"جارٍ البحث", loc_none:"بدون موقع",
+      cover_pick:"اختر الغلاف", cover_q:"أي لقطة تكون الغلاف؟",
+      cover_use:"استخدم هذه اللقطة",
+      song_add:"إضافة أغنية", song_search:"ابحث عن أغنية أو فنان…",
+      song_empty:"ابحث عن أغنية أو فنان…", song_none:"لا توجد نتائج.",
+      today:"اليوم", photo:"صورة", comments:"التعليقات",
+      comment_ph:"اكتب تعليقًا…", no_comments:"كن أول من يعلق.",
+      options:"خيارات", share:"مشاركة", report:"إبلاغ",
+      report_title:"الإبلاغ عن هذه اللحظة", report_sub:"اختر السبب. ستتم المراجعة.",
+      delete_moment:"حذف هذه اللحظة؟", irreversible:"لا يمكن التراجع عن هذا.",
+      send_moment:"إرسال هذه اللحظة", send_moment_sub:"سترسل كرسالة.",
+      profile_edit:"تعديل الملف", settings:"الإعدادات", bio:"نبذة",
+      edit:"تعديل", follow:"متابعة", following:"تتابعه", message:"رسالة",
+      moments:"لحظات", followers:"متابعون", follows:"يتابع",
+      my_moments:"لحظاتي", private:"خاص", saved:"المحفوظات",
+      joined:"انضم", see_profile:"عرض الملف كاملًا ←",
+      no_moments:"لم تشارك أي لحظة بعد", no_saved:"لم تحفظ أي لحظة بعد",
+      msg_requests:"طلبات الرسائل", msg_ph:"اكتب رسالة…",
+      no_msgs:"لا توجد رسائل بعد.", accept:"قبول",
+      req_pending:"تم إرسال الطلب", req_new:"طلب رسالة",
+      locked_msg:"لا يمكنك رؤية الرسائل قبل القبول.",
+      notifications:"الإشعارات", mark_read:"تعليم كمقروء",
+      no_notifs:"لا توجد إشعارات.",
+      appearance:"المظهر", theme_system:"النظام", theme_light:"فاتح", theme_dark:"داكن",
+      language:"اللغة", sound:"الصوت", sound_sub:"تشغيل الفيديو بالصوت",
+      fullscreen:"ملء الشاشة", fullscreen_sub:"إخفاء شريط الحالة",
+      notifs_setting:"الإشعارات", share_loc:"مشاركة الموقع",
+      change_username:"تغيير اسم المستخدم", change_pass:"تغيير كلمة المرور",
+      blocked:"المحظورون", logout:"تسجيل الخروج", about:"حول Klipsy",
+      features:"المزايا", account:"الحساب", privacy:"الخصوصية",
+      now:"الآن", past:"الماضي", search_place:"ابحث عن مدينة أو منطقة…",
+      moments_count:"لحظة", map_hint:"تصفح الخريطة أو اختر من القائمة",
+      just_now:"الآن", min_ago:"د", hour_ago:"س", day_ago:"ي",
+      mood_huzur:"مطمئن", mood_mutlu:"سعيد", mood_heyecan:"متحمس",
+      mood_asik:"عاشق", mood_huzun:"حزين", mood_ozlem:"مشتاق",
+      mood_saskin:"مندهش", mood_sakin:"هادئ", mood_yorgun:"متعب",
+      mood_dusunce:"متأمل",
+      t_refreshed:"تم التحديث", t_saved:"أضيف للمحفوظات",
+      t_unsaved:"أزيل من المحفوظات", t_copied:"تم النسخ",
+      t_sent:"تم الإرسال", t_deleted:"تم الحذف", t_reported:"تم إرسال البلاغ، شكرًا",
+      t_sound_on:"تم تشغيل الصوت", t_sound_off:"تم كتم الصوت",
+      t_gallery_saved:"حُفظ في معرضك", t_cover_set:"تم اختيار الغلاف",
+      t_loc_on:"ستتم مشاركة الموقع", t_loc_off:"لن تتم مشاركة الموقع",
+      welcome:"أهلًا بك!", pick_name:"اختر اسمك واسم المستخدم في Klipsy.",
+      name:"الاسم", continue:"متابعة"
+    },
+    fr:{
+      _name:"Français",
+      tab_feed:"Fil", tab_msg:"Messages", tab_time:"Temps", tab_profile:"Profil",
+      cancel:"Annuler", delete:"Supprimer", save:"Enregistrer", send:"Envoyer", close:"Fermer",
+      back:"Retour", done:"Terminé", retry:"Réessayer", loading:"Chargement…",
+      login:"Connexion", signup:"Inscription", email:"E-mail", password:"Mot de passe",
+      username:"Nom d'utilisateur", google_continue:"Continuer avec Google",
+      terms:"En continuant, vous acceptez les conditions d'utilisation.",
+      tagline:"Partage l'instant, tel qu'il est.",
+      forgot:"Mot de passe oublié ?",
+      note_ph:"Que raconte cet instant ?", mood_q:"Qu'as-tu ressenti ?", mood:"Humeur",
+      location:"Lieu", song:"Musique", cover:"Couverture", saved_phone:"Enregistré",
+      send_feed:"Partager", shot_now:"pris à l'instant",
+      loc_searching:"Recherche", loc_none:"Sans lieu",
+      cover_pick:"Choisir la couverture", cover_q:"Quelle image en couverture ?",
+      cover_use:"Utiliser cette image",
+      song_add:"Ajouter une musique", song_search:"Rechercher un titre ou artiste…",
+      song_empty:"Cherche un titre ou un artiste…", song_none:"Aucun résultat.",
+      today:"AUJOURD'HUI", photo:"PHOTO", comments:"Commentaires",
+      comment_ph:"Écrire un commentaire…", no_comments:"Sois le premier à commenter.",
+      options:"Options", share:"Partager", report:"Signaler",
+      report_title:"Signaler cet instant", report_sub:"Choisis un motif. Il sera examiné.",
+      delete_moment:"Supprimer cet instant ?", irreversible:"Action irréversible.",
+      send_moment:"Envoyer cet instant", send_moment_sub:"Envoyé sous forme de message.",
+      profile_edit:"Modifier le profil", settings:"Réglages", bio:"Bio",
+      edit:"Modifier", follow:"Suivre", following:"Abonné", message:"Message",
+      moments:"Instants", followers:"Abonnés", follows:"Abonnements",
+      my_moments:"Mes instants", private:"Privé", saved:"Enregistrés",
+      joined:"a rejoint", see_profile:"Voir le profil complet →",
+      no_moments:"Tu n'as pas encore partagé d'instant", no_saved:"Rien d'enregistré pour l'instant",
+      msg_requests:"Demandes de message", msg_ph:"Écrire un message…",
+      no_msgs:"Aucun message.", accept:"Accepter",
+      req_pending:"Demande envoyée", req_new:"Demande de message",
+      locked_msg:"Tu ne peux pas voir les messages avant d'accepter.",
+      notifications:"Notifications", mark_read:"Marquer comme lu",
+      no_notifs:"Aucune notification.",
+      appearance:"Apparence", theme_system:"Système", theme_light:"Clair", theme_dark:"Sombre",
+      language:"Langue", sound:"Son", sound_sub:"Démarrer les vidéos avec le son",
+      fullscreen:"Plein écran", fullscreen_sub:"Masquer la barre d'état",
+      notifs_setting:"Notifications", share_loc:"Partager la position",
+      change_username:"Changer de nom d'utilisateur", change_pass:"Changer le mot de passe",
+      blocked:"Bloqués", logout:"Déconnexion", about:"À propos de Klipsy",
+      features:"Fonctions", account:"Compte", privacy:"Confidentialité",
+      now:"MAINTENANT", past:"PASSÉ", search_place:"Chercher une ville ou un quartier…",
+      moments_count:"instants", map_hint:"explore la carte ou choisis dans la liste",
+      just_now:"à l'instant", min_ago:"min", hour_ago:"h", day_ago:"j",
+      mood_huzur:"Paisible", mood_mutlu:"Heureux", mood_heyecan:"Excité",
+      mood_asik:"Amoureux", mood_huzun:"Triste", mood_ozlem:"Nostalgique",
+      mood_saskin:"Étonné", mood_sakin:"Calme", mood_yorgun:"Fatigué",
+      mood_dusunce:"Pensif",
+      t_refreshed:"Fil actualisé", t_saved:"Ajouté aux enregistrés",
+      t_unsaved:"Retiré des enregistrés", t_copied:"Copié",
+      t_sent:"Envoyé", t_deleted:"Supprimé", t_reported:"Signalement envoyé, merci",
+      t_sound_on:"Son activé", t_sound_off:"Son coupé",
+      t_gallery_saved:"Enregistré dans ta galerie", t_cover_set:"Couverture choisie",
+      t_loc_on:"La position sera partagée", t_loc_off:"La position ne sera pas partagée",
+      welcome:"Bienvenue !", pick_name:"Choisis ton nom et ton pseudo sur Klipsy.",
+      name:"Nom", continue:"Continuer"
+    },
+    de:{
+      _name:"Deutsch",
+      tab_feed:"Feed", tab_msg:"Nachrichten", tab_time:"Zeit", tab_profile:"Profil",
+      cancel:"Abbrechen", delete:"Löschen", save:"Speichern", send:"Senden", close:"Schließen",
+      back:"Zurück", done:"Fertig", retry:"Erneut versuchen", loading:"Lädt…",
+      login:"Anmelden", signup:"Registrieren", email:"E-Mail", password:"Passwort",
+      username:"Benutzername", google_continue:"Mit Google fortfahren",
+      terms:"Mit dem Fortfahren akzeptierst du die Nutzungsbedingungen.",
+      tagline:"Teile den Moment, genau wie er ist.",
+      forgot:"Passwort vergessen?",
+      note_ph:"Was erzählt dieser Moment?", mood_q:"Wie hast du dich gefühlt?", mood:"Stimmung",
+      location:"Ort", song:"Song", cover:"Cover", saved_phone:"Gespeichert",
+      send_feed:"In den Feed", shot_now:"gerade aufgenommen",
+      loc_searching:"Suche", loc_none:"Kein Ort",
+      cover_pick:"Cover wählen", cover_q:"Welches Bild als Cover?",
+      cover_use:"Dieses Bild nehmen",
+      song_add:"Song hinzufügen", song_search:"Song oder Künstler suchen…",
+      song_empty:"Suche nach Song oder Künstler…", song_none:"Keine Ergebnisse.",
+      today:"HEUTE", photo:"FOTO", comments:"Kommentare",
+      comment_ph:"Kommentar schreiben…", no_comments:"Schreib den ersten Kommentar.",
+      options:"Optionen", share:"Teilen", report:"Melden",
+      report_title:"Diesen Moment melden", report_sub:"Wähle einen Grund. Wird geprüft.",
+      delete_moment:"Diesen Moment löschen?", irreversible:"Das kann nicht rückgängig gemacht werden.",
+      send_moment:"Moment senden", send_moment_sub:"Wird als Nachricht gesendet.",
+      profile_edit:"Profil bearbeiten", settings:"Einstellungen", bio:"Bio",
+      edit:"Bearbeiten", follow:"Folgen", following:"Folgst du", message:"Nachricht",
+      moments:"Momente", followers:"Follower", follows:"Folgt",
+      my_moments:"Meine Momente", private:"Privat", saved:"Gespeichert",
+      joined:"dabei seit", see_profile:"Ganzes Profil ansehen →",
+      no_moments:"Du hast noch keinen Moment geteilt", no_saved:"Noch nichts gespeichert",
+      msg_requests:"Nachrichtenanfragen", msg_ph:"Nachricht schreiben…",
+      no_msgs:"Noch keine Nachrichten.", accept:"Annehmen",
+      req_pending:"Anfrage gesendet", req_new:"Nachrichtenanfrage",
+      locked_msg:"Du kannst Nachrichten erst nach dem Annehmen sehen.",
+      notifications:"Mitteilungen", mark_read:"Als gelesen markieren",
+      no_notifs:"Keine Mitteilungen.",
+      appearance:"Darstellung", theme_system:"System", theme_light:"Hell", theme_dark:"Dunkel",
+      language:"Sprache", sound:"Ton", sound_sub:"Videos mit Ton starten",
+      fullscreen:"Vollbild", fullscreen_sub:"Statusleiste ausblenden",
+      notifs_setting:"Mitteilungen", share_loc:"Standort teilen",
+      change_username:"Benutzernamen ändern", change_pass:"Passwort ändern",
+      blocked:"Blockiert", logout:"Abmelden", about:"Über Klipsy",
+      features:"Funktionen", account:"Konto", privacy:"Privatsphäre",
+      now:"JETZT", past:"VERGANGENHEIT", search_place:"Stadt, Land oder Gegend suchen…",
+      moments_count:"Momente", map_hint:"Karte erkunden oder aus der Liste wählen",
+      just_now:"gerade eben", min_ago:"Min", hour_ago:"Std", day_ago:"T",
+      mood_huzur:"Friedlich", mood_mutlu:"Glücklich", mood_heyecan:"Aufgeregt",
+      mood_asik:"Verliebt", mood_huzun:"Traurig", mood_ozlem:"Sehnsüchtig",
+      mood_saskin:"Erstaunt", mood_sakin:"Ruhig", mood_yorgun:"Müde",
+      mood_dusunce:"Nachdenklich",
+      t_refreshed:"Feed aktualisiert", t_saved:"Zu Gespeicherten hinzugefügt",
+      t_unsaved:"Aus Gespeicherten entfernt", t_copied:"Kopiert",
+      t_sent:"Gesendet", t_deleted:"Gelöscht", t_reported:"Meldung gesendet, danke",
+      t_sound_on:"Ton an", t_sound_off:"Ton aus",
+      t_gallery_saved:"In deiner Galerie gespeichert", t_cover_set:"Cover gewählt",
+      t_loc_on:"Standort wird geteilt", t_loc_off:"Standort wird nicht geteilt",
+      welcome:"Willkommen!", pick_name:"Wähle deinen Namen und Benutzernamen bei Klipsy.",
+      name:"Name", continue:"Weiter"
+    },
+    ru:{
+      _name:"Русский",
+      tab_feed:"Лента", tab_msg:"Сообщения", tab_time:"Время", tab_profile:"Профиль",
+      cancel:"Отмена", delete:"Удалить", save:"Сохранить", send:"Отправить", close:"Закрыть",
+      back:"Назад", done:"Готово", retry:"Повторить", loading:"Загрузка…",
+      login:"Войти", signup:"Регистрация", email:"Эл. почта", password:"Пароль",
+      username:"Имя пользователя", google_continue:"Продолжить с Google",
+      terms:"Продолжая, вы принимаете условия использования.",
+      tagline:"Делись моментом таким, какой он есть.",
+      forgot:"Забыли пароль?",
+      note_ph:"О чём этот момент?", mood_q:"Что ты почувствовал?", mood:"Настроение",
+      location:"Место", song:"Музыка", cover:"Обложка", saved_phone:"Сохранено",
+      send_feed:"В ленту", shot_now:"снято сейчас",
+      loc_searching:"Поиск", loc_none:"Без места",
+      cover_pick:"Выбрать обложку", cover_q:"Какой кадр сделать обложкой?",
+      cover_use:"Использовать этот кадр",
+      song_add:"Добавить музыку", song_search:"Поиск песни или артиста…",
+      song_empty:"Найди песню или артиста…", song_none:"Ничего не найдено.",
+      today:"СЕГОДНЯ", photo:"ФОТО", comments:"Комментарии",
+      comment_ph:"Написать комментарий…", no_comments:"Оставь первый комментарий.",
+      options:"Действия", share:"Поделиться", report:"Пожаловаться",
+      report_title:"Пожаловаться на момент", report_sub:"Выбери причину. Мы проверим.",
+      delete_moment:"Удалить этот момент?", irreversible:"Это нельзя отменить.",
+      send_moment:"Отправить момент", send_moment_sub:"Будет отправлено сообщением.",
+      profile_edit:"Редактировать профиль", settings:"Настройки", bio:"О себе",
+      edit:"Изменить", follow:"Подписаться", following:"Вы подписаны", message:"Сообщение",
+      moments:"Моменты", followers:"Подписчики", follows:"Подписки",
+      my_moments:"Мои моменты", private:"Личное", saved:"Сохранённые",
+      joined:"с нами с", see_profile:"Открыть профиль →",
+      no_moments:"Ты ещё не делился моментом", no_saved:"Пока ничего не сохранено",
+      msg_requests:"Запросы сообщений", msg_ph:"Написать сообщение…",
+      no_msgs:"Сообщений пока нет.", accept:"Принять",
+      req_pending:"Запрос отправлен", req_new:"Запрос сообщения",
+      locked_msg:"Ты не увидишь сообщения, пока не примешь запрос.",
+      notifications:"Уведомления", mark_read:"Отметить прочитанным",
+      no_notifs:"Уведомлений нет.",
+      appearance:"Оформление", theme_system:"Система", theme_light:"Светлая", theme_dark:"Тёмная",
+      language:"Язык", sound:"Звук", sound_sub:"Запускать видео со звуком",
+      fullscreen:"Полный экран", fullscreen_sub:"Скрыть строку состояния",
+      notifs_setting:"Уведомления", share_loc:"Делиться местом",
+      change_username:"Сменить имя пользователя", change_pass:"Сменить пароль",
+      blocked:"Заблокированные", logout:"Выйти", about:"О Klipsy",
+      features:"Возможности", account:"Аккаунт", privacy:"Приватность",
+      now:"СЕЙЧАС", past:"ПРОШЛОЕ", search_place:"Найти город, страну или район…",
+      moments_count:"моментов", map_hint:"исследуй карту или выбери из списка",
+      just_now:"только что", min_ago:"мин", hour_ago:"ч", day_ago:"д",
+      mood_huzur:"Спокойный", mood_mutlu:"Счастливый", mood_heyecan:"Взволнованный",
+      mood_asik:"Влюблённый", mood_huzun:"Грустный", mood_ozlem:"Тоскующий",
+      mood_saskin:"Удивлённый", mood_sakin:"Умиротворённый", mood_yorgun:"Усталый",
+      mood_dusunce:"Задумчивый",
+      t_refreshed:"Лента обновлена", t_saved:"Добавлено в сохранённые",
+      t_unsaved:"Убрано из сохранённых", t_copied:"Скопировано",
+      t_sent:"Отправлено", t_deleted:"Удалено", t_reported:"Жалоба отправлена, спасибо",
+      t_sound_on:"Звук включён", t_sound_off:"Звук выключен",
+      t_gallery_saved:"Сохранено в галерею", t_cover_set:"Обложка выбрана",
+      t_loc_on:"Место будет показано", t_loc_off:"Место не будет показано",
+      welcome:"Добро пожаловать!", pick_name:"Выбери имя и имя пользователя в Klipsy.",
+      name:"Имя", continue:"Продолжить"
+    },
+    pt:{
+      _name:"Português",
+      tab_feed:"Feed", tab_msg:"Mensagens", tab_time:"Tempo", tab_profile:"Perfil",
+      cancel:"Cancelar", delete:"Excluir", save:"Salvar", send:"Enviar", close:"Fechar",
+      back:"Voltar", done:"Pronto", retry:"Tentar de novo", loading:"Carregando…",
+      login:"Entrar", signup:"Criar conta", email:"E-mail", password:"Senha",
+      username:"Usuário", google_continue:"Continuar com Google",
+      terms:"Ao continuar, você aceita os termos de uso.",
+      tagline:"Compartilhe o momento, como ele é.",
+      forgot:"Esqueceu a senha?",
+      note_ph:"O que este momento conta?", mood_q:"Como você se sentiu?", mood:"Humor",
+      location:"Local", song:"Música", cover:"Capa", saved_phone:"Salvo",
+      send_feed:"Enviar ao feed", shot_now:"tirada agora",
+      loc_searching:"Buscando", loc_none:"Sem local",
+      cover_pick:"Escolher capa", cover_q:"Qual quadro será a capa?",
+      cover_use:"Usar este quadro",
+      song_add:"Adicionar música", song_search:"Buscar música ou artista…",
+      song_empty:"Busque uma música ou artista…", song_none:"Nenhum resultado.",
+      today:"HOJE", photo:"FOTO", comments:"Comentários",
+      comment_ph:"Escreva um comentário…", no_comments:"Seja o primeiro a comentar.",
+      options:"Opções", share:"Compartilhar", report:"Denunciar",
+      report_title:"Denunciar este momento", report_sub:"Escolha um motivo. Será analisado.",
+      delete_moment:"Excluir este momento?", irreversible:"Isso não pode ser desfeito.",
+      send_moment:"Enviar este momento", send_moment_sub:"Será enviado como mensagem.",
+      profile_edit:"Editar perfil", settings:"Configurações", bio:"Bio",
+      edit:"Editar", follow:"Seguir", following:"Seguindo", message:"Mensagem",
+      moments:"Momentos", followers:"Seguidores", follows:"Seguindo",
+      my_moments:"Meus momentos", private:"Privado", saved:"Salvos",
+      joined:"entrou em", see_profile:"Ver perfil completo →",
+      no_moments:"Você ainda não compartilhou um momento", no_saved:"Nada salvo ainda",
+      msg_requests:"Pedidos de mensagem", msg_ph:"Escreva uma mensagem…",
+      no_msgs:"Sem mensagens ainda.", accept:"Aceitar",
+      req_pending:"Pedido enviado", req_new:"Pedido de mensagem",
+      locked_msg:"Você não pode ver as mensagens antes de aceitar.",
+      notifications:"Notificações", mark_read:"Marcar como lida",
+      no_notifs:"Sem notificações.",
+      appearance:"Aparência", theme_system:"Sistema", theme_light:"Claro", theme_dark:"Escuro",
+      language:"Idioma", sound:"Som", sound_sub:"Iniciar vídeos com som",
+      fullscreen:"Tela cheia", fullscreen_sub:"Ocultar a barra de status",
+      notifs_setting:"Notificações", share_loc:"Compartilhar local",
+      change_username:"Mudar usuário", change_pass:"Mudar senha",
+      blocked:"Bloqueados", logout:"Sair", about:"Sobre o Klipsy",
+      features:"Recursos", account:"Conta", privacy:"Privacidade",
+      now:"AGORA", past:"PASSADO", search_place:"Buscar cidade, país ou bairro…",
+      moments_count:"momentos", map_hint:"explore o mapa ou escolha da lista",
+      just_now:"agora", min_ago:"min", hour_ago:"h", day_ago:"d",
+      mood_huzur:"Em paz", mood_mutlu:"Feliz", mood_heyecan:"Animado",
+      mood_asik:"Apaixonado", mood_huzun:"Triste", mood_ozlem:"Saudoso",
+      mood_saskin:"Surpreso", mood_sakin:"Calmo", mood_yorgun:"Cansado",
+      mood_dusunce:"Pensativo",
+      t_refreshed:"Feed atualizado", t_saved:"Adicionado aos salvos",
+      t_unsaved:"Removido dos salvos", t_copied:"Copiado",
+      t_sent:"Enviado", t_deleted:"Excluído", t_reported:"Denúncia enviada, obrigado",
+      t_sound_on:"Som ligado", t_sound_off:"Som desligado",
+      t_gallery_saved:"Salvo na sua galeria", t_cover_set:"Capa escolhida",
+      t_loc_on:"O local será compartilhado", t_loc_off:"O local não será compartilhado",
+      welcome:"Bem-vindo!", pick_name:"Escolha seu nome e usuário no Klipsy.",
+      name:"Nome", continue:"Continuar"
+    },
+    hi:{
+      _name:"हिन्दी",
+      tab_feed:"फ़ीड", tab_msg:"संदेश", tab_time:"समय", tab_profile:"प्रोफ़ाइल",
+      cancel:"रद्द करें", delete:"हटाएँ", save:"सहेजें", send:"भेजें", close:"बंद करें",
+      back:"वापस", done:"हो गया", retry:"पुनः प्रयास", loading:"लोड हो रहा है…",
+      login:"लॉग इन", signup:"साइन अप", email:"ईमेल", password:"पासवर्ड",
+      username:"यूज़रनेम", google_continue:"Google से जारी रखें",
+      terms:"जारी रखने पर आप उपयोग की शर्तें स्वीकार करते हैं।",
+      tagline:"पल को वैसे ही साझा करो, जैसा वह है।",
+      forgot:"पासवर्ड भूल गए?",
+      note_ph:"यह पल क्या कहता है?", mood_q:"आपने कैसा महसूस किया?", mood:"भाव",
+      location:"स्थान", song:"गाना", cover:"कवर", saved_phone:"सहेजा गया",
+      send_feed:"फ़ीड पर भेजें", shot_now:"अभी लिया गया",
+      loc_searching:"खोज रहे हैं", loc_none:"कोई स्थान नहीं",
+      cover_pick:"कवर चुनें", cover_q:"कौन-सा फ़्रेम कवर बने?",
+      cover_use:"यही फ़्रेम लें",
+      song_add:"गाना जोड़ें", song_search:"गाना या कलाकार खोजें…",
+      song_empty:"गाना या कलाकार खोजें…", song_none:"कोई परिणाम नहीं।",
+      today:"आज", photo:"फ़ोटो", comments:"टिप्पणियाँ",
+      comment_ph:"टिप्पणी लिखें…", no_comments:"पहली टिप्पणी करें।",
+      options:"विकल्प", share:"साझा करें", report:"रिपोर्ट करें",
+      report_title:"इस पल की रिपोर्ट करें", report_sub:"कारण चुनें। समीक्षा की जाएगी।",
+      delete_moment:"यह पल हटाएँ?", irreversible:"यह वापस नहीं किया जा सकता।",
+      send_moment:"यह पल भेजें", send_moment_sub:"संदेश के रूप में भेजा जाएगा।",
+      profile_edit:"प्रोफ़ाइल संपादित करें", settings:"सेटिंग्स", bio:"परिचय",
+      edit:"संपादित करें", follow:"फ़ॉलो करें", following:"फ़ॉलो कर रहे हैं", message:"संदेश",
+      moments:"पल", followers:"फ़ॉलोअर्स", follows:"फ़ॉलोइंग",
+      my_moments:"मेरे पल", private:"निजी", saved:"सहेजे गए",
+      joined:"शामिल हुए", see_profile:"पूरी प्रोफ़ाइल देखें →",
+      no_moments:"आपने अभी तक कोई पल साझा नहीं किया", no_saved:"अभी कुछ सहेजा नहीं गया",
+      msg_requests:"संदेश अनुरोध", msg_ph:"संदेश लिखें…",
+      no_msgs:"अभी कोई संदेश नहीं।", accept:"स्वीकार करें",
+      req_pending:"अनुरोध भेजा गया", req_new:"संदेश अनुरोध",
+      locked_msg:"स्वीकार किए बिना आप संदेश नहीं देख सकते।",
+      notifications:"सूचनाएँ", mark_read:"पढ़ा हुआ चिह्नित करें",
+      no_notifs:"कोई सूचना नहीं।",
+      appearance:"रूप", theme_system:"सिस्टम", theme_light:"हल्का", theme_dark:"गहरा",
+      language:"भाषा", sound:"ध्वनि", sound_sub:"वीडियो ध्वनि के साथ चलाएँ",
+      fullscreen:"पूर्ण स्क्रीन", fullscreen_sub:"स्टेटस बार छिपाएँ",
+      notifs_setting:"सूचनाएँ", share_loc:"स्थान साझा करें",
+      change_username:"यूज़रनेम बदलें", change_pass:"पासवर्ड बदलें",
+      blocked:"अवरुद्ध", logout:"लॉग आउट", about:"Klipsy के बारे में",
+      features:"विशेषताएँ", account:"खाता", privacy:"गोपनीयता",
+      now:"अभी", past:"अतीत", search_place:"शहर, देश या क्षेत्र खोजें…",
+      moments_count:"पल", map_hint:"मानचित्र देखें या सूची से चुनें",
+      just_now:"अभी", min_ago:"मि", hour_ago:"घं", day_ago:"दि",
+      mood_huzur:"शांत", mood_mutlu:"खुश", mood_heyecan:"उत्साहित",
+      mood_asik:"प्यार में", mood_huzun:"उदास", mood_ozlem:"याद में",
+      mood_saskin:"हैरान", mood_sakin:"स्थिर", mood_yorgun:"थका हुआ",
+      mood_dusunce:"विचारमग्न",
+      t_refreshed:"फ़ीड ताज़ा हुआ", t_saved:"सहेजे गए में जोड़ा",
+      t_unsaved:"सहेजे गए से हटाया", t_copied:"कॉपी हुआ",
+      t_sent:"भेजा गया", t_deleted:"हटाया गया", t_reported:"रिपोर्ट भेजी गई, धन्यवाद",
+      t_sound_on:"ध्वनि चालू", t_sound_off:"ध्वनि बंद",
+      t_gallery_saved:"गैलरी में सहेजा गया", t_cover_set:"कवर चुना गया",
+      t_loc_on:"स्थान साझा होगा", t_loc_off:"स्थान साझा नहीं होगा",
+      welcome:"स्वागत है!", pick_name:"Klipsy पर अपना नाम और यूज़रनेम चुनें।",
+      name:"नाम", continue:"जारी रखें"
+    },
+    id:{
+      _name:"Bahasa Indonesia",
+      tab_feed:"Beranda", tab_msg:"Pesan", tab_time:"Waktu", tab_profile:"Profil",
+      cancel:"Batal", delete:"Hapus", save:"Simpan", send:"Kirim", close:"Tutup",
+      back:"Kembali", done:"Selesai", retry:"Coba lagi", loading:"Memuat…",
+      login:"Masuk", signup:"Daftar", email:"Email", password:"Kata sandi",
+      username:"Nama pengguna", google_continue:"Lanjut dengan Google",
+      terms:"Dengan melanjutkan kamu menyetujui ketentuan penggunaan.",
+      tagline:"Bagikan momen, apa adanya.",
+      forgot:"Lupa kata sandi?",
+      note_ph:"Apa cerita momen ini?", mood_q:"Apa yang kamu rasakan?", mood:"Suasana",
+      location:"Lokasi", song:"Lagu", cover:"Sampul", saved_phone:"Tersimpan",
+      send_feed:"Kirim ke beranda", shot_now:"diambil sekarang",
+      loc_searching:"Mencari", loc_none:"Tanpa lokasi",
+      cover_pick:"Pilih sampul", cover_q:"Bingkai mana jadi sampul?",
+      cover_use:"Pakai bingkai ini",
+      song_add:"Tambah lagu", song_search:"Cari lagu atau artis…",
+      song_empty:"Cari lagu atau artis…", song_none:"Tidak ada hasil.",
+      today:"HARI INI", photo:"FOTO", comments:"Komentar",
+      comment_ph:"Tulis komentar…", no_comments:"Jadilah yang pertama berkomentar.",
+      options:"Opsi", share:"Bagikan", report:"Laporkan",
+      report_title:"Laporkan momen ini", report_sub:"Pilih alasan. Akan ditinjau.",
+      delete_moment:"Hapus momen ini?", irreversible:"Tindakan ini tidak bisa dibatalkan.",
+      send_moment:"Kirim momen ini", send_moment_sub:"Akan dikirim sebagai pesan.",
+      profile_edit:"Edit Profil", settings:"Pengaturan", bio:"Bio",
+      edit:"Edit", follow:"Ikuti", following:"Mengikuti", message:"Pesan",
+      moments:"Momen", followers:"Pengikut", follows:"Mengikuti",
+      my_moments:"Momenku", private:"Pribadi", saved:"Tersimpan",
+      joined:"bergabung", see_profile:"Lihat profil lengkap →",
+      no_moments:"Kamu belum membagikan momen", no_saved:"Belum ada yang disimpan",
+      msg_requests:"Permintaan pesan", msg_ph:"Tulis pesan…",
+      no_msgs:"Belum ada pesan.", accept:"Terima",
+      req_pending:"Permintaan terkirim", req_new:"Permintaan pesan",
+      locked_msg:"Kamu tidak bisa melihat pesan sebelum menerima.",
+      notifications:"Notifikasi", mark_read:"Tandai dibaca",
+      no_notifs:"Belum ada notifikasi.",
+      appearance:"Tampilan", theme_system:"Sistem", theme_light:"Terang", theme_dark:"Gelap",
+      language:"Bahasa", sound:"Suara", sound_sub:"Mulai video dengan suara",
+      fullscreen:"Layar penuh", fullscreen_sub:"Sembunyikan bilah status",
+      notifs_setting:"Notifikasi", share_loc:"Bagikan lokasi",
+      change_username:"Ubah nama pengguna", change_pass:"Ubah kata sandi",
+      blocked:"Diblokir", logout:"Keluar", about:"Tentang Klipsy",
+      features:"Fitur", account:"Akun", privacy:"Privasi",
+      now:"SEKARANG", past:"LALU", search_place:"Cari kota, negara, atau area…",
+      moments_count:"momen", map_hint:"jelajahi peta atau pilih dari daftar",
+      just_now:"baru saja", min_ago:"mnt", hour_ago:"j", day_ago:"h",
+      mood_huzur:"Tenang", mood_mutlu:"Bahagia", mood_heyecan:"Bersemangat",
+      mood_asik:"Jatuh cinta", mood_huzun:"Sedih", mood_ozlem:"Rindu",
+      mood_saskin:"Takjub", mood_sakin:"Damai", mood_yorgun:"Lelah",
+      mood_dusunce:"Termenung",
+      t_refreshed:"Beranda diperbarui", t_saved:"Ditambahkan ke tersimpan",
+      t_unsaved:"Dihapus dari tersimpan", t_copied:"Disalin",
+      t_sent:"Terkirim", t_deleted:"Dihapus", t_reported:"Laporan terkirim, terima kasih",
+      t_sound_on:"Suara aktif", t_sound_off:"Suara mati",
+      t_gallery_saved:"Tersimpan di galerimu", t_cover_set:"Sampul dipilih",
+      t_loc_on:"Lokasi akan dibagikan", t_loc_off:"Lokasi tidak dibagikan",
+      welcome:"Selamat datang!", pick_name:"Pilih nama dan nama pengguna di Klipsy.",
+      name:"Nama", continue:"Lanjut"
+    }
+  };
+
+  const STORE_KEY = 'klipsy_lang';
+
+  function detect(){
+    try{
+      const saved = localStorage.getItem(STORE_KEY);
+      if(saved && DICT[saved]) return saved;
+    }catch(e){}
+    const langs = navigator.languages && navigator.languages.length
+      ? navigator.languages : [navigator.language || 'en'];
+    for(const l of langs){
+      const code = String(l).toLowerCase().split('-')[0];
+      if(DICT[code]) return code;
+    }
+    return 'en';
+  }
+
+  let current = detect();
+
+  const I18N = {
+    get lang(){ return current; },
+    get list(){ return Object.keys(DICT).map(k=>({code:k, name:DICT[k]._name})); },
+    isRTL(){ return !!DICT[current]._rtl; },
+    t(key, fallback){
+      const d = DICT[current];
+      if(d && d[key] != null) return d[key];
+      if(DICT.en && DICT.en[key] != null) return DICT.en[key];
+      return fallback != null ? fallback : key;
+    },
+    set(code){
+      if(!DICT[code]) return false;
+      current = code;
+      try{ localStorage.setItem(STORE_KEY, code); }catch(e){}
+      apply();
+      return true;
+    }
+  };
+
+  // data-i18n taşıyan tüm öğeleri çevir
+  function apply(){
+    const d = document.documentElement;
+    d.setAttribute('lang', current);
+    d.setAttribute('dir', I18N.isRTL() ? 'rtl' : 'ltr');
+
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      const val = I18N.t(key, null);
+      if(val != null) el.textContent = val;
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-ph');
+      const val = I18N.t(key, null);
+      if(val != null) el.setAttribute('placeholder', val);
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-aria');
+      const val = I18N.t(key, null);
+      if(val != null) el.setAttribute('aria-label', val);
+    });
+    // uygulama içi yeniden çizim gerektiren yerler
+    if(typeof window.__onLangChange === 'function'){
+      try{ window.__onLangChange(); }catch(e){}
+    }
+  }
+
+  window.I18N = I18N;
+  window.t = (k, f)=>I18N.t(k, f);
+  document.addEventListener('DOMContentLoaded', apply);
+  window.__applyI18n = apply;
+})();
+</script>
+
 
 <!-- ===== PWA: uygulama gibi kurulabilsin ===== -->
 <link rel="manifest" href="./manifest.json">
@@ -745,6 +1429,26 @@ svg{display:block}
   border:1px solid var(--edge-soft);border-radius:11px;padding:3px}
 .themeSegBtn{flex:1;height:34px;border:0;border-radius:8px;background:transparent;
   color:var(--t3);font-size:12.5px;font-weight:600;letter-spacing:-.01em;transition:all .18s}
+/* ===== Arapça: sağdan sola düzen ===== */
+[dir="rtl"] .setRow,[dir="rtl"] .crow2,[dir="rtl"] .shrow,[dir="rtl"] .nrow,
+[dir="rtl"] .cpSideBtn,[dir="rtl"] .songRow{direction:rtl}
+[dir="rtl"] .setTxt,[dir="rtl"] .crow2 .mid,[dir="rtl"] .songTx{text-align:right}
+[dir="rtl"] .cpBody,[dir="rtl"] .profbody{direction:rtl}
+[dir="rtl"] .cpnote,[dir="rtl"] .msgbar input,[dir="rtl"] .cbar input{text-align:right}
+[dir="rtl"] .cpSide{right:auto;left:14px}
+[dir="rtl"] .pmore{right:auto;left:15px}
+[dir="rtl"] .exFab{left:auto;right:16px}
+[dir="rtl"] .heroSet{right:auto;left:12px}
+[dir="rtl"] #arcView .avX{left:auto;right:12px}
+[dir="rtl"] #arcView .avTop{right:auto;left:12px;justify-content:flex-start}
+[dir="rtl"] .msg.me{align-self:flex-start}
+[dir="rtl"] .msg.you{align-self:flex-end}
+[dir="rtl"] .chatTabs #chatTabReq{margin-left:0;margin-right:auto}
+.langSelect{flex:none;height:34px;border-radius:9px;padding:0 10px;
+  background:var(--surf1);border:1px solid var(--edge-soft);color:var(--t1);
+  font-size:13px;font-weight:600;font-family:inherit;outline:none;max-width:44%}
+.langSelect option{background:#16161f;color:#fff}
+[data-theme="light"] .langSelect option{background:#fff;color:#111}
 .themeSegBtn.on{background:var(--panelbg);color:var(--t1);box-shadow:0 2px 8px -2px rgba(0,0,0,.3)}
 .setRow.danger .setTxt b{color:var(--err,#FF6B8A)}
 .setLogout{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:52px;
@@ -1562,12 +2266,12 @@ svg{display:block}
           icon.png bulunamadı — dosyanın index.html ile aynı klasörde olduğundan emin ol
         </div>
         <h1>Klipsy</h1>
-        <p>Yaşadığın anı, olduğu gibi paylaş.</p>
+        <p data-i18n="tagline">Yaşadığın anı, olduğu gibi paylaş.</p>
       </div>
       <div class="gcard">
       <div class="gtabs">
-        <button id="gTabLogin" class="on">Giriş yap</button>
-        <button id="gTabSignup">Kayıt ol</button>
+        <button id="gTabLogin" class="on" data-i18n="login">Giriş yap</button>
+        <button id="gTabSignup" data-i18n="signup">Kayıt ol</button>
       </div>
       <div class="gfield" id="gfUsername" style="display:none">
         <label>Kullanıcı adı</label>
@@ -1590,10 +2294,10 @@ svg{display:block}
       <div class="gOr"><span>veya</span></div>
       <button class="gGoogle" id="gGoogle">
         <svg width="19" height="19" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        <span>Google ile devam et</span>
+        <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanım koşullarını kabul etmiş olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v98</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v99</span></div>
     </div>
   </section>
 </div>
@@ -1616,11 +2320,11 @@ svg{display:block}
   <nav class="tabbar" id="tabbar">
     <button class="tab on" id="tabFeed">
       <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7.5" y="2.8" width="13.7" height="13.7" rx="3.4" opacity=".42"/><rect x="2.8" y="7.5" width="13.7" height="13.7" rx="3.4"/></svg>
-      <span>Akış</span>
+      <span data-i18n="tab_feed">Akış</span>
     </button>
     <button class="tab" id="tabMsg">
       <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 8h9M7.5 12h5"/><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9l-4 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/></svg>
-      <span>Mesajlar</span>
+      <span data-i18n="tab_msg">Mesajlar</span>
       <em class="dot hide" id="dmDot">0</em>
     </button>
     <div class="camtab">
@@ -1630,11 +2334,11 @@ svg{display:block}
     </div>
     <button class="tab" id="tabTime">
       <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.2 4.2v4.4h4.4"/><path d="M12 8v4.2l2.8 1.7"/></svg>
-      <span>Zaman</span>
+      <span data-i18n="tab_time">Zaman</span>
     </button>
     <button class="tab" id="tabProfile">
       <span class="av" id="tabAv">S</span>
-      <span>Profil</span>
+      <span data-i18n="tab_profile">Profil</span>
     </button>
   </nav>
 
@@ -1643,9 +2347,9 @@ svg{display:block}
       <button class="iconbtn" id="notifBack" aria-label="Geri">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>
       </button>
-      <h2>Bildirimler</h2>
+      <h2 data-i18n="notifications">Bildirimler</h2>
       <div class="spacer"></div>
-      <button class="pill" id="markRead">Okundu yap</button>
+      <button class="pill" id="markRead" data-i18n="mark_read">Okundu yap</button>
     </div>
     <div class="notiflist" id="notifList"></div>
   </section>
@@ -1671,7 +2375,7 @@ svg{display:block}
       </div>
       <div class="cbar">
         <span class="cav" id="commAv">S</span>
-        <input id="commInput" type="text" placeholder="Yorum yaz…" autocomplete="off" maxlength="240" enterkeyhint="send">
+        <input id="commInput" type="text" placeholder="Yorum yaz…" data-i18n-ph="comment_ph" autocomplete="off" maxlength="240" enterkeyhint="send">
         <button class="send" id="commSend" aria-label="Gönder">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 3.4 10.6 13.9"/><path d="M21.2 3.4 14.5 21l-3.9-7.1L3.5 10z"/></svg>
         </button>
@@ -1689,7 +2393,7 @@ svg{display:block}
         </button>
         <div class="exSearch">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input id="exInput" type="text" placeholder="Şehir, ülke ya da mahalle ara…" autocomplete="off">
+          <input id="exInput" type="text" placeholder="Şehir, ülke ya da mahalle ara…" data-i18n-ph="search_place" autocomplete="off">
         </div>
       </div>
 
@@ -1699,10 +2403,10 @@ svg{display:block}
           <div class="tlTicks" id="tlTicks"></div>
           <div class="tlThumb" id="tlThumb"><span class="tlBubble" id="tlBubble">Tümü</span></div>
         </div>
-        <div class="tlEnds"><span>şimdi</span><span>geçmiş</span></div>
+        <div class="tlEnds"><span data-i18n="now">şimdi</span><span data-i18n="past">geçmiş</span></div>
       </div>
 
-      <button class="exFab" id="exFab" aria-label="Anları göster">
+      <button class="exFab" id="exFab" aria-label="Anları göster" data-i18n-aria="moments">
         <svg id="exFabIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
 
@@ -1757,12 +2461,12 @@ svg{display:block}
       <button class="iconbtn" id="chatsBack" aria-label="Geri">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>
       </button>
-      <h2>Mesajlar</h2>
+      <h2 data-i18n="tab_msg">Mesajlar</h2>
       <div class="spacer"></div>
     </div>
     <div class="chatTabs">
-      <button class="chatTab active" id="chatTabMain">Mesajlar</button>
-      <button class="chatTab" id="chatTabReq">Mesaj istekleri<em class="chatTabDot hide" id="chatTabDot"></em></button>
+      <button class="chatTab active" id="chatTabMain" data-i18n="tab_msg">Mesajlar</button>
+      <button class="chatTab" id="chatTabReq" data-i18n="msg_requests">Mesaj istekleri<em class="chatTabDot hide" id="chatTabDot"></em></button>
     </div>
     <div class="chatlist" id="chatList"></div>
     <div class="chatlist" id="chatReqList" style="display:none"></div>
@@ -1784,7 +2488,7 @@ svg{display:block}
       <button class="camb" id="msgCam" aria-label="Kamerayla gönder">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></svg>
       </button>
-      <input id="msgInput" type="text" placeholder="Mesaj yaz…" autocomplete="off" maxlength="400" enterkeyhint="send">
+      <input id="msgInput" type="text" placeholder="Mesaj yaz…" data-i18n-ph="msg_ph" autocomplete="off" maxlength="400" enterkeyhint="send">
       <button class="go" id="msgSend" aria-label="Gönder">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 3.4 10.6 13.9"/><path d="M21.2 3.4 14.5 21l-3.9-7.1L3.5 10z"/></svg>
       </button>
@@ -1794,7 +2498,7 @@ svg{display:block}
   <section class="sheet" id="postMenu" aria-hidden="true">
     <div class="scrim" data-close="postMenu"></div>
     <div class="shbox">
-      <h3>Seçenekler</h3>
+      <h3 data-i18n="options">Seçenekler</h3>
       <div class="shlist" id="postMenuList"></div>
     </div>
   </section>
@@ -1803,12 +2507,12 @@ svg{display:block}
     <div class="scrim" data-close="coverSheet"></div>
     <div class="shbox">
       <div class="grip"></div>
-      <h3>Kapak seç</h3>
-      <p>Videonun hangi karesi kapak olsun?</p>
+      <h3 data-i18n="cover_pick">Kapak seç</h3>
+      <p data-i18n="cover_q">Videonun hangi karesi kapak olsun?</p>
       <div class="cvPreview"><canvas id="cvCanvas"></canvas></div>
       <div class="cvStrip" id="cvStrip"></div>
       <input type="range" id="cvRange" min="0" max="100" step="0.5" value="10">
-      <button class="cvApply" id="cvApply">Bu kareyi kullan</button>
+      <button class="cvApply" id="cvApply" data-i18n="cover_use">Bu kareyi kullan</button>
     </div>
   </section>
 
@@ -1816,10 +2520,10 @@ svg{display:block}
     <div class="scrim" data-close="songSheet"></div>
     <div class="shbox" id="songBox">
       <div class="grip"></div>
-      <h3>Şarkı ekle</h3>
+      <h3 data-i18n="song_add">Şarkı ekle</h3>
       <div class="songSearchWrap">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="songSearchInput" type="text" placeholder="Şarkı ya da sanatçı ara…" autocomplete="off">
+        <input id="songSearchInput" type="text" placeholder="Şarkı ya da sanatçı ara…" data-i18n-ph="song_search" autocomplete="off">
       </div>
       <div class="shlist" id="songResults"></div>
     </div>
@@ -1828,8 +2532,8 @@ svg{display:block}
   <section class="sheet" id="reportSheet" aria-hidden="true">
     <div class="scrim" data-close="reportSheet"></div>
     <div class="shbox">
-      <h3>Bu anı şikayet et</h3>
-      <p>Sebebini seç. İncelenmek üzere iletilir.</p>
+      <h3 data-i18n="report_title">Bu anı şikayet et</h3>
+      <p data-i18n="report_sub">Sebebini seç. İncelenmek üzere iletilir.</p>
       <div class="shlist" id="reportList"></div>
     </div>
   </section>
@@ -1837,7 +2541,7 @@ svg{display:block}
   <section class="sheet" id="msgMenu" aria-hidden="true">
     <div class="scrim" data-close="msgMenu"></div>
     <div class="shbox">
-      <h3>Mesaj</h3>
+      <h3 data-i18n="message">Mesaj</h3>
       <div class="shlist" id="msgMenuList"></div>
     </div>
   </section>
@@ -1845,8 +2549,8 @@ svg{display:block}
   <section class="sheet" id="shareSheet" aria-hidden="true">
     <div class="scrim" data-close="shareSheet"></div>
     <div class="shbox">
-      <h3>Bu anı gönder</h3>
-      <p>Seçtiğin kişiye mesaj olarak iletilir.</p>
+      <h3 data-i18n="send_moment">Bu anı gönder</h3>
+      <p data-i18n="send_moment_sub">Seçtiğin kişiye mesaj olarak iletilir.</p>
       <div class="shlist" id="shList"></div>
     </div>
   </section>
@@ -1894,7 +2598,7 @@ svg{display:block}
       <button class="iconbtn" id="setBack" aria-label="Geri">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>
       </button>
-      <h2>Ayarlar</h2>
+      <h2 data-i18n="settings">Ayarlar</h2>
       <div class="spacer"></div>
     </div>
     <div class="setbody" id="setBody"></div>
@@ -1905,7 +2609,7 @@ svg{display:block}
       <button class="iconbtn" id="epBack" aria-label="Geri">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>
       </button>
-      <h2>Profili Düzenle</h2>
+      <h2 data-i18n="profile_edit">Profili Düzenle</h2>
       <div class="spacer"></div>
       <button class="epSave" id="epSave">Kaydet</button>
     </div>
@@ -1936,7 +2640,7 @@ svg{display:block}
       <span class="cpLive"><i></i><span id="cpNow">--:--</span></span>
       <span class="cpSeal">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>
-        o an çekildi
+        <span data-i18n="shot_now">o an çekildi</span>
       </span>
     </div>
 
@@ -1945,14 +2649,14 @@ svg{display:block}
         <span class="sIc" id="cpLocIcon">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10.5c0 5.5-8 11.5-8 11.5s-8-6-8-11.5a8 8 0 0 1 16 0z"/><circle cx="12" cy="10.5" r="2.8"/></svg>
         </span>
-        <span class="sLb" id="cpLocText">Konum</span>
+        <span class="sLb" id="cpLocText" data-i18n="location">Konum</span>
         <span class="sSub" id="cpLocSub"></span>
       </button>
       <button class="cpSideBtn cpSongLine" id="cpSongRow" aria-label="Şarkı ekle">
         <span class="sIc" id="cpSongIcon">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         </span>
-        <span class="sLb" id="cpSongText">Şarkı</span>
+        <span class="sLb" id="cpSongText" data-i18n="song">Şarkı</span>
         <span class="sSub" id="cpSongSub"></span>
         <span class="sGo" id="cpSongGo" aria-hidden="true"></span>
       </button>
@@ -1960,26 +2664,26 @@ svg{display:block}
         <span class="sIc" id="cpMoodIcon">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.3 1.8 3.5 1.8 3.5-1.8 3.5-1.8"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>
         </span>
-        <span class="sLb" id="cpMoodBtnLb">Duygu</span>
+        <span class="sLb" id="cpMoodBtnLb" data-i18n="mood">Duygu</span>
       </button>
       <button class="cpSideBtn" id="cpCoverBtn" aria-label="Kapak seç" hidden>
         <span class="sIc" id="cpCoverIcon">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.6"/><path d="m3 15.5 4.5-4.2 3.4 3.1 3.6-3.6 6.5 6"/><circle cx="8.6" cy="9.2" r="1.4"/></svg>
         </span>
-        <span class="sLb">Kapak</span>
+        <span class="sLb" data-i18n="cover">Kapak</span>
       </button>
       <button class="cpSideBtn" id="cpSaveBtn" aria-label="Telefona kaydet">
         <span class="sIc" id="cpSaveIcon">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></svg>
         </span>
-        <span class="sLb" id="cpSaveLb">Kaydet</span>
+        <span class="sLb" id="cpSaveLb" data-i18n="save">Kaydet</span>
       </button>
       <span class="cpSideSep"></span>
       <button class="cpSideBtn cpSendBtn" id="cpShare" aria-label="Akışa gönder">
         <span class="sIc sSend">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </span>
-        <span class="sLb">Gönder</span>
+        <span class="sLb" data-i18n="send">Gönder</span>
       </button>
       <button class="cpMetaGhost" id="cpLocRetry" aria-label="Konumu yenile" hidden>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M18.6 2.6V6.4h-3.8"/></svg>
@@ -1990,12 +2694,12 @@ svg{display:block}
     <div class="cpBody">
       <div class="cpNoteWrap" id="cpNoteBox">
         <textarea class="cpnote" id="cpNote" maxlength="180" rows="1"
-          placeholder="Bu an ne anlatıyor?"></textarea>
+          placeholder="Bu an ne anlatıyor?" data-i18n-ph="note_ph"></textarea>
       </div>
       <div class="cpcount" id="cpCount">0 / 180</div>
 
       <div class="cpMoodPanel" id="cpMoodPanel">
-        <div class="cpMoodLabel" id="cpMoodLabel">Ne hissettin?</div>
+        <div class="cpMoodLabel" id="cpMoodLabel" data-i18n="mood_q">Ne hissettin?</div>
         <div class="cpmoods" id="cpMoods"></div>
       </div>
     </div>
@@ -2008,6 +2712,15 @@ svg{display:block}
 
 <script>
 window.__APP_STARTED=false;
+// dil değişince arayüzü yeniden çiz
+window.__onLangChange = function(){
+  try{
+    if(typeof render==="function") render();
+    if(typeof renderProfile==="function" && document.getElementById("profile").classList.contains("open")) renderProfile();
+    if(typeof renderChats==="function" && document.getElementById("chats").classList.contains("open")) renderChats();
+    if(typeof buildMoods==="function") buildMoods();
+  }catch(e){}
+};
 window.__startApp = () => {
 if(window.__APP_STARTED)return;window.__APP_STARTED=true;
 "use strict";
@@ -2057,7 +2770,7 @@ const ME=(window.__me&&window.__me.username)?window.__me.username:"sen";
         ptr.style.height="0px";
         ptr.classList.remove("spinning");
         refreshing=false;
-        toast("Akış yenilendi");
+        toast(t("t_refreshed"));
       },500);
     }else{
       ptr.style.height="0px";
@@ -2214,17 +2927,24 @@ function paintAv(el,name){
 
 /* ---------- veri ---------- */
 const MOODS=[
-  {k:"huzur",   em:"🌿", t:"Huzurlu",    c:"#6BBF8A"},
-  {k:"mutlu",   em:"☀️", t:"Mutlu",      c:"#FFC857"},
-  {k:"heyecan", em:"⚡", t:"Heyecanlı",  c:"#FF6B35"},
-  {k:"asik",    em:"💗", t:"Aşık",       c:"#FF7BA9"},
-  {k:"huzun",   em:"🌧️", t:"Hüzünlü",    c:"#6B8FBF"},
-  {k:"ozlem",   em:"🕯️", t:"Özlemli",    c:"#C79A6B"},
-  {k:"saskin",  em:"✨", t:"Şaşkın",     c:"#7BD3F7"},
-  {k:"sakin",   em:"🌊", t:"Sakin",      c:"#5FB6C4"},
-  {k:"yorgun",  em:"🌙", t:"Yorgun",     c:"#8A7FA8"},
-  {k:"dusunce", em:"🌫️", t:"Düşünceli",  c:"#9BA0AC"}
+  {k:"huzur",   em:"🌿", c:"#6BBF8A"},
+  {k:"mutlu",   em:"☀️", c:"#FFC857"},
+  {k:"heyecan", em:"⚡", c:"#FF6B35"},
+  {k:"asik",    em:"💗", c:"#FF7BA9"},
+  {k:"huzun",   em:"🌧️", c:"#6B8FBF"},
+  {k:"ozlem",   em:"🕯️", c:"#C79A6B"},
+  {k:"saskin",  em:"✨", c:"#7BD3F7"},
+  {k:"sakin",   em:"🌊", c:"#5FB6C4"},
+  {k:"yorgun",  em:"🌙", c:"#8A7FA8"},
+  {k:"dusunce", em:"🌫️", c:"#9BA0AC"}
 ];
+// duygu adı seçili dile göre okunur
+MOODS.forEach(m=>{
+  Object.defineProperty(m,'t',{
+    get(){ return (window.t ? window.t('mood_'+m.k) : m.k); },
+    enumerable:true
+  });
+});
 const KISI=["deniz.k","arasy","meltem","bora","ipeksu","efe","zeyno","kaan","nil.a","ozan","sude","tuna","mert","ela.d"];
 const YER=["Kadıköy, İstanbul","Alsancak, İzmir","Kaleiçi, Antalya","Çankaya, Ankara","Ayvalık","Uzungöl","Bodrum","Eminönü, İstanbul","Beypazarı","Kaş","Amasra","Göreme","Assos","Ordu","Mardin"];
 const YORUM=["Işık tam yerinde.","Burayı çok özledim.","Ben de tam oradaydım!","Bu kareyi çok sevdim.",
@@ -2404,7 +3124,7 @@ function notifRow(n){
   return b;
 }
 $("#markRead").addEventListener("click",()=>{
-  notifs.forEach(n=>n.seen=true);paintDot();renderNotifs();toast("Tüm bildirimler okundu");
+  notifs.forEach(n=>n.seen=true);paintDot();renderNotifs();toast(t("mark_read"));
   if(window.__sb&&window.__me) window.__sb.rpc('mark_all_seen').catch(()=>{});
 });
 
@@ -2638,7 +3358,7 @@ function build(it){
     if(!(it.song&&it.song.preview)) return;
     soundOn=!soundOn;
     applySound();
-    toast(soundOn?"Ses açıldı":"Ses kapatıldı");
+    toast(t(soundOn?"t_sound_on":"t_sound_off"));
   });
   eyes.addEventListener("click",()=>toast(nf(it.views)+" kişi bu anı gördü"));
   save.addEventListener("click",()=>{
@@ -2738,7 +3458,7 @@ function build(it){
     sndBtn.addEventListener("click",()=>{
       soundOn=!soundOn;
       applySound();
-      toast(soundOn?"Ses açıldı":"Ses kapatıldı");
+      toast(t(soundOn?"t_sound_on":"t_sound_off"));
     });
   }
 
@@ -3592,7 +4312,7 @@ $("#cvApply").addEventListener("click",()=>{
     if(b){
       pickedCover=b;
       $("#cpCoverBtn").classList.add("on");
-      toast("Kapak seçildi");
+      toast(t("t_cover_set"));
     }
     close("coverSheet");
   },"image/jpeg",0.75);
@@ -3614,7 +4334,7 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
     btn.classList.add("on");
     ic.innerHTML='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>';
     lb.textContent="Kaydedildi";
-    toast("Galerine kaydedildi");
+    toast(t("t_gallery_saved"));
     setTimeout(()=>{
       btn.classList.remove("on");
       ic.innerHTML='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></svg>';
@@ -3760,7 +4480,7 @@ $("#cpLoc").addEventListener("click",()=>{
   $("#cpLocSw").classList.toggle("on",shareLoc);
   $("#cpLocSw").setAttribute("aria-checked",String(shareLoc));
   $("#cpLoc").classList.toggle("mute",!shareLoc);
-  toast(shareLoc?"Konum paylaşılacak":"Konum paylaşılmayacak");
+  toast(t(shareLoc?"t_loc_on":"t_loc_off"));
 });
 
 const cpNote=$("#cpNote");
@@ -4327,6 +5047,24 @@ function setTheme(t){
   renderSettings();
   if(typeof refreshMapTheme==="function") refreshMapTheme();
 }
+// dil seçme satırı
+function langRow(){
+  const wrap=document.createElement("div");wrap.className="setRow langRow";
+  wrap.innerHTML='<span class="setIc"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M3 12h18"/><path d="M12 2.8c2.5 2.6 3.9 5.9 3.9 9.2s-1.4 6.6-3.9 9.2c-2.5-2.6-3.9-5.9-3.9-9.2s1.4-6.6 3.9-9.2z"/></svg></span>'+
+    '<span class="setTxt"><b>'+t("language")+'</b><span>'+(window.I18N?window.I18N.list.find(l=>l.code===window.I18N.lang).name:"")+'</span></span>';
+  const sel=document.createElement("select");sel.className="langSelect";
+  (window.I18N?window.I18N.list:[]).forEach(l=>{
+    const o=document.createElement("option");o.value=l.code;o.textContent=l.name;
+    if(window.I18N && l.code===window.I18N.lang) o.selected=true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener("change",e=>{
+    if(window.I18N){ window.I18N.set(e.target.value); renderSettings(); }
+  });
+  wrap.appendChild(sel);
+  return wrap;
+}
+
 function themeRow(){
   const wrap=document.createElement("div");wrap.className="setRow themeRow";
   const opts=[['system','Sistem'],['light','Açık'],['dark','Koyu']];
@@ -4375,11 +5113,12 @@ function renderSettings(){
 
   // ÖZELLIKLER
   const g1=document.createElement("div");g1.className="setGroup";
-  g1.innerHTML='<div class="setLabel">Özellikler</div>';
+  g1.innerHTML='<div class="setLabel">'+t("features")+'</div>';
+  g1.appendChild(langRow());
   g1.appendChild(themeRow());
   g1.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5.5A2.5 2.5 0 0 0 3 5.5V8"/><path d="M16 3h2.5A2.5 2.5 0 0 1 21 5.5V8"/><path d="M8 21H5.5A2.5 2.5 0 0 1 3 18.5V16"/><path d="M16 21h2.5a2.5 2.5 0 0 0 2.5-2.5V16"/></svg>',
-    "Tam ekran", "Durum çubuğunu gizle", !!document.fullscreenElement,
+    t("fullscreen"), t("fullscreen_sub"), !!document.fullscreenElement,
     (on)=>{
       try{
         if(on){
@@ -4395,7 +5134,7 @@ function renderSettings(){
     }));
   g1.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/></svg>',
-    "Sesli içerik", "Videolar sesli başlasın", soundOn,
+    t("sound"), t("sound_sub"), soundOn,
     (on)=>{ soundOn=on; applySound&&applySound(); toast(on?"Ses açık":"Ses kapalı"); }));
   box.appendChild(g1);
 
@@ -4404,28 +5143,28 @@ function renderSettings(){
   g2.innerHTML='<div class="setLabel">Gizlilik ve bildirim</div>';
   g2.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
-    "Bildirimler", "Beğeni, yorum, takip, mesaj", prefNotif,
+    t("notifs_setting"), "Beğeni, yorum, takip, mesaj", prefNotif,
     (on)=>{ prefNotif=on; savePref('notif_enabled',on); toast(on?"Bildirimler açık":"Bildirimler kapalı"); }));
   g2.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
-    "Konum paylaşımı", "Anlarında mahalle bilgisi görünsün", prefLocation,
+    t("share_loc"), "Anlarında mahalle bilgisi görünsün", prefLocation,
     (on)=>{ prefLocation=on; savePref('share_location',on); toast(on?"Konum paylaşılacak":"Konum paylaşılmayacak"); }));
   g2.appendChild(settingsRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
-    "Engellenenler","Engellediğin kişileri yönet",
+    t("blocked"),"Engellediğin kişileri yönet",
     ()=>toast("Engelleme, birinin anındaki ⋯ menüsünden yapılır") ));
   box.appendChild(g2);
 
   // HESAP
   const g3=document.createElement("div");g3.className="setGroup";
-  g3.innerHTML='<div class="setLabel">Hesap</div>';
+  g3.innerHTML='<div class="setLabel">'+t("account")+'</div>';
   g3.appendChild(settingsRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
     "Profili Düzenle","Ad, konum, eğitim, iş, burç, ilgi alanları",
     ()=>{ close("settings"); openEditProfile(); } ));
   g3.appendChild(settingsRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-    "Kullanıcı adını değiştir","@"+ME,
+    t("change_username"),"@"+ME,
     ()=>changeUsername() ));
   g3.appendChild(settingsRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
@@ -4438,7 +5177,7 @@ function renderSettings(){
   g4.innerHTML='<div class="setLabel">Hakkında</div>';
   g4.appendChild(settingsRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>',
-    "Klipsy hakkında","Yaşadığın anı, olduğu gibi paylaş",
+    t("about"),"Yaşadığın anı, olduğu gibi paylaş",
     ()=>toast("Klipsy — anlar yüklenmez, o an çekilir ve akışta yaşar") ));
   box.appendChild(g4);
 
@@ -4448,7 +5187,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v98";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v99";
   box.appendChild(ver);
 }
 
@@ -4867,7 +5606,7 @@ function renderSaved(box){
       // akıştaki kareyi de senkronla
       const feedItem=items.find(x=>x.id===it.id);
       if(feedItem){ feedItem.saved=false; const node=list.querySelector('[data-id="'+it.id+'"]'); if(node&&node._sync) node._sync(); }
-      renderProfile();toast("Kayıttan çıkarıldı");
+      renderProfile();toast(t("t_unsaved"));
     });
     c.appendChild(un);
     c.addEventListener("click",()=>openArchiveView(it));
@@ -5437,7 +6176,7 @@ function openReport(momentId){
       if(b.classList.contains("done")) return;
       b.classList.add("done");
       close("reportSheet");
-      toast("Şikayetin iletildi, teşekkürler");
+      toast(t("t_reported"));
       if(window.__sb && window.__me && isReal(momentId)){
         const {error}=await window.__sb.from('reports').insert({
           reporter_id:window.__me.id, target_type:'moment',

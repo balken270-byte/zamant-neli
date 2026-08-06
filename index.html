@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v96</title>
+<title>Klipsy v98</title>
 
 <!-- ===== PWA: uygulama gibi kurulabilsin ===== -->
 <link rel="manifest" href="./manifest.json">
@@ -1403,32 +1403,7 @@ svg{display:block}
   background:radial-gradient(120% 80% at 50% 8%, rgba(8,8,12,.5), transparent 55%),
     linear-gradient(rgba(8,8,12,.6), rgba(8,8,12,.86) 62%, var(--bg))}
 
-.gwslides{flex:1;display:flex;overflow:hidden;position:relative;z-index:2}
-.gwslide{min-width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  padding:0 30px;text-align:center;opacity:.35;transition:opacity .4s}
-.gwslide.on{opacity:1}
-.gwicon{width:74px;height:74px;border-radius:24px;display:grid;place-items:center;margin-bottom:24px;
-  background:rgba(255,255,255,.1);border:1px solid var(--edge);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
-.gwslide h2{font-size:27px;font-weight:800;letter-spacing:-.04em;line-height:1.12}
-.gwslide p{font-size:15px;color:var(--t2);line-height:1.55;margin-top:12px;max-width:300px}
-.gwbrand{position:absolute;top:calc(var(--sat) + 26px);left:0;right:0;z-index:3;
-  display:flex;align-items:center;justify-content:center;gap:9px}
-.gwbrand .glogo{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;
-  background:linear-gradient(145deg,#FF3B6B,#7B5BFF);box-shadow:0 4px 14px -4px rgba(255,59,107,.7)}
-.gwbrand span{font-size:16px;font-weight:700;letter-spacing:-.03em}
-.gwbot{flex:none;z-index:2;padding:30px 26px calc(var(--sab) + 24px)}
-.gdots{display:flex;justify-content:center;gap:7px;margin-bottom:22px}
-.gdots i{width:7px;height:7px;border-radius:99px;background:rgba(255,255,255,.24);transition:all .3s}
-.gdots i.on{width:22px;background:#fff}
-.gwnext{width:100%;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:9px;
-  background:linear-gradient(145deg,#FF3B6B,#7B5BFF);color:#fff;border:1px solid rgba(255,255,255,.24);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 12px 30px -12px rgba(255,59,107,.6);
-  font-size:16px;font-weight:600;letter-spacing:-.018em;transition:transform .12s}
 .gwnext:active{transform:scale(.985)}
-.gwskip{position:absolute;top:calc(var(--sat) + 22px);right:20px;z-index:4;
-  font-size:13px;font-weight:600;color:var(--t2);padding:8px 12px;border-radius:99px;
-  background:rgba(255,255,255,.08);border:1px solid var(--edge-soft)}
 
 .gauth{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;
   padding:calc(var(--sat) + 30px) 26px calc(var(--sab) + 24px);scrollbar-width:none;position:relative;z-index:2}
@@ -1494,10 +1469,38 @@ svg{display:block}
   box-shadow:0 6px 18px -8px rgba(0,0,0,.5);transition:transform .12s,opacity .18s}
 .gGoogle:active{transform:scale(.98)}
 .gGoogle svg{flex:none}
-.gsplash{align-items:center;justify-content:center;gap:20px;background:var(--bg)}
-.gsplash .glogo{width:74px;height:74px;border-radius:24px;display:grid;place-items:center;
-  background:linear-gradient(145deg,#FF3B6B,#7B5BFF);
-  box-shadow:0 16px 40px -12px rgba(255,59,107,.6), inset 0 1px 0 rgba(255,255,255,.3)}
+/* ===== açılış (splash) ekranı ===== */
+.gsplash{align-items:center;justify-content:center;background:#08080C;overflow:hidden}
+.gsplash .spGlow{position:absolute;width:min(120vw,560px);height:min(120vw,560px);border-radius:50%;
+  background:radial-gradient(circle, rgba(255,59,107,.28), rgba(123,91,255,.16) 45%, transparent 70%);
+  filter:blur(28px);animation:spGlow 3.4s ease-in-out infinite}
+@keyframes spGlow{
+  0%,100%{transform:scale(.92);opacity:.75}
+  50%{transform:scale(1.06);opacity:1}
+}
+.gsplash .spCore{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:16px}
+.gsplash .spIcon{width:92px;height:92px;border-radius:26px;object-fit:cover;
+  box-shadow:0 22px 48px -16px rgba(255,59,107,.7), 0 0 0 1px rgba(255,255,255,.1);
+  animation:spIconIn .72s cubic-bezier(.2,.9,.25,1.05) both}
+@keyframes spIconIn{
+  0%{opacity:0;transform:scale(.7) translateY(16px)}
+  60%{opacity:1;transform:scale(1.04) translateY(0)}
+  100%{opacity:1;transform:scale(1)}
+}
+.gsplash .spName{font-family:"Space Grotesk",sans-serif;font-size:30px;font-weight:700;letter-spacing:-.03em;
+  background:linear-gradient(135deg,#fff 35%,#FFD9E4 62%,#C9B8FF);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:spNameIn .6s ease .22s both}
+@keyframes spNameIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.gsplash .spLine{width:38px;height:2.5px;border-radius:99px;overflow:hidden;position:relative;
+  background:rgba(255,255,255,.14);animation:spNameIn .6s ease .38s both}
+.gsplash .spLine::after{content:"";position:absolute;left:-40%;top:0;bottom:0;width:40%;
+  border-radius:99px;background:linear-gradient(90deg,#FF3B6B,#7B5BFF);
+  animation:spSweep 1.15s ease-in-out infinite}
+@keyframes spSweep{
+  0%{left:-45%}
+  100%{left:105%}
+}
 
 #onboard{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:24px;
   background:var(--bg);color:var(--t1)}
@@ -1539,50 +1542,11 @@ svg{display:block}
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
   <section class="gscreen gsplash" id="gSplash">
-    <div class="glogo">
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9.2" stroke="#fff" stroke-width="1.9"/>
-        <circle cx="12" cy="12" r="4.4" stroke="#fff" stroke-width="1.9"/>
-        <path d="M12 7.6V12l2.9 1.7" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="gspin"></div>
-  </section>
-
-  <section class="gscreen" id="gWelcome">
-    <div class="gwall" id="gWall"></div>
-    <div class="gveil"></div>
-    <div class="gwbrand">
-      <span class="glogo">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9.2" stroke="#fff" stroke-width="2"/>
-          <circle cx="12" cy="12" r="4.4" stroke="#fff" stroke-width="2"/>
-          <path d="M12 7.6V12l2.9 1.7" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span>Klipsy</span>
-    </div>
-    <button class="gwskip" id="gwSkip">Gec</button>
-    <div class="gwslides" id="gwSlides">
-      <div class="gwslide on">
-        <div class="gwicon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.6"/></svg></div>
-        <h2>Sadece su an</h2>
-        <p>Galeri yok. Ne paylasacaksan tam o an kameranla cekersin. Yasadigin ani, oldugu gibi.</p>
-      </div>
-      <div class="gwslide">
-        <div class="gwicon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.2V12l3.1 1.9"/></svg></div>
-        <h2>Zamanda ilerle</h2>
-        <p>Akis asagi indikce gecmise gider. Eskiyen anlar usulca solar - tipki hatiralar gibi.</p>
-      </div>
-      <div class="gwslide">
-        <div class="gwicon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg></div>
-        <h2>Nerede, ne hissettin</h2>
-        <p>Her an bir duygu ve bir yer tasir. Konumun mahalle duzeyinde kalir - tam adresin gizli.</p>
-      </div>
-    </div>
-    <div class="gwbot">
-      <div class="gdots" id="gwDots"><i class="on"></i><i></i><i></i></div>
-      <button class="gwnext" id="gwNext">Devam et</button>
+    <div class="spGlow"></div>
+    <div class="spCore">
+      <img class="spIcon" src="./icon.png" alt="" onerror="this.style.display='none'">
+      <div class="spName">Klipsy</div>
+      <div class="spLine"></div>
     </div>
   </section>
 
@@ -1598,15 +1562,15 @@ svg{display:block}
           icon.png bulunamadı — dosyanın index.html ile aynı klasörde olduğundan emin ol
         </div>
         <h1>Klipsy</h1>
-        <p>Yasadigin ani, oldugu gibi paylas.</p>
+        <p>Yaşadığın anı, olduğu gibi paylaş.</p>
       </div>
       <div class="gcard">
       <div class="gtabs">
-        <button id="gTabLogin" class="on">Giris yap</button>
-        <button id="gTabSignup">Kayit ol</button>
+        <button id="gTabLogin" class="on">Giriş yap</button>
+        <button id="gTabSignup">Kayıt ol</button>
       </div>
       <div class="gfield" id="gfUsername" style="display:none">
-        <label>Kullanici adi</label>
+        <label>Kullanıcı adı</label>
         <div class="ginwrap">
           <span class="pre">@</span>
           <input id="gUsername" class="pad" type="text" autocomplete="off" placeholder="kullaniciadi" maxlength="20" autocapitalize="none" spellcheck="false">
@@ -1621,7 +1585,7 @@ svg{display:block}
         <label>Parola</label>
         <div class="ginwrap"><input id="gPassword" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
       </div>
-      <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giris yap</span></button>
+      <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giriş yap</span></button>
       <div class="gmsg" id="gMsg"></div>
       <div class="gOr"><span>veya</span></div>
       <button class="gGoogle" id="gGoogle">
@@ -1629,7 +1593,7 @@ svg{display:block}
         <span>Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot">Devam ederek kullanim kosullarini kabul etmis olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v96</span></div>
+      <div class="gfoot">Devam ederek kullanım koşullarını kabul etmiş olursun.<br><span style="opacity:.5;font-size:11px">Klipsy v98</span></div>
     </div>
   </section>
 </div>
@@ -4484,7 +4448,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v96";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v98";
   box.appendChild(ver);
 }
 
@@ -5943,27 +5907,7 @@ function buildWall(el){
   }
 }
 
-/* --- karşılama --- */
-let wi=0;
-const gslides=gate.querySelectorAll('.gwslide');
-const gdots=$('#gwDots').children;
-function goSlide(i){
-  wi=i;
-  gslides.forEach((s,k)=>s.classList.toggle('on',k===i));
-  Array.from(gdots).forEach((d,k)=>d.classList.toggle('on',k===i));
-  $('#gwSlides').style.transform='translateX(-'+(i*100)+'%)';
-  $('#gwSlides').style.transition='transform .4s cubic-bezier(.22,1,.36,1)';
-  $('#gwNext').textContent = i===gslides.length-1 ? 'Basla' : 'Devam et';
-}
-$('#gwNext').addEventListener('click',()=>{ if(wi<gslides.length-1) goSlide(wi+1); else toAuth(); });
-$('#gwSkip').addEventListener('click',toAuth);
-let gtx=0;
-$('#gwSlides').addEventListener('touchstart',e=>gtx=e.touches[0].clientX,{passive:true});
-$('#gwSlides').addEventListener('touchend',e=>{
-  const dx=e.changedTouches[0].clientX-gtx;
-  if(dx<-45&&wi<gslides.length-1)goSlide(wi+1);else if(dx>45&&wi>0)goSlide(wi-1);
-});
-function toAuth(){ try{localStorage.setItem(SEEN_KEY,'1')}catch(e){} gshow('gAuth'); }
+/* --- karşılama ekranı kaldırıldı: kullanıcı doğrudan girişe gider --- */
 
 /* --- kimlik --- */
 let mode='login';
@@ -5972,7 +5916,7 @@ function setMode(m){
   $('#gTabLogin').classList.toggle('on',!su);
   $('#gTabSignup').classList.toggle('on',su);
   $('#gfUsername').style.display=su?'block':'none';
-  $('#gSubmitText').textContent=su?'Kayit ol':'Giris yap';
+  $('#gSubmitText').textContent=su?'Kayıt ol':'Giriş yap';
   gclearMsg();
 }
 $('#gTabLogin').addEventListener('click',()=>setMode('login'));
@@ -6136,14 +6080,13 @@ window.__logout = async () => {
 };
 
 /* --- açılış --- */
-buildWall($('#gWall'));buildWall($('#gWall2'));
+buildWall($('#gWall2'));
 (async()=>{
   const {data:{session}}=await sb.auth.getSession();
   if(session){ await enterApp(); }
   else{
     setMode('login');
-    let seen=false; try{seen=localStorage.getItem(SEEN_KEY)==='1'}catch(e){}
-    gshow(seen?'gAuth':'gWelcome');
+    gshow('gAuth');
   }
 })();
 </script>

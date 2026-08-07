@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v116</title>
+<title>Klipsy v118</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4670,21 +4670,17 @@ svg{display:block}
   opacity:0;pointer-events:none;transition:opacity .22s,transform .22s var(--ease)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 /* ============ GİRİŞ KATMANI ============ */
-#gate{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;
-  background:
-    radial-gradient(680px 480px at 12% -6%, rgba(255,59,107,.28), transparent 62%),
-    radial-gradient(620px 520px at 96% 22%, rgba(123,91,255,.26), transparent 64%),
-    radial-gradient(560px 460px at -8% 78%, rgba(30,136,199,.22), transparent 62%),
-    var(--bg);
-  max-width:430px;margin:0 auto}
+#gate{position:fixed;inset:0;z-index:200;display:block;
+  background:var(--bg);
+  max-width:430px;margin:0 auto;overflow:hidden}
 #gate.off{display:none}
 @media (min-width:520px) and (min-height:720px){
   #gate{position:absolute;border-radius:32px;overflow:hidden}
 }
 .gscreen{position:absolute;inset:0;display:none;flex-direction:column;z-index:2}
 .gscreen.on{display:flex}
-.gwall{position:absolute;top:calc(-1 * var(--sat));left:0;right:0;bottom:0;z-index:0;overflow:hidden;pointer-events:none}
-.gwall .gcol{position:absolute;top:calc(-1 * var(--sat) - 12%);width:34%;display:flex;flex-direction:column;gap:12px;will-change:transform}
+.gwall{position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;overflow:hidden;pointer-events:none}
+.gwall .gcol{position:absolute;top:-20%;width:34%;display:flex;flex-direction:column;gap:12px;will-change:transform}
 .gwall .gcol.c1{left:0;animation:gdrift1 38s linear infinite}
 .gwall .gcol.c2{left:33.5%;animation:gdrift2 46s linear infinite}
 .gwall .gcol.c3{left:67%;animation:gdrift1 42s linear infinite}
@@ -4695,8 +4691,7 @@ svg{display:block}
 .gtile.empty{background-image:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
 .gtile .em{position:absolute;top:7px;left:8px;font-size:15px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.8))}
 .gveil{position:absolute;inset:0;z-index:1;
-  background:radial-gradient(120% 80% at 50% 8%, rgba(8,8,12,.5), transparent 55%),
-    linear-gradient(rgba(8,8,12,.6), rgba(8,8,12,.86) 62%, var(--bg))}
+  background:linear-gradient(rgba(8,8,12,.28) 0%, rgba(8,8,12,.45) 30%, rgba(8,8,12,.8) 66%, var(--bg) 100%)}
 
 .gwnext:active{transform:scale(.985)}
 
@@ -4705,14 +4700,13 @@ svg{display:block}
 .gauth::-webkit-scrollbar{display:none}
 /* ===== giriş ekranı dil seçici ===== */
 .gLangBtn{position:absolute;top:calc(var(--sat) + 14px);right:14px;z-index:6;
-  display:flex;align-items:center;gap:7px;height:34px;padding:0 13px 0 11px;border-radius:99px;
+  width:38px;height:38px;display:grid;place-items:center;border-radius:99px;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
-  color:rgba(255,255,255,.85);
-  font-size:12px;font-weight:600;letter-spacing:.06em;font-family:inherit;
+  color:rgba(255,255,255,.88);
   backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
   box-shadow:0 2px 12px -4px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
   transition:all .22s var(--ease)}
-.gLangBtn svg{width:15px;height:15px;flex:none;opacity:.7}
+.gLangBtn svg{width:19px;height:19px;flex:none;opacity:.88}
 .gLangBtn:active{transform:scale(.94);background:rgba(255,255,255,.13)}
 
 /* alt sayfa */
@@ -4940,7 +4934,7 @@ svg{display:block}
       var sheet=document.getElementById('gLangSheet');
       var scrim=document.getElementById('glsScrim');
       var list=document.getElementById('glsList');
-      var code=document.getElementById('gLangCode');
+      var code=document.getElementById('gLangCode'); // artık yok, zararsız
       var title=document.getElementById('glsTitle');
       var sub=document.getElementById('glsSub');
       if(!btn||!sheet||!list||!window.I18N) return;
@@ -4949,7 +4943,7 @@ svg{display:block}
         'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>';
 
       function paint(){
-        code.textContent=window.I18N.lang.toUpperCase();
+        if(code) code.textContent=window.I18N.lang.toUpperCase();
         if(title) title.textContent=window.t?window.t('language'):'Dil';
         if(sub){
           var subs={tr:'Uygulama dilini seç',en:'Choose the app language',
@@ -4999,8 +4993,13 @@ svg{display:block}
 
   <section class="gscreen on" id="gAuth">
     <button class="gLangBtn" id="gLangBtn" aria-label="Dil">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M3.6 9.6h16.8M3.6 14.4h16.8"/><path d="M12 3.4c2.3 2.6 3.5 5.5 3.5 8.6s-1.2 6-3.5 8.6c-2.3-2.6-3.5-5.5-3.5-8.6S9.7 6 12 3.4z"/></svg>
-      <span id="gLangCode">TR</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.6 6.2h7.2M6.2 4.4v1.8"/>
+        <path d="M8.1 6.2c0 3.4-2.1 6.2-5.5 7.6"/>
+        <path d="M4.4 9.4c.9 2 2.6 3.4 4.8 4.1"/>
+        <path d="m12.6 19.6 3.9-9.2 3.9 9.2"/>
+        <path d="M13.9 16.6h5.2"/>
+      </svg>
     </button>
 
     <div class="gLangSheet" id="gLangSheet" aria-hidden="true">
@@ -5048,7 +5047,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v116</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v118</span></div>
     </div>
   </section>
 </div>
@@ -8097,7 +8096,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v116";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v118";
   box.appendChild(ver);
 }
 

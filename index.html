@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v106</title>
+<title>Klipsy v110</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4692,6 +4692,7 @@ svg{display:block}
 @keyframes gdrift2{from{transform:translateY(-50%)}to{transform:translateY(0)}}
 .gtile{width:100%;aspect-ratio:3/4;border-radius:14px;overflow:hidden;position:relative;flex:none;
   background:#16161C center/cover no-repeat;border:1px solid rgba(255,255,255,.06)}
+.gtile.empty{background-image:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
 .gtile .em{position:absolute;top:7px;left:8px;font-size:15px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.8))}
 .gveil{position:absolute;inset:0;z-index:1;
   background:radial-gradient(120% 80% at 50% 8%, rgba(8,8,12,.5), transparent 55%),
@@ -4878,7 +4879,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v106</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v110</span></div>
     </div>
   </section>
 </div>
@@ -5644,25 +5645,36 @@ async function loadFeed(){
   }catch(e){ console.warn(e); }
 }
 
+// akışta görünen isimleri (ad soyad) tazele
+function paintFeedNames(){
+  list.querySelectorAll(".post").forEach(el=>{
+    const nmeEl=el.querySelector(".pname");
+    if(nmeEl && el._who){
+      const uu=USERS[el._who];
+      nmeEl.textContent=(uu&&uu.display_name)?uu.display_name:el._who;
+    }
+  });
+}
+
 async function fetchDisplayNames(){
   const sb=window.__sb; if(!sb) return;
-  const names=[...new Set(items.map(x=>x.who))].filter(n=>!(USERS[n]&&USERS[n].display_name!==undefined));
-  if(!names.length) return;
+  // akışta görünen TÜM kullanıcılar için isim bilgisi olsun
+  const all=[...new Set(items.map(x=>x.who))].filter(Boolean);
+  const missing=all.filter(n=>!(USERS[n] && USERS[n].display_name!==undefined));
+  if(!missing.length){ paintFeedNames(); return; }
   try{
-    const {data}=await sb.from('profiles').select('username, display_name').in('username',names);
+    const {data}=await sb.from('profiles').select('username, display_name').in('username',missing);
     (data||[]).forEach(r=>{
       if(!USERS[r.username]) USERS[r.username]={name:r.username, followers:0, follows:0, moments:0, joined:Date.now()};
       USERS[r.username].display_name = r.display_name||null;
     });
-    // akışta isimleri güncelle
-    list.querySelectorAll(".post").forEach(el=>{
-      const nmeEl=el.querySelector(".pname");
-      if(nmeEl && el._who){
-        const uu=USERS[el._who];
-        nmeEl.textContent=(uu&&uu.display_name)?uu.display_name:el._who;
-      }
+    // profili gelmeyenleri de işaretle ki tekrar tekrar sorulmasın
+    missing.forEach(n=>{
+      if(!USERS[n]) USERS[n]={name:n, followers:0, follows:0, moments:0, joined:Date.now()};
+      if(USERS[n].display_name===undefined) USERS[n].display_name=null;
     });
-  }catch(e){}
+    paintFeedNames();
+  }catch(e){ paintFeedNames(); }
 }
 
 /* ---------- bildirimler ---------- */
@@ -6404,7 +6416,7 @@ ci.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendCom
 /* ---------- katmanlar ---------- */
 // akış dışına çıkaran paneller (bunlar açıkken akış sesi susar)
 const AUDIO_BLOCKERS=["comments","timeSheet","notif","cam","compose","profile","chats","chat",
-  "settings","editProfile","songSheet","coverSheet","postMenu","reportSheet","msgMenu","shareSheet","followSheet","miniProfile"];
+  "settings","editProfile","songSheet","coverSheet","postMenu","reportSheet","msgMenu","shareSheet","followSheet","miniProfile","arcView"];
 function anyBlockerOpen(){
   return AUDIO_BLOCKERS.some(id=>{
     const el=document.getElementById(id);
@@ -7800,7 +7812,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v106";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v110";
   box.appendChild(ver);
 }
 
@@ -8095,6 +8107,11 @@ function openArchiveView(it){
       ov.classList.remove("open");
       const m=$("#avMedia");
       if(m){ const v=m.querySelector("video"); if(v){ try{v.pause();}catch(e){} } m.innerHTML=""; }
+      // akış sesi geri gelsin
+      if(typeof anyBlockerOpen==="function" && !anyBlockerOpen() && typeof resumeFeedMedia==="function"){
+        setTimeout(()=>{ if(!anyBlockerOpen()) resumeFeedMedia(); },80);
+      }
+      if(typeof syncStatusBar==="function") syncStatusBar();
     };
     ov.querySelector("#avClose").addEventListener("click",shut);
     ov.querySelector("#avScrim").addEventListener("click",shut);
@@ -8134,6 +8151,8 @@ function openArchiveView(it){
   ov.querySelector("#avMeta").innerHTML=bits.join('');
 
   ov.classList.add("open");
+  if(typeof pauseFeedMedia==="function") pauseFeedMedia();
+  if(typeof syncStatusBar==="function") syncStatusBar();
 }
 
 /* kaydedilenler */
@@ -9245,18 +9264,136 @@ function tileImg(seed){
   x.filter='none';x.globalAlpha=1;return c.toDataURL('image/jpeg',.7);
 }
 function buildWall(el){
+  // Boş kareler kurulur; içlerini gerçek anlar doldurur (liveWall).
+  // Demo görsel yok — an yoksa kareler sade renkli kalır.
   el.innerHTML='';
   for(let ci=0;ci<3;ci++){
     const col=document.createElement('div');col.className='gcol c'+(ci+1);
     for(let rep=0;rep<2;rep++)for(let i=0;i<5;i++){
-      const seed=ci*100+rep*50+i*7+3;
-      const t=document.createElement('div');t.className='gtile';
-      t.style.backgroundImage='url('+tileImg(seed)+')';
-      const e=document.createElement('span');e.className='em';e.textContent=EMO[seed%EMO.length];
-      t.appendChild(e);col.appendChild(t);
+      const t=document.createElement('div');t.className='gtile empty';
+      col.appendChild(t);
     }
     el.appendChild(col);
   }
+}
+
+/* Giriş ekranı arka planını GERÇEK anlarla besle.
+   Önce yer tutucu kareler gösterilir (ekran anında açılsın),
+   anlar gelince sessizce onların yerini alır. Her açılışta farklı. */
+async function liveWall(el){
+  if(!el || !window.__sb) return;
+  try{
+    const sb=window.__sb;
+    // son anları çek — küçük kapak resmi yeter
+    const {data,error}=await sb
+      .from('moments')
+      .select('media_path,poster_path,media_kind,mood,created_at')
+      .eq('is_removed',false)
+      .order('created_at',{ascending:false})
+      .limit(60);
+    if(error||!data||!data.length) return;
+
+    // Videolar için kapak resmi şart (video dosyası arka plan olarak yüklenemez).
+    // Kapağı olmayan eski videoları ele; fotoğraflar olduğu gibi kalır.
+    // video: kapağı varsa resim olarak, yoksa gerçek video olarak gösterilebilir
+    const usable=data.filter(r=> !!(r.poster_path || r.media_path));
+    if(!usable.length) return;
+
+    // karıştır: her açılışta farklı sıra
+    const pool=usable.slice();
+    for(let i=pool.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [pool[i],pool[j]]=[pool[j],pool[i]];
+    }
+
+    const tiles=el.querySelectorAll('.gtile');
+    const MOOD_EM={huzur:"🌿",mutlu:"☀️",heyecan:"⚡",asik:"💗",huzun:"🌧️",
+                   ozlem:"🕯️",saskin:"✨",sakin:"🌊",yorgun:"🌙",dusunce:"🌫️"};
+
+    // Videolardan birkaçı gerçekten oynasın (canlı his), gerisi kapak resmi.
+    // Sınır şart: 30 eşzamanlı video telefonu kilitler.
+    const MAX_VIDEO = 3;
+    let videoUsed = 0;
+
+    // her kareyi hazırla; hepsinin yüklenmesini bekleyebilmek için söz (promise) döndür
+    const jobs=[];
+    tiles.forEach((tile,idx)=>{
+      const r=pool[idx % pool.length];
+      if(!r) return;
+
+      // video ise ve kotamız varsa gerçek video oynat
+      if(r.media_kind==='video' && r.media_path && videoUsed<MAX_VIDEO && idx%4===1){
+        videoUsed++;
+        let vurl;
+        try{ vurl=sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl; }catch(e){ vurl=null; }
+        if(vurl){
+          jobs.push(new Promise(done=>{
+            const v=document.createElement('video');
+            v.src=vurl; v.muted=true; v.loop=true; v.playsInline=true;
+            v.autoplay=true; v.preload='metadata';
+            v.setAttribute('muted','');
+            v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit';
+            const finish=()=>{
+              tile.style.transition='opacity .45s ease';
+              tile.style.opacity='0';
+              setTimeout(()=>{
+                tile.classList.remove('empty');
+                tile.style.backgroundImage='none';
+                tile.style.position='relative';
+                tile.insertBefore(v, tile.firstChild);
+                let em=tile.querySelector('.em');
+                if(!em){ em=document.createElement('span'); em.className='em'; tile.appendChild(em); }
+                if(em && r.mood && MOOD_EM[r.mood]) em.textContent=MOOD_EM[r.mood];
+                tile.style.opacity='';
+                v.play().catch(()=>{});
+                done();
+              },180);
+            };
+            v.addEventListener('loadeddata',finish,{once:true});
+            v.addEventListener('error',()=>done(),{once:true});
+            setTimeout(done,3000);
+          }));
+          return;
+        }
+      }
+
+      // kapağı olmayan ve video kotasına giremeyen video: yer tutucu kalsın
+      const path=(r.media_kind==='video') ? r.poster_path : r.media_path;
+      if(!path) return;
+      let url;
+      try{
+        // küçük sürüm iste (veri tasarrufu)
+        const tr=sb.storage.from('moments').getPublicUrl(path,{
+          transform:{width:220,height:300,resize:'cover',quality:60}
+        });
+        url=tr.data.publicUrl;
+      }catch(e){
+        try{ url=sb.storage.from('moments').getPublicUrl(path).data.publicUrl; }catch(e2){ return; }
+      }
+      jobs.push(new Promise(done=>{
+        const img=new Image();
+        const put=()=>{
+          tile.style.transition='opacity .45s ease';
+          tile.style.opacity='0';
+          setTimeout(()=>{
+            tile.classList.remove('empty');
+            tile.style.backgroundImage='url('+url+')';
+            let em=tile.querySelector('.em');
+            if(!em){ em=document.createElement('span'); em.className='em'; tile.appendChild(em); }
+            if(em && r.mood && MOOD_EM[r.mood]) em.textContent=MOOD_EM[r.mood];
+            tile.style.opacity='';
+            done();
+          },180);
+        };
+        img.onload=put;
+        img.onerror=()=>done();      // yüklenemezse yer tutucu kalsın
+        setTimeout(done,2500);        // takılırsa bekletme
+        img.src=url;
+      }));
+    });
+    // ilk ekranda görünenler yeter; hepsini beklemeye gerek yok
+    await Promise.all(jobs.slice(0,9));
+  }catch(e){}
 }
 
 /* --- karşılama ekranı kaldırıldı: kullanıcı doğrudan girişe gider --- */
@@ -9433,13 +9570,20 @@ window.__logout = async () => {
 
 /* --- açılış --- */
 buildWall($('#gWall2'));
+// Açılış (splash) ekranı görünürken duvarı gerçek anlarla doldurmaya başla.
+// Giriş ekranına geçmeden önce kısa bir süre bekleyip içeriğin yerleşmesini sağlıyoruz.
+const _wallReady = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })();
+
 (async()=>{
   const {data:{session}}=await sb.auth.getSession();
-  if(session){ await enterApp(); }
-  else{
-    setMode('login');
-    gshow('gAuth');
-  }
+  if(session){ await enterApp(); return; }
+  setMode('login');
+  // duvar hazır olsun diye en fazla 1.2sn bekle (splash zaten görünüyor)
+  await Promise.race([
+    _wallReady,
+    new Promise(r=>setTimeout(r,1200))
+  ]);
+  gshow('gAuth');
 })();
 </script>
 </body>

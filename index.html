@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v113</title>
+<title>Klipsy v115</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4703,6 +4703,42 @@ svg{display:block}
 .gauth{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;
   padding:calc(var(--sat) + 30px) 26px calc(var(--sab) + 24px);scrollbar-width:none;position:relative;z-index:2}
 .gauth::-webkit-scrollbar{display:none}
+/* giriş ekranı dil seçici */
+.gLangBtn{position:absolute;top:calc(var(--sat) + 14px);right:14px;z-index:6;
+  display:flex;align-items:center;gap:7px;height:36px;padding:0 12px 0 11px;border-radius:99px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.92);
+  font-size:12.5px;font-weight:600;letter-spacing:.03em;font-family:inherit;
+  backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+  box-shadow:0 4px 16px -6px rgba(0,0,0,.5);
+  transition:background .2s,transform .12s,border-color .2s}
+.gLangBtn svg{width:16px;height:16px;flex:none;opacity:.85}
+.gLangBtn .gChev{width:13px;height:13px;opacity:.55;transition:transform .24s var(--ease)}
+.gLangBtn.open .gChev{transform:rotate(180deg)}
+.gLangBtn:active{transform:scale(.95)}
+.gLangBtn.open{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.26)}
+
+.gLangMenu{position:absolute;top:calc(var(--sat) + 58px);right:14px;z-index:7;
+  display:none;flex-direction:column;min-width:180px;max-height:58vh;overflow-y:auto;
+  border-radius:16px;padding:6px;
+  background:rgba(16,16,22,.92);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 24px 56px -18px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.07);
+  backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);
+  scrollbar-width:none;transform-origin:top right}
+.gLangMenu::-webkit-scrollbar{display:none}
+.gLangMenu.open{display:flex;animation:gLangIn .2s cubic-bezier(.22,1,.36,1)}
+@keyframes gLangIn{from{opacity:0;transform:scale(.94) translateY(-6px)}to{opacity:1;transform:none}}
+.gLangMenu button{display:flex;align-items:center;gap:10px;
+  height:42px;padding:0 12px;border-radius:11px;background:none;border:0;color:rgba(255,255,255,.88);
+  font-size:14.5px;font-family:inherit;text-align:left;letter-spacing:-.01em;
+  transition:background .15s,color .15s}
+.gLangMenu button .lname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gLangMenu button .lcode{font-size:11px;font-weight:700;letter-spacing:.05em;
+  color:rgba(255,255,255,.35);flex:none}
+.gLangMenu button:active{background:rgba(255,255,255,.08)}
+.gLangMenu button.on{color:#fff;font-weight:600;
+  background:linear-gradient(90deg, rgba(255,59,107,.18), rgba(123,91,255,.12))}
+.gLangMenu button.on .lcode{color:#FF7A9A}
 .gbrand{display:flex;flex-direction:column;align-items:center;gap:11px;margin-bottom:30px}
 @keyframes logoIn{from{opacity:0;transform:scale(.82) translateY(8px)}to{opacity:1;transform:none}}
 .gbrand .glogo{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;
@@ -4824,8 +4860,9 @@ svg{display:block}
       resolved=(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';
     }
     document.documentElement.setAttribute('data-theme', resolved);
+    // giriş/açılış ekranı her zaman koyu olduğu için üst şerit de koyu başlar
     var tc=document.getElementById('__themeColor');
-    if(tc) tc.setAttribute('content', resolved==='light' ? '#F2F2F5' : '#08080C');
+    if(tc) tc.setAttribute('content', '#08080C');
   }catch(e){}
 })();
 </script>
@@ -4837,6 +4874,90 @@ svg{display:block}
   <div class="gwall" id="gWall2"></div>
   <div class="gveil"></div>
 
+  <script>
+  // ACİL ÇIKIŞ: 9 saniye sonra hâlâ açılış ekranındaysak zorla giriş ekranına geç.
+  // Ağ/veritabanı takılsa bile kullanıcı asla donmuş ekranda kalmaz.
+  (function(){
+    setTimeout(function(){
+      try{
+        var g=document.getElementById('gate');
+        if(!g || g.classList.contains('off')) return;
+        var sp=document.getElementById('gSplash');
+        if(sp && sp.classList.contains('on')){
+          document.querySelectorAll('#gate .gscreen').forEach(function(s){ s.classList.remove('on'); });
+          var a=document.getElementById('gAuth');
+          if(a) a.classList.add('on');
+        }
+      }catch(e){}
+    }, 9000);
+  })();
+  </script>
+
+  <script>
+  // Duvarı HEMEN kur: animasyon açılışın ilk anından itibaren aksın.
+  // (İçini gerçek anlar sonra doldurur.)
+  (function(){
+    try{
+      var el=document.getElementById('gWall2');
+      if(!el) return;
+      for(var ci=0;ci<3;ci++){
+        var col=document.createElement('div');
+        col.className='gcol c'+(ci+1);
+        for(var r=0;r<2;r++)for(var i=0;i<5;i++){
+          var t=document.createElement('div');
+          t.className='gtile empty';
+          col.appendChild(t);
+        }
+        el.appendChild(col);
+      }
+    }catch(e){}
+  })();
+  </script>
+
+  <script>
+  // Giriş ekranı dil seçici
+  (function(){
+    function init(){
+      var btn=document.getElementById('gLangBtn');
+      var menu=document.getElementById('gLangMenu');
+      var code=document.getElementById('gLangCode');
+      if(!btn||!menu||!window.I18N) return;
+
+      function paint(){
+        code.textContent=window.I18N.lang.toUpperCase();
+        menu.innerHTML='';
+        window.I18N.list.forEach(function(l){
+          var b=document.createElement('button');
+          b.className=(l.code===window.I18N.lang)?'on':'';
+          b.innerHTML='<span class="lname">'+l.name+'</span>'+
+                      '<span class="lcode">'+l.code.toUpperCase()+'</span>';
+          b.addEventListener('click',function(){
+            window.I18N.set(l.code);
+            paint();
+            menu.classList.remove('open');
+            btn.classList.remove('open');
+          });
+          menu.appendChild(b);
+        });
+      }
+      paint();
+
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        menu.classList.toggle('open');
+        btn.classList.toggle('open', menu.classList.contains('open'));
+      });
+      document.addEventListener('click',function(e){
+        if(!menu.contains(e.target) && !btn.contains(e.target)){
+          menu.classList.remove('open'); btn.classList.remove('open');
+        }
+      });
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+    else init();
+  })();
+  </script>
+
   <section class="gscreen gsplash" id="gSplash">
     <div class="spGlow"></div>
     <div class="spCore">
@@ -4847,6 +4968,12 @@ svg{display:block}
   </section>
 
   <section class="gscreen on" id="gAuth">
+    <button class="gLangBtn" id="gLangBtn" aria-label="Dil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.2 9.5h17.6M3.2 14.5h17.6"/><path d="M12 3c2.4 2.7 3.6 5.7 3.6 9s-1.2 6.3-3.6 9c-2.4-2.7-3.6-5.7-3.6-9S9.6 5.7 12 3z"/></svg>
+      <span id="gLangCode">TR</span>
+      <svg class="gChev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="gLangMenu" id="gLangMenu"></div>
     <div class="gauth">
       <div class="gbrand">
         <h1>Klipsy</h1>
@@ -4881,7 +5008,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v113</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v115</span></div>
     </div>
   </section>
 </div>
@@ -5296,6 +5423,113 @@ svg{display:block}
 
 <script>
 window.__APP_STARTED=false;
+
+/* ============================================================
+   KLİPSY — VERİ MERKEZİ (DataHub)
+   Amaç: Supabase'e giden her istek tek kapıdan geçsin.
+   - Önbellek: aynı veri kısa sürede tekrar istenirse ağa gidilmez
+   - Birleştirme: aynı istek aynı anda 5 kez çağrılsa bile 1 kez gider
+   - Öncelik: kritik istekler önce, süs olanlar sonra
+   - Zaman aşımı: hiçbir istek uygulamayı kilitleyemez
+   ============================================================ */
+window.DataHub = (function(){
+  const cache = new Map();      // anahtar -> {t: zaman, v: değer}
+  const inflight = new Map();   // anahtar -> devam eden söz (promise)
+
+  // ne kadar taze sayılacak (ms)
+  const TTL = {
+    profile:   60000,   // profil bilgisi 1 dk
+    feed:      15000,   // akış 15 sn
+    counts:    30000,   // takipçi/an sayıları
+    saved:     20000,
+    conv:      10000,   // sohbet listesi
+    notifs:    10000,
+    names:    300000,   // ad-soyad 5 dk (nadiren değişir)
+    default:   20000
+  };
+
+  function ttlFor(key){
+    const kind = String(key).split(':')[0];
+    return TTL[kind] || TTL.default;
+  }
+
+  function fresh(key){
+    const hit = cache.get(key);
+    if(!hit) return null;
+    if(Date.now() - hit.t > ttlFor(key)){ cache.delete(key); return null; }
+    return hit.v;
+  }
+
+  // ana giriş: get(anahtar, üreticiFonksiyon, seçenekler)
+  async function get(key, producer, opts){
+    opts = opts || {};
+    if(!opts.force){
+      const f = fresh(key);
+      if(f !== null && f !== undefined) return f;
+    }
+    if(inflight.has(key)) return inflight.get(key);   // aynı istek zaten yolda
+
+    const p = (async()=>{
+      try{
+        const timeout = opts.timeout || 8000;
+        const val = await Promise.race([
+          producer(),
+          new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), timeout))
+        ]);
+        if(val !== undefined && val !== null) cache.set(key, {t:Date.now(), v:val});
+        return val;
+      }catch(e){
+        // hata durumunda bayat veri varsa onu ver (boş ekran gösterme)
+        const stale = cache.get(key);
+        if(stale) return stale.v;
+        if(opts.fallback !== undefined) return opts.fallback;
+        throw e;
+      }finally{
+        inflight.delete(key);
+      }
+    })();
+
+    inflight.set(key, p);
+    return p;
+  }
+
+  // bir anahtarı (veya önekini) geçersiz kıl — veri değiştiğinde çağrılır
+  function invalidate(prefix){
+    if(!prefix){ cache.clear(); return; }
+    [...cache.keys()].forEach(k=>{ if(k.startsWith(prefix)) cache.delete(k); });
+  }
+
+  // düşük öncelikli iş: tarayıcı boştayken çalıştır (akışı yavaşlatmasın)
+  function idle(fn, delay){
+    if(typeof requestIdleCallback === 'function'){
+      requestIdleCallback(()=>{ try{fn();}catch(e){} }, {timeout: delay||1500});
+    }else{
+      setTimeout(()=>{ try{fn();}catch(e){} }, delay||300);
+    }
+  }
+
+  // sıraya alma: ağır işleri arka arkaya, aynı anda değil
+  const queue = [];
+  let running = false;
+  async function enqueue(fn){
+    return new Promise((resolve)=>{
+      queue.push(async()=>{ try{ resolve(await fn()); }catch(e){ resolve(null); } });
+      pump();
+    });
+  }
+  async function pump(){
+    if(running) return;
+    running = true;
+    while(queue.length){
+      const job = queue.shift();
+      await job();
+    }
+    running = false;
+  }
+
+  return { get, invalidate, idle, enqueue, cache };
+})();
+
 // dil değişince arayüzü yeniden çiz
 window.__onLangChange = function(){
   try{
@@ -5665,7 +5899,10 @@ async function fetchDisplayNames(){
   const missing=all.filter(n=>!(USERS[n] && USERS[n].display_name!==undefined));
   if(!missing.length){ paintFeedNames(); return; }
   try{
-    const {data}=await sb.from('profiles').select('username, display_name').in('username',missing);
+    const data = await DataHub.get('names:'+missing.slice().sort().join(','), async()=>{
+      const r = await sb.from('profiles').select('username, display_name').in('username',missing);
+      return r.data || [];
+    }, {fallback:[], timeout:5000});
     (data||[]).forEach(r=>{
       if(!USERS[r.username]) USERS[r.username]={name:r.username, followers:0, follows:0, moments:0, joined:Date.now()};
       USERS[r.username].display_name = r.display_name||null;
@@ -5685,7 +5922,12 @@ async function loadNotifs(){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return;
   try{
-    const {data,error}=await sb.rpc('get_notifications');
+    const data = await DataHub.get('notifs:me', async()=>{
+      const r = await sb.rpc('get_notifications');
+      if(r.error) throw r.error;
+      return r.data || [];
+    }, {fallback:[], timeout:6000});
+    const error = null;
     if(error){ console.warn('notif:',error.message); return; }
     notifs=(data||[]).map(r=>({
       id:r.id, type:r.kind, who:r.actor_username, avatar:r.actor_avatar,
@@ -7815,7 +8057,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v113";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v115";
   box.appendChild(ver);
 }
 
@@ -8425,7 +8667,12 @@ async function loadConversations(){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return;
   try{
-    const {data,error}=await sb.rpc('get_conversations');
+    const data = await DataHub.get('conv:me', async()=>{
+      const r = await sb.rpc('get_conversations');
+      if(r.error) throw r.error;
+      return r.data || [];
+    }, {fallback:[], timeout:6000});
+    const error = null;
     if(error){ console.warn('convos:',error.message); return; }
     chats=(data||[]).map(r=>{
       _convId[r.other_username]=r.conv_id;
@@ -9536,10 +9783,26 @@ function showOnboarding(user, prof){
   };
 }
 
+// bir sözü (promise) belli sürede bitmezse bırak — açılış asla takılmasın
+function withTimeout(p, ms, fallback){
+  return Promise.race([
+    Promise.resolve(p).catch(()=>fallback),
+    new Promise(r=>setTimeout(()=>r(fallback), ms))
+  ]);
+}
+
 async function enterApp(){
-  const {data:{user}}=await sb.auth.getUser();
-  if(!user){return;}
-  const {data:prof}=await sb.from('profiles').select('username, avatar_url, onboarded, display_name').eq('id',user.id).single();
+  const ures = await withTimeout(sb.auth.getUser(), 4000, {data:{user:null}});
+  const user = ures && ures.data ? ures.data.user : null;
+  if(!user){ gshow('gAuth'); return; }
+
+  // profil çekilemezse bile uygulamayı aç — asla splash'ta kalma
+  const pres = await withTimeout(
+    sb.from('profiles').select('username, avatar_url, onboarded, display_name').eq('id',user.id).single(),
+    4000, {data:null}
+  );
+  const prof = pres ? pres.data : null;
+
   // kullanıcı adını seçmemişse önce onboarding ekranı
   if(prof && prof.onboarded===false){
     showOnboarding(user, prof);
@@ -9554,7 +9817,7 @@ async function enterApp(){
     sb.channel('notif-'+user.id)
       .on('postgres_changes',
         { event:'INSERT', schema:'public', table:'notifications', filter:'user_id=eq.'+user.id },
-        () => { if(window.__onNewNotification) window.__onNewNotification(); })
+        () => { try{DataHub.invalidate('notifs:');}catch(e){} if(window.__onNewNotification) window.__onNewNotification(); })
       .subscribe();
   }catch(e){ console.warn('realtime notif:',e); }
 
@@ -9565,7 +9828,7 @@ async function enterApp(){
         { event:'INSERT', schema:'public', table:'messages' },
         (payload) => {
           const m=payload.new;
-          if(m && m.sender_id!==user.id && window.__onNewMessage) window.__onNewMessage(m);
+          if(m && m.sender_id!==user.id){ try{DataHub.invalidate('conv:');}catch(e){} if(window.__onNewMessage) window.__onNewMessage(m); }
         })
       .subscribe();
   }catch(e){ console.warn('realtime msg:',e); }
@@ -9597,14 +9860,15 @@ window.__logout = async () => {
 };
 
 /* --- açılış --- */
-buildWall($('#gWall2'));
+if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 // Açılış (splash) ekranı görünürken duvarı gerçek anlarla doldurmaya başla.
 // Giriş ekranına geçmeden önce kısa bir süre bekleyip içeriğin yerleşmesini sağlıyoruz.
 // duvar arka planda dolsun — giriş ekranını BEKLETMEZ
 const _wallReady = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })();
 
 (async()=>{
-  const {data:{session}}=await sb.auth.getSession();
+  const sres = await withTimeout(sb.auth.getSession(), 4000, {data:{session:null}});
+  const session = sres && sres.data ? sres.data.session : null;
   if(session){ await enterApp(); return; }
   setMode('login');
   // en fazla 350ms bekle; duvar hazır değilse zaten arka planda dolmaya devam eder

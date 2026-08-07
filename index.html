@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v115</title>
+<title>Klipsy v116</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4683,8 +4683,8 @@ svg{display:block}
 }
 .gscreen{position:absolute;inset:0;display:none;flex-direction:column;z-index:2}
 .gscreen.on{display:flex}
-.gwall{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.gwall .gcol{position:absolute;top:-12%;width:34%;display:flex;flex-direction:column;gap:12px;will-change:transform}
+.gwall{position:absolute;top:calc(-1 * var(--sat));left:0;right:0;bottom:0;z-index:0;overflow:hidden;pointer-events:none}
+.gwall .gcol{position:absolute;top:calc(-1 * var(--sat) - 12%);width:34%;display:flex;flex-direction:column;gap:12px;will-change:transform}
 .gwall .gcol.c1{left:0;animation:gdrift1 38s linear infinite}
 .gwall .gcol.c2{left:33.5%;animation:gdrift2 46s linear infinite}
 .gwall .gcol.c3{left:67%;animation:gdrift1 42s linear infinite}
@@ -4703,42 +4703,60 @@ svg{display:block}
 .gauth{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;
   padding:calc(var(--sat) + 30px) 26px calc(var(--sab) + 24px);scrollbar-width:none;position:relative;z-index:2}
 .gauth::-webkit-scrollbar{display:none}
-/* giriş ekranı dil seçici */
+/* ===== giriş ekranı dil seçici ===== */
 .gLangBtn{position:absolute;top:calc(var(--sat) + 14px);right:14px;z-index:6;
-  display:flex;align-items:center;gap:7px;height:36px;padding:0 12px 0 11px;border-radius:99px;
-  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.92);
-  font-size:12.5px;font-weight:600;letter-spacing:.03em;font-family:inherit;
-  backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
-  box-shadow:0 4px 16px -6px rgba(0,0,0,.5);
-  transition:background .2s,transform .12s,border-color .2s}
-.gLangBtn svg{width:16px;height:16px;flex:none;opacity:.85}
-.gLangBtn .gChev{width:13px;height:13px;opacity:.55;transition:transform .24s var(--ease)}
-.gLangBtn.open .gChev{transform:rotate(180deg)}
-.gLangBtn:active{transform:scale(.95)}
-.gLangBtn.open{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.26)}
+  display:flex;align-items:center;gap:7px;height:34px;padding:0 13px 0 11px;border-radius:99px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.85);
+  font-size:12px;font-weight:600;letter-spacing:.06em;font-family:inherit;
+  backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+  box-shadow:0 2px 12px -4px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
+  transition:all .22s var(--ease)}
+.gLangBtn svg{width:15px;height:15px;flex:none;opacity:.7}
+.gLangBtn:active{transform:scale(.94);background:rgba(255,255,255,.13)}
 
-.gLangMenu{position:absolute;top:calc(var(--sat) + 58px);right:14px;z-index:7;
-  display:none;flex-direction:column;min-width:180px;max-height:58vh;overflow-y:auto;
-  border-radius:16px;padding:6px;
-  background:rgba(16,16,22,.92);
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow:0 24px 56px -18px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.07);
-  backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);
-  scrollbar-width:none;transform-origin:top right}
-.gLangMenu::-webkit-scrollbar{display:none}
-.gLangMenu.open{display:flex;animation:gLangIn .2s cubic-bezier(.22,1,.36,1)}
-@keyframes gLangIn{from{opacity:0;transform:scale(.94) translateY(-6px)}to{opacity:1;transform:none}}
-.gLangMenu button{display:flex;align-items:center;gap:10px;
-  height:42px;padding:0 12px;border-radius:11px;background:none;border:0;color:rgba(255,255,255,.88);
-  font-size:14.5px;font-family:inherit;text-align:left;letter-spacing:-.01em;
-  transition:background .15s,color .15s}
-.gLangMenu button .lname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gLangMenu button .lcode{font-size:11px;font-weight:700;letter-spacing:.05em;
-  color:rgba(255,255,255,.35);flex:none}
-.gLangMenu button:active{background:rgba(255,255,255,.08)}
-.gLangMenu button.on{color:#fff;font-weight:600;
-  background:linear-gradient(90deg, rgba(255,59,107,.18), rgba(123,91,255,.12))}
-.gLangMenu button.on .lcode{color:#FF7A9A}
+/* alt sayfa */
+.gLangSheet{position:fixed;inset:0;z-index:120;display:none}
+.gLangSheet.open{display:block}
+.gLangSheet .glsScrim{position:absolute;inset:0;background:rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  animation:fadeIn .22s ease}
+.gLangSheet .glsBox{position:absolute;left:0;right:0;bottom:0;
+  max-height:78vh;display:flex;flex-direction:column;
+  padding:0 0 calc(var(--sab) + 14px);
+  border-radius:26px 26px 0 0;
+  background:linear-gradient(180deg, rgba(26,26,34,.98), rgba(14,14,19,.99));
+  border-top:1px solid rgba(255,255,255,.12);
+  box-shadow:0 -24px 60px -20px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.09);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  animation:glsUp .34s cubic-bezier(.22,1,.36,1)}
+@keyframes glsUp{from{transform:translateY(100%)}to{transform:none}}
+.gLangSheet .glsGrip{width:38px;height:4px;border-radius:99px;
+  background:rgba(255,255,255,.22);margin:10px auto 4px}
+.gLangSheet .glsHead{padding:8px 24px 14px;text-align:left}
+.gLangSheet .glsHead h3{font-size:19px;font-weight:700;letter-spacing:-.03em;color:#fff}
+.gLangSheet .glsHead p{font-size:13px;color:rgba(255,255,255,.45);margin-top:3px;letter-spacing:-.01em}
+.gLangSheet .glsList{overflow-y:auto;padding:0 12px;scrollbar-width:none}
+.gLangSheet .glsList::-webkit-scrollbar{display:none}
+.gLangSheet .glsList button{display:flex;align-items:center;gap:14px;width:100%;
+  height:54px;padding:0 12px;border-radius:14px;background:none;border:0;
+  color:rgba(255,255,255,.9);font-family:inherit;text-align:left;
+  transition:background .16s}
+.gLangSheet .glsList button:active{background:rgba(255,255,255,.06)}
+.gLangSheet .glsList .lmark{width:30px;height:30px;flex:none;border-radius:99px;
+  display:grid;place-items:center;font-size:11px;font-weight:800;letter-spacing:.04em;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.55);transition:all .2s}
+.gLangSheet .glsList .lname{flex:1;min-width:0;font-size:15.5px;letter-spacing:-.016em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gLangSheet .glsList .lcheck{width:20px;height:20px;flex:none;opacity:0;
+  color:#FF6B8A;transition:opacity .2s}
+.gLangSheet .glsList button.on{background:rgba(255,255,255,.045)}
+.gLangSheet .glsList button.on .lname{font-weight:600;color:#fff}
+.gLangSheet .glsList button.on .lmark{
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);border-color:transparent;color:#fff;
+  box-shadow:0 4px 14px -4px rgba(255,59,107,.7)}
+.gLangSheet .glsList button.on .lcheck{opacity:1}
 .gbrand{display:flex;flex-direction:column;align-items:center;gap:11px;margin-bottom:30px}
 @keyframes logoIn{from{opacity:0;transform:scale(.82) translateY(8px)}to{opacity:1;transform:none}}
 .gbrand .glogo{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;
@@ -4915,42 +4933,54 @@ svg{display:block}
   </script>
 
   <script>
-  // Giriş ekranı dil seçici
+  // Giriş ekranı dil seçici (alt sayfa)
   (function(){
     function init(){
       var btn=document.getElementById('gLangBtn');
-      var menu=document.getElementById('gLangMenu');
+      var sheet=document.getElementById('gLangSheet');
+      var scrim=document.getElementById('glsScrim');
+      var list=document.getElementById('glsList');
       var code=document.getElementById('gLangCode');
-      if(!btn||!menu||!window.I18N) return;
+      var title=document.getElementById('glsTitle');
+      var sub=document.getElementById('glsSub');
+      if(!btn||!sheet||!list||!window.I18N) return;
+
+      var CHECK='<svg class="lcheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+        'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>';
 
       function paint(){
         code.textContent=window.I18N.lang.toUpperCase();
-        menu.innerHTML='';
+        if(title) title.textContent=window.t?window.t('language'):'Dil';
+        if(sub){
+          var subs={tr:'Uygulama dilini seç',en:'Choose the app language',
+                    es:'Elige el idioma',ar:'اختر لغة التطبيق',fr:'Choisis la langue',
+                    de:'App-Sprache wählen',ru:'Выбери язык',pt:'Escolha o idioma',
+                    hi:'ऐप की भाषा चुनें',id:'Pilih bahasa aplikasi'};
+          sub.textContent=subs[window.I18N.lang]||subs.en;
+        }
+        list.innerHTML='';
         window.I18N.list.forEach(function(l){
           var b=document.createElement('button');
           b.className=(l.code===window.I18N.lang)?'on':'';
-          b.innerHTML='<span class="lname">'+l.name+'</span>'+
-                      '<span class="lcode">'+l.code.toUpperCase()+'</span>';
+          b.innerHTML='<span class="lmark">'+l.code.toUpperCase()+'</span>'+
+                      '<span class="lname">'+l.name+'</span>'+CHECK;
           b.addEventListener('click',function(){
             window.I18N.set(l.code);
             paint();
-            menu.classList.remove('open');
-            btn.classList.remove('open');
+            close();
           });
-          menu.appendChild(b);
+          list.appendChild(b);
         });
       }
-      paint();
 
-      btn.addEventListener('click',function(e){
-        e.stopPropagation();
-        menu.classList.toggle('open');
-        btn.classList.toggle('open', menu.classList.contains('open'));
-      });
-      document.addEventListener('click',function(e){
-        if(!menu.contains(e.target) && !btn.contains(e.target)){
-          menu.classList.remove('open'); btn.classList.remove('open');
-        }
+      function open(){ sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
+      function close(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
+
+      paint();
+      btn.addEventListener('click', open);
+      if(scrim) scrim.addEventListener('click', close);
+      document.addEventListener('keydown', function(e){
+        if(e.key==='Escape' && sheet.classList.contains('open')) close();
       });
     }
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
@@ -4969,11 +4999,21 @@ svg{display:block}
 
   <section class="gscreen on" id="gAuth">
     <button class="gLangBtn" id="gLangBtn" aria-label="Dil">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.2 9.5h17.6M3.2 14.5h17.6"/><path d="M12 3c2.4 2.7 3.6 5.7 3.6 9s-1.2 6.3-3.6 9c-2.4-2.7-3.6-5.7-3.6-9S9.6 5.7 12 3z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M3.6 9.6h16.8M3.6 14.4h16.8"/><path d="M12 3.4c2.3 2.6 3.5 5.5 3.5 8.6s-1.2 6-3.5 8.6c-2.3-2.6-3.5-5.5-3.5-8.6S9.7 6 12 3.4z"/></svg>
       <span id="gLangCode">TR</span>
-      <svg class="gChev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </button>
-    <div class="gLangMenu" id="gLangMenu"></div>
+
+    <div class="gLangSheet" id="gLangSheet" aria-hidden="true">
+      <div class="glsScrim" id="glsScrim"></div>
+      <div class="glsBox">
+        <div class="glsGrip"></div>
+        <div class="glsHead">
+          <h3 id="glsTitle">Dil</h3>
+          <p id="glsSub">Uygulama dilini seç</p>
+        </div>
+        <div class="glsList" id="glsList"></div>
+      </div>
+    </div>
     <div class="gauth">
       <div class="gbrand">
         <h1>Klipsy</h1>
@@ -5008,7 +5048,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v115</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v116</span></div>
     </div>
   </section>
 </div>
@@ -8057,7 +8097,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v115";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v116";
   box.appendChild(ver);
 }
 

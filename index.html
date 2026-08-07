@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v110</title>
+<title>Klipsy v112</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4879,7 +4879,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v110</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v112</span></div>
     </div>
   </section>
 </div>
@@ -5628,6 +5628,8 @@ async function loadFeed(){
       song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
     };});
     render(); activeIdx=-1; syncActive();
+    // isimleri HEMEN çek — beğeni/kaydet sorgularını bekleme
+    fetchDisplayNames();
     // kullanıcının beğendiği ve kaydettiği kareleri işaretle
     if(me && items.length){
       const ids=items.map(x=>x.id);
@@ -5640,8 +5642,6 @@ async function loadFeed(){
       items.forEach(it=>{ it.liked=likedSet.has(it.id); it.saved=savedSet.has(it.id); });
       list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
     }
-    // akıştaki kullanıcıların adlarını çek (ad görünsün)
-    fetchDisplayNames();
   }catch(e){ console.warn(e); }
 }
 
@@ -7154,6 +7154,7 @@ function openCompose(src,kind,blob,durationMs){
     box.style.backgroundImage="url("+src+")";
   }
   $("#compose").classList.add("open");
+  if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#compose").setAttribute("aria-hidden","false");
   const bodyEl=$(".cpBody"); if(bodyEl) bodyEl.scrollTop=0;
@@ -7812,7 +7813,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v110";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v112";
   box.appendChild(ver);
 }
 
@@ -8865,6 +8866,7 @@ async function openCam(which){
   if(which==="profile"){camMode="photo";facing="user";}
   $("#camTitle").textContent=which==="profile"?t("profile_photo"):(which==="dm"?t("act_send_msg"):t("act_shoot_now"));
   $("#cam").classList.add("open");$("#cam").setAttribute("aria-hidden","false");
+  if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#camFail").classList.remove("on");
   setMode(camMode);await start();
@@ -9198,7 +9200,7 @@ async function loadSupabase(){
     try{
       const mod = await Promise.race([
         import(/* @vite-ignore */ url),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('zaman asimi')), 8000))
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('zaman asimi')), 3500))
       ]);
       if(mod && mod.createClient) return mod.createClient;
     }catch(e){ lastErr=e; }
@@ -9391,8 +9393,11 @@ async function liveWall(el){
         img.src=url;
       }));
     });
-    // ilk ekranda görünenler yeter; hepsini beklemeye gerek yok
-    await Promise.all(jobs.slice(0,9));
+    // sadece ilk 3 kare beklenir, gerisi arka planda dolar
+    await Promise.race([
+      Promise.all(jobs.slice(0,3)),
+      new Promise(r=>setTimeout(r,600))
+    ]);
   }catch(e){}
 }
 
@@ -9564,7 +9569,28 @@ async function enterApp(){
   }catch(e){ console.warn('realtime msg:',e); }
 }
 window.__logout = async () => {
-  await sb.auth.signOut();
+  // anında geri bildirim ver — kullanıcı donmuş sanmasın
+  try{
+    const ov=document.createElement('div');
+    ov.id='__signingOut';
+    ov.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:center;'+
+      'justify-content:center;background:#08080C;color:#fff;font-family:Inter,sans-serif;'+
+      'font-size:14px;gap:12px;flex-direction:column';
+    ov.innerHTML='<div style="width:34px;height:34px;border-radius:50%;'+
+      'border:3px solid rgba(255,255,255,.18);border-top-color:#FF3B6B;'+
+      'animation:__so 0.8s linear infinite"></div><span>'+
+      ((window.t&&window.t('logout2'))||'Çıkış yapılıyor')+'…</span>'+
+      '<style>@keyframes __so{to{transform:rotate(360deg)}}</style>';
+    document.body.appendChild(ov);
+  }catch(e){}
+
+  // yerel oturumu hemen temizle (sunucu cevabını bekleme)
+  try{ await sb.auth.signOut({ scope:'local' }); }
+  catch(e){ try{ await sb.auth.signOut(); }catch(e2){} }
+
+  // sunucu tarafı çıkışı arka planda dene, takılırsa bekletme
+  try{ sb.auth.signOut().catch(()=>{}); }catch(e){}
+
   location.reload();
 };
 
@@ -9572,16 +9598,17 @@ window.__logout = async () => {
 buildWall($('#gWall2'));
 // Açılış (splash) ekranı görünürken duvarı gerçek anlarla doldurmaya başla.
 // Giriş ekranına geçmeden önce kısa bir süre bekleyip içeriğin yerleşmesini sağlıyoruz.
+// duvar arka planda dolsun — giriş ekranını BEKLETMEZ
 const _wallReady = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })();
 
 (async()=>{
   const {data:{session}}=await sb.auth.getSession();
   if(session){ await enterApp(); return; }
   setMode('login');
-  // duvar hazır olsun diye en fazla 1.2sn bekle (splash zaten görünüyor)
+  // en fazla 350ms bekle; duvar hazır değilse zaten arka planda dolmaya devam eder
   await Promise.race([
     _wallReady,
-    new Promise(r=>setTimeout(r,1200))
+    new Promise(r=>setTimeout(r,350))
   ]);
   gshow('gAuth');
 })();

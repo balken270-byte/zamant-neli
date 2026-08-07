@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v118</title>
+<title>Klipsy v122</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5047,7 +5047,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v118</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v122</span></div>
     </div>
   </section>
 </div>
@@ -5515,7 +5515,11 @@ window.DataHub = (function(){
           producer(),
           new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), timeout))
         ]);
-        if(val !== undefined && val !== null) cache.set(key, {t:Date.now(), v:val});
+        // BOŞ sonucu önbelleğe ALMA — yoksa veri gelmeden dondurup
+        // TTL boyunca boş göstermeye devam ederiz (isim/akış kaybolma hatası).
+        const isEmpty = val === undefined || val === null ||
+                        (Array.isArray(val) && val.length === 0);
+        if(!isEmpty) cache.set(key, {t:Date.now(), v:val});
         return val;
       }catch(e){
         // hata durumunda bayat veri varsa onu ver (boş ekran gösterme)
@@ -5570,33 +5574,7 @@ window.DataHub = (function(){
 })();
 
 // dil değişince arayüzü yeniden çiz
-window.__onLangChange = function(){
-  try{
-    if(typeof monthNames==="function") AY=monthNames();
-    if(typeof timeFilters==="function") TIME_FILTERS=timeFilters();
-    curEra="";  // akıştaki dönem etiketi yeniden hesaplansın
-    if(typeof syncActive==="function") syncActive();
-    if(typeof paintMoodBtn==="function") paintMoodBtn();
-    if(typeof buildTimeline==="function") buildTimeline();
-    if(typeof renderSettings==="function" && document.getElementById("settings").classList.contains("open")) renderSettings();
-    if(typeof render==="function") render();
-    if(typeof renderProfile==="function" && document.getElementById("profile").classList.contains("open")) renderProfile();
-    if(typeof renderChats==="function" && document.getElementById("chats").classList.contains("open")) renderChats();
-    if(typeof buildMoods==="function"){
-      buildMoods();
-      // seçili duygu varsa işaretini geri koy
-      if(typeof pickedMood!=="undefined" && pickedMood){
-        document.querySelectorAll("#cpMoods .moodchip").forEach(x=>{
-          const on = x.dataset.k===pickedMood.k;
-          x.classList.toggle("on",on);
-          x.setAttribute("aria-pressed",String(on));
-        });
-        const ml=document.getElementById("cpMoodLabel");
-        if(ml){ ml.classList.add("done"); ml.textContent=pickedMood.t; }
-      }
-    }
-  }catch(e){}
-};
+
 window.__startApp = () => {
 if(window.__APP_STARTED)return;window.__APP_STARTED=true;
 "use strict";
@@ -5902,9 +5880,16 @@ async function loadFeed(){
       comments:[],
       song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
     };});
+    // İsimleri kartlar çizilmeden ÖNCE çek (en fazla 1.2sn bekle),
+    // böylece ilk çizimde ad-soyad doğru gelir; gecikirse sonra boyanır.
+    try{
+      await Promise.race([
+        fetchDisplayNames(),
+        new Promise(r=>setTimeout(r,1200))
+      ]);
+    }catch(e){}
     render(); activeIdx=-1; syncActive();
-    // isimleri HEMEN çek — beğeni/kaydet sorgularını bekleme
-    fetchDisplayNames();
+    if(typeof paintFeedNames==="function") paintFeedNames();
     // kullanıcının beğendiği ve kaydettiği kareleri işaretle
     if(me && items.length){
       const ids=items.map(x=>x.id);
@@ -6397,6 +6382,40 @@ function render(){
   f.appendChild(cap);
   list.appendChild(f);
 }
+
+/* Dil değişince arayüzü yeniden çiz.
+   ÖNEMLİ: Bu fonksiyon render/items/AY ile AYNI kapsamda olmalı,
+   yoksa hiçbirini göremez ve çeviri anlık yansımaz. */
+window.__onLangChange = function(){
+  try{
+    if(typeof monthNames==="function") AY=monthNames();
+    if(typeof timeFilters==="function") TIME_FILTERS=timeFilters();
+    curEra="";
+    if(typeof buildMoods==="function"){
+      buildMoods();
+      if(typeof pickedMood!=="undefined" && pickedMood){
+        document.querySelectorAll("#cpMoods .moodchip").forEach(x=>{
+          const on = x.dataset.k===pickedMood.k;
+          x.classList.toggle("on",on);
+          x.setAttribute("aria-pressed",String(on));
+        });
+        const ml=document.getElementById("cpMoodLabel");
+        if(ml){ ml.classList.add("done"); ml.textContent=pickedMood.t; }
+      }
+    }
+    if(typeof paintMoodBtn==="function") paintMoodBtn();
+    render();                                   // akış kartları
+    if(typeof paintFeedNames==="function") paintFeedNames();
+    activeIdx=-1; syncActive();
+    if(typeof buildTimeline==="function") buildTimeline();
+    const openId = id => { const e=document.getElementById(id); return e && e.classList.contains("open"); };
+    if(openId("settings") && typeof renderSettings==="function") renderSettings();
+    if(openId("profile")  && typeof renderProfile==="function")  renderProfile();
+    if(openId("chats")    && typeof renderChats==="function")    renderChats();
+    if(openId("notif")    && typeof renderNotifs==="function")   renderNotifs();
+  }catch(e){ console.warn("lang refresh:", e); }
+};
+
 
 /* ---------- aktif kare takibi ---------- */
 let activeIdx=0;
@@ -7014,15 +7033,11 @@ async function fetchMomentGeos(){
           const mo=MOOD_BY_KEY[r.mood];
           let thumb=null;
           if(r.media_path){
+            // video ise kapak resmi, yoksa asıl dosya (transform ücretli planda)
             try{
-              // pin küçük olduğu için küçültülmüş sürüm iste (performans)
-              const t=window.__sb.storage.from('moments').getPublicUrl(r.media_path,{
-                transform:{ width:96, height:96, resize:'cover', quality:60 }
-              });
-              thumb=t.data.publicUrl;
-            }catch(e){
-              try{ thumb=window.__sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl; }catch(e2){}
-            }
+              const p = (r.media_kind==='video' && r.poster_path) ? r.poster_path : r.media_path;
+              thumb = window.__sb.storage.from('moments').getPublicUrl(p).data.publicUrl;
+            }catch(e){}
           }
           out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,
             moodEmoji:mo?mo.em:"📍", thumb:thumb, kind:r.media_kind});
@@ -8096,7 +8111,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v118";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v122";
   box.appendChild(ver);
 }
 
@@ -9572,9 +9587,59 @@ function buildWall(el){
    anlar gelince sessizce onların yerini alır. Her açılışta farklı. */
 async function liveWall(el){
   if(!el || !window.__sb) return;
+  const sb=window.__sb;
+  const MOOD_EM={huzur:"🌿",mutlu:"☀️",heyecan:"⚡",asik:"💗",huzun:"🌧️",
+                 ozlem:"🕯️",saskin:"✨",sakin:"🌊",yorgun:"🌙",dusunce:"🌫️"};
+  const MAX_VIDEO = 10;
+
+  function urlOf(path){
+    if(!path) return null;
+    try{ return sb.storage.from('moments').getPublicUrl(path).data.publicUrl || null; }
+    catch(e){ return null; }
+  }
+
+  // Kareyi VİDEO ile doldur (akıştaki yöntemin aynısı: bekleme yok)
+  function fillVideo(tile, r){
+    const vurl = urlOf(r.media_path);
+    if(!vurl) return false;
+    const v=document.createElement('video');
+    v.src=vurl;
+    v.loop=true; v.muted=true; v.playsInline=true; v.autoplay=true; v.preload='metadata';
+    v.setAttribute('playsinline',''); v.setAttribute('muted','');
+    const p=urlOf(r.poster_path);
+    if(p) v.poster=p;                       // yüklenene kadar kapak görünsün
+    v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block';
+    tile.classList.remove('empty');
+    tile.style.position='relative';
+    tile.style.backgroundImage='none';
+    tile.insertBefore(v, tile.firstChild);
+    stamp(tile, r);
+    v.play().catch(()=>{});
+    return true;
+  }
+
+  // Kareyi RESİM ile doldur
+  function fillImage(tile, r){
+    const path = (r.media_kind==='video') ? (r.poster_path || r.media_path) : r.media_path;
+    const url = urlOf(path);
+    if(!url) return false;
+    const img=new Image();
+    img.onload=function(){
+      tile.classList.remove('empty');
+      tile.style.backgroundImage='url('+url+')';
+      stamp(tile, r);
+    };
+    img.src=url;
+    return true;
+  }
+
+  function stamp(tile, r){
+    let em=tile.querySelector('.em');
+    if(!em){ em=document.createElement('span'); em.className='em'; tile.appendChild(em); }
+    if(r && r.mood && MOOD_EM[r.mood]) em.textContent=MOOD_EM[r.mood];
+  }
+
   try{
-    const sb=window.__sb;
-    // son anları çek — küçük kapak resmi yeter
     const {data,error}=await sb
       .from('moments')
       .select('media_path,poster_path,media_kind,mood,created_at')
@@ -9583,109 +9648,53 @@ async function liveWall(el){
       .limit(60);
     if(error||!data||!data.length) return;
 
-    // Videolar için kapak resmi şart (video dosyası arka plan olarak yüklenemez).
-    // Kapağı olmayan eski videoları ele; fotoğraflar olduğu gibi kalır.
-    // video: kapağı varsa resim olarak, yoksa gerçek video olarak gösterilebilir
-    const usable=data.filter(r=> !!(r.poster_path || r.media_path));
-    if(!usable.length) return;
+    const pool=data.filter(r=> !!(r.poster_path || r.media_path));
+    if(!pool.length) return;
 
-    // karıştır: her açılışta farklı sıra
-    const pool=usable.slice();
+    // her açılışta farklı sıra
     for(let i=pool.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
       [pool[i],pool[j]]=[pool[j],pool[i]];
     }
 
-    const tiles=el.querySelectorAll('.gtile');
-    const MOOD_EM={huzur:"🌿",mutlu:"☀️",heyecan:"⚡",asik:"💗",huzun:"🌧️",
-                   ozlem:"🕯️",saskin:"✨",sakin:"🌊",yorgun:"🌙",dusunce:"🌫️"};
+    const tiles=[...el.querySelectorAll('.gtile')];
+    if(!tiles.length) return;
 
-    // Videolardan birkaçı gerçekten oynasın (canlı his), gerisi kapak resmi.
-    // Sınır şart: 30 eşzamanlı video telefonu kilitler.
-    const MAX_VIDEO = 3;
-    let videoUsed = 0;
-
-    // her kareyi hazırla; hepsinin yüklenmesini bekleyebilmek için söz (promise) döndür
-    const jobs=[];
-    tiles.forEach((tile,idx)=>{
-      const r=pool[idx % pool.length];
-      if(!r) return;
-
-      // video ise ve kotamız varsa gerçek video oynat
-      if(r.media_kind==='video' && r.media_path && videoUsed<MAX_VIDEO && idx%4===1){
-        videoUsed++;
-        let vurl;
-        try{ vurl=sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl; }catch(e){ vurl=null; }
-        if(vurl){
-          jobs.push(new Promise(done=>{
-            const v=document.createElement('video');
-            v.src=vurl; v.muted=true; v.loop=true; v.playsInline=true;
-            v.autoplay=true; v.preload='metadata';
-            v.setAttribute('muted','');
-            v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit';
-            const finish=()=>{
-              tile.style.transition='opacity .45s ease';
-              tile.style.opacity='0';
-              setTimeout(()=>{
-                tile.classList.remove('empty');
-                tile.style.backgroundImage='none';
-                tile.style.position='relative';
-                tile.insertBefore(v, tile.firstChild);
-                let em=tile.querySelector('.em');
-                if(!em){ em=document.createElement('span'); em.className='em'; tile.appendChild(em); }
-                if(em && r.mood && MOOD_EM[r.mood]) em.textContent=MOOD_EM[r.mood];
-                tile.style.opacity='';
-                v.play().catch(()=>{});
-                done();
-              },180);
-            };
-            v.addEventListener('loadeddata',finish,{once:true});
-            v.addEventListener('error',()=>done(),{once:true});
-            setTimeout(done,3000);
-          }));
-          return;
-        }
+    // Videoları ayır (benzersiz), kalanları resim havuzu yap
+    const seen=new Set();
+    const vids=[], imgs=[];
+    pool.forEach(r=>{
+      if(r.media_kind==='video' && r.media_path && !seen.has(r.media_path)){
+        seen.add(r.media_path); vids.push(r);
+      }else{
+        imgs.push(r);
       }
-
-      // kapağı olmayan ve video kotasına giremeyen video: yer tutucu kalsın
-      const path=(r.media_kind==='video') ? r.poster_path : r.media_path;
-      if(!path) return;
-      let url;
-      try{
-        // küçük sürüm iste (veri tasarrufu)
-        const tr=sb.storage.from('moments').getPublicUrl(path,{
-          transform:{width:220,height:300,resize:'cover',quality:60}
-        });
-        url=tr.data.publicUrl;
-      }catch(e){
-        try{ url=sb.storage.from('moments').getPublicUrl(path).data.publicUrl; }catch(e2){ return; }
-      }
-      jobs.push(new Promise(done=>{
-        const img=new Image();
-        const put=()=>{
-          tile.style.transition='opacity .45s ease';
-          tile.style.opacity='0';
-          setTimeout(()=>{
-            tile.classList.remove('empty');
-            tile.style.backgroundImage='url('+url+')';
-            let em=tile.querySelector('.em');
-            if(!em){ em=document.createElement('span'); em.className='em'; tile.appendChild(em); }
-            if(em && r.mood && MOOD_EM[r.mood]) em.textContent=MOOD_EM[r.mood];
-            tile.style.opacity='';
-            done();
-          },180);
-        };
-        img.onload=put;
-        img.onerror=()=>done();      // yüklenemezse yer tutucu kalsın
-        setTimeout(done,2500);        // takılırsa bekletme
-        img.src=url;
-      }));
     });
-    // sadece ilk 3 kare beklenir, gerisi arka planda dolar
-    await Promise.race([
-      Promise.all(jobs.slice(0,3)),
-      new Promise(r=>setTimeout(r,600))
-    ]);
+
+    // Videoların yerleşeceği kareler: eşit aralıklarla dağıt
+    const vCount = Math.min(MAX_VIDEO, vids.length, tiles.length);
+    const vSlot = new Map();
+    if(vCount){
+      const step = tiles.length / vCount;
+      for(let k=0;k<vCount;k++){
+        vSlot.set(Math.min(tiles.length-1, Math.round(k*step)), vids[k]);
+      }
+    }
+
+    // Kalan karelere resim havuzunu sırayla dağıt (biterse başa dön).
+    // Resim yoksa videoların kapaklarını kullan — kare ASLA boş kalmasın.
+    const fallback = imgs.length ? imgs : (vids.length ? vids : pool);
+    let fi = 0;
+
+    tiles.forEach((tile, idx)=>{
+      const vr = vSlot.get(idx);
+      if(vr && fillVideo(tile, vr)) return;          // video yerleşti
+      // resim dene; olmazsa bir sonraki içeriği dene (boş kare bırakma)
+      for(let attempt=0; attempt<fallback.length; attempt++){
+        const r = fallback[(fi++) % fallback.length];
+        if(r && fillImage(tile, r)) return;
+      }
+    });
   }catch(e){}
 }
 

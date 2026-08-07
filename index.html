@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v112</title>
+<title>Klipsy v113</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4681,9 +4681,9 @@ svg{display:block}
 @media (min-width:520px) and (min-height:720px){
   #gate{position:absolute;border-radius:32px;overflow:hidden}
 }
-.gscreen{position:absolute;inset:0;display:none;flex-direction:column}
+.gscreen{position:absolute;inset:0;display:none;flex-direction:column;z-index:2}
 .gscreen.on{display:flex}
-.gwall{position:absolute;inset:0;z-index:0;overflow:hidden}
+.gwall{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .gwall .gcol{position:absolute;top:-12%;width:34%;display:flex;flex-direction:column;gap:12px;will-change:transform}
 .gwall .gcol.c1{left:0;animation:gdrift1 38s linear infinite}
 .gwall .gcol.c2{left:33.5%;animation:gdrift2 46s linear infinite}
@@ -4762,9 +4762,9 @@ svg{display:block}
 .gGoogle:active{transform:scale(.98)}
 .gGoogle svg{flex:none}
 /* ===== açılış (splash) ekranı ===== */
-.gsplash{align-items:center;justify-content:center;background:#08080C;overflow:hidden}
+.gsplash{align-items:center;justify-content:center;background:transparent;overflow:hidden}
 .gsplash .spGlow{position:absolute;width:min(120vw,560px);height:min(120vw,560px);border-radius:50%;
-  background:radial-gradient(circle, rgba(255,59,107,.28), rgba(123,91,255,.16) 45%, transparent 70%);
+  background:radial-gradient(circle, rgba(255,59,107,.22), rgba(123,91,255,.12) 45%, transparent 70%);
   filter:blur(28px);animation:spGlow 3.4s ease-in-out infinite}
 @keyframes spGlow{
   0%,100%{transform:scale(.92);opacity:.75}
@@ -4833,6 +4833,10 @@ svg{display:block}
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
+  <!-- akan duvar: hem açılış hem giriş ekranının arkasında, kesintisiz -->
+  <div class="gwall" id="gWall2"></div>
+  <div class="gveil"></div>
+
   <section class="gscreen gsplash" id="gSplash">
     <div class="spGlow"></div>
     <div class="spCore">
@@ -4843,8 +4847,6 @@ svg{display:block}
   </section>
 
   <section class="gscreen on" id="gAuth">
-    <div class="gwall" id="gWall2"></div>
-    <div class="gveil"></div>
     <div class="gauth">
       <div class="gbrand">
         <h1>Klipsy</h1>
@@ -4879,7 +4881,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v112</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v113</span></div>
     </div>
   </section>
 </div>
@@ -7813,7 +7815,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v112";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v113";
   box.appendChild(ver);
 }
 

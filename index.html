@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v132</title>
+<title>Klipsy v135</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4489,10 +4489,13 @@ svg{display:block}
 .crow2 .nm{font-size:14.5px;font-weight:600;letter-spacing:-.018em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2 .tm{margin-left:auto;font-size:11.5px;color:var(--t3);white-space:nowrap}
-.reqTag{display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;padding:2px 8px;
-  border-radius:99px;margin-right:6px;letter-spacing:-.01em}
-.reqTag.in{background:rgba(255,59,107,.16);color:#FF8AA3}
-.reqTag.me{background:rgba(255,255,255,.08);color:var(--t3);margin-right:0}
+.reqTag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  height:19px;padding:0 8px;border-radius:99px;margin-right:6px;letter-spacing:-.005em}
+.reqTag svg{width:10px;height:10px;flex:none}
+.reqTag.in{background:rgba(255,59,107,.18);color:#FF8AA3;
+  box-shadow:inset 0 0 0 1px rgba(255,59,107,.22)}
+.reqTag.me{background:var(--surf2);color:var(--t3);margin-right:0;
+  box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .chatTabs{display:flex;align-items:center;gap:26px;padding:2px 18px 0;border-bottom:1px solid var(--edge-soft);margin-bottom:4px}
 .chatTabs #chatTabReq{margin-left:auto}
 .chatTab{position:relative;padding:12px 0 13px;font-size:14.5px;font-weight:600;color:var(--t3);
@@ -4513,16 +4516,54 @@ svg{display:block}
 .reqCount{min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#FF3B6B;color:#fff;
   font-size:12px;font-weight:700;display:grid;place-items:center}
 .reqRow>svg{color:var(--t3);flex:none}
-#chatReqBar{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:12px 16px;background:rgba(255,59,107,.08);border-bottom:1px solid rgba(255,59,107,.18)}
-#chatReqBar span{font-size:12.5px;color:var(--t1);line-height:1.4;flex:1}
-#chatReqBar.mine{background:var(--surf2);border-bottom-color:var(--edge)}
-#chatReqBar.mine span{color:var(--t3)}
-.chatReqBtns{display:flex;gap:8px;flex:none}
-.chatReqBtns button{height:32px;padding:0 14px;border-radius:99px;border:0;font-size:12.5px;font-weight:600;
-  white-space:nowrap}
-#chatReqAccept{background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff}
-#chatReqDecline{background:rgba(255,255,255,.08);color:var(--t2)}
+/* ===== sohbet isteği kartı ===== */
+#chatReqBar{display:flex;flex-direction:column;gap:12px;
+  padding:14px 16px 15px;
+  background:linear-gradient(160deg, rgba(255,59,107,.13), rgba(123,91,255,.08) 70%, transparent);
+  border-bottom:1px solid rgba(255,255,255,.1);
+  animation:crIn .34s cubic-bezier(.22,1,.36,1);
+  transition:opacity .24s, transform .24s}
+@keyframes crIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+#chatReqBar.done{opacity:0;transform:translateY(-8px)}
+
+/* bekleme hali (isteği ben gönderdim) — yatay, sakin */
+#chatReqBar.mine{flex-direction:row;align-items:center;gap:12px;
+  background:var(--surf1);border-bottom-color:var(--edge-soft)}
+
+#chatReqBar .crTop{display:flex;align-items:center;gap:12px}
+
+#chatReqBar .crIcon{width:38px;height:38px;flex:none;border-radius:99px;
+  display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  box-shadow:0 6px 16px -6px rgba(255,59,107,.7)}
+#chatReqBar .crIcon svg{width:18px;height:18px}
+#chatReqBar.mine .crIcon{background:var(--surf2);border:1px solid var(--edge);
+  color:var(--t2);box-shadow:none}
+/* bekleyen saat ikonu hafifçe nefes alsın */
+#chatReqBar .crIcon.pulse{animation:crPulse 2.4s ease-in-out infinite}
+@keyframes crPulse{0%,100%{opacity:.75}50%{opacity:1}}
+
+#chatReqBar .crTx{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+#chatReqBar .crTx b{font-size:14px;font-weight:700;color:var(--t1);letter-spacing:-.02em}
+#chatReqBar .crTx span{font-size:12.5px;color:var(--t3);line-height:1.4;letter-spacing:-.01em}
+
+.chatReqBtns{display:flex;gap:9px}
+.chatReqBtns button{flex:1;height:42px;border-radius:13px;border:0;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:14px;font-weight:600;font-family:inherit;letter-spacing:-.016em;
+  transition:transform .12s, opacity .18s}
+.chatReqBtns button:active{transform:scale(.97)}
+.chatReqBtns button svg{width:16px;height:16px;flex:none}
+#chatReqAccept{background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  box-shadow:0 8px 20px -10px rgba(255,59,107,.85)}
+#chatReqAccept.busy{opacity:.72}
+#chatReqDecline{background:var(--surf2);color:var(--t2);border:1px solid var(--edge-soft)}
+/* kabul ederken dönen gösterge */
+.crSpin{width:15px;height:15px;flex:none;border-radius:99px;
+  border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
+  animation:crSpin .7s linear infinite}
+@keyframes crSpin{to{transform:rotate(360deg)}}
+
 .crow2 .pv{font-size:13px;color:var(--t3);margin-top:3px;letter-spacing:-.01em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2.unread .nm{font-weight:700}
@@ -4994,6 +5035,20 @@ svg{display:block}
   color:#fff;-webkit-text-fill-color:#fff;caret-color:var(--accent);text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .gfield input.pad{padding-left:18px}
 .gfield input::placeholder{color:rgba(255,255,255,.4);-webkit-text-fill-color:rgba(255,255,255,.4)}
+/* Tarayıcının otomatik doldurma zeminini bastır (yoksa alan beyaz olur) */
+.gfield input:-webkit-autofill,
+.gfield input:-webkit-autofill:hover,
+.gfield input:-webkit-autofill:focus,
+.gfield input:-webkit-autofill:active{
+  -webkit-text-fill-color:#fff !important;
+  caret-color:#fff;
+  -webkit-box-shadow:0 0 0 1000px transparent inset !important;
+  box-shadow:0 0 0 1000px transparent inset !important;
+  transition:background-color 9999s ease-out 0s !important;
+  background-clip:content-box !important}
+.gfield input:autofill{
+  -webkit-text-fill-color:#fff !important;
+  box-shadow:0 0 0 1000px transparent inset !important}
 .ghint{font-size:11px;margin:5px 0 0 0;color:var(--t3);min-height:13px;transition:color .16s;
   text-shadow:0 1px 6px rgba(0,0,0,.7)}
 .ghint.ok{color:var(--ok,#5FD69A)}
@@ -5259,7 +5314,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v132</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v135</span></div>
     </div>
   </section>
 </div>
@@ -6968,15 +7023,63 @@ function anyBlockerOpen(){
     return el && el.classList.contains("open");
   });
 }
+/* ===== GERİ HAREKETİ / GERİ TUŞU =====
+   Tek sayfalık uygulama olduğu için telefonun geri hareketi
+   uygulamayı kapatıyordu. Her açılan panel için tarayıcı geçmişine
+   bir kayıt ekliyoruz; geri hareketi o kaydı silip paneli kapatıyor. */
+const _navStack = [];      // açık panellerin sırası
+let _navSelfBack = false;  // geri işlemini biz mi başlattık?
+
+function _pushHistory(id){
+  _navStack.push(id);
+  try{ history.pushState({klipsy:id, depth:_navStack.length}, ""); }catch(e){}
+}
+
+// geri hareketi/tuşu: en son açılan paneli kapat
+window.addEventListener("popstate", ()=>{
+  // düğmeyle kapatma sırasında biz history.back() çağırdıysak burada iş yok
+  if(_navSelfBack){ _navSelfBack=false; return; }
+  if(!_navStack.length) return;   // panel yoksa normal davran (uygulamadan çık)
+  const id = _navStack.pop();
+  try{ _closeSilently(id); }catch(e){}
+});
+
+// panel düğmeyle kapandığında geçmiş kaydını da geri al
+function _popHistory(id){
+  const ix=_navStack.lastIndexOf(id);
+  if(ix<0) return;
+  _navStack.splice(ix,1);
+  _navSelfBack=true;
+  try{ history.back(); }catch(e){ _navSelfBack=false; }
+  setTimeout(()=>{ _navSelfBack=false; },400);
+}
+
+function _closeSilently(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.remove("open");
+  el.setAttribute("aria-hidden","true");
+  if(id==="comments" && typeof closeComments==="function") closeComments();
+  if(id==="songSheet" && typeof stopSheetPreview==="function") stopSheetPreview();
+  if(id==="arcView" && typeof arcStopSong==="function") arcStopSong();
+  if(AUDIO_BLOCKERS.includes(id) && !anyBlockerOpen() && typeof resumeFeedMedia==="function"){
+    setTimeout(()=>{ if(!anyBlockerOpen()) resumeFeedMedia(); },80);
+  }
+  if(typeof syncStatusBar==="function") syncStatusBar();
+}
+
 function open(id){
   const el=document.getElementById(id);
   el.classList.add("open");el.setAttribute("aria-hidden","false");
+  _pushHistory(id);
   if(AUDIO_BLOCKERS.includes(id) && typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
 }
 function close(id){
   const el=document.getElementById(id);
   el.classList.remove("open");el.setAttribute("aria-hidden","true");
+  // panel düğmeyle kapatıldıysa geçmiş kaydını da geri al
+  _popHistory(id);
   if(id==="comments") closeComments();
   if(id==="songSheet" && typeof stopSheetPreview==="function") stopSheetPreview();
   // başka engelleyici panel kalmadıysa akış sesini geri getir
@@ -7917,6 +8020,7 @@ function openCompose(src,kind,blob,durationMs){
     box.style.backgroundImage="url("+src+")";
   }
   $("#compose").classList.add("open");
+  _pushHistory("compose");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#compose").setAttribute("aria-hidden","false");
@@ -8162,6 +8266,7 @@ function closeCompose(back){
   const c=$("#compose");
   cpStopPreview();
   c.classList.remove("open");c.setAttribute("aria-hidden","true");
+  _popHistory("compose");
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#cpMedia").innerHTML="";$("#cpMedia").style.backgroundImage="";
   draft=null;pickedMood=null;
@@ -8208,15 +8313,31 @@ async function loadProfileData(name){
       if(data.avatar_url) setRealAvatar(data.username, data.avatar_url);
       const extra={ display_name:data.display_name||null, city:data.city||null, education:data.education||null,
         job:data.job||null, zodiac:data.zodiac||null, interests:data.interests||null, link:data.link||null };
+
+      // Sayaç kolonları (follower_count/following_count) güncel olmayabiliyor;
+      // gerçek sayıyı follows tablosundan say. Başarısız olursa kolona düşülür.
+      let fwCount=data.follower_count||0, foCount=data.following_count||0, mmCount=data.moment_count||0;
+      try{
+        const sb=window.__sb;
+        const [fw,fo,mm]=await Promise.all([
+          sb.from('follows').select('*',{count:'exact',head:true}).eq('followee_id',data.id),
+          sb.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',data.id),
+          sb.from('moments').select('*',{count:'exact',head:true}).eq('author_id',data.id).eq('is_removed',false)
+        ]);
+        if(typeof fw.count==='number') fwCount=fw.count;
+        if(typeof fo.count==='number') foCount=fo.count;
+        if(typeof mm.count==='number') mmCount=mm.count;
+      }catch(e){}
+
       USERS[name]=Object.assign({
         name:data.username, id:data.id, avatar:data.avatar_url, bio:data.bio||null,
-        followers:data.follower_count, follows:data.following_count,
-        moments:data.moment_count, joined:new Date(data.created_at).getTime()
+        followers:fwCount, follows:foCount,
+        moments:mmCount, joined:new Date(data.created_at).getTime()
       }, extra);
       if(name===ME){
-        meUser.followers=data.follower_count;
-        meUser.follows=data.following_count;
-        meUser.moments=data.moment_count;
+        meUser.followers=fwCount;
+        meUser.follows=foCount;
+        meUser.moments=mmCount;
         meUser.bio=data.bio||null;
         meUser.joined=new Date(data.created_at).getTime();
         Object.assign(meUser, extra);
@@ -8335,7 +8456,7 @@ async function openMiniProfile(name){
   });
   const mBtn=document.createElement("button");
   mBtn.className="ghost";
-  mBtn.innerHTML="Mesaj";
+  mBtn.innerHTML=t("message");
   mBtn.addEventListener("click",()=>{ close("miniProfile"); openChats(); openChat(name); });
   acts.append(fBtn,mBtn);
 }
@@ -8711,7 +8832,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v132";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v135";
   box.appendChild(ver);
 }
 
@@ -9035,6 +9156,7 @@ function openArchiveView(it){
     document.body.appendChild(ov);
     const shut=()=>{
       ov.classList.remove("open");
+      _popHistory("arcView");
       arcStopSong();
       const m=$("#avMedia");
       if(m){ const v=m.querySelector("video"); if(v){ try{v.pause();}catch(e){} } m.innerHTML=""; }
@@ -9107,6 +9229,7 @@ function openArchiveView(it){
   ov.querySelector("#avMeta").innerHTML=bits.join('');
 
   ov.classList.add("open");
+  _pushHistory("arcView");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
 }
@@ -9125,7 +9248,8 @@ async function loadSaved(){
       poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
       kind:r.media_kind, mood:MOOD_BY_KEY[r.mood]||null,
       where:r.place_label||t("no_location"), ts:new Date(r.created_at).getTime(),
-      note:r.note||""
+      note:r.note||"",
+      song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
     }));
   }catch(e){ console.warn(e); _savedCache=[]; }
   return _savedCache;
@@ -9336,7 +9460,9 @@ function buildChatRow(c, isRequestRow){
     // istek listesinde mesaj içeriği ASLA gösterilmez
     pv.innerHTML = '<span class="reqTag in">'+t("msg_request2")+'</span> '+t("open_decide")+'';
   }else if(isPending && iAmRequester){
-    pv.innerHTML = '<span class="reqTag me">'+t("req_sent2")+'</span>';
+    pv.innerHTML = '<span class="reqTag me">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>'+
+      t("req_sent2")+'</span>';
   }else{
     pv.textContent=preview(c);
   }
@@ -9433,6 +9559,7 @@ function renderChatRequestBar(c){
   // gelen bekleyen istekte yazma kutusunu gizle
   if(msgBar) msgBar.style.display = (isPending && !iAmRequester) ? "none" : "flex";
   if(!isPending){ if(bar) bar.remove(); return; }
+
   if(!bar){
     bar=document.createElement("div");bar.id="chatReqBar";
     const chatPanel=$("#chat");
@@ -9440,30 +9567,65 @@ function renderChatRequestBar(c){
     if(head&&head.nextSibling) chatPanel.insertBefore(bar, head.nextSibling);
     else if(chatPanel) chatPanel.appendChild(bar);
   }
+
+  const ICO = {
+    clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>',
+    mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.4"/><path d="m3.6 6.6 8.4 6 8.4-6"/></svg>',
+    check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>',
+    x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+  };
+
   if(iAmRequester){
+    // --- BEN İSTEK GÖNDERDİM: bekleme durumu ---
     bar.className="chatReqBar mine";
-    bar.innerHTML='<span>'+t("req_sent2")+', '+esc(who_or(c))+' '+t("req_waiting")+'</span>';
+    bar.innerHTML=
+      '<div class="crIcon pulse">'+ICO.clock+'</div>'+
+      '<div class="crTx">'+
+        '<b>'+t("req_sent2")+'</b>'+
+        '<span>'+esc(who_or(c))+' '+t("req_waiting")+'</span>'+
+      '</div>';
   }else{
+    // --- BANA İSTEK GELDİ: kabul / sil ---
     bar.className="chatReqBar";
-    bar.innerHTML='<span>'+esc(c.who)+' '+t("wants_msg")+'.</span>'+
-      '<div class="chatReqBtns"><button id="chatReqAccept">Kabul et</button><button id="chatReqDecline" data-i18n="delete">Sil</button></div>';
+    bar.innerHTML=
+      '<div class="crTop">'+
+        '<div class="crIcon">'+ICO.mail+'</div>'+
+        '<div class="crTx">'+
+          '<b>'+t("req_new")+'</b>'+
+          '<span>'+esc(c.who)+' '+t("wants_msg")+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="chatReqBtns">'+
+        '<button id="chatReqDecline" class="crGhost">'+ICO.x+'<span>'+t("delete")+'</span></button>'+
+        '<button id="chatReqAccept" class="crPrimary">'+ICO.check+'<span>'+t("accept")+'</span></button>'+
+      '</div>';
+
     const accBtn=bar.querySelector('#chatReqAccept');
     const decBtn=bar.querySelector('#chatReqDecline');
+
     accBtn.addEventListener('click',async ()=>{
-      accBtn.disabled=true; accBtn.textContent='Kabul ediliyor…';
+      accBtn.disabled=true;
+      accBtn.classList.add("busy");
+      accBtn.innerHTML='<span class="crSpin"></span><span>'+t("sending")+'</span>';
       if(window.__sb && c.convId){
         const {error}=await window.__sb.rpc('accept_conversation',{conv:c.convId});
-        if(error){ toast('Kabul edilemedi: '+error.message); accBtn.disabled=false; accBtn.textContent='Kabul et'; return; }
+        if(error){
+          toast(t("err_generic2")+" "+error.message);
+          accBtn.disabled=false; accBtn.classList.remove("busy");
+          accBtn.innerHTML=ICO.check+'<span>'+t("accept")+'</span>';
+          return;
+        }
       }
       c.requestState='accepted';
-      bar.remove();
+      bar.classList.add("done");
+      setTimeout(()=>bar.remove(), 260);
       if(msgBar) msgBar.style.display="flex";
       toast(c.who+" "+t("ok_chat_ok"));
       loadConversations();
-      // artık mesajları çekip göster
       await loadMessages(c.who);
       renderChat();
     });
+
     decBtn.addEventListener('click',async ()=>{
       if(!confirm(c.who+" "+t("req_delete_q"))) return;
       if(window.__sb && c.convId){
@@ -9827,6 +9989,7 @@ async function openCam(which){
   if(which==="profile"){camMode="photo";facing="user";}
   $("#camTitle").textContent=which==="profile"?t("profile_photo"):(which==="dm"?t("act_send_msg"):t("act_shoot_now"));
   $("#cam").classList.add("open");$("#cam").setAttribute("aria-hidden","false");
+  _pushHistory("cam");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#camFail").classList.remove("on");
@@ -9856,6 +10019,7 @@ function stopCam(){
 function closeCam(){
   stopCam();
   $("#cam").classList.remove("open");$("#cam").setAttribute("aria-hidden","true");
+  _popHistory("cam");
   if(target!=="dm") setTab($("#tabFeed"));
   if(typeof syncStatusBar==="function") syncStatusBar();
 }

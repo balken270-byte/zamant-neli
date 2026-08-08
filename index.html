@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v130</title>
+<title>Klipsy v132</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      top_songs:"Bugün en çok dinlenenler",
       pick_place:"Şehir ya da ülke seç",
       place_layers:"Bu yerdeki anlar",
       anywhere:"Her yer",
@@ -353,6 +354,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      top_songs:"Top songs today",
       pick_place:"Pick a city or country",
       place_layers:"Moments here",
       anywhere:"Anywhere",
@@ -676,6 +678,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      top_songs:"Lo más escuchado hoy",
       pick_place:"Elige una ciudad o país",
       place_layers:"Momentos aquí",
       anywhere:"Cualquier lugar",
@@ -999,6 +1002,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      top_songs:"الأكثر استماعًا اليوم",
       pick_place:"اختر مدينة أو دولة",
       place_layers:"لحظات هنا",
       anywhere:"كل الأماكن",
@@ -1322,6 +1326,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      top_songs:"Les plus écoutés aujourd'hui",
       pick_place:"Choisis une ville ou un pays",
       place_layers:"Instants ici",
       anywhere:"Partout",
@@ -1645,6 +1650,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      top_songs:"Heute am meisten gehört",
       pick_place:"Stadt oder Land wählen",
       place_layers:"Momente hier",
       anywhere:"Überall",
@@ -1968,6 +1974,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      top_songs:"Самое популярное сегодня",
       pick_place:"Выбери город или страну",
       place_layers:"Моменты здесь",
       anywhere:"Везде",
@@ -2291,6 +2298,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      top_songs:"Mais ouvidas hoje",
       pick_place:"Escolha uma cidade ou país",
       place_layers:"Momentos aqui",
       anywhere:"Qualquer lugar",
@@ -2614,6 +2622,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      top_songs:"आज के टॉप गाने",
       pick_place:"शहर या देश चुनें",
       place_layers:"यहाँ के पल",
       anywhere:"कहीं भी",
@@ -2937,6 +2946,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      top_songs:"Terpopuler hari ini",
       pick_place:"Pilih kota atau negara",
       place_layers:"Momen di sini",
       anywhere:"Di mana saja",
@@ -4090,7 +4100,13 @@ svg{display:block}
   color:var(--t3);font-size:12.5px;font-weight:600;letter-spacing:-.01em;transition:all .18s}
 /* ===== Arapça: sağdan sola düzen ===== */
 [dir="rtl"] .setRow,[dir="rtl"] .crow2,[dir="rtl"] .shrow,[dir="rtl"] .nrow,
-[dir="rtl"] .cpSideBtn,[dir="rtl"] .songRow{direction:rtl}
+[dir="rtl"] .cpSideBtn,[dir="rtl"] /* popüler şarkılar başlığı + sıra numarası */
+.songTopHead{display:flex;align-items:center;gap:7px;padding:4px 14px 8px;
+  font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--t3)}
+.songTopHead .stFlame{font-size:13px}
+.songRank{width:20px;flex:none;text-align:center;font-size:12px;font-weight:700;
+  color:var(--t3);font-variant-numeric:tabular-nums}
+.songRow{direction:rtl}
 [dir="rtl"] .setTxt,[dir="rtl"] .crow2 .mid,[dir="rtl"] .songTx{text-align:right}
 [dir="rtl"] .cpBody,[dir="rtl"] .profbody{direction:rtl}
 [dir="rtl"] .cpnote,[dir="rtl"] .msgbar input,[dir="rtl"] .cbar input{text-align:right}
@@ -4370,6 +4386,31 @@ svg{display:block}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 #arcView .avBottom{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:16px 16px 18px;
   display:flex;flex-direction:column;gap:9px}
+/* arşiv görüntüleyici — sağ altta tek plak */
+#arcView .avDisc{position:absolute;right:12px;bottom:14px;z-index:5;
+  width:46px;height:46px;border-radius:99px;padding:0;border:0;
+  background:#121218;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.16);
+  display:grid;place-items:center;overflow:hidden;
+  transition:transform .16s}
+#arcView .avDisc:active{transform:scale(.9)}
+/* kapak resmi — çalarken döner */
+#arcView .adArt{position:absolute;inset:3px;border-radius:99px;
+  background:#2A2A34 center/cover no-repeat;
+  animation:adSpin 3.4s linear infinite;animation-play-state:paused}
+#arcView .avDisc.playing .adArt{animation-play-state:running}
+@keyframes adSpin{to{transform:rotate(360deg)}}
+/* ortadaki iğne deliği */
+#arcView .adHole{position:relative;z-index:2;width:11px;height:11px;border-radius:99px;
+  background:#0B0B10;box-shadow:0 0 0 1.5px rgba(255,255,255,.28)}
+/* durakken görünen nota işareti */
+#arcView .adNote{position:absolute;z-index:3;right:1px;bottom:1px;
+  width:17px;height:17px;border-radius:99px;
+  display:grid;place-items:center;font-size:10px;color:#fff;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  border:1.5px solid #101018;transition:opacity .2s}
+#arcView .avDisc.playing .adNote{opacity:0}
+
 #arcView .avNote{font-size:15px;line-height:1.45;font-weight:500;color:#fff;letter-spacing:-.014em;
   text-shadow:0 1px 10px rgba(0,0,0,.8);
   display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
@@ -5218,7 +5259,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v130</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v132</span></div>
     </div>
   </section>
 </div>
@@ -7936,15 +7977,145 @@ function openSongSheet(){
   $("#songResults").innerHTML='<div class="songEmpty">'+t("song_search2")+'</div>';
   $("#songSearchInput").value="";
   open("songSheet");
+  loadTopSongs();                       // panel dolu açılsın
   setTimeout(()=>$("#songSearchInput").focus(),260);
 }
 $("#songSearchInput").addEventListener("input",e=>{
   clearTimeout(_songSearchT);
   const q=e.target.value.trim();
-  if(q.length<2){ $("#songResults").innerHTML='<div class="songEmpty">'+t("song_search2")+'</div>'; return; }
+  if(q.length<2){ loadTopSongs(); return; }
   $("#songResults").innerHTML='<div class="songEmpty">'+t("searching2")+'</div>';
   _songSearchT=setTimeout(()=>searchSongs(q),380);
 });
+/* ===== POPÜLER ŞARKILAR =====
+   Apple'ın eski RSS adresleri artık güvenilmez (kimi ülkede boş döner,
+   kimi tarayıcıda engellenir). Bu yüzden birden fazla kaynak sırayla
+   denenir; hiçbiri olmazsa arama kutusuna yönlendiren bir mesaj çıkar. */
+function userCountry(){
+  try{
+    const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+    for(const l of langs){
+      const p = String(l).split('-');
+      if(p[1] && p[1].length===2) return p[1].toUpperCase();
+    }
+  }catch(e){}
+  return 'TR';
+}
+
+// Kaynak 1: Apple Marketing Tools (güncel) — önizleme YOK, ad+sanatçı var
+async function topFromMarketingTools(cc){
+  const url = "https://rss.applemarketingtools.com/api/v2/"+cc+"/music/most-played/30/songs.json";
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("mt");
+  const j = await r.json();
+  const res = (j.feed && j.feed.results) ? j.feed.results : [];
+  return res.map(x=>({
+    title: x.name || "",
+    artist: x.artistName || "",
+    art: (x.artworkUrl100||"").replace("100x100bb","300x300bb"),
+    preview: null
+  })).filter(x=>x.title);
+}
+
+// Kaynak 2: eski iTunes RSS — bazı ülkelerde hâlâ çalışır, önizleme içerir
+async function topFromLegacyRss(cc){
+  const url = "https://itunes.apple.com/"+cc+"/rss/topsongs/limit=30/json";
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("rss");
+  const j = await r.json();
+  const entries = (j.feed && j.feed.entry) ? j.feed.entry : [];
+  return entries.map(e=>({
+    title:  e["im:name"] ? e["im:name"].label : "",
+    artist: e["im:artist"] ? e["im:artist"].label : "",
+    art:    (e["im:image"] && e["im:image"].length)
+            ? e["im:image"][e["im:image"].length-1].label.replace(/\/\d+x\d+bb/, "/300x300bb") : "",
+    preview: (e.link||[]).map(L=>L.attributes)
+             .filter(a=>a && a["im:assetType"]==="preview")
+             .map(a=>a.href)[0] || null
+  })).filter(x=>x.title);
+}
+
+async function loadTopSongs(){
+  const box=$("#songResults");
+  if(!box) return;
+  box.innerHTML='<div class="songEmpty">'+t("loading2")+'</div>';
+  const cc = userCountry().toLowerCase();
+
+  let list=[];
+  try{
+    list = await DataHub.get('top:'+cc, async()=>{
+      // sırayla dene, ilk dolu sonucu kullan
+      const sources=[topFromLegacyRss, topFromMarketingTools];
+      for(const fn of sources){
+        try{
+          const out = await fn(cc);
+          if(out && out.length) return out;
+        }catch(e){}
+      }
+      // ülkeye özel bulunamazsa ABD listesini dene
+      if(cc!=='us'){
+        for(const fn of sources){
+          try{
+            const out = await fn('us');
+            if(out && out.length) return out;
+          }catch(e){}
+        }
+      }
+      return [];
+    }, {fallback:[], timeout:9000});
+  }catch(e){ list=[]; }
+
+  // Hiçbir kaynak çalışmadı: kullanıcıyı aramaya yönlendir (boş sayfa bırakma)
+  if(!list || !list.length){
+    box.innerHTML='<div class="songEmpty">'+t("song_empty")+'</div>';
+    return;
+  }
+
+  box.innerHTML="";
+  const head=document.createElement("div");
+  head.className="songTopHead";
+  head.innerHTML='<span class="stFlame">🔥</span>'+t("top_songs");
+  box.appendChild(head);
+
+  list.forEach((s,i)=>{
+    const b=document.createElement("button");b.className="songRow";
+    b.innerHTML='<span class="songRank">'+(i+1)+'</span>'+
+      '<div class="songArt"'+(s.art?' style="background-image:url('+esc(s.art)+')"':'')+'></div>'+
+      '<div class="songTx"><b>'+esc(s.title)+'</b><span>'+esc(s.artist)+'</span></div>'+
+      (s.preview?'<span class="songPlay"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>':'');
+
+    const playBtn=b.querySelector(".songPlay");
+    if(playBtn){
+      playBtn.addEventListener("click",ev=>{
+        ev.stopPropagation();
+        const already = _sheetPreview && _sheetPreview._src===s.preview && !_sheetPreview.paused;
+        stopSheetPreview();
+        if(already) return;
+        _sheetPreview=new Audio(s.preview);
+        _sheetPreview._src=s.preview;
+        _sheetPreview.volume=0.85;
+        _sheetPreview.play().catch(()=>{});
+        playBtn.classList.add("on");
+        _sheetPreview.addEventListener("ended",()=>playBtn.classList.remove("on"));
+      });
+    }
+
+    b.addEventListener("click",()=>{
+      if(s.preview){
+        pickedSong={title:s.title, artist:s.artist, art:s.art, preview:s.preview};
+        stopSheetPreview(); close("songSheet"); renderSongRow(); cpPlayPreview();
+      }else{
+        // önizlemesi yok: arama ile tam kaydı bul (önizlemeli sürümü seçilebilir)
+        const q=s.title+" "+s.artist;
+        const inp=$("#songSearchInput");
+        if(inp) inp.value=q;
+        searchSongs(q);
+      }
+    });
+    box.appendChild(b);
+  });
+}
+
 async function searchSongs(q){
   try{
     const url="https://itunes.apple.com/search?term="+encodeURIComponent(q)+"&media=music&entity=song&limit=200";
@@ -8540,7 +8711,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v130";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v132";
   box.appendChild(ver);
 }
 
@@ -8825,6 +8996,23 @@ function renderProfile(){
 }
 
 // Anıyı profilde tam ekran göster (akışa atmadan)
+// arşiv görüntüleyicide şarkı çalma
+let _arcSong=null;
+function arcStopSong(){
+  if(_arcSong){ try{_arcSong.pause();}catch(e){} _arcSong=null; }
+  const el=document.getElementById("avSong");
+  if(el) el.classList.remove("playing");
+}
+function arcPlaySong(song){
+  arcStopSong();
+  if(!song || !song.preview) return;
+  _arcSong=new Audio(song.preview);
+  _arcSong.loop=true; _arcSong.volume=0.8;
+  _arcSong.play().catch(()=>{});
+  const el=document.getElementById("avSong");
+  if(el) el.classList.add("playing");
+}
+
 function openArchiveView(it){
   let ov=$("#arcView");
   if(!ov){
@@ -8842,10 +9030,12 @@ function openArchiveView(it){
           '<div class="avNote" id="avNote"></div>'+
           '<div class="avMeta" id="avMeta"></div>'+
         '</div>'+
+        '<button class="avDisc" id="avSong" aria-label="Şarkı"></button>'+
       '</div>';
     document.body.appendChild(ov);
     const shut=()=>{
       ov.classList.remove("open");
+      arcStopSong();
       const m=$("#avMedia");
       if(m){ const v=m.querySelector("video"); if(v){ try{v.pause();}catch(e){} } m.innerHTML=""; }
       // akış sesi geri gelsin
@@ -8877,6 +9067,31 @@ function openArchiveView(it){
   top.innerHTML = it.mood
     ? '<span class="avMood" style="--mc:'+(it.mood.c||"#7B5BFF")+'">'+it.mood.em+' '+esc(it.mood.label||it.mood.t||"")+'</span>'
     : '';
+
+  // şarkı şeridi
+  const songEl=ov.querySelector("#avSong");
+  arcStopSong();
+  if(it.song && it.song.title){
+    songEl.style.display="";
+    // tek plak: kapak resmi döner, ortada iğne deliği
+    songEl.innerHTML=
+      '<span class="adArt"'+(it.song.art?' style="background-image:url('+esc(it.song.art)+')"':'')+'></span>'+
+      '<span class="adHole"></span>'+
+      '<span class="adNote">♪</span>';
+    songEl.title=(it.song.title||"")+" — "+(it.song.artist||"");
+    // dokununca çal/durdur
+    songEl.onclick=(ev)=>{
+      ev.stopPropagation();
+      if(_arcSong && !_arcSong.paused){ arcStopSong(); }
+      else { arcPlaySong(it.song); }
+    };
+    // video yoksa şarkıyı otomatik başlat
+    if(it.kind!=="video") setTimeout(()=>arcPlaySong(it.song), 260);
+  }else{
+    songEl.style.display="none";
+    songEl.innerHTML="";
+    songEl.onclick=null;
+  }
 
   // alt: not + zaman/konum
   const noteEl=ov.querySelector("#avNote");

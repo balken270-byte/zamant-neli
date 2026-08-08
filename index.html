@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v138</title>
+<title>Klipsy v139</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4299,7 +4299,15 @@ svg{display:block}
   font-size:13px;font-weight:600;font-family:inherit;letter-spacing:-.014em;
   transition:all .18s}
 .epGender button:active{transform:scale(.97)}
-.epGender button.on{background:var(--surf2);border-color:var(--edge);color:var(--t1)}
+/* seçili cinsiyet: dolu ve net */
+.epGender button.on{color:#fff;border-color:transparent;font-weight:700;
+  box-shadow:0 6px 18px -8px rgba(0,0,0,.7)}
+.epGender button.on[data-g="female"]{background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
+.epGender button.on[data-g="male"]{background:linear-gradient(135deg,#2E9BFF,#5B6BFF)}
+.epGender button.on[data-g=""]{background:linear-gradient(135deg,#7E8794,#4A5361)}
+/* seçiliyken renk noktası beyaz halkaya dönüşsün */
+.epGender button.on .gDot{background:#fff !important;
+  box-shadow:0 0 0 2px rgba(255,255,255,.35)}
 .epGender .gDot{width:14px;height:14px;border-radius:99px;flex:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
 .epGender .gDot.female{background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
@@ -5388,7 +5396,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v138</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v139</span></div>
     </div>
   </section>
 </div>
@@ -8936,7 +8944,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v138";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v139";
   box.appendChild(ver);
 }
 
@@ -10196,7 +10204,8 @@ async function post(src,kind,mood,where,note,extra){
   items.unshift(local);
   render();
   requestAnimationFrame(()=>{feed.scrollTop=0;activeIdx=-1;syncActive();resumeAt=Date.now()+RESUME*2;});
-  toast(kind==="video"?t("loading_video"):t("loading_frame"));
+  // NOT: "yükleniyor" bildirimi kaldırıldı — içerik zaten anında akışta görünüyor,
+  // yükleme arka planda tamamlanıyor. Sadece sonuç bildiriliyor.
 
   if(!sb||!me){ toast(t("err_offline_local")); return; }
 
@@ -10716,16 +10725,33 @@ function showOnboarding(user, prof){
     ob.innerHTML=
       '<div class="obBox">'+
       '<h2>'+t("welcome2")+'</h2>'+
-      '<p>Klipsy\'de görünecek adını ve kullanıcı adını seç.</p>'+
-      '<div class="obField"><label>Ad</label><input id="obName" type="text" maxlength="40" placeholder="'+t("f_name")+'" autocomplete="off"></div>'+
+      '<p>'+t("pick_name2")+'</p>'+
+      '<div class="obField"><label>'+t("f_name")+'</label><input id="obName" type="text" maxlength="40" placeholder="'+t("f_name")+'" autocomplete="off"></div>'+
       '<div class="obField"><label>'+t("username2")+'</label><div class="obUwrap"><span>@</span><input id="obUser" type="text" maxlength="20" placeholder="kullaniciadi" autocapitalize="none" autocomplete="off" spellcheck="false"></div><div class="obHint" id="obHint">'+t("username_rule")+'</div></div>'+
-      '<button class="obSave" id="obSave">Devam et</button>'+
+      '<div class="obField"><label>'+t("f_gender")+'</label>'+
+        '<div class="epGender" id="obGender">'+
+          '<button type="button" data-g="female"><span class="gDot female"></span>'+t("g_female")+'</button>'+
+          '<button type="button" data-g="male"><span class="gDot male"></span>'+t("g_male")+'</button>'+
+          '<button type="button" data-g=""><span class="gDot none"></span>'+t("g_none")+'</button>'+
+        '</div>'+
+        '<div class="epHint">'+t("f_gender_sub")+'</div>'+
+      '</div>'+
+      '<button class="obSave" id="obSave">'+t("continue")+'</button>'+
       '</div>';
     document.body.appendChild(ob);
   }
   ob.classList.add('open');
   const nameI=document.getElementById('obName');
   const userI=document.getElementById('obUser');
+  // cinsiyet seçimi (avatar rengini belirler)
+  let obGender = prof && prof.gender ? prof.gender : "";
+  const gWrap=document.getElementById('obGender');
+  if(gWrap){
+    const gBtns=[...gWrap.querySelectorAll('button')];
+    const paintOb=()=>gBtns.forEach(b=>b.classList.toggle('on', b.dataset.g===obGender));
+    gBtns.forEach(b=>b.addEventListener('click',()=>{ obGender=b.dataset.g; paintOb(); }));
+    paintOb();
+  }
   const hint=document.getElementById('obHint');
   const save=document.getElementById('obSave');
   // varsayılan doldur
@@ -10743,14 +10769,14 @@ function showOnboarding(user, prof){
     const un=(userI.value||'').trim().toLowerCase();
     if(un.length<3||un.length>20){ hint.textContent=t("v_username_len"); hint.className='obHint err'; return; }
     if(!/^[a-z0-9_]+$/.test(un)){ hint.textContent=t("v_chars"); hint.className='obHint err'; return; }
-    save.disabled=true; save.textContent='Kaydediliyor…';
+    save.disabled=true; save.textContent=t("sending");
     // kullanıcı adı müsait mi
     const {data:taken}=await sb.from('profiles').select('id').eq('username',un).neq('id',user.id).maybeSingle();
-    if(taken){ hint.textContent=t("v_taken"); hint.className='obHint err'; save.disabled=false; save.textContent='Devam et'; return; }
+    if(taken){ hint.textContent=t("v_taken"); hint.className='obHint err'; save.disabled=false; save.textContent=t("continue"); return; }
     const {error}=await sb.from('profiles').update({
-      username:un, display_name:nm||null, onboarded:true
+      username:un, display_name:nm||null, gender:obGender||null, onboarded:true
     }).eq('id',user.id);
-    if(error){ hint.textContent='Hata: '+error.message; hint.className='obHint err'; save.disabled=false; save.textContent='Devam et'; return; }
+    if(error){ hint.textContent=t("err_generic2")+' '+error.message; hint.className='obHint err'; save.disabled=false; save.textContent=t("continue"); return; }
     ob.classList.remove('open');
     // uygulamaya gir
     window.__me = { id:user.id, username:un, avatar_url:prof.avatar_url||null, email:user.email||null };

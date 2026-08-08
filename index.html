@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v137</title>
+<title>Klipsy v138</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      g_none:"Belirtme",
+      g_male:"Erkek",
+      g_female:"Kadın",
+      f_gender_sub:"Profil resmin yoksa avatar rengini belirler",
+      f_gender:"Cinsiyet",
       top_songs:"Bugün en çok dinlenenler",
       pick_place:"Şehir ya da ülke seç",
       place_layers:"Bu yerdeki anlar",
@@ -354,6 +359,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      g_none:"Prefer not to say",
+      g_male:"Man",
+      g_female:"Woman",
+      f_gender_sub:"Sets your avatar color when you have no photo",
+      f_gender:"Gender",
       top_songs:"Top songs today",
       pick_place:"Pick a city or country",
       place_layers:"Moments here",
@@ -678,6 +688,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      g_none:"Prefiero no decirlo",
+      g_male:"Hombre",
+      g_female:"Mujer",
+      f_gender_sub:"Define el color del avatar si no tienes foto",
+      f_gender:"Género",
       top_songs:"Lo más escuchado hoy",
       pick_place:"Elige una ciudad o país",
       place_layers:"Momentos aquí",
@@ -1002,6 +1017,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      g_none:"أفضّل عدم الذكر",
+      g_male:"ذكر",
+      g_female:"أنثى",
+      f_gender_sub:"يحدد لون الصورة الرمزية إن لم تكن لديك صورة",
+      f_gender:"الجنس",
       top_songs:"الأكثر استماعًا اليوم",
       pick_place:"اختر مدينة أو دولة",
       place_layers:"لحظات هنا",
@@ -1326,6 +1346,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      g_none:"Ne pas préciser",
+      g_male:"Homme",
+      g_female:"Femme",
+      f_gender_sub:"Définit la couleur de l'avatar sans photo",
+      f_gender:"Genre",
       top_songs:"Les plus écoutés aujourd'hui",
       pick_place:"Choisis une ville ou un pays",
       place_layers:"Instants ici",
@@ -1650,6 +1675,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      g_none:"Keine Angabe",
+      g_male:"Mann",
+      g_female:"Frau",
+      f_gender_sub:"Bestimmt die Avatarfarbe ohne Foto",
+      f_gender:"Geschlecht",
       top_songs:"Heute am meisten gehört",
       pick_place:"Stadt oder Land wählen",
       place_layers:"Momente hier",
@@ -1974,6 +2004,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      g_none:"Не указывать",
+      g_male:"Мужчина",
+      g_female:"Женщина",
+      f_gender_sub:"Задаёт цвет аватара, если нет фото",
+      f_gender:"Пол",
       top_songs:"Самое популярное сегодня",
       pick_place:"Выбери город или страну",
       place_layers:"Моменты здесь",
@@ -2298,6 +2333,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      g_none:"Prefiro não dizer",
+      g_male:"Homem",
+      g_female:"Mulher",
+      f_gender_sub:"Define a cor do avatar se não tiver foto",
+      f_gender:"Gênero",
       top_songs:"Mais ouvidas hoje",
       pick_place:"Escolha uma cidade ou país",
       place_layers:"Momentos aqui",
@@ -2622,6 +2662,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      g_none:"नहीं बताना",
+      g_male:"पुरुष",
+      g_female:"महिला",
+      f_gender_sub:"फ़ोटो न होने पर अवतार का रंग तय करता है",
+      f_gender:"लिंग",
       top_songs:"आज के टॉप गाने",
       pick_place:"शहर या देश चुनें",
       place_layers:"यहाँ के पल",
@@ -2946,6 +2991,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      g_none:"Tidak disebutkan",
+      g_male:"Laki-laki",
+      g_female:"Perempuan",
+      f_gender_sub:"Menentukan warna avatar jika tanpa foto",
+      f_gender:"Jenis kelamin",
       top_songs:"Terpopuler hari ini",
       pick_place:"Pilih kota atau negara",
       place_layers:"Momen di sini",
@@ -3530,8 +3580,9 @@ svg{display:block}
 .pauthor{position:absolute;top:calc(var(--sat) + 10px);left:13px;right:96px;z-index:3;
   display:flex;align-items:center;gap:10px}
 .pav{width:38px;height:38px;border-radius:99px;flex:none;background:#22222A center/cover no-repeat;
-  border:1.5px solid rgba(255,255,255,.5);display:grid;place-items:center;
-  font-size:13px;font-weight:600;color:var(--t2);box-shadow:0 2px 10px rgba(0,0,0,.55)}
+  border:2px solid rgba(255,255,255,.92);display:grid;place-items:center;
+  font-size:13px;font-weight:600;color:var(--t2);
+  box-shadow:0 2px 10px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.35)}
 .pav.live{border:0;padding:2px;background:linear-gradient(140deg,#FF3B6B,#FF9052);
   box-shadow:0 0 0 1px rgba(255,255,255,.25), 0 3px 14px -2px rgba(255,59,107,.7)}
 .pav.live span{width:100%;height:100%;border-radius:99px;background:#111 center/cover no-repeat;
@@ -4240,6 +4291,21 @@ svg{display:block}
   border:1px solid rgba(255,59,107,.22);color:var(--t1)}
 .pdlink{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;
   color:var(--accent);text-decoration:none;letter-spacing:-.01em;word-break:break-all}
+/* cinsiyet seçici */
+.epGender{display:flex;gap:8px;margin-top:2px}
+.epGender button{flex:1;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  background:var(--surf1);border:1px solid var(--edge-soft);color:var(--t2);
+  font-size:13px;font-weight:600;font-family:inherit;letter-spacing:-.014em;
+  transition:all .18s}
+.epGender button:active{transform:scale(.97)}
+.epGender button.on{background:var(--surf2);border-color:var(--edge);color:var(--t1)}
+.epGender .gDot{width:14px;height:14px;border-radius:99px;flex:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.epGender .gDot.female{background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
+.epGender .gDot.male{background:linear-gradient(135deg,#2E9BFF,#5B6BFF)}
+.epGender .gDot.none{background:linear-gradient(135deg,#7E8794,#4A5361)}
+.epHint{font-size:11.5px;color:var(--t3);margin-top:6px;line-height:1.45}
 .epField{margin-bottom:18px}
 .epField label{display:block;font-size:11.5px;font-weight:700;color:var(--t3);text-transform:uppercase;
   letter-spacing:.05em;margin:0 2px 7px}
@@ -4490,7 +4556,8 @@ svg{display:block}
   border-radius:18px;transition:background .15s}
 .crow2:active{background:var(--surf1)}
 .crow2 .av{width:50px;height:50px;border-radius:99px;flex:none;background:var(--avatar-bg) center/cover no-repeat;
-  border:1px solid var(--edge);display:grid;place-items:center;font-size:17px;font-weight:600;color:var(--t2)}
+  border:1.5px solid var(--edge);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  display:grid;place-items:center;font-size:17px;font-weight:600;color:var(--t2)}
 .crow2 .mid{flex:1;min-width:0}
 .crow2 .top{display:flex;align-items:baseline;gap:8px}
 .crow2 .nm{font-size:14.5px;font-weight:600;letter-spacing:-.018em;
@@ -5321,7 +5388,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v137</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v138</span></div>
     </div>
   </section>
 </div>
@@ -6016,14 +6083,22 @@ function frameImage(seed){
 
 /* ---------- profil fotoğrafları ---------- */
 const AVCACHE={};
-function avatarImage(name){
-  // Varsayılan profil resmi: Klipsy marka gradyanı + beyaz kişi silüeti.
-  // base64 kodlanır: özel karakter/parantez sorunu yaşanmaz, her yerde çalışır.
-  if(AVCACHE.__default) return AVCACHE.__default;
+// cinsiyete göre varsayılan avatar renkleri
+const AV_COLORS = {
+  female: ["#FF3B6B","#7B5BFF"],   // pembe → mor
+  male:   ["#2E9BFF","#5B6BFF"],   // mavi → indigo
+  none:   ["#7E8794","#4A5361"]    // nötr gri (belirtilmemiş)
+};
+
+function avatarImage(name, gender){
+  // Varsayılan profil resmi: cinsiyete göre gradyan + beyaz kişi silüeti.
+  const g = (gender==='female'||gender==='male') ? gender : 'none';
+  if(AVCACHE['__'+g]) return AVCACHE['__'+g];
+  const [c1,c2] = AV_COLORS[g];
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 100 100">'+
       '<defs><linearGradient id="kg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">'+
-        '<stop offset="0" stop-color="#FF3B6B"/><stop offset="1" stop-color="#7B5BFF"/>'+
+        '<stop offset="0" stop-color="'+c1+'"/><stop offset="1" stop-color="'+c2+'"/>'+
       '</linearGradient></defs>'+
       '<rect width="100" height="100" fill="url(#kg)"/>'+
       '<circle cx="50" cy="38" r="16" fill="#ffffff" fill-opacity="0.93"/>'+
@@ -6035,7 +6110,7 @@ function avatarImage(name){
   }catch(e){
     url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   }
-  AVCACHE.__default = url;
+  AVCACHE['__'+g] = url;
   return url;
 }
 let myAvatar=null;
@@ -6044,9 +6119,23 @@ function setRealAvatar(name,url){ if(url) REALAV[name]=url; }
 function avSrc(n){
   if(n===ME && myAvatar) return myAvatar;
   if(REALAV[n]) return REALAV[n];
-  return avatarImage(n);
+  // kullanıcının cinsiyeti biliniyorsa avatar rengi ona göre
+  const u = USERS[n];
+  return avatarImage(n, u && u.gender ? u.gender : null);
 }
+// cinsiyet değişince ekrandaki tüm varsayılan avatarları yenile
+function paintAllAvatars(){
+  try{
+    document.querySelectorAll("[data-av-name]").forEach(el=>{
+      paintAv(el, el.getAttribute("data-av-name"));
+    });
+    if(typeof renderProfile==="function" && document.getElementById("profile").classList.contains("open")) renderProfile();
+    if(typeof renderChats==="function") renderChats();
+  }catch(e){}
+}
+
 function paintAv(el,name){
+  el.setAttribute("data-av-name", name);
   const src=avSrc(name);
   if(src){el.style.backgroundImage='url("'+src+'")';el.textContent="";}
   else{el.style.backgroundImage="";el.textContent=name[0].toUpperCase();}
@@ -8300,13 +8389,14 @@ async function loadProfileData(name){
   if(!window.__sb) return null;
   try{
     const {data}=await window.__sb.from('profiles')
-      .select('id, username, avatar_url, bio, moment_count, follower_count, following_count, created_at, display_name, city, education, job, zodiac, interests, link')
+      .select('id, username, avatar_url, bio, moment_count, follower_count, following_count, created_at, display_name, city, education, job, zodiac, interests, link, gender')
       .eq('username',name).single();
     if(data){
       _idCache[name]=data.id;
       if(data.avatar_url) setRealAvatar(data.username, data.avatar_url);
       const extra={ display_name:data.display_name||null, city:data.city||null, education:data.education||null,
-        job:data.job||null, zodiac:data.zodiac||null, interests:data.interests||null, link:data.link||null };
+        job:data.job||null, zodiac:data.zodiac||null, interests:data.interests||null, link:data.link||null,
+        gender:data.gender||null };
 
       // Sayaç kolonları (follower_count/following_count) güncel olmayabiliyor;
       // gerçek sayıyı follows tablosundan say. Başarısız olursa kolona düşülür.
@@ -8573,6 +8663,23 @@ function openEditProfile(){
   const u=meUser;
   epFields().forEach(([key])=>{ _epVals[key]=(u&&u[key])?u[key]:""; });
   const box=$("#epBody");box.innerHTML="";
+
+  // --- cinsiyet seçici (varsayılan avatar rengini belirler) ---
+  _epVals.gender = (u && u.gender) ? u.gender : "";
+  const gRow=document.createElement("div");gRow.className="epField";
+  gRow.innerHTML='<label>'+t("f_gender")+'</label>'+
+    '<div class="epGender">'+
+      '<button type="button" data-g="female"><span class="gDot female"></span>'+t("g_female")+'</button>'+
+      '<button type="button" data-g="male"><span class="gDot male"></span>'+t("g_male")+'</button>'+
+      '<button type="button" data-g=""><span class="gDot none"></span>'+t("g_none")+'</button>'+
+    '</div>'+
+    '<div class="epHint">'+t("f_gender_sub")+'</div>';
+  box.appendChild(gRow);
+  const gBtns=[...gRow.querySelectorAll(".epGender button")];
+  const paintG=()=>gBtns.forEach(b=>b.classList.toggle("on", b.dataset.g===(_epVals.gender||"")));
+  gBtns.forEach(b=>b.addEventListener("click",()=>{ _epVals.gender=b.dataset.g; paintG(); }));
+  paintG();
+
   epFields().forEach(([key,label,hint,type,max])=>{
     const row=document.createElement("div");row.className="epField";
     row.innerHTML='<label>'+label+'</label>'+
@@ -8588,11 +8695,14 @@ $("#epSave").addEventListener("click",async ()=>{
   if(!window.__sb||!window.__me){ toast(t("err_offline")); return; }
   const patch={};
   epFields().forEach(([key])=>{ patch[key]=(_epVals[key]||"").trim()||null; });
+  patch.gender = _epVals.gender || null;   // cinsiyet (avatar rengi)
   const {error}=await window.__sb.from('profiles').update(patch).eq('id',window.__me.id);
   if(error){ toast("Kaydedilemedi: "+error.message); return; }
   Object.assign(meUser, patch);
   if(USERS[ME]) Object.assign(USERS[ME], patch);
   toast(t("ok_profile"));
+  // cinsiyet değiştiyse varsayılan avatar rengi de değişsin
+  if(typeof paintAllAvatars==="function") paintAllAvatars();
   close("editProfile");
   if($("#profile").classList.contains("open")) renderProfile();
 });
@@ -8826,7 +8936,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v137";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v138";
   box.appendChild(ver);
 }
 

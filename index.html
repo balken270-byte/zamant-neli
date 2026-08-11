@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v142</title>
+<title>Klipsy v144</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -3772,7 +3772,8 @@ svg{display:block}
 .tabbar{position:absolute;bottom:0;left:0;right:0;z-index:var(--z-tab);
   height:calc(var(--tab) + var(--sab));padding:0 6px var(--sab);display:flex;align-items:stretch;
   background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.35) 70%,transparent);
-  transition:opacity .25s,transform .3s var(--ease),background .2s}
+  /* NOT: background geçişi YOK — gradyandan düz renge animasyon titriyor */
+  transition:opacity .25s,transform .3s var(--ease)}
 [data-theme="light"] .tabbar.onLight{
   background:rgba(255,255,255,.97);border-top:0}
 [data-theme="light"] .tabbar.onLight .tab{color:rgba(20,20,24,.5)}
@@ -4381,6 +4382,23 @@ svg{display:block}
 .profbio .bioText.empty{color:var(--t3);font-style:italic}
 .profnote .ic{flex:none;color:var(--t3);margin-top:1px}
 .profnote p{font-size:12.5px;line-height:1.55;color:var(--t3);letter-spacing:-.01em}
+
+/* arşiv sekmeleri: Anılarım | Kaydedilenler */
+.arcTabs{display:flex;align-items:center;gap:20px;margin:22px 2px 12px;
+  padding-top:18px;border-top:1px solid var(--edge-soft)}
+.arcTab{background:none;border:0;padding:0 0 7px;font-family:inherit;
+  font-size:13.5px;font-weight:700;letter-spacing:-.018em;color:var(--t3);
+  position:relative;transition:color .18s}
+.arcTab.on{color:var(--t1)}
+.arcTab::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2.5px;
+  border-radius:99px;background:linear-gradient(90deg,#FF3B6B,#7B5BFF);
+  transform:scaleX(0);transform-origin:left;transition:transform .24s var(--ease)}
+.arcTab.on::after{transform:scaleX(1)}
+.arcLock{margin-left:auto;display:flex;align-items:center;gap:5px;height:21px;padding:0 8px;
+  border-radius:99px;background:var(--surf1);border:1px solid var(--edge-soft);
+  font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.02em}
+.arcPane{animation:arcFade .22s ease}
+@keyframes arcFade{from{opacity:0}to{opacity:1}}
 
 /* galeri başlığı: sade, üstte ince ayraç */
 .arcHead{display:flex;align-items:center;gap:8px;margin:22px 2px 10px;
@@ -5454,7 +5472,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v142</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v144</span></div>
     </div>
   </section>
 </div>
@@ -7219,6 +7237,7 @@ function _closeSilently(id){
     setTimeout(()=>{ if(!anyBlockerOpen()) resumeFeedMedia(); },80);
   }
   if(typeof syncStatusBar==="function") syncStatusBar();
+  if(typeof syncTabbar==="function") syncTabbar();
 }
 
 function open(id){
@@ -7227,6 +7246,7 @@ function open(id){
   _pushHistory(id);
   if(AUDIO_BLOCKERS.includes(id) && typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
+  if(typeof syncTabbar==="function") syncTabbar();
 }
 function close(id){
   const el=document.getElementById(id);
@@ -7254,8 +7274,32 @@ const overlayOpen=()=>["comments","timeSheet","notif","cam","compose","profile",
 /* ---------- sekmeler ---------- */
 function setTab(el){
   $$(".tab").forEach(t=>t.classList.toggle("on",t===el));
-  const lightScreens=["tabMsg","tabProfile","tabTime"];
-  $("#tabbar").classList.toggle("onLight", el && lightScreens.includes(el.id));
+  syncTabbar();
+}
+
+/* Navigasyon çubuğunun rengini AÇIK OLAN EKRANA göre ayarla.
+   Sadece sekmeye basınca değil, panel açılıp kapandığında da çalışmalı;
+   yoksa açık temada çubuk siyah kalıyordu. */
+let _tabbarRaf=0;
+function syncTabbar(){
+  // aynı karede birden çok kez çağrılırsa tek sefere indir
+  if(_tabbarRaf) cancelAnimationFrame(_tabbarRaf);
+  _tabbarRaf=requestAnimationFrame(()=>{ _tabbarRaf=0; _applyTabbar(); });
+}
+function _applyTabbar(){
+  const bar=document.getElementById("tabbar");
+  if(!bar) return;
+  // bu paneller açıkken arka plan açık renkli olur
+  const lightPanels=["profile","chats","chat","settings","editProfile","notif","timeSheet"];
+  const panelOpen = lightPanels.some(id=>{
+    const e=document.getElementById(id);
+    return e && e.classList.contains("open");
+  });
+  // panel yoksa aktif sekmeye bak
+  const activeTab=document.querySelector(".tab.on");
+  const lightTabs=["tabMsg","tabProfile","tabTime"];
+  const tabLight = activeTab && lightTabs.includes(activeTab.id);
+  bar.classList.toggle("onLight", panelOpen || tabLight);
 }
 // sekmeler arası geçişte açık kalan ana panelleri kapat (tabbar artık her ekranda görünür olduğu için gerekli)
 function closeMainPanels(){
@@ -9178,7 +9222,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v142";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v144";
   box.appendChild(ver);
 }
 
@@ -9406,10 +9450,35 @@ function renderProfile(){
 
   if(!own) return;
 
-  /* gizli arşiv */
-  const ah=document.createElement("div");ah.className="arcHead";
-  ah.innerHTML='<h4>'+t("my_moments2")+'</h4><span class="lock">'+IC.lock+t("private2")+'</span>';
-  box.appendChild(ah);
+  /* gizli arşiv — sekmeli: Anılarım | Kaydedilenler */
+  const tabs=document.createElement("div");tabs.className="arcTabs";
+  tabs.innerHTML=
+    '<button class="arcTab on" data-arc="mine">'+t("my_moments2")+'</button>'+
+    '<button class="arcTab" data-arc="saved">'+t("saved2")+'</button>'+
+    '<span class="arcLock">'+IC.lock+t("private2")+'</span>';
+  box.appendChild(tabs);
+
+  const pane=document.createElement("div");pane.className="arcPane";
+  box.appendChild(pane);
+
+  const arcTabBtns=[...tabs.querySelectorAll(".arcTab")];
+  function showArc(which){
+    arcTabBtns.forEach(b=>b.classList.toggle("on", b.dataset.arc===which));
+    pane.innerHTML="";
+    if(which==="saved"){ renderSaved(pane); }
+    else { renderMine(pane); }
+  }
+  arcTabBtns.forEach(b=>b.addEventListener("click",()=>showArc(b.dataset.arc)));
+  showArc(_arcTab||"mine");
+  arcTabBtns.forEach(b=>b.addEventListener("click",()=>{ _arcTab=b.dataset.arc; }));
+  return;
+}
+
+// hangi sekme açıktı (panel yeniden çizilince korunsun)
+let _arcTab="mine";
+
+// --- Anılarım ızgarası ---
+function renderMine(box){
   const sub=document.createElement("div");sub.className="arcSub";
   sub.textContent=t("archive_desc");
   box.appendChild(sub);
@@ -9419,7 +9488,6 @@ function renderProfile(){
     const e=document.createElement("div");e.className="arcEmpty";
     e.innerHTML='<b>'+t("no_moments_own")+'</b><span>'+t("archive_empty_hint")+'</span>';
     box.appendChild(e);
-    renderSaved(box);
     return;
   }
   const grid=document.createElement("div");grid.className="arcGrid";
@@ -9459,7 +9527,6 @@ function renderProfile(){
   });
   box.appendChild(grid);
   if(typeof lazyLoadArcVideos==="function") lazyLoadArcVideos();
-  renderSaved(box);
 }
 
 // Anıyı profilde tam ekran göster (akışa atmadan)
@@ -9602,10 +9669,7 @@ async function loadSaved(){
 }
 
 function renderSaved(box){
-  const h=document.createElement("div");h.className="arcHead";h.style.marginTop="26px";
-  const cnt=_savedCache?_savedCache.length:0;
-  h.innerHTML='<h4>'+t("saved2")+'</h4><span class="lock">'+IC.bookmark+cnt+'</span>';
-  box.appendChild(h);
+  // başlık yok — sekme zaten hangi bölümde olduğumuzu gösteriyor
   const s=document.createElement("div");s.className="arcSub";
   s.textContent=t("saved_desc");
   box.appendChild(s);
@@ -9614,7 +9678,10 @@ function renderSaved(box){
     const l=document.createElement("div");l.className="arcEmpty";
     l.innerHTML='<b>'+t("loading2")+'</b>';
     box.appendChild(l);
-    loadSaved().then(()=>{ if($("#profile").classList.contains("open")) renderProfile(); });
+    loadSaved().then(()=>{
+      // sadece bu bölmeyi tazele — sekme seçimi korunsun
+      if(box && box.isConnected){ box.innerHTML=""; renderSaved(box); }
+    });
     return;
   }
   const saved=_savedCache;
@@ -10792,18 +10859,24 @@ async function liveWall(el){
   }
 
   // Kareyi RESİM ile doldur
+  // Resmi yükle ve YÜKLENDİĞİNDE bildir (açılış ekranı bunu bekliyor)
   function fillImage(tile, r){
     const path = (r.media_kind==='video') ? (r.poster_path || r.media_path) : r.media_path;
     const url = urlOf(path);
-    if(!url) return false;
-    const img=new Image();
-    img.onload=function(){
-      tile.classList.remove('empty');
-      tile.style.backgroundImage='url('+url+')';
-      stamp(tile, r);
-    };
-    img.src=url;
-    return true;
+    if(!url) return null;
+    return new Promise(done=>{
+      const img=new Image();
+      const finish=(ok)=>{ done(ok); };
+      img.onload=function(){
+        tile.classList.remove('empty');
+        tile.style.backgroundImage='url("'+url+'")';
+        stamp(tile, r);
+        finish(true);
+      };
+      img.onerror=()=>finish(false);
+      setTimeout(()=>finish(false), 4000);   // takılmasın
+      img.src=url;
+    });
   }
 
   function stamp(tile, r){
@@ -10859,15 +10932,22 @@ async function liveWall(el){
     const fallback = imgs.length ? imgs : (vids.length ? vids : pool);
     let fi = 0;
 
+    const jobs=[];
     tiles.forEach((tile, idx)=>{
       const vr = vSlot.get(idx);
-      if(vr && fillVideo(tile, vr)) return;          // video yerleşti
+      if(vr && fillVideo(tile, vr)) return;          // video yerleşti (bekleme yok)
       // resim dene; olmazsa bir sonraki içeriği dene (boş kare bırakma)
       for(let attempt=0; attempt<fallback.length; attempt++){
         const r = fallback[(fi++) % fallback.length];
-        if(r && fillImage(tile, r)) return;
+        if(!r) continue;
+        const p = fillImage(tile, r);
+        if(p){ jobs.push(p); return; }
       }
     });
+
+    // İlk ekranda görünen kareler yüklenene kadar bekle (açılış ekranı bunu bekliyor).
+    // Tamamı değil — sadece ilk 9 kare yeter, gerisi arka planda dolar.
+    await Promise.all(jobs.slice(0, 9));
   }catch(e){}
 }
 
@@ -11109,10 +11189,11 @@ const _wallReady = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })
   const session = sres && sres.data ? sres.data.session : null;
   if(session){ await enterApp(); return; }
   setMode('login');
-  // en fazla 350ms bekle; duvar hazır değilse zaten arka planda dolmaya devam eder
+  // Açılış ekranı, arka plan duvarı hazır olana kadar bekler (en fazla 2.5sn).
+  // Böylece giriş ekranı boş karelerle değil, dolu olarak açılır.
   await Promise.race([
     _wallReady,
-    new Promise(r=>setTimeout(r,350))
+    new Promise(r=>setTimeout(r,2500))
   ]);
   gshow('gAuth');
 })();

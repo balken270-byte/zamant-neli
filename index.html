@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v139</title>
+<title>Klipsy v142</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      all_of:"Tümü:",
+      cities:"Şehirler",
+      countries:"Ülkeler",
       g_none:"Belirtme",
       g_male:"Erkek",
       g_female:"Kadın",
@@ -359,6 +362,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      all_of:"All of",
+      cities:"Cities",
+      countries:"Countries",
       g_none:"Prefer not to say",
       g_male:"Man",
       g_female:"Woman",
@@ -688,6 +694,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      all_of:"Todo en",
+      cities:"Ciudades",
+      countries:"Países",
       g_none:"Prefiero no decirlo",
       g_male:"Hombre",
       g_female:"Mujer",
@@ -1017,6 +1026,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      all_of:"كل",
+      cities:"المدن",
+      countries:"الدول",
       g_none:"أفضّل عدم الذكر",
       g_male:"ذكر",
       g_female:"أنثى",
@@ -1346,6 +1358,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      all_of:"Tout",
+      cities:"Villes",
+      countries:"Pays",
       g_none:"Ne pas préciser",
       g_male:"Homme",
       g_female:"Femme",
@@ -1675,6 +1690,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      all_of:"Ganz",
+      cities:"Städte",
+      countries:"Länder",
       g_none:"Keine Angabe",
       g_male:"Mann",
       g_female:"Frau",
@@ -2004,6 +2022,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      all_of:"Весь",
+      cities:"Города",
+      countries:"Страны",
       g_none:"Не указывать",
       g_male:"Мужчина",
       g_female:"Женщина",
@@ -2333,6 +2354,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      all_of:"Todo",
+      cities:"Cidades",
+      countries:"Países",
       g_none:"Prefiro não dizer",
       g_male:"Homem",
       g_female:"Mulher",
@@ -2662,6 +2686,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      all_of:"पूरा",
+      cities:"शहर",
+      countries:"देश",
       g_none:"नहीं बताना",
       g_male:"पुरुष",
       g_female:"महिला",
@@ -2991,6 +3018,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      all_of:"Seluruh",
+      cities:"Kota",
+      countries:"Negara",
       g_none:"Tidak disebutkan",
       g_male:"Laki-laki",
       g_female:"Perempuan",
@@ -3811,7 +3841,7 @@ svg{display:block}
 /* avatar + küçük tür rozeti */
 .nav-av{width:46px;height:46px;border-radius:99px;flex:none;position:relative;
   background:var(--avatar-bg) center/cover no-repeat;
-  border:1px solid var(--edge);display:grid;place-items:center;
+  box-shadow:0 0 0 1px var(--edge);display:grid;place-items:center;
   font-size:15px;font-weight:600;color:var(--t2)}
 .nav-av .nbadge{position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;border-radius:99px;
   display:grid;place-items:center;border:2px solid var(--panelbg);color:#fff}
@@ -3941,6 +3971,22 @@ svg{display:block}
 /* ==== KEŞFET: tam ekran harita + katmanlar (Airbnb tarzı) ==== */
 #timeSheet{z-index:var(--z-time);color:var(--t1)}
 .explore{position:absolute;inset:0;overflow:hidden}
+/* haritada kullanıcının konumu */
+.userDot{position:relative}
+.userDot .udCore{position:absolute;inset:4px;border-radius:99px;background:#2E9BFF;
+  box-shadow:0 0 0 2.5px #fff, 0 2px 8px rgba(0,0,0,.5)}
+.userDot .udPulse{position:absolute;inset:-6px;border-radius:99px;background:rgba(46,155,255,.28);
+  animation:udP 2.2s ease-out infinite}
+@keyframes udP{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+
+/* konumuma dön düğmesi */
+.exLocBtn{position:absolute;right:16px;bottom:calc(var(--sab) + 26px);z-index:1001;
+  width:46px;height:46px;border-radius:99px;display:grid;place-items:center;
+  background:var(--panelbg);color:var(--t1);border:1px solid var(--edge);
+  box-shadow:0 6px 20px -6px rgba(0,0,0,.6);transition:transform .12s}
+.exLocBtn:active{transform:scale(.92)}
+.exLocBtn.on{color:#2E9BFF;border-color:rgba(46,155,255,.5)}
+
 #exploreMap{position:absolute;inset:0;background:#12121a;z-index:1}
 [data-theme="light"] #exploreMap{background:#EAEAEF}
 /* açık temada üst durum çubuğu alanı beyaz kalsın (harita altına girmesin) */
@@ -4015,7 +4061,7 @@ svg{display:block}
   transition:background .15s}
 .exItem:active{background:var(--surf1)}
 .exItem .exThumb{width:48px;height:60px;border-radius:11px;flex:none;object-fit:cover;
-  background:var(--avatar-bg) center/cover;border:1px solid var(--edge)}
+  background:var(--avatar-bg) center/cover;box-shadow:0 0 0 1px var(--edge)}
 .exItem .exMeta{flex:1;min-width:0}
 .exItem .exWho{font-size:14px;font-weight:600;letter-spacing:-.015em;display:flex;align-items:center;gap:6px}
 .exItem .exMood{font-size:13px}
@@ -4127,7 +4173,7 @@ svg{display:block}
 .setAccount{display:flex;align-items:center;gap:14px;padding:16px;border-radius:18px;margin-bottom:8px;
   background:var(--surf2);border:1px solid var(--edge-soft)}
 .setAv{width:56px;height:56px;border-radius:99px;flex:none;background:var(--avatar-bg) center/cover;
-  border:1px solid var(--edge);display:grid;place-items:center;font-size:22px;font-weight:600;color:var(--t2)}
+  box-shadow:0 0 0 1px var(--edge);display:grid;place-items:center;font-size:22px;font-weight:600;color:var(--t2)}
 .setAccInfo b{font-size:17px;font-weight:700;letter-spacing:-.02em;display:block}
 .setAccInfo span{font-size:13px;color:var(--t3);margin-top:1px;display:block}
 .setGroup{margin-top:22px}
@@ -4171,6 +4217,7 @@ svg{display:block}
 [dir="rtl"] .cpSide{right:auto;left:14px}
 [dir="rtl"] .pmore{right:auto;left:15px}
 [dir="rtl"] .exFab{left:auto;right:16px}
+[dir="rtl"] .exLocBtn{right:auto;left:16px}
 [dir="rtl"] .heroSet{right:auto;left:12px}
 [dir="rtl"] #arcView .avX{left:auto;right:12px}
 [dir="rtl"] #arcView .avTop{right:auto;left:12px;justify-content:flex-start}
@@ -4397,6 +4444,16 @@ svg{display:block}
 #feedPlace .fpItem.on .fpName{font-weight:600}
 #feedPlace .fpItem.on .fpIc{background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
   border-color:transparent;color:#fff}
+/* geri satırı (ülkeden çıkış) */
+#feedPlace .fpBack{display:flex;align-items:center;gap:8px;width:100%;height:44px;padding:0 10px;
+  border-radius:12px;background:none;border:0;color:var(--t2);font-family:inherit;
+  font-size:14px;font-weight:600;letter-spacing:-.014em;text-align:left;margin-bottom:2px}
+#feedPlace .fpBack:active{background:var(--surf1)}
+#feedPlace .fpBack svg{flex:none;opacity:.7}
+/* şehir satırında ülke adı ikinci satırda */
+#feedPlace .fpItem .fpName i{display:block;font-style:normal;font-size:11.5px;
+  color:var(--t3);font-weight:500;margin-top:1px}
+#feedPlace .fpItem .fpGo{flex:none;color:var(--t3);display:grid;place-items:center;margin-left:2px}
 #feedPlace .fpEmpty{padding:30px 20px;text-align:center;color:var(--t3);font-size:13.5px}
 
 /* ===== aynı yer, farklı zaman ===== */
@@ -4563,8 +4620,9 @@ svg{display:block}
 .crow2{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 10px;
   border-radius:18px;transition:background .15s}
 .crow2:active{background:var(--surf1)}
-.crow2 .av{width:50px;height:50px;border-radius:99px;flex:none;background:var(--avatar-bg) center/cover no-repeat;
-  border:1.5px solid var(--edge);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+.crow2 .av{width:50px;height:50px;border-radius:99px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat;
+  box-shadow:0 0 0 1px var(--edge);
   display:grid;place-items:center;font-size:17px;font-weight:600;color:var(--t2)}
 .crow2 .mid{flex:1;min-width:0}
 .crow2 .top{display:flex;align-items:baseline;gap:8px}
@@ -4804,7 +4862,7 @@ svg{display:block}
   border-radius:16px;transition:background .15s}
 .shrow:active{background:var(--surf1)}
 .shrow .av{width:42px;height:42px;border-radius:99px;flex:none;background:var(--avatar-bg) center/cover no-repeat;
-  border:1px solid var(--edge);display:grid;place-items:center;font-size:15px;font-weight:600;color:var(--t2)}
+  box-shadow:0 0 0 1px var(--edge);display:grid;place-items:center;font-size:15px;font-weight:600;color:var(--t2)}
 .shrow .nm{flex:1;min-width:0;font-size:14.5px;font-weight:600;letter-spacing:-.018em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .shrow .go2{flex:none;font-size:12.5px;font-weight:600;color:var(--t2);
@@ -5396,7 +5454,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v139</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v142</span></div>
     </div>
   </section>
 </div>
@@ -5470,14 +5528,14 @@ svg{display:block}
       <div class="commlist" id="commList"></div>
       <div class="replybar" id="replyBar">
         <span><b id="replyTo">—</b> kişisine yanıt veriyorsun</span>
-        <button id="replyCancel" aria-label=t("cancel2")>
+        <button id="replyCancel" aria-label="İptal" data-i18n-aria="cancel2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </div>
       <div class="cbar">
         <span class="cav" id="commAv">S</span>
         <input id="commInput" type="text" placeholder="Yorum yaz…" data-i18n-ph="comment_ph" autocomplete="off" maxlength="240" enterkeyhint="send">
-        <button class="send" id="commSend" aria-label=t("act_send2")>
+        <button class="send" id="commSend" aria-label="Gönder" data-i18n-aria="act_send2">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 3.4 10.6 13.9"/><path d="M21.2 3.4 14.5 21l-3.9-7.1L3.5 10z"/></svg>
         </button>
       </div>
@@ -5507,7 +5565,11 @@ svg{display:block}
         <div class="tlEnds"><span data-i18n="now2">şimdi</span><span data-i18n="past2">geçmiş</span></div>
       </div>
 
-      <button class="exFab" id="exFab" aria-label=t("act_show_moments") data-i18n-aria="moments">
+      <button class="exLocBtn" id="exLocBtn" aria-label="Konumum" data-i18n-aria="location">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 1.6v3M12 19.4v3M1.6 12h3M19.4 12h3"/></svg>
+      </button>
+
+      <button class="exFab" id="exFab" aria-label="Anları göster" data-i18n-aria="act_show_moments" data-i18n-aria="moments">
         <svg id="exFabIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
 
@@ -5545,7 +5607,7 @@ svg{display:block}
           <small data-i18n="no_gallery">Galeri yok</small>
         </div>
         <button class="shutter" id="shutter" aria-label="Çek" data-i18n-aria="shoot"><i></i></button>
-        <button class="flip" id="flip" aria-label=t("flip_cam")>
+        <button class="flip" id="flip" aria-label="Kamerayı çevir" data-i18n-aria="flip_cam">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-14.6 6"/><path d="M3.5 12a8.5 8.5 0 0 1 14.6-6"/><path d="M18.1 2.4V6h-3.6"/><path d="M5.9 21.6V18h3.6"/></svg>
         </button>
       </div>
@@ -5586,11 +5648,11 @@ svg{display:block}
     </div>
     <div class="msgs" id="msgList"></div>
     <div class="msgbar" id="msgBar">
-      <button class="camb" id="msgCam" aria-label=t("send_by_cam")>
+      <button class="camb" id="msgCam" aria-label="Kamerayla gönder" data-i18n-aria="send_by_cam">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></svg>
       </button>
       <input id="msgInput" type="text" placeholder="Mesaj yaz…" data-i18n-ph="msg_ph" autocomplete="off" maxlength="400" enterkeyhint="send">
-      <button class="go" id="msgSend" aria-label=t("act_send2")>
+      <button class="go" id="msgSend" aria-label="Gönder" data-i18n-aria="act_send2">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 3.4 10.6 13.9"/><path d="M21.2 3.4 14.5 21l-3.9-7.1L3.5 10z"/></svg>
       </button>
     </div>
@@ -5735,7 +5797,7 @@ svg{display:block}
     <div class="cpVeilBot"></div>
 
     <div class="cptop">
-      <button class="cpIconBtn" id="cpBack" aria-label=t("retake")>
+      <button class="cpIconBtn" id="cpBack" aria-label="Yeniden çek" data-i18n-aria="retake">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>
       </button>
       <span class="cpLive"><i></i><span id="cpNow">--:--</span></span>
@@ -5753,7 +5815,7 @@ svg{display:block}
         <span class="sLb" id="cpLocText" data-i18n="location">Konum</span>
         <span class="sSub" id="cpLocSub"></span>
       </button>
-      <button class="cpSideBtn cpSongLine" id="cpSongRow" aria-label=t("song_add2")>
+      <button class="cpSideBtn cpSongLine" id="cpSongRow" aria-label="Şarkı ekle" data-i18n-aria="song_add2">
         <span class="sIc" id="cpSongIcon">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         </span>
@@ -5761,7 +5823,7 @@ svg{display:block}
         <span class="sSub" id="cpSongSub"></span>
         <span class="sGo" id="cpSongGo" aria-hidden="true"></span>
       </button>
-      <button class="cpSideBtn" id="cpMoodBtn" aria-label=t("pick_mood")>
+      <button class="cpSideBtn" id="cpMoodBtn" aria-label="Duygu seç" data-i18n-aria="pick_mood">
         <span class="sIc" id="cpMoodIcon">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.3 1.8 3.5 1.8 3.5-1.8 3.5-1.8"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>
         </span>
@@ -5789,7 +5851,7 @@ svg{display:block}
       <button class="cpMetaGhost" id="cpLocRetry" aria-label="Konumu yenile" hidden>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M18.6 2.6V6.4h-3.8"/></svg>
       </button>
-      <button class="sw on" id="cpLocSw" role="switch" aria-checked="true" aria-label=t("share_loc2") hidden><i></i></button>
+      <button class="sw on" id="cpLocSw" role="switch" aria-checked="true" aria-label="Konumu paylaş" data-i18n-aria="share_loc2" hidden><i></i></button>
     </div>
 
     <div class="cpBody">
@@ -7428,7 +7490,75 @@ function initMap(){
     keepBuffer:4, updateWhenIdle:false, updateWhenZooming:false, updateInterval:120,
     crossOrigin:true
   }).addTo(_map);
+  // kullanıcı haritayı elle gezdirirse otomatik odaklamayı bırak
+  _map.on("dragstart zoomstart", ()=>{ _mapUserMoved = true; });
+
+  // konumu al ve haritayı oraya çek (yakındaki anlar mantığı)
+  try{
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+        p=>{
+          _lastKnownPos = { lat:p.coords.latitude, lng:p.coords.longitude };
+          if(!_mapUserMoved){
+            try{ _map.setView([_lastKnownPos.lat,_lastKnownPos.lng], 12, {animate:true}); }catch(e){}
+            drawUserDot();
+          }
+        },
+        ()=>{},
+        { enableHighAccuracy:false, timeout:6000, maximumAge:300000 }
+      );
+    }
+  }catch(e){}
+
+  bindLocBtn();
   setTimeout(()=>{ _map.invalidateSize(); drawMomentPins(); },120);
+}
+
+// "konumuma dön" düğmesi
+function bindLocBtn(){
+  const b=document.getElementById("exLocBtn");
+  if(!b || b._bound) return;
+  b._bound=true;
+  b.addEventListener("click",()=>{
+    if(!_map) return;
+    if(_lastKnownPos){
+      _mapUserMoved=false;
+      _map.setView([_lastKnownPos.lat,_lastKnownPos.lng], 13, {animate:true});
+      drawUserDot();
+      b.classList.add("on");
+      setTimeout(()=>b.classList.remove("on"), 1400);
+      return;
+    }
+    // konum yoksa yeniden iste
+    if(!navigator.geolocation){ toast(t("loc_nogps")); return; }
+    b.classList.add("on");
+    navigator.geolocation.getCurrentPosition(
+      p=>{
+        _lastKnownPos={ lat:p.coords.latitude, lng:p.coords.longitude };
+        _mapUserMoved=false;
+        _map.setView([_lastKnownPos.lat,_lastKnownPos.lng], 13, {animate:true});
+        drawUserDot();
+        setTimeout(()=>b.classList.remove("on"), 1200);
+      },
+      ()=>{ b.classList.remove("on"); toast(t("loc_failed")); },
+      { enableHighAccuracy:true, timeout:8000, maximumAge:60000 }
+    );
+  });
+}
+
+// haritada kullanıcının konumunu gösteren nokta
+let _userDot=null;
+function drawUserDot(){
+  if(!_map || !_lastKnownPos) return;
+  try{
+    if(_userDot){ _map.removeLayer(_userDot); _userDot=null; }
+    const icon=L.divIcon({
+      className:"userDot",
+      html:'<span class="udPulse"></span><span class="udCore"></span>',
+      iconSize:[18,18], iconAnchor:[9,9]
+    });
+    _userDot=L.marker([_lastKnownPos.lat,_lastKnownPos.lng],{icon, interactive:false, zIndexOffset:-100}).addTo(_map);
+  }catch(e){}
 }
 function refreshMapTheme(){
   if(!_map||!_mapTileLayer) return;
@@ -7486,43 +7616,102 @@ async function openFeedPlace(){
   $("#fpSub").textContent   = t("pick_place");
   $("#fpInput").placeholder = t("search_place");
   $("#fpInput").value="";
+  _fpCountry=null;                    // her açılışta ülkeler seviyesinden başla
   ov.classList.add("open");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   await paintFeedPlaceList();
 }
 
+// hangi seviyedeyiz: null = ülkeler, "Türkiye" = o ülkenin şehirleri
+let _fpCountry = null;
+
 async function paintFeedPlaceList(){
   const box=$("#fpList"); if(!box) return;
   const q=($("#fpInput").value||"").toLowerCase().trim();
 
-  // mevcut anlardan yer listesi çıkar (şehir/ülke seviyesinde)
   const geos = await fetchMomentGeos();
-  const counts = new Map();
+
+  // Konum etiketi: "Mahalle, Şehir, Ülke" -> son parça ülke, ondan önceki şehir
+  const tree = new Map();      // ülke -> Map(şehir -> adet)
+  const countryTotal = new Map();
   geos.forEach(g=>{
     const parts = placeParts(g.label);
-    // son iki parça genelde şehir ve ülke olur
-    parts.slice(-2).forEach(p=>{
-      if(p.length < 2) return;
-      counts.set(p, (counts.get(p)||0)+1);
-    });
+    if(!parts.length) return;
+    const country = parts[parts.length-1];
+    const city    = parts.length>1 ? parts[parts.length-2] : null;
+    if(!country || country.length<2) return;
+    countryTotal.set(country, (countryTotal.get(country)||0)+1);
+    if(!tree.has(country)) tree.set(country, new Map());
+    if(city && city.length>=2){
+      const cm=tree.get(country);
+      cm.set(city, (cm.get(city)||0)+1);
+    }
   });
-
-  let list=[...counts.entries()]
-    .map(([name,n])=>({name,n}))
-    .filter(x=>!q || x.name.toLowerCase().includes(q))
-    .sort((a,b)=>b.n-a.n);
 
   box.innerHTML="";
 
-  // "Her yer" seçeneği
+  // ---------- ARAMA: seviyeden bağımsız, tüm şehir/ülkelerde ara ----------
+  if(q){
+    const hits=[];
+    countryTotal.forEach((n,c)=>{ if(c.toLowerCase().includes(q)) hits.push({name:c,n,kind:"country"}); });
+    tree.forEach((cities,c)=>{
+      cities.forEach((n,city)=>{
+        if(city.toLowerCase().includes(q)) hits.push({name:city,n,kind:"city",country:c});
+      });
+    });
+    hits.sort((a,b)=>b.n-a.n);
+    if(!hits.length){
+      box.innerHTML='<div class="fpEmpty">'+t("no_moments_here")+'</div>';
+      return;
+    }
+    hits.slice(0,60).forEach(x=>box.appendChild(fpRow(x)));
+    return;
+  }
+
+  // ---------- SEVİYE 2: seçilen ülkenin şehirleri ----------
+  if(_fpCountry){
+    const back=document.createElement("button");
+    back.className="fpBack";
+    back.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>'+
+      '<span>'+esc(_fpCountry)+'</span>';
+    back.addEventListener("click",()=>{ _fpCountry=null; paintFeedPlaceList(); });
+    box.appendChild(back);
+
+    // ülkenin tamamı seçeneği
+    const allC=document.createElement("button");
+    allC.className="fpItem"+(feedPlace===_fpCountry?" on":"");
+    allC.innerHTML='<span class="fpIc">'+ICO_GLOBE+'</span>'+
+      '<span class="fpName">'+t("all_of")+' '+esc(_fpCountry)+'</span>'+
+      '<span class="fpN">'+(countryTotal.get(_fpCountry)||0)+'</span>';
+    allC.addEventListener("click",()=>setFeedPlace(_fpCountry));
+    box.appendChild(allC);
+
+    const cities=[...(tree.get(_fpCountry)||new Map()).entries()]
+      .map(([name,n])=>({name,n,kind:"city",country:_fpCountry}))
+      .sort((a,b)=>b.n-a.n);
+
+    if(cities.length){
+      const lbl=document.createElement("div");lbl.className="fpLabel";
+      lbl.textContent=t("cities");
+      box.appendChild(lbl);
+      cities.forEach(x=>box.appendChild(fpRow(x)));
+    }
+    return;
+  }
+
+  // ---------- SEVİYE 1: her yer + ülkeler ----------
   const all=document.createElement("button");
   all.className="fpItem"+(feedPlace?"":" on");
-  all.innerHTML='<span class="fpIc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.4 2.7 3.6 5.7 3.6 9s-1.2 6.3-3.6 9c-2.4-2.7-3.6-5.7-3.6-9S9.6 5.7 12 3z"/></svg></span>'+
+  all.innerHTML='<span class="fpIc">'+ICO_GLOBE+'</span>'+
     '<span class="fpName">'+t("anywhere")+'</span>';
-  all.addEventListener("click",()=>{ setFeedPlace(null); });
+  all.addEventListener("click",()=>setFeedPlace(null));
   box.appendChild(all);
 
-  if(!list.length){
+  const countries=[...countryTotal.entries()]
+    .map(([name,n])=>({name,n,kind:"country"}))
+    .sort((a,b)=>b.n-a.n);
+
+  if(!countries.length){
     const e=document.createElement("div");e.className="fpEmpty";
     e.textContent=t("no_moments_here");
     box.appendChild(e);
@@ -7530,18 +7719,43 @@ async function paintFeedPlaceList(){
   }
 
   const lbl=document.createElement("div");lbl.className="fpLabel";
-  lbl.textContent=t("location");
+  lbl.textContent=t("countries");
   box.appendChild(lbl);
+  countries.forEach(x=>box.appendChild(fpRow(x)));
+}
 
-  list.slice(0,60).forEach(x=>{
-    const b=document.createElement("button");
-    b.className="fpItem"+(feedPlace===x.name?" on":"");
-    b.innerHTML='<span class="fpIc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10.5c0 5.5-8 11.5-8 11.5s-8-6-8-11.5a8 8 0 0 1 16 0z"/><circle cx="12" cy="10.5" r="2.8"/></svg></span>'+
-      '<span class="fpName">'+esc(x.name)+'</span>'+
-      '<span class="fpN">'+x.n+'</span>';
-    b.addEventListener("click",()=>{ setFeedPlace(x.name); });
-    box.appendChild(b);
-  });
+const ICO_GLOBE='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.4 2.7 3.6 5.7 3.6 9s-1.2 6.3-3.6 9c-2.4-2.7-3.6-5.7-3.6-9S9.6 5.7 12 3z"/></svg>';
+const ICO_PIN='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10.5c0 5.5-8 11.5-8 11.5s-8-6-8-11.5a8 8 0 0 1 16 0z"/><circle cx="12" cy="10.5" r="2.8"/></svg>';
+const ICO_CHEV='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+
+// tek satır üret (ülke ya da şehir)
+function fpRow(x){
+  const b=document.createElement("button");
+  const selected = feedPlace===x.name;
+  b.className="fpItem"+(selected?" on":"");
+
+  const isCountry = x.kind==="country";
+  const hasCities = isCountry && _fpCountry!==x.name;
+
+  b.innerHTML=
+    '<span class="fpIc">'+(isCountry?ICO_GLOBE:ICO_PIN)+'</span>'+
+    '<span class="fpName">'+esc(x.name)+
+      (x.kind==="city" && x.country && !_fpCountry ? '<i>'+esc(x.country)+'</i>' : '')+
+    '</span>'+
+    '<span class="fpN">'+x.n+'</span>'+
+    (hasCities ? '<span class="fpGo">'+ICO_CHEV+'</span>' : '');
+
+  if(hasCities){
+    // ülkeye dokun: şehirlerini aç
+    b.addEventListener("click",()=>{
+      _fpCountry=x.name;
+      const inp=$("#fpInput"); if(inp) inp.value="";
+      paintFeedPlaceList();
+    });
+  }else{
+    b.addEventListener("click",()=>setFeedPlace(x.name));
+  }
+  return b;
 }
 
 function setFeedPlace(name){
@@ -7677,8 +7891,25 @@ async function drawMomentPins(){
     mk.bindTooltip((g.label||"An"),{direction:"top",offset:[0,-30]});
     _mapMarkers.push(mk);bounds.push([g.lat,g.lng]);
   });
-  if(bounds.length){ try{ _map.fitBounds(bounds,{padding:[50,50],maxZoom:13}); }catch(e){} }
+  // ODAKLAMA: "yakındaki anlar" mantığı — haritayı tüm ülkeye açma.
+  // Kullanıcının konumu biliniyorsa oraya, bilinmiyorsa EN YAKIN ana odaklan.
+  if(bounds.length && !_mapUserMoved){
+    try{
+      const me = _lastKnownPos;   // {lat,lng} — konum alındıysa dolu
+      if(me){
+        _map.setView([me.lat, me.lng], 12, {animate:false});
+      }else{
+        // konum yok: en son paylaşılan ana odaklan (şehir seviyesinde)
+        const first = bounds[0];
+        _map.setView(first, 12, {animate:false});
+      }
+    }catch(e){}
+  }
 }
+
+// kullanıcı haritayı kendisi gezdirdiyse otomatik odaklama yapma
+let _mapUserMoved = false;
+let _lastKnownPos = null;
 async function fetchMomentGeos(){
   if(_geoCache) return _geoCache;
   const out=[];
@@ -8083,6 +8314,9 @@ function openCompose(src,kind,blob,durationMs){
   // kapak seçme sadece videolarda
   const cvBtn=$("#cpCoverBtn");
   if(cvBtn){ cvBtn.hidden = (kind!=="video"); cvBtn.classList.remove("on"); }
+  // şarkı ekleme fotoğraf VE videoda kullanılabilir
+  const sgBtn=$("#cpSongRow");
+  if(sgBtn){ sgBtn.hidden=false; sgBtn.style.display=""; }
   renderSongRow();
   shareLoc=true;
   $("#cpLocSw").classList.add("on");
@@ -8944,7 +9178,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v139";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v142";
   box.appendChild(ver);
 }
 

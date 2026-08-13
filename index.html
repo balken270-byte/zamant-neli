@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v184</title>
+<title>Klipsy v185</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6003,7 +6003,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v184</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v185</span></div>
     </div>
   </section>
 </div>
@@ -10157,7 +10157,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v184";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v185";
   box.appendChild(ver);
 }
 
@@ -12271,42 +12271,91 @@ nextAt=Date.now()+HOLD;
    Sadece gerçek uygulamada (Capacitor) çalışır; tarayıcıda atlanır.
    ============================================================ */
 /* APK: Google girişinden dönünce oturumu kur.
-   Sistem tarayıcısı "com.klipsy.app://login#..." adresiyle uygulamayı açar;
-   adresteki jeton okunup oturuma çevrilir. */
+   Supabase iki farklı biçimde dönebiliyor:
+     1) adres sonunda #access_token=... (klasik)
+     2) adres sonunda ?code=...        (yeni PKCE yöntemi)
+   İkisi de denenir; ayrıca sonuç ekranda gösterilir ki
+   bir sorun olursa körlemesine kalınmasın. */
 (function nativeAuthReturn(){
   const cap = window.Capacitor;
   if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
   const P = cap.Plugins || {};
   if(!P.App || !P.App.addListener) return;
 
+  const say = (m)=>{ try{ if(typeof gmsg==="function") gmsg(m,'err'); else alert(m); }catch(e){} };
+
   P.App.addListener('appUrlOpen', async (ev)=>{
+    const url = (ev && ev.url) ? ev.url : '';
+    if(url.indexOf('com.klipsy.app') !== 0) return;
+
+    try{ if(P.Browser && P.Browser.close) await P.Browser.close(); }catch(e){}
+
+    const sb = window.__sb;
+    if(!sb){ say('Bağlantı hazır değil'); return; }
+
     try{
-      const url = ev && ev.url ? ev.url : '';
-      if(url.indexOf('com.klipsy.app://login') !== 0) return;
+      // --- 1) PKCE: ?code=... ---
+      const qIndex = url.indexOf('?');
+      if(qIndex > -1){
+        const qs = new URLSearchParams(url.slice(qIndex+1).split('#')[0]);
+        const code = qs.get('code');
+        const errDesc = qs.get('error_description');
+        if(errDesc){ say(errDesc); return; }
+        if(code){
+          const { error } = await sb.auth.exchangeCodeForSession(code);
+          if(error){ say('Giriş tamamlanamadı: '+error.message); return; }
+          await enterApp();
+          return;
+        }
+      }
 
-      // tarayıcı penceresini kapat
-      try{ if(P.Browser && P.Browser.close) await P.Browser.close(); }catch(e){}
+      // --- 2) Klasik: #access_token=... ---
+      const hIndex = url.indexOf('#');
+      if(hIndex > -1){
+        const hs = new URLSearchParams(url.slice(hIndex+1));
+        const at = hs.get('access_token');
+        const rt = hs.get('refresh_token');
+        const errDesc = hs.get('error_description');
+        if(errDesc){ say(errDesc); return; }
+        if(at && rt){
+          const { error } = await sb.auth.setSession({ access_token:at, refresh_token:rt });
+          if(error){ say('Oturum kurulamadı: '+error.message); return; }
+          await enterApp();
+          return;
+        }
+      }
 
+      // --- 3) Hiçbiri yoksa: Supabase kendi oturumunu kurmuş olabilir ---
+      const { data } = await sb.auth.getSession();
+      if(data && data.session){ await enterApp(); return; }
+
+      say('Giriş bilgisi alınamadı');
+    }catch(e){
+      say('Hata: ' + (e && e.message ? e.message : e));
+    }
+  });
+})();
+
+/* YEDEK: Uygulama öne geldiğinde oturum oluşmuş mu diye bak.
+   Bazı cihazlarda adres yakalanamıyor ama Supabase oturumu kurmuş oluyor. */
+(function nativeResumeCheck(){
+  const cap = window.Capacitor;
+  if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+  const P = cap.Plugins || {};
+  if(!P.App || !P.App.addListener) return;
+
+  P.App.addListener('appStateChange', async (st)=>{
+    if(!st || !st.isActive) return;
+    try{
+      const gate = document.getElementById('gate');
+      if(!gate || gate.classList.contains('off')) return;   // zaten girilmiş
       const sb = window.__sb;
       if(!sb) return;
-
-      // jetonlar # ya da ? sonrasında gelir
-      const frag = url.split('#')[1] || url.split('?')[1] || '';
-      const q = new URLSearchParams(frag);
-      const access_token = q.get('access_token');
-      const refresh_token = q.get('refresh_token');
-      const code = q.get('code');
-
-      if(access_token && refresh_token){
-        await sb.auth.setSession({ access_token, refresh_token });
-      }else if(code && sb.auth.exchangeCodeForSession){
-        await sb.auth.exchangeCodeForSession(code);
-      }else{
-        return;
+      const { data } = await sb.auth.getSession();
+      if(data && data.session && typeof enterApp==='function'){
+        await enterApp();
       }
-      // oturum kuruldu → uygulamaya gir
-      if(typeof enterApp === 'function') await enterApp();
-    }catch(e){ console.warn('auth return:', e); }
+    }catch(e){}
   });
 })();
 

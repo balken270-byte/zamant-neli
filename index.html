@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v166</title>
+<title>Klipsy v170</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      loc_blocked:"Konum engellendi",
+      loc_denied_short:"Konum izni verilmedi",
+      ok_got_it:"Anladım",
+      loc_step3:"Konumu 'İzin ver' yap ve sayfayı yenile",
+      loc_step2:"İzinler / Site ayarları bölümünü aç",
+      loc_step1:"Adres çubuğundaki kilit ya da (i) simgesine dokun",
+      loc_denied_body:"Daha önce reddettiğin için uygulama izni tekrar isteyemiyor. Tarayıcı ayarlarından açman gerekiyor:",
+      loc_denied_title:"Konum izni kapalı",
       chart_off:"Günlük liste şu an alınamadı",
       req_accept_first:"Önce isteği kabul et",
       req_wait_toast:"Kabul edilene kadar mesaj gönderemezsin",
@@ -379,6 +387,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      loc_blocked:"Location blocked",
+      loc_denied_short:"Location permission denied",
+      ok_got_it:"Got it",
+      loc_step3:"Set Location to 'Allow' and reload the page",
+      loc_step2:"Open Permissions / Site settings",
+      loc_step1:"Tap the lock or (i) icon in the address bar",
+      loc_denied_body:"Since you declined before, the app can't ask again. Enable it in your browser settings:",
+      loc_denied_title:"Location access is off",
       chart_off:"Daily chart isn't available right now",
       req_accept_first:"Accept the request first",
       req_wait_toast:"You can't send until it's accepted",
@@ -728,6 +744,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      loc_blocked:"Ubicación bloqueada",
+      loc_denied_short:"Permiso de ubicación denegado",
+      ok_got_it:"Entendido",
+      loc_step3:"Pon Ubicación en 'Permitir' y recarga la página",
+      loc_step2:"Abre Permisos / Configuración del sitio",
+      loc_step1:"Toca el candado o el icono (i) en la barra de direcciones",
+      loc_denied_body:"Como lo rechazaste antes, la app no puede volver a pedirlo. Actívalo en los ajustes del navegador:",
+      loc_denied_title:"El acceso a ubicación está desactivado",
       chart_off:"La lista diaria no está disponible",
       req_accept_first:"Acepta la solicitud primero",
       req_wait_toast:"No puedes enviar hasta que lo acepten",
@@ -1077,6 +1101,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      loc_blocked:"الموقع محظور",
+      loc_denied_short:"لم يُمنح إذن الموقع",
+      ok_got_it:"فهمت",
+      loc_step3:"اضبط الموقع على 'سماح' وأعد تحميل الصفحة",
+      loc_step2:"افتح الأذونات / إعدادات الموقع",
+      loc_step1:"اضغط على القفل أو أيقونة (i) في شريط العنوان",
+      loc_denied_body:"لأنك رفضت سابقًا، لا يمكن للتطبيق الطلب مجددًا. فعّله من إعدادات المتصفح:",
+      loc_denied_title:"إذن الموقع مغلق",
       chart_off:"القائمة اليومية غير متاحة الآن",
       req_accept_first:"اقبل الطلب أولًا",
       req_wait_toast:"لا يمكنك الإرسال حتى يتم القبول",
@@ -1426,6 +1458,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      loc_blocked:"Position bloquée",
+      loc_denied_short:"Autorisation de position refusée",
+      ok_got_it:"Compris",
+      loc_step3:"Mets Position sur 'Autoriser' et recharge la page",
+      loc_step2:"Ouvre Autorisations / Paramètres du site",
+      loc_step1:"Touche le cadenas ou l'icône (i) dans la barre d'adresse",
+      loc_denied_body:"Comme tu as refusé, l'app ne peut plus demander. Active-le dans les réglages du navigateur :",
+      loc_denied_title:"L'accès à la position est désactivé",
       chart_off:"Le classement du jour est indisponible",
       req_accept_first:"Accepte d'abord la demande",
       req_wait_toast:"Tu ne peux pas envoyer avant l'acceptation",
@@ -1775,6 +1815,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      loc_blocked:"Standort blockiert",
+      loc_denied_short:"Standortzugriff verweigert",
+      ok_got_it:"Verstanden",
+      loc_step3:"Stelle Standort auf 'Zulassen' und lade neu",
+      loc_step2:"Öffne Berechtigungen / Website-Einstellungen",
+      loc_step1:"Tippe auf das Schloss oder (i) in der Adressleiste",
+      loc_denied_body:"Da du zuvor abgelehnt hast, kann die App nicht erneut fragen. Aktiviere es in den Browsereinstellungen:",
+      loc_denied_title:"Standortzugriff ist aus",
       chart_off:"Tagesliste gerade nicht verfügbar",
       req_accept_first:"Nimm die Anfrage zuerst an",
       req_wait_toast:"Du kannst erst nach der Annahme senden",
@@ -2124,6 +2172,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      loc_blocked:"Геолокация заблокирована",
+      loc_denied_short:"Доступ к геолокации отклонён",
+      ok_got_it:"Понятно",
+      loc_step3:"Поставь 'Разрешить' и обнови страницу",
+      loc_step2:"Открой Разрешения / Настройки сайта",
+      loc_step1:"Нажми на замок или значок (i) в адресной строке",
+      loc_denied_body:"Ты отказал ранее, приложение не может спросить снова. Включи в настройках браузера:",
+      loc_denied_title:"Доступ к геолокации выключен",
       chart_off:"Дневной чарт сейчас недоступен",
       req_accept_first:"Сначала прими запрос",
       req_wait_toast:"Нельзя писать до принятия",
@@ -2473,6 +2529,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      loc_blocked:"Localização bloqueada",
+      loc_denied_short:"Permissão de localização negada",
+      ok_got_it:"Entendi",
+      loc_step3:"Defina Localização como 'Permitir' e recarregue",
+      loc_step2:"Abra Permissões / Configurações do site",
+      loc_step1:"Toque no cadeado ou no ícone (i) na barra de endereço",
+      loc_denied_body:"Como você recusou antes, o app não pode pedir de novo. Ative nas configurações do navegador:",
+      loc_denied_title:"O acesso à localização está desativado",
       chart_off:"A lista diária não está disponível",
       req_accept_first:"Aceite o pedido primeiro",
       req_wait_toast:"Você não pode enviar até ser aceito",
@@ -2822,6 +2886,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      loc_blocked:"स्थान अवरुद्ध",
+      loc_denied_short:"स्थान अनुमति नहीं दी गई",
+      ok_got_it:"समझ गया",
+      loc_step3:"स्थान को 'अनुमति दें' करें और पेज रीलोड करें",
+      loc_step2:"अनुमतियाँ / साइट सेटिंग्स खोलें",
+      loc_step1:"एड्रेस बार में लॉक या (i) आइकन दबाएँ",
+      loc_denied_body:"पहले मना करने के कारण ऐप दोबारा नहीं पूछ सकता। ब्राउज़र सेटिंग्स में चालू करें:",
+      loc_denied_title:"स्थान अनुमति बंद है",
       chart_off:"दैनिक सूची अभी उपलब्ध नहीं",
       req_accept_first:"पहले अनुरोध स्वीकार करें",
       req_wait_toast:"स्वीकार होने तक नहीं भेज सकते",
@@ -3171,6 +3243,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      loc_blocked:"Lokasi diblokir",
+      loc_denied_short:"Izin lokasi ditolak",
+      ok_got_it:"Mengerti",
+      loc_step3:"Atur Lokasi ke 'Izinkan' lalu muat ulang",
+      loc_step2:"Buka Izin / Setelan situs",
+      loc_step1:"Ketuk ikon gembok atau (i) di bilah alamat",
+      loc_denied_body:"Karena kamu menolak sebelumnya, aplikasi tidak bisa meminta lagi. Aktifkan di pengaturan browser:",
+      loc_denied_title:"Akses lokasi mati",
       chart_off:"Daftar harian sedang tidak tersedia",
       req_accept_first:"Terima permintaannya dulu",
       req_wait_toast:"Tidak bisa kirim sampai diterima",
@@ -4700,6 +4780,18 @@ svg{display:block}
   background:none;border:0;color:var(--t2);transition:opacity .14s,transform .12s}
 .chatMoreBtn:active{opacity:.55;transform:scale(.9)}
 
+/* mesaj listesi: durum göstergesi avatarın köşesinde */
+.crow2 .av{position:relative}
+.crow2 .avWait,.crow2 .avBadge{position:absolute;right:-2px;bottom:-2px;
+  border:2.5px solid var(--panelbg);border-radius:99px;
+  display:grid;place-items:center}
+.crow2 .avWait{width:21px;height:21px;
+  background:var(--panelbg);color:var(--t2);
+  box-shadow:inset 0 0 0 1px var(--edge)}
+.crow2 .avWait svg{width:12px;height:12px}
+.crow2 .avBadge{min-width:21px;height:21px;padding:0 5px;
+  background:var(--accent);color:#fff;font-size:11px;font-weight:700}
+
 /* sohbette engel şeridi (WhatsApp tarzı) */
 .chatBlockStrip{position:absolute;left:0;right:0;bottom:0;z-index:6;
   display:flex;align-items:center;gap:12px;
@@ -4953,7 +5045,7 @@ svg{display:block}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2.unread .nm{font-weight:700}
 .crow2.unread .pv{color:rgba(255,255,255,.9)}
-.crow2 .badge2{flex:none;min-width:20px;height:20px;padding:0 6px;border-radius:99px;
+.crow2 .badge2{min-width:20px;height:20px;padding:0 5px;border-radius:99px;
   background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
 
 .chatHead{display:flex;align-items:center;gap:11px;flex:none;border-bottom:1px solid var(--edge-soft);
@@ -5741,7 +5833,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v166</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v170</span></div>
     </div>
   </section>
 </div>
@@ -8435,7 +8527,7 @@ function toast(m){
 }
 
 /* ---------- paylaşım ekranı ---------- */
-let draft=null, pickedMood=null, place=null, shareLoc=true, pickedSong=null;
+let draft=null, pickedMood=null, place=null, shareLoc=true, pickedSong=null, _locDenied=false;
 
 function buildMoods(){
   const box=$("#cpMoods");
@@ -8699,11 +8791,18 @@ function getLocation(){
   },err=>{
     locIcon("bad");
     let m=t("loc_failed"),s=t("loc_optional");
-    if(err.code===1){m="Konum izni verilmedi";s=t("loc_perm_hint");}
+    if(err.code===1){
+      m=t("loc_denied_short"); s=t("loc_perm_hint");
+      _locDenied=true;                       // "Yardım" bağlantısı çıksın
+    }
     else if(err.code===2){m=t("loc_notfound");s=t("loc_nosignal");}
     else if(err.code===3){m=t("loc_timeout");s=t("hint_refresh");}
-    if(!window.isSecureContext){m="Konum engellendi";s=t("err_https");}
+    if(!window.isSecureContext){m=t("loc_blocked");s=t("err_https");}
     locState("bad",m,s);
+    // izin reddedildiyse nasıl açılacağını göster
+    if(err.code===1 && typeof openLocationHelp==="function"){
+      setTimeout(()=>openLocationHelp(), 400);
+    }
   },{enableHighAccuracy:true,timeout:12000,maximumAge:30000});
 }
 $("#cpLocRetry").addEventListener("click",e=>{e.stopPropagation();getLocation();});
@@ -8745,7 +8844,8 @@ function openCompose(src,kind,blob,durationMs){
   const sgBtn=$("#cpSongRow");
   if(sgBtn){ sgBtn.hidden=false; sgBtn.style.display=""; }
   renderSongRow();
-  shareLoc=true;
+  // Ayarlar'daki "Konumu paylaş" tercihi burada geçerli olur
+  shareLoc = (typeof prefLocation==="boolean") ? prefLocation : true;
   $("#cpLocSw").classList.add("on");
   $("#cpLoc").classList.remove("mute");
   $$("#cpMoods .moodchip").forEach(x=>{x.classList.remove("on");x.setAttribute("aria-pressed","false");});
@@ -8858,59 +8958,62 @@ function userCountry(){
   return 'TR';
 }
 
-/* itunes.apple.com üzerindeki günlük liste.
-   Bu adres tarayıcıdan okunabiliyor (şarkı arama da aynı adresi kullanıyor)
-   ve önizleme adreslerini doğrudan içeriyor — bu yüzden birincil kaynak. */
-async function topFromItunes(cc){
-  const url = "https://itunes.apple.com/"+cc+"/rss/topsongs/limit=40/json";
-  const r = await fetch(url);
-  if(!r.ok) throw new Error("itunes rss");
-  const j = await r.json();
-  const entries = (j.feed && j.feed.entry) ? j.feed.entry : [];
-  return entries.map(e=>({
-    id: (e.id && e.id.attributes) ? e.id.attributes["im:id"] : null,
-    title:  e["im:name"] ? e["im:name"].label : "",
-    artist: e["im:artist"] ? e["im:artist"].label : "",
-    art: (e["im:image"] && e["im:image"].length)
-         ? e["im:image"][e["im:image"].length-1].label.replace(/\/\d+x\d+bb/, "/300x300bb")
-         : "",
-    preview: (e.link||[]).map(L=>L.attributes)
-             .filter(a=>a && a["im:assetType"]==="preview")
-             .map(a=>a.href)[0] || null
-  })).filter(x=>x.title);
-}
-
 /* Apple'ın resmi günlük listesi.
    SORUN: Apple'ın RSS sunucusu tarayıcıdan okumaya izin vermiyor (CORS).
    İstek gidiyor ama tarayıcı cevabı JavaScript'e vermiyor.
    ÇÖZÜM: önce doğrudan denenir; olmazsa açık bir aktarma servisi üzerinden alınır. */
-function appleChartUrl(cc){
-  return "https://rss.marketingtools.apple.com/api/v2/"+cc+"/music/most-played/40/songs.json";
+/* İki alan adı da aynı veriyi verir, ancak tarayıcı erişimi farklıdır:
+   - rss.applemarketingtools.com : tarayıcıdan okunabiliyor (ÇALIŞAN)
+   - rss.marketingtools.apple.com: engellenebiliyor (yedek)
+   Bu yüzden sıra önemlidir. */
+const APPLE_CHART_HOSTS = [
+  "https://rss.applemarketingtools.com",
+  "https://rss.marketingtools.apple.com"
+];
+function appleChartUrl(cc, host){
+  return (host||APPLE_CHART_HOSTS[0])+"/api/v2/"+cc+"/music/most-played/40/songs.json";
 }
 
 async function fetchChartJson(cc){
-  const direct = appleChartUrl(cc);
+  const path = "/api/v2/"+cc+"/music/most-played/40/songs.json";
 
-  // 1) doğrudan dene (izin veriliyorsa en hızlısı)
+  // 1) KENDİ SUNUCUMUZ (Supabase) — CORS sorunu YOK, en güvenilir yol.
+  //    "apple-chart" adlı Edge Function kuruluysa buradan gelir.
   try{
-    const r = await fetch(direct);
-    if(r.ok) return await r.json();
+    const sb = window.__sb;
+    if(sb && sb.functions){
+      const { data, error } = await sb.functions.invoke('apple-chart', { body:{ country: cc } });
+      if(!error && data && data.feed) return data;
+    }
   }catch(e){}
 
-  // 2) aktarma servisleri (tarayıcı engelini aşar)
+  // 2) Apple'ın iki adresini doğrudan dene
+  for(const host of APPLE_CHART_HOSTS){
+    try{
+      const r = await fetch(host+path);
+      if(r.ok){
+        const j = await r.json();
+        if(j && j.feed) return j;
+      }
+    }catch(e){}
+  }
+
+  // 3) Açık aktarma servisleri (tarayıcı engelini aşar)
+  const target = APPLE_CHART_HOSTS[0]+path;
   const proxies = [
+    u => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u),
     u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
-    u => "https://corsproxy.io/?" + encodeURIComponent(u)
+    u => "https://corsproxy.io/?url=" + encodeURIComponent(u)
   ];
   for(const mk of proxies){
     try{
-      const r = await fetch(mk(direct));
+      const r = await fetch(mk(target));
       if(!r.ok) continue;
-      const txt = await r.text();
-      const j = JSON.parse(txt);
+      const j = JSON.parse(await r.text());
       if(j && j.feed) return j;
     }catch(e){}
   }
+
   throw new Error("chart unavailable");
 }
 
@@ -8963,15 +9066,7 @@ async function loadTopSongs(){
     // Anahtara tarih eklenir: liste her gün otomatik tazelenir.
     const today = new Date().toISOString().slice(0,10);
     list = await DataHub.get('top:'+cc+':'+today, async()=>{
-      // 1) itunes.apple.com — tarayıcıdan okunabiliyor (arama da bu adresi kullanıyor)
-      //    ve önizleme adreslerini doğrudan veriyor. ÖNCELİKLİ KAYNAK.
-      for(const country of [cc, 'us']){
-        try{
-          const out = await topFromItunes(country);
-          if(out && out.length) return out;
-        }catch(e){}
-      }
-      // 2) yedek: Apple'ın yeni listesi (tarayıcı engeli olabilir, aktarma denenir)
+      // önce kullanıcının ülkesi, olmazsa ABD listesi
       for(const country of [cc, 'us']){
         try{
           const out = await topFromApple(country);
@@ -9564,6 +9659,61 @@ function themeRow(){
 
 // tercihler (bellek + Supabase)
 let prefNotif=true, prefLocation=true;
+
+/* Konum izni gerçekten var mı? Yoksa istemeyi dener.
+   Tarayıcıda izin bir kez reddedilirse JavaScript onu geri açamaz —
+   kullanıcının site ayarlarından düzeltmesi gerekir. */
+async function ensureLocationPermission(){
+  if(!navigator.geolocation) return false;
+  try{
+    if(navigator.permissions && navigator.permissions.query){
+      const st = await navigator.permissions.query({name:'geolocation'});
+      if(st.state === 'granted') return true;
+      if(st.state === 'denied') return false;   // istemek bile mümkün değil
+    }
+  }catch(e){}
+  // 'prompt' durumu: izin penceresini aç
+  return new Promise(res=>{
+    navigator.geolocation.getCurrentPosition(
+      ()=>res(true),
+      ()=>res(false),
+      {enableHighAccuracy:false, timeout:8000, maximumAge:300000}
+    );
+  });
+}
+
+/* İzin reddedilmişse ne yapılacağını anlatan pencere */
+function openLocationHelp(){
+  let ov=document.getElementById("locHelp");
+  if(!ov){
+    ov=document.createElement("div");ov.id="locHelp";
+    ov.innerHTML=
+      '<div class="lhScrim" data-close-lh></div>'+
+      '<div class="lhBox">'+
+        '<div class="lhIcon">'+
+          '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10.5c0 5.5-8 11.5-8 11.5s-8-6-8-11.5a8 8 0 0 1 16 0z"/><circle cx="12" cy="10.5" r="2.8"/></svg>'+
+        '</div>'+
+        '<h3 id="lhTitle"></h3>'+
+        '<p id="lhBody"></p>'+
+        '<ol class="lhSteps" id="lhSteps"></ol>'+
+        '<button class="lhOk" id="lhOk"></button>'+
+      '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click",e=>{
+      if(e.target.hasAttribute("data-close-lh")) ov.classList.remove("open");
+    });
+    ov.querySelector("#lhOk").addEventListener("click",()=>ov.classList.remove("open"));
+  }
+  document.getElementById("lhTitle").textContent = t("loc_denied_title");
+  document.getElementById("lhBody").textContent  = t("loc_denied_body");
+  const steps=document.getElementById("lhSteps");
+  steps.innerHTML =
+    '<li>'+t("loc_step1")+'</li>'+
+    '<li>'+t("loc_step2")+'</li>'+
+    '<li>'+t("loc_step3")+'</li>';
+  document.getElementById("lhOk").textContent = t("ok_got_it");
+  ov.classList.add("open");
+}
 async function loadPrefs(){
   if(window.__sb && window.__me){
     try{
@@ -9633,7 +9783,20 @@ function renderSettings(){
   g2.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
     t("share_loc"), t("loc_in_moments"), prefLocation,
-    (on)=>{ prefLocation=on; savePref('share_location',on); toast(t(on?"t_loc_on":"t_loc_off")); }));
+    async (on)=>{
+      if(on){
+        // Açılıyorsa tarayıcı izni gerçekten var mı bak
+        const ok = await ensureLocationPermission();
+        if(!ok){
+          // izin yok → anahtarı geri kapat ve nasıl açılacağını anlat
+          renderSettings();
+          openLocationHelp();
+          return;
+        }
+      }
+      prefLocation=on; savePref('share_location',on);
+      toast(t(on?"t_loc_on":"t_loc_off"));
+    }));
   g2.appendChild(settingsRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
     t("blocked"),t("s_blocked_sub"),
@@ -9672,7 +9835,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v166";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v170";
   box.appendChild(ver);
 }
 
@@ -10322,18 +10485,25 @@ function buildChatRow(c, isRequestRow){
   if(isRequestRow){
     // istek listesinde mesaj içeriği ASLA gösterilmez
     pv.innerHTML = '<span class="reqTag in">'+t("msg_request2")+'</span> '+t("open_decide")+'';
-  }else if(isPending && iAmRequester){
-    pv.innerHTML = '<span class="reqTag me">'+
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>'+
-      t("req_sent2")+'</span>';
   }else{
+    // Gönderdiğim istekte de gerçek mesaj görünür; bekleme durumu sağda gösterilir.
     pv.textContent=preview(c);
   }
   mid.append(top,pv);
   b.append(av,mid);
-  if(c.unread && !isRequestRow){
-    const bd=document.createElement("span");bd.className="badge2";bd.textContent=c.unread;
-    b.appendChild(bd);
+
+  // Gösterge AVATARIN KÖŞESİNE binir → sağ uç boş kalır, saatler tam hizalanır.
+  if(isPending && iAmRequester && !isRequestRow){
+    const wt=document.createElement("span");
+    wt.className="avWait";
+    wt.title=t("req_sent2");
+    wt.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>';
+    av.appendChild(wt);
+  }else if(c.unread && !isRequestRow){
+    const bd=document.createElement("span");
+    bd.className="avBadge";
+    bd.textContent = c.unread>9 ? "9+" : c.unread;
+    av.appendChild(bd);
   }
   b.addEventListener("click",()=>openChat(c.who));
   // sohbete uzun bas → sil

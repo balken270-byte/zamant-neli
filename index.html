@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v173</title>
+<title>Klipsy v174</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      drafts:"Taslaklar",
+      draft_too_big:"Dosya taslak için çok büyük",
+      draft_sent:"taslak paylaşıldı",
+      draft_sending:"Taslaklar gönderiliyor…",
+      draft_saved:"Bağlantı yok — taslak olarak kaydedildi",
       song_no_preview:"Bu şarkının önizlemesi yok",
       ok_song_added:"Şarkı eklendi",
       act_use:"Ekle",
@@ -390,6 +395,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      drafts:"Drafts",
+      draft_too_big:"File is too large to save as a draft",
+      draft_sent:"drafts published",
+      draft_sending:"Sending drafts…",
+      draft_saved:"No connection — saved as a draft",
       song_no_preview:"No preview for this song",
       ok_song_added:"Song added",
       act_use:"Use",
@@ -750,6 +760,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      drafts:"Borradores",
+      draft_too_big:"El archivo es muy grande para un borrador",
+      draft_sent:"borradores publicados",
+      draft_sending:"Enviando borradores…",
+      draft_saved:"Sin conexión — guardado como borrador",
       song_no_preview:"Sin vista previa para esta canción",
       ok_song_added:"Canción añadida",
       act_use:"Usar",
@@ -1110,6 +1125,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      drafts:"المسودات",
+      draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
+      draft_sent:"مسودة نُشرت",
+      draft_sending:"جارٍ إرسال المسودات…",
+      draft_saved:"لا يوجد اتصال — حُفظ كمسودة",
       song_no_preview:"لا توجد معاينة لهذه الأغنية",
       ok_song_added:"أُضيفت الأغنية",
       act_use:"إضافة",
@@ -1470,6 +1490,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      drafts:"Brouillons",
+      draft_too_big:"Fichier trop volumineux pour un brouillon",
+      draft_sent:"brouillons publiés",
+      draft_sending:"Envoi des brouillons…",
+      draft_saved:"Pas de connexion — enregistré en brouillon",
       song_no_preview:"Pas d'aperçu pour ce morceau",
       ok_song_added:"Morceau ajouté",
       act_use:"Utiliser",
@@ -1830,6 +1855,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      drafts:"Entwürfe",
+      draft_too_big:"Datei zu groß für einen Entwurf",
+      draft_sent:"Entwürfe veröffentlicht",
+      draft_sending:"Entwürfe werden gesendet…",
+      draft_saved:"Keine Verbindung — als Entwurf gespeichert",
       song_no_preview:"Keine Vorschau für diesen Song",
       ok_song_added:"Song hinzugefügt",
       act_use:"Verwenden",
@@ -2190,6 +2220,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      drafts:"Черновики",
+      draft_too_big:"Файл слишком большой для черновика",
+      draft_sent:"черновиков опубликовано",
+      draft_sending:"Отправка черновиков…",
+      draft_saved:"Нет связи — сохранено в черновиках",
       song_no_preview:"Нет превью для этой песни",
       ok_song_added:"Песня добавлена",
       act_use:"Добавить",
@@ -2550,6 +2585,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      drafts:"Rascunhos",
+      draft_too_big:"Arquivo grande demais para rascunho",
+      draft_sent:"rascunhos publicados",
+      draft_sending:"Enviando rascunhos…",
+      draft_saved:"Sem conexão — salvo como rascunho",
       song_no_preview:"Sem prévia para esta música",
       ok_song_added:"Música adicionada",
       act_use:"Usar",
@@ -2910,6 +2950,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      drafts:"ड्राफ़्ट",
+      draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
+      draft_sent:"ड्राफ़्ट प्रकाशित",
+      draft_sending:"ड्राफ़्ट भेजे जा रहे हैं…",
+      draft_saved:"कनेक्शन नहीं — ड्राफ़्ट में सहेजा",
       song_no_preview:"इस गाने का पूर्वावलोकन नहीं",
       ok_song_added:"गाना जोड़ा गया",
       act_use:"जोड़ें",
@@ -3270,6 +3315,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      drafts:"Draf",
+      draft_too_big:"Berkas terlalu besar untuk draf",
+      draft_sent:"draf dipublikasikan",
+      draft_sending:"Mengirim draf…",
+      draft_saved:"Tanpa koneksi — disimpan sebagai draf",
       song_no_preview:"Tidak ada pratinjau lagu ini",
       ok_song_added:"Lagu ditambahkan",
       act_use:"Pakai",
@@ -5906,7 +5956,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v173</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v174</span></div>
     </div>
   </section>
 </div>
@@ -10047,7 +10097,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v173";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v174";
   box.appendChild(ver);
 }
 
@@ -11604,10 +11654,24 @@ async function start(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$("#camFail").classList.add("on");return;}
   try{
     const wantAudio=(camMode==="video");
-    stream=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:facing,width:{ideal:1280}},
-      audio: wantAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:2} : false
-    });
+    // DİKEY akış iste: önizleme 9:16 gösterirken kayıt yatay geliyordu.
+    // Bu yüzden çekilen video/fotoğraf ekranda görülenden çok farklı çıkıyordu.
+    const portrait = { ideal: 9/16 };
+    const vcon = target==="profile"
+      ? { facingMode:facing, width:{ideal:1080}, height:{ideal:1080}, aspectRatio:{ideal:1} }
+      : { facingMode:facing, width:{ideal:1080}, height:{ideal:1920}, aspectRatio:portrait };
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:vcon,
+        audio: wantAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:2} : false
+      });
+    }catch(e1){
+      // cihaz bu ölçüyü desteklemiyorsa sadeleştirerek tekrar dene
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:facing},
+        audio: wantAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:2} : false
+      });
+    }
     v.srcObject=stream;await v.play().catch(()=>{});
   }catch(e){$("#camFail").classList.add("on");}
 }
@@ -11633,15 +11697,40 @@ $("#camClose").addEventListener("click",closeCam);
 $("#openCam").addEventListener("click",()=>openCam("post"));
 function grab(){
   const v=$("#camVideo"); if(!v.videoWidth) return null;
-  const square=target==="profile";
+  const square = target==="profile";
+  const vw=v.videoWidth, vh=v.videoHeight;
+
+  // Hedef oran: profil için kare, diğerlerinde ekranla aynı (9:16)
+  const targetRatio = square ? 1 : (9/16);
+
+  // Kaynaktan ORTADAN, hedef orana uyan en büyük alanı kes (object-fit: cover mantığı)
+  let sw, sh;
+  if(vw/vh > targetRatio){           // kaynak daha geniş → yanlardan kes
+    sh = vh;
+    sw = Math.round(vh * targetRatio);
+  }else{                             // kaynak daha dar → üst/alttan kes
+    sw = vw;
+    sh = Math.round(vw / targetRatio);
+  }
+  const sx = Math.round((vw - sw)/2);
+  const sy = Math.round((vh - sh)/2);
+
+  // Çıktı boyutu: netlik için uzun kenar en fazla 1920
+  const maxLong = 1920;
+  let cw, ch;
+  if(square){ cw = ch = Math.min(sw, 1080); }
+  else{
+    ch = Math.min(sh, maxLong);
+    cw = Math.round(ch * targetRatio);
+  }
+
   const c=document.createElement("canvas");
-  const w=Math.min(v.videoWidth,v.videoHeight*(square?1:.52));
-  c.width=w;c.height=square?w:w*1.92;
+  c.width=cw; c.height=ch;
   const x=c.getContext("2d");
-  if(facing==="user"){x.translate(c.width,0);x.scale(-1,1);}
-  const sw=Math.min(v.videoWidth,c.width),sh=Math.min(v.videoHeight,c.height);
-  x.drawImage(v,(v.videoWidth-sw)/2,(v.videoHeight-sh)/2,sw,sh,0,0,c.width,c.height);
-  return c.toDataURL("image/jpeg",.86);
+  x.imageSmoothingQuality="high";
+  if(facing==="user"){ x.translate(cw,0); x.scale(-1,1); }   // ön kamera aynalı
+  x.drawImage(v, sx, sy, sw, sh, 0, 0, cw, ch);
+  return c.toDataURL("image/jpeg",.9);
 }
 function dataURLtoBlob(durl){
   const [head,b64]=durl.split(',');
@@ -11756,11 +11845,136 @@ async function post(src,kind,mood,where,note,extra){
     render(); activeIdx=-1; syncActive();
     toast(kind==="video"?t("ok_video_in_feed"):t("ok_photo_in_feed"));
   }catch(e){
-    toast(t("err_upload")+" "+(e.message||"hata"));
-    // yerelde kalsın ama işaretle
+    // Yükleme başarısız (internet yok, sunucu hatası vs.)
+    // An KAYBOLMAZ: taslak olarak cihaza kaydedilir, bağlantı gelince gönderilir.
     local._failed=true;
+    const saved = await saveDraft({
+      kind, blob, note, mood: mood?mood.k:null,
+      where, extra, song, ts: Date.now()
+    });
+    render(); activeIdx=-1; syncActive();
+    toast(saved ? t("draft_saved") : (t("err_upload")+" "+(e.message||"")));
   }
 }
+
+/* ============================================================
+   TASLAKLAR — bağlantı yokken paylaşımlar kaybolmasın
+   Anlar cihazda saklanır, internet gelince otomatik gönderilir.
+   ============================================================ */
+const DRAFT_KEY = 'klipsy_drafts_v1';
+
+function readDrafts(){
+  try{ return JSON.parse(localStorage.getItem(DRAFT_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function writeDrafts(list){
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(list)); return true; }
+  catch(e){ return false; }
+}
+
+// Blob'u metne çevir (cihazda saklanabilsin)
+function blobToDataURL(blob){
+  return new Promise(res=>{
+    try{
+      const r=new FileReader();
+      r.onload=()=>res(r.result);
+      r.onerror=()=>res(null);
+      r.readAsDataURL(blob);
+    }catch(e){ res(null); }
+  });
+}
+function dataURLtoBlobSafe(durl){
+  try{ return dataURLtoBlob(durl); }catch(e){ return null; }
+}
+
+async function saveDraft(d){
+  try{
+    if(!d.blob) return false;
+    const data = await blobToDataURL(d.blob);
+    if(!data) return false;
+    // çok büyük dosyalar cihaz belleğini doldurur
+    if(data.length > 4500000){ toast(t("draft_too_big")); return false; }
+    const list = readDrafts();
+    list.push({
+      id: 'd'+Date.now()+Math.random().toString(36).slice(2,6),
+      kind:d.kind, data, note:d.note||"", mood:d.mood||null,
+      where:d.where||null, extra:d.extra||null, song:d.song||null, ts:d.ts||Date.now()
+    });
+    const ok = writeDrafts(list);
+    paintDraftDot();
+    return ok;
+  }catch(e){ return false; }
+}
+
+async function sendDraft(d){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return false;
+  const blob = dataURLtoBlobSafe(d.data);
+  if(!blob) return false;
+  try{
+    const ext = d.kind==="video" ? "webm" : "jpg";
+    const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
+    const up = await sb.storage.from('moments').upload(path, blob, {
+      contentType: d.kind==="video" ? "video/webm" : "image/jpeg", upsert:false
+    });
+    if(up.error) throw up.error;
+
+    const ex = d.extra||{};
+    const row = {
+      author_id: me.id, media_path: path, media_kind: d.kind, poster_path: null,
+      mood: d.mood || 'sakin', note: d.note || null,
+      place_label: (ex.shareLoc===false) ? null : (d.where || null),
+      geo_lat: (ex.la!=null && ex.shareLoc!==false) ? ex.la : null,
+      geo_lng: (ex.lo!=null && ex.shareLoc!==false) ? ex.lo : null,
+      duration_ms: ex.durationMs || null,
+      song_title: d.song? d.song.title : null,
+      song_artist: d.song? d.song.artist : null,
+      song_art: d.song? d.song.art : null,
+      song_preview: d.song? d.song.preview : null
+    };
+    const ins = await sb.from('moments').insert(row).select('id').single();
+    if(ins.error) throw ins.error;
+    return true;
+  }catch(e){ return false; }
+}
+
+let _draftBusy=false;
+async function flushDrafts(silent){
+  if(_draftBusy) return;
+  const list = readDrafts();
+  if(!list.length) return;
+  if(!navigator.onLine) return;
+  if(!window.__sb || !window.__me) return;
+
+  _draftBusy=true;
+  if(!silent) toast(t("draft_sending"));
+  const kalan=[];
+  let sent=0;
+  for(const d of list){
+    const ok = await sendDraft(d);
+    if(ok) sent++; else kalan.push(d);
+  }
+  writeDrafts(kalan);
+  paintDraftDot();
+  _draftBusy=false;
+
+  if(sent){
+    toast(sent+" "+t("draft_sent"));
+    if(typeof loadFeed==="function") loadFeed();
+  }
+}
+
+// Bekleyen taslak varsa profil sekmesinde küçük bir işaret göster
+function paintDraftDot(){
+  const n = readDrafts().length;
+  const el = document.getElementById("draftDot");
+  if(el) el.style.display = n ? "" : "none";
+  const cnt = document.getElementById("draftCount");
+  if(cnt) cnt.textContent = n;
+}
+
+// bağlantı gelince otomatik gönder
+window.addEventListener("online", ()=>{ setTimeout(()=>flushDrafts(true), 1200); });
 async function setAvatar(src){
   myAvatar=src;paintAv($("#tabAv"),ME);
   render();
@@ -11862,6 +12076,9 @@ nextAt=Date.now()+HOLD;
 /* YÜKLEME ÖNCELİĞİ
    Akış tek başına önce gider — bağlantıyı başka sorgularla paylaşmaz.
    Kullanıcı ekranda içeriği görür görmez, geri kalanı arka planda yüklenir. */
+// bekleyen taslak varsa gönder (uygulama açılır açılmaz)
+setTimeout(()=>{ try{ flushDrafts(true); paintDraftDot(); }catch(e){} }, 2500);
+
 loadFeed().finally(()=>{
   // akış geldikten sonra, sırayla ve boş zamanda
   const rest = () => {

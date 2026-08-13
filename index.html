@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v181</title>
+<title>Klipsy v183</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -3763,12 +3763,26 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
 <meta name="description" content="Yaşadığın anı, olduğu gibi paylaş.">
 
 <script>
-// Service Worker kaydı — Android'in uygulamayı kurulabilir sayması için gerekli
-if ('serviceWorker' in navigator) {
+/* Service Worker — SADECE tarayıcıda gerekli.
+   APK içinde dosyalar zaten cihazda olduğu için bu katman gereksiz;
+   üstelik eski dosyayı servis edip karışıklık yaratabiliyor.
+   Bu yüzden gerçek uygulamada kaydedilmez, varsa kaldırılır. */
+(function () {
+  var native = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if (!('serviceWorker' in navigator)) return;
+
+  if (native) {
+    // APK: varsa temizle
+    navigator.serviceWorker.getRegistrations().then(function (rs) {
+      rs.forEach(function (r) { r.unregister(); });
+    }).catch(function () {});
+    return;
+  }
+
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function(){});
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
   });
-}
+})();
 </script>
 
 
@@ -4879,6 +4893,22 @@ video{background-color:#12121a}
 
 /* mesaj listesi: durum göstergesi avatarın köşesinde */
 .crow2 .av{position:relative}
+/* ===== APK'ye özel hafifletmeler =====
+   Bulanıklık (backdrop-filter) mobil WebView'de pahalıdır.
+   Gerçek uygulamada yerine yarı saydam zemin kullanılır. */
+html.native .gLangBtn,
+html.native .exLocBtn,
+html.native .songNow,
+html.native .arc .del{
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important}
+html.native .songNow{background:rgba(40,28,52,.94)}
+html.native .gLangBtn{background:rgba(255,255,255,.12)}
+
+/* dokunma tepkisi anında olsun */
+html.native *{-webkit-tap-highlight-color:transparent}
+html.native button,html.native .tab{touch-action:manipulation}
+
 .crow2 .avWait,.crow2 .avBadge{position:absolute;right:-2px;bottom:-2px;
   border:2.5px solid var(--panelbg);border-radius:99px;
   display:grid;place-items:center}
@@ -5973,7 +6003,7 @@ video{background-color:#12121a}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v181</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v183</span></div>
     </div>
   </section>
 </div>
@@ -10127,7 +10157,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v181";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v183";
   box.appendChild(ver);
 }
 
@@ -12240,6 +12270,25 @@ nextAt=Date.now()+HOLD;
    APK İZİNLERİ — uygulama açılışında bir kez sor
    Sadece gerçek uygulamada (Capacitor) çalışır; tarayıcıda atlanır.
    ============================================================ */
+/* APK ayarları: görsel yükü hafiflet, uygulama hissi ver */
+(function nativeTuning(){
+  const cap = window.Capacitor;
+  if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+
+  document.documentElement.classList.add('native');   // CSS hafifletmeleri devreye girer
+
+  // uzun basışta metin seçme / bağlam menüsü çıkmasın
+  document.addEventListener('contextmenu', e=>e.preventDefault());
+
+  // çift dokunuşla yakınlaştırmayı engelle
+  let lastTouch = 0;
+  document.addEventListener('touchend', e=>{
+    const now = Date.now();
+    if(now - lastTouch <= 320) e.preventDefault();
+    lastTouch = now;
+  }, {passive:false});
+})();
+
 async function requestNativePermissions(){
   const cap = window.Capacitor;
   if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;   // tarayıcıda değil

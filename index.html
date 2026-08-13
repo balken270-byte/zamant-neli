@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v177</title>
+<title>Klipsy v178</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4460,7 +4460,24 @@ svg{display:block}
 /* ============ kamera ============ */
 #cam{position:absolute;inset:0;z-index:var(--z-cam);background:#000;display:none;flex-direction:column}
 #cam.open{display:flex;animation:fadeIn .2s ease}
+/* Tarayıcının video üzerine koyduğu oynat ikonunu ve denetimlerini gizle.
+   (APK'da içerik gelene kadar ortada büyük bir ▶ görünüyordu.) */
+video::-webkit-media-controls,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-overlay-play-button{
+  display:none !important;-webkit-appearance:none;opacity:0;pointer-events:none}
+video{background-color:#12121a}
+
 #cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+/* izin beklenirken: video gizli, sade zemin ve dönen gösterge */
+#cam.waiting video{opacity:0}
+#cam.waiting::before{content:"";position:absolute;inset:0;z-index:2;
+  background:linear-gradient(160deg,#15151d,#0b0b10)}
+#cam.waiting::after{content:"";position:absolute;top:50%;left:50%;z-index:3;
+  width:32px;height:32px;margin:-16px 0 0 -16px;border-radius:99px;
+  border:3px solid rgba(255,255,255,.16);border-top-color:#FF3B6B;
+  animation:crSpin .8s linear infinite}
 #cam video.mirror{transform:scaleX(-1)}
 .camtop{position:relative;z-index:2;padding:calc(var(--sat) + 12px) 14px 0;display:flex;align-items:center;justify-content:space-between}
 .camtop .title{font-size:14px;font-weight:600;letter-spacing:-.018em;
@@ -5956,7 +5973,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v177</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v178</span></div>
     </div>
   </section>
 </div>
@@ -10097,7 +10114,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v177";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v178";
   box.appendChild(ver);
 }
 
@@ -11652,6 +11669,9 @@ async function start(){
   stopCam();
   const v=$("#camVideo");v.classList.toggle("mirror",facing==="user");
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$("#camFail").classList.add("on");return;}
+  // izin beklenirken video boş kalır → sade bir zemin göster (çirkin ikon çıkmasın)
+  const camPanel=$("#cam");
+  if(camPanel) camPanel.classList.add("waiting");
   try{
     const wantAudio=(camMode==="video");
     // DİKEY akış iste: önizleme 9:16 gösterirken kayıt yatay geliyordu.
@@ -11690,6 +11710,7 @@ async function start(){
       });
     }
     v.srcObject=stream;await v.play().catch(()=>{});
+    if(camPanel) camPanel.classList.remove("waiting");
 
     // --- GİZLİ TANILAMA ---
     // Normal kullanıcı görmez. Adrese ?cam=1 eklenirse gerçek değerleri gösterir.
@@ -11711,7 +11732,10 @@ async function start(){
         dbg.textContent=info;
       }
     }catch(e){}
-  }catch(e){$("#camFail").classList.add("on");}
+  }catch(e){
+    if(camPanel) camPanel.classList.remove("waiting");
+    $("#camFail").classList.add("on");
+  }
 }
 function stopCam(){
   if(recorder&&recorder.state==="recording"){try{recorder.stop()}catch(e){}}
@@ -12154,6 +12178,33 @@ nextAt=Date.now()+HOLD;
 /* YÜKLEME ÖNCELİĞİ
    Akış tek başına önce gider — bağlantıyı başka sorgularla paylaşmaz.
    Kullanıcı ekranda içeriği görür görmez, geri kalanı arka planda yüklenir. */
+/* ============================================================
+   APK İZİNLERİ — uygulama açılışında bir kez sor
+   Sadece gerçek uygulamada (Capacitor) çalışır; tarayıcıda atlanır.
+   ============================================================ */
+async function requestNativePermissions(){
+  const cap = window.Capacitor;
+  if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;   // tarayıcıda değil
+  try{ if(localStorage.getItem('klipsy_perm_asked')==='1') return; }catch(e){}
+
+  const P = cap.Plugins || {};
+  // Kamera + mikrofon
+  try{
+    if(P.Camera && P.Camera.requestPermissions){
+      await P.Camera.requestPermissions({ permissions:['camera','photos'] });
+    }
+  }catch(e){}
+  // Konum
+  try{
+    if(P.Geolocation && P.Geolocation.requestPermissions){
+      await P.Geolocation.requestPermissions();
+    }
+  }catch(e){}
+
+  try{ localStorage.setItem('klipsy_perm_asked','1'); }catch(e){}
+}
+setTimeout(()=>{ try{ requestNativePermissions(); }catch(e){} }, 1500);
+
 // bekleyen taslak varsa gönder (uygulama açılır açılmaz)
 setTimeout(()=>{ try{ flushDrafts(true); paintDraftDot(); }catch(e){} }, 2500);
 

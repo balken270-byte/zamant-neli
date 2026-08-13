@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v176</title>
+<title>Klipsy v177</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5956,7 +5956,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v176</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v177</span></div>
     </div>
   </section>
 </div>
@@ -10097,7 +10097,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v176";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v177";
   box.appendChild(ver);
 }
 
@@ -11662,8 +11662,21 @@ async function start(){
        kadar geniş görmüyor. Bu yüzden orana KARIŞMIYORUZ; kamera kendi
        doğal (genelde 4:3) geniş görüntüsünü versin.
        Dikey 9:16 kırpma sadece gösterimde ve çekim anında yapılır. */
-    const fps = { ideal: 60, min: 24 };
-    const vcon = { facingMode:facing, width:{ideal:1920}, height:{ideal:1920}, frameRate:fps };
+    /* "advanced" listesi sırayla denenir ve BAŞARISIZ OLMAZ:
+       önce 60 fps, olmazsa 1080p, olmazsa 30 fps kabul edilir.
+       Orana yine karışmıyoruz (kamera geniş görüntüsünü versin). */
+    const vcon = {
+      facingMode: facing,
+      width:  { ideal: 1920 },
+      height: { ideal: 1920 },
+      frameRate: { ideal: 60, min: 24 },
+      advanced: [
+        { frameRate: { min: 60 } },          // 1. tercih: gerçek 60 fps
+        { frameRate: { min: 50 } },
+        { width: { min: 1080 } },            // sonra çözünürlük
+        { frameRate: { min: 30 } }
+      ]
+    };
     try{
       stream=await navigator.mediaDevices.getUserMedia({
         video:vcon,
@@ -11677,6 +11690,27 @@ async function start(){
       });
     }
     v.srcObject=stream;await v.play().catch(()=>{});
+
+    // --- GİZLİ TANILAMA ---
+    // Normal kullanıcı görmez. Adrese ?cam=1 eklenirse gerçek değerleri gösterir.
+    try{
+      const st=stream.getVideoTracks()[0];
+      const s=st && st.getSettings ? st.getSettings() : {};
+      const info = (s.width||"?")+"x"+(s.height||"?")+" @"+Math.round(s.frameRate||0)+"fps";
+      console.log("[Klipsy kamera]", info, s);
+      if(location.search.indexOf("cam=1")>=0){
+        let dbg=document.getElementById("camDbg");
+        if(!dbg){
+          dbg=document.createElement("div");dbg.id="camDbg";
+          dbg.style.cssText="position:absolute;top:calc(var(--sat) + 58px);left:50%;"+
+            "transform:translateX(-50%);z-index:40;padding:5px 11px;border-radius:99px;"+
+            "background:rgba(0,0,0,.7);color:#7CFFB2;font:600 11px/1 ui-monospace,monospace;"+
+            "letter-spacing:.02em;pointer-events:none";
+          document.getElementById("cam").appendChild(dbg);
+        }
+        dbg.textContent=info;
+      }
+    }catch(e){}
   }catch(e){$("#camFail").classList.add("on");}
 }
 function stopCam(){
@@ -12026,21 +12060,16 @@ function startRec(){
     if(!type && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) type=t;
   });
 
-  /* KAYIT YÜKÜ AYARI
-     Kamera akışı çok büyükse (ör. 4:3 tam sensör, 60 fps) kayıt sırasında
-     telefon zorlanıp takılıyor. Kaydı başlatmadan önce akışı makul bir
-     ölçüye çekiyoruz: uzun kenar en fazla 1920, kare hızı cihaz zorlanırsa 30. */
+  /* Kayıt sırasında kamera akışına DOKUNULMAZ.
+     (Önceden akışı küçültüyorduk; kamera o an yeniden yapılanıp
+     kare hızı düşüyor ve kayıt başlarken takılma hissi oluyordu.)
+     Bit hızı, akışın gerçek ölçüsüne bakılarak seçilir. */
   let vBits = 6000000;
   try{
     const st = stream.getVideoTracks()[0];
     const s  = st && st.getSettings ? st.getSettings() : {};
     const longSide = Math.max(s.width||1080, s.height||1920);
     const fr = s.frameRate || 30;
-
-    // akış gereğinden büyükse küçült (kayıt hafiflesin)
-    if(st && st.applyConstraints && longSide > 1920){
-      try{ st.applyConstraints({ width:{max:1080}, height:{max:1920} }); }catch(e){}
-    }
 
     if(longSide >= 1900)      vBits = fr >= 50 ? 9000000 : 6000000;
     else if(longSide >= 1200) vBits = fr >= 50 ? 5500000 : 3800000;

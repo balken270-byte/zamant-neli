@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v174</title>
+<title>Klipsy v176</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5956,7 +5956,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v174</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v176</span></div>
     </div>
   </section>
 </div>
@@ -10097,7 +10097,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v174";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v176";
   box.appendChild(ver);
 }
 
@@ -11656,10 +11656,14 @@ async function start(){
     const wantAudio=(camMode==="video");
     // DİKEY akış iste: önizleme 9:16 gösterirken kayıt yatay geliyordu.
     // Bu yüzden çekilen video/fotoğraf ekranda görülenden çok farklı çıkıyordu.
-    const portrait = { ideal: 9/16 };
-    const vcon = target==="profile"
-      ? { facingMode:facing, width:{ideal:1080}, height:{ideal:1080}, aspectRatio:{ideal:1} }
-      : { facingMode:facing, width:{ideal:1080}, height:{ideal:1920}, aspectRatio:portrait };
+    /* GÖRÜŞ ALANI (FOV) NOTU — önemli:
+       Kameradan 9:16 oran İSTEMEK, sensörün kenarlarını kestiriyor.
+       Sonuç: görüntü yakınlaşmış gibi oluyor, telefonun kendi kamerası
+       kadar geniş görmüyor. Bu yüzden orana KARIŞMIYORUZ; kamera kendi
+       doğal (genelde 4:3) geniş görüntüsünü versin.
+       Dikey 9:16 kırpma sadece gösterimde ve çekim anında yapılır. */
+    const fps = { ideal: 60, min: 24 };
+    const vcon = { facingMode:facing, width:{ideal:1920}, height:{ideal:1920}, frameRate:fps };
     try{
       stream=await navigator.mediaDevices.getUserMedia({
         video:vcon,
@@ -11715,10 +11719,10 @@ function grab(){
   const sx = Math.round((vw - sw)/2);
   const sy = Math.round((vh - sh)/2);
 
-  // Çıktı boyutu: netlik için uzun kenar en fazla 1920
-  const maxLong = 1920;
+  // Çıktı boyutu: kaynak izin veriyorsa 2160'a kadar çık (daha net kare)
+  const maxLong = 2160;
   let cw, ch;
-  if(square){ cw = ch = Math.min(sw, 1080); }
+  if(square){ cw = ch = Math.min(sw, 1440); }
   else{
     ch = Math.min(sh, maxLong);
     cw = Math.round(ch * targetRatio);
@@ -11730,7 +11734,7 @@ function grab(){
   x.imageSmoothingQuality="high";
   if(facing==="user"){ x.translate(cw,0); x.scale(-1,1); }   // ön kamera aynalı
   x.drawImage(v, sx, sy, sw, sh, 0, 0, cw, ch);
-  return c.toDataURL("image/jpeg",.9);
+  return c.toDataURL("image/jpeg",.94);   // daha az sıkıştırma = daha net
 }
 function dataURLtoBlob(durl){
   const [head,b64]=durl.split(',');
@@ -11753,8 +11757,8 @@ async function makeVideoPoster(videoSrc){
         try{
           const w=v.videoWidth, h=v.videoHeight;
           if(!w||!h) return finish(null);
-          // ızgara için küçük kapak yeterli
-          const maxW=480;
+          // kapak hem ızgarada hem giriş ekranında kullanılıyor → biraz daha büyük
+          const maxW=720;
           const scale=Math.min(1, maxW/w);
           const cv=document.createElement("canvas");
           cv.width=Math.round(w*scale); cv.height=Math.round(h*scale);
@@ -12003,12 +12007,57 @@ async function setAvatar(src){
 }
 function startRec(){
   if(!stream||!window.MediaRecorder) return;
+
+  /* CODEC SIRASI ÖNEMLİ:
+     H.264 (mp4) neredeyse her telefonda DONANIMLA kodlanır → hafif ve akıcı.
+     VP9 ise genelde yazılımla kodlanır → işlemciyi yorar, kayıt takılır.
+     Bu yüzden önce donanım destekli olanlar denenir. */
   let type="";
-  ["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm","video/mp4"].forEach(t=>{
-    if(!type&&MediaRecorder.isTypeSupported(t))type=t;
+  [
+    "video/mp4;codecs=h264,aac",
+    "video/mp4;codecs=avc1",
+    "video/mp4",
+    "video/webm;codecs=h264",
+    "video/webm;codecs=vp8,opus",
+    "video/webm;codecs=vp8",
+    "video/webm;codecs=vp9",
+    "video/webm"
+  ].forEach(t=>{
+    if(!type && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) type=t;
   });
+
+  /* KAYIT YÜKÜ AYARI
+     Kamera akışı çok büyükse (ör. 4:3 tam sensör, 60 fps) kayıt sırasında
+     telefon zorlanıp takılıyor. Kaydı başlatmadan önce akışı makul bir
+     ölçüye çekiyoruz: uzun kenar en fazla 1920, kare hızı cihaz zorlanırsa 30. */
+  let vBits = 6000000;
+  try{
+    const st = stream.getVideoTracks()[0];
+    const s  = st && st.getSettings ? st.getSettings() : {};
+    const longSide = Math.max(s.width||1080, s.height||1920);
+    const fr = s.frameRate || 30;
+
+    // akış gereğinden büyükse küçült (kayıt hafiflesin)
+    if(st && st.applyConstraints && longSide > 1920){
+      try{ st.applyConstraints({ width:{max:1080}, height:{max:1920} }); }catch(e){}
+    }
+
+    if(longSide >= 1900)      vBits = fr >= 50 ? 9000000 : 6000000;
+    else if(longSide >= 1200) vBits = fr >= 50 ? 5500000 : 3800000;
+    else                      vBits = 2500000;
+  }catch(e){}
+
   chunks=[];
-  try{recorder=type?new MediaRecorder(stream,{mimeType:type}):new MediaRecorder(stream);}catch(e){return;}
+  const opts = type
+    ? { mimeType:type, videoBitsPerSecond:vBits, audioBitsPerSecond:128000 }
+    : { videoBitsPerSecond:vBits, audioBitsPerSecond:128000 };
+  try{
+    recorder = new MediaRecorder(stream, opts);
+  }catch(e){
+    // bit hızı reddedilirse sade kurulumla dene
+    try{ recorder = type ? new MediaRecorder(stream,{mimeType:type}) : new MediaRecorder(stream); }
+    catch(e2){ return; }
+  }
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
   recorder.onstop=()=>{
     const blob=new Blob(chunks,{type:chunks[0]?chunks[0].type:"video/webm"});

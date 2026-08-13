@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v161</title>
+<title>Klipsy v162</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      blocked_send_other:"Mesaj gönderilemedi",
+      blocked_send_mine:"Engellediğin kişiye mesaj gönderemezsin",
+      blocked_me_sub:"Bu sohbete artık mesaj gönderemezsin.",
+      blocked_by_me_sub:"Mesaj gönderemez ve anlarını göremez.",
+      blocked_title:"Bu kişiyi engelledin",
       no_blocked:"Engellediğin kimse yok",
       ok_unblocked:"engeli kaldırıldı",
       act_unblock:"Kaldır",
@@ -371,6 +376,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      blocked_send_other:"Message couldn't be sent",
+      blocked_send_mine:"You can't message someone you blocked",
+      blocked_me_sub:"You can no longer send messages in this chat.",
+      blocked_by_me_sub:"They can't message you or see your moments.",
+      blocked_title:"You blocked this person",
       no_blocked:"You haven't blocked anyone",
       ok_unblocked:"unblocked",
       act_unblock:"Unblock",
@@ -712,6 +722,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      blocked_send_other:"No se pudo enviar el mensaje",
+      blocked_send_mine:"No puedes escribir a quien bloqueaste",
+      blocked_me_sub:"Ya no puedes enviar mensajes en este chat.",
+      blocked_by_me_sub:"No puede escribirte ni ver tus momentos.",
+      blocked_title:"Bloqueaste a esta persona",
       no_blocked:"No has bloqueado a nadie",
       ok_unblocked:"desbloqueado",
       act_unblock:"Desbloquear",
@@ -1053,6 +1068,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      blocked_send_other:"تعذّر إرسال الرسالة",
+      blocked_send_mine:"لا يمكنك مراسلة من حظرته",
+      blocked_me_sub:"لم يعد بإمكانك إرسال رسائل في هذه المحادثة.",
+      blocked_by_me_sub:"لا يمكنه مراسلتك أو رؤية لحظاتك.",
+      blocked_title:"لقد حظرت هذا الشخص",
       no_blocked:"لم تحظر أحدًا",
       ok_unblocked:"أُلغي حظره",
       act_unblock:"إلغاء الحظر",
@@ -1394,6 +1414,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      blocked_send_other:"Message non envoyé",
+      blocked_send_mine:"Tu ne peux pas écrire à une personne bloquée",
+      blocked_me_sub:"Tu ne peux plus envoyer de messages ici.",
+      blocked_by_me_sub:"Il ne peut ni t'écrire ni voir tes instants.",
+      blocked_title:"Tu as bloqué cette personne",
       no_blocked:"Tu n'as bloqué personne",
       ok_unblocked:"débloqué",
       act_unblock:"Débloquer",
@@ -1735,6 +1760,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      blocked_send_other:"Nachricht konnte nicht gesendet werden",
+      blocked_send_mine:"Du kannst blockierten Personen nicht schreiben",
+      blocked_me_sub:"Du kannst in diesem Chat nicht mehr schreiben.",
+      blocked_by_me_sub:"Er kann dir nicht schreiben und deine Momente nicht sehen.",
+      blocked_title:"Du hast diese Person blockiert",
       no_blocked:"Du hast niemanden blockiert",
       ok_unblocked:"freigegeben",
       act_unblock:"Freigeben",
@@ -2076,6 +2106,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      blocked_send_other:"Не удалось отправить сообщение",
+      blocked_send_mine:"Нельзя писать заблокированному",
+      blocked_me_sub:"Ты больше не можешь писать в этом чате.",
+      blocked_by_me_sub:"Он не может писать тебе и видеть твои моменты.",
+      blocked_title:"Ты заблокировал этого человека",
       no_blocked:"Ты никого не заблокировал",
       ok_unblocked:"разблокирован",
       act_unblock:"Разблокировать",
@@ -2417,6 +2452,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      blocked_send_other:"Não foi possível enviar a mensagem",
+      blocked_send_mine:"Você não pode escrever para quem bloqueou",
+      blocked_me_sub:"Você não pode mais enviar mensagens nesta conversa.",
+      blocked_by_me_sub:"Não pode te mandar mensagem nem ver seus momentos.",
+      blocked_title:"Você bloqueou esta pessoa",
       no_blocked:"Você não bloqueou ninguém",
       ok_unblocked:"desbloqueado",
       act_unblock:"Desbloquear",
@@ -2758,6 +2798,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      blocked_send_other:"संदेश नहीं भेजा जा सका",
+      blocked_send_mine:"ब्लॉक किए गए व्यक्ति को संदेश नहीं भेज सकते",
+      blocked_me_sub:"अब आप इस चैट में संदेश नहीं भेज सकते।",
+      blocked_by_me_sub:"वे आपको संदेश नहीं भेज सकते और न ही आपके पल देख सकते हैं।",
+      blocked_title:"आपने इस व्यक्ति को ब्लॉक किया है",
       no_blocked:"आपने किसी को ब्लॉक नहीं किया",
       ok_unblocked:"अनब्लॉक किया गया",
       act_unblock:"अनब्लॉक",
@@ -3099,6 +3144,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      blocked_send_other:"Pesan tidak terkirim",
+      blocked_send_mine:"Kamu tidak bisa mengirim pesan ke yang kamu blokir",
+      blocked_me_sub:"Kamu tidak bisa lagi mengirim pesan di obrolan ini.",
+      blocked_by_me_sub:"Dia tidak bisa mengirimimu pesan atau melihat momenmu.",
+      blocked_title:"Kamu memblokir orang ini",
       no_blocked:"Kamu belum memblokir siapa pun",
       ok_unblocked:"blokir dibuka",
       act_unblock:"Buka blokir",
@@ -4620,6 +4670,23 @@ svg{display:block}
   background:none;border:0;color:var(--t2);transition:opacity .14s,transform .12s}
 .chatMoreBtn:active{opacity:.55;transform:scale(.9)}
 
+/* sohbette engel şeridi (WhatsApp tarzı) */
+.chatBlockStrip{position:absolute;left:0;right:0;bottom:0;z-index:6;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px calc(var(--sab) + 14px);
+  background:var(--panelbg);border-top:1px solid var(--edge);
+  animation:crIn .3s cubic-bezier(.22,1,.36,1)}
+.chatBlockStrip .cbTx{flex:1;min-width:0}
+.chatBlockStrip .cbTx b{display:block;font-size:14px;font-weight:600;color:var(--t1);
+  letter-spacing:-.018em;margin-bottom:2px}
+.chatBlockStrip .cbTx span{display:block;font-size:12.5px;color:var(--t3);line-height:1.45}
+.chatBlockStrip.muted{justify-content:center;text-align:center}
+.chatBlockStrip.muted .cbTx span{font-size:13px}
+.chatBlockStrip .cbBtn{flex:none;height:34px;padding:0 14px;border-radius:99px;
+  background:var(--surf2);border:1px solid var(--edge-soft);color:var(--t1);
+  font-size:13px;font-weight:600;font-family:inherit;transition:transform .12s}
+.chatBlockStrip .cbBtn:active{transform:scale(.95)}
+
 /* engellenenler listesi */
 .blRow{display:flex;align-items:center;gap:12px;padding:11px 4px;
   border-bottom:1px solid var(--edge-soft)}
@@ -5617,7 +5684,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v161</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v162</span></div>
     </div>
   </section>
 </div>
@@ -9480,7 +9547,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v161";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v162";
   box.appendChild(ver);
 }
 
@@ -10336,8 +10403,13 @@ function openChatMenu(who){
     chatWho=null;
     setTimeout(()=>openProfile(who), 220);   // paneller kapansın, sonra aç
   });
-  // engelle
-  row(IC2.block, t("act_block")+" @"+who, true, ()=>{ close("chatMenu"); confirmBlock(who); });
+  // engelle / engeli kaldır (duruma göre)
+  const bst=_blockCache[who];
+  if(bst && bst.byMe){
+    row(IC2.block, t("act_unblock")+" @"+who, false, ()=>{ close("chatMenu"); unblockFromChat(who); });
+  }else{
+    row(IC2.block, t("act_block")+" @"+who, true, ()=>{ close("chatMenu"); confirmBlock(who); });
+  }
   // şikayet
   row(IC2.flag, t("act_report2"), true, ()=>{ close("chatMenu"); setTimeout(()=>reportUser(who), 200); });
   // sohbeti sil
@@ -10361,11 +10433,12 @@ async function confirmBlock(who){
       await sb.from('follows').delete().eq('follower_id',uid).eq('followee_id',me.id);
     }catch(e){}
     toast(who+" "+t("ok_blocked"));
-    close("chat");
-    chats = chats.filter(c=>c.who!==who);
-    renderChats();
-    loadConversations();
+    delete _blockCache[who];
+    // sohbeti KAPATMA — engel şeridini göster (kullanıcı durumu görsün)
+    if(chatWho===who) await applyBlockUI(who);
     try{ DataHub.invalidate(); }catch(e){}
+    loadConversations();
+    renderChats();
     loadFeed();
   }catch(e){ toast(t("err_generic")); }
 }
@@ -10430,6 +10503,93 @@ async function confirmDeleteChat(who){
 
 let _reportTargetUser = null;
 
+/* ===== ENGELLEME DURUMU =====
+   İki yön var:
+   - blockedByMe : ben onu engelledim  → mesaj yazamam, "engeli kaldır" çıkar
+   - blockedMe   : o beni engelledi    → mesaj gönderemem, sebep gizlenir  */
+const _blockCache = {};   // username -> {byMe:bool, me:bool, t:zaman}
+
+async function checkBlockState(who, force){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me||!who) return {byMe:false, me:false};
+  const hit=_blockCache[who];
+  if(!force && hit && (Date.now()-hit.t)<30000) return hit;
+
+  let byMe=false, blockedMe=false;
+  try{
+    const uid = await idOfUsername(who);
+    if(uid){
+      const [a,b] = await Promise.all([
+        sb.from('blocks').select('blocker_id').eq('blocker_id',me.id).eq('blocked_id',uid).maybeSingle(),
+        sb.from('blocks').select('blocker_id').eq('blocker_id',uid).eq('blocked_id',me.id).maybeSingle()
+      ]);
+      byMe = !!(a && a.data);
+      blockedMe = !!(b && b.data);
+    }
+  }catch(e){}
+  const st={byMe, me:blockedMe, t:Date.now()};
+  _blockCache[who]=st;
+  return st;
+}
+
+/* Sohbette engel şeridi göster / yazma kutusunu kapat */
+async function applyBlockUI(who){
+  const st = await checkBlockState(who);
+  const bar = $("#msgBar");
+  let strip = document.getElementById("chatBlockStrip");
+
+  if(!st.byMe && !st.me){
+    if(strip) strip.remove();
+    if(bar) bar.style.display="flex";
+    return st;
+  }
+
+  // yazma kutusunu gizle
+  if(bar) bar.style.display="none";
+
+  if(!strip){
+    strip=document.createElement("div");
+    strip.id="chatBlockStrip";
+    const panel=$("#chat");
+    if(panel) panel.appendChild(strip);
+  }
+
+  if(st.byMe){
+    // BEN ENGELLEDİM — kaldırma seçeneği sunulur
+    strip.className="chatBlockStrip";
+    strip.innerHTML=
+      '<div class="cbTx">'+
+        '<b>'+t("blocked_title")+'</b>'+
+        '<span>'+t("blocked_by_me_sub")+'</span>'+
+      '</div>'+
+      '<button class="cbBtn" id="cbUnblock">'+t("act_unblock")+'</button>';
+    const ub=strip.querySelector("#cbUnblock");
+    if(ub) ub.addEventListener("click",()=>unblockFromChat(who));
+  }else{
+    // O BENİ ENGELLEDİ — sebep açıklanmaz (gizlilik)
+    strip.className="chatBlockStrip muted";
+    strip.innerHTML='<div class="cbTx"><span>'+t("blocked_me_sub")+'</span></div>';
+  }
+  return st;
+}
+
+async function unblockFromChat(who){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  try{
+    const uid = await idOfUsername(who);
+    if(!uid) return;
+    const {error}=await sb.from('blocks').delete()
+      .eq('blocker_id',me.id).eq('blocked_id',uid);
+    if(error) throw error;
+    delete _blockCache[who];
+    toast(who+" "+t("ok_unblocked"));
+    try{ DataHub.invalidate(); }catch(e){}
+    await applyBlockUI(who);
+    loadFeed();
+  }catch(e){ toast(t("err_generic")); }
+}
+
 async function openChat(who){
   chatWho=who;
   // sohbeti açmadan önce istek durumunu güncel çekelim (bayat veri kalmasın)
@@ -10442,6 +10602,7 @@ async function openChat(who){
   renderChat();
   renderChatRequestBar(c);
   open("chat");
+  applyBlockUI(who);           // engel varsa şerit göster, yazmayı kapat
   setTimeout(()=>{const m=$("#msgList");m.scrollTop=m.scrollHeight;},60);
   // kabul edilmemiş gelen istekte mesaj içeriğini hiç çekme (gizlilik)
   const iAmRequesterNow = c.requestState==='pending' && window.__me && c.requesterId===window.__me.id;
@@ -10724,6 +10885,15 @@ mi.addEventListener("input",()=>ms.classList.toggle("on",mi.value.trim().length>
 async function sendMsg(){
   const v=mi.value.trim(); if(!v||!chatWho) return;
   const who=chatWho;
+
+  // ENGEL KONTROLÜ — engelliysek mesaj hiç gönderilmez
+  const bs = await checkBlockState(who);
+  if(bs.byMe || bs.me){
+    applyBlockUI(who);
+    toast(bs.byMe ? t("blocked_send_mine") : t("blocked_send_other"));
+    return;
+  }
+
   mi.value="";ms.classList.remove("on");
   // iyimser göster
   const localMsg={me:true,text:v,ts:Date.now(),_pending:true};
@@ -10756,7 +10926,11 @@ ms.addEventListener("click",sendMsg);
 mi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}});
 $("#msgCam").addEventListener("click",()=>openCam("dm"));
 $("#chatBack").addEventListener("click",()=>{close("chat");chatWho=null;renderChats();});
-$("#chatMore").addEventListener("click",()=>{ if(chatWho) openChatMenu(chatWho); });
+$("#chatMore").addEventListener("click",async ()=>{
+  if(!chatWho) return;
+  await checkBlockState(chatWho, true);   // güncel durum, sonra menüyü çiz
+  openChatMenu(chatWho);
+});
 $("#blBack").addEventListener("click",()=>close("blockedPanel"));
 $("#chatsBack").addEventListener("click",()=>{close("chats");setTab($("#tabFeed"));});
 $("#tabMsg").addEventListener("click",()=>{closeMainPanels();setTab($("#tabMsg"));openChats();});

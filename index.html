@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v162</title>
+<title>Klipsy v166</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      chart_off:"Günlük liste şu an alınamadı",
+      req_accept_first:"Önce isteği kabul et",
+      req_wait_toast:"Kabul edilene kadar mesaj gönderemezsin",
       blocked_send_other:"Mesaj gönderilemedi",
       blocked_send_mine:"Engellediğin kişiye mesaj gönderemezsin",
       blocked_me_sub:"Bu sohbete artık mesaj gönderemezsin.",
@@ -376,6 +379,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      chart_off:"Daily chart isn't available right now",
+      req_accept_first:"Accept the request first",
+      req_wait_toast:"You can't send until it's accepted",
       blocked_send_other:"Message couldn't be sent",
       blocked_send_mine:"You can't message someone you blocked",
       blocked_me_sub:"You can no longer send messages in this chat.",
@@ -722,6 +728,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      chart_off:"La lista diaria no está disponible",
+      req_accept_first:"Acepta la solicitud primero",
+      req_wait_toast:"No puedes enviar hasta que lo acepten",
       blocked_send_other:"No se pudo enviar el mensaje",
       blocked_send_mine:"No puedes escribir a quien bloqueaste",
       blocked_me_sub:"Ya no puedes enviar mensajes en este chat.",
@@ -1068,6 +1077,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      chart_off:"القائمة اليومية غير متاحة الآن",
+      req_accept_first:"اقبل الطلب أولًا",
+      req_wait_toast:"لا يمكنك الإرسال حتى يتم القبول",
       blocked_send_other:"تعذّر إرسال الرسالة",
       blocked_send_mine:"لا يمكنك مراسلة من حظرته",
       blocked_me_sub:"لم يعد بإمكانك إرسال رسائل في هذه المحادثة.",
@@ -1414,6 +1426,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      chart_off:"Le classement du jour est indisponible",
+      req_accept_first:"Accepte d'abord la demande",
+      req_wait_toast:"Tu ne peux pas envoyer avant l'acceptation",
       blocked_send_other:"Message non envoyé",
       blocked_send_mine:"Tu ne peux pas écrire à une personne bloquée",
       blocked_me_sub:"Tu ne peux plus envoyer de messages ici.",
@@ -1760,6 +1775,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      chart_off:"Tagesliste gerade nicht verfügbar",
+      req_accept_first:"Nimm die Anfrage zuerst an",
+      req_wait_toast:"Du kannst erst nach der Annahme senden",
       blocked_send_other:"Nachricht konnte nicht gesendet werden",
       blocked_send_mine:"Du kannst blockierten Personen nicht schreiben",
       blocked_me_sub:"Du kannst in diesem Chat nicht mehr schreiben.",
@@ -2106,6 +2124,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      chart_off:"Дневной чарт сейчас недоступен",
+      req_accept_first:"Сначала прими запрос",
+      req_wait_toast:"Нельзя писать до принятия",
       blocked_send_other:"Не удалось отправить сообщение",
       blocked_send_mine:"Нельзя писать заблокированному",
       blocked_me_sub:"Ты больше не можешь писать в этом чате.",
@@ -2452,6 +2473,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      chart_off:"A lista diária não está disponível",
+      req_accept_first:"Aceite o pedido primeiro",
+      req_wait_toast:"Você não pode enviar até ser aceito",
       blocked_send_other:"Não foi possível enviar a mensagem",
       blocked_send_mine:"Você não pode escrever para quem bloqueou",
       blocked_me_sub:"Você não pode mais enviar mensagens nesta conversa.",
@@ -2798,6 +2822,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      chart_off:"दैनिक सूची अभी उपलब्ध नहीं",
+      req_accept_first:"पहले अनुरोध स्वीकार करें",
+      req_wait_toast:"स्वीकार होने तक नहीं भेज सकते",
       blocked_send_other:"संदेश नहीं भेजा जा सका",
       blocked_send_mine:"ब्लॉक किए गए व्यक्ति को संदेश नहीं भेज सकते",
       blocked_me_sub:"अब आप इस चैट में संदेश नहीं भेज सकते।",
@@ -3144,6 +3171,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      chart_off:"Daftar harian sedang tidak tersedia",
+      req_accept_first:"Terima permintaannya dulu",
+      req_wait_toast:"Tidak bisa kirim sampai diterima",
       blocked_send_other:"Pesan tidak terkirim",
       blocked_send_mine:"Kamu tidak bisa mengirim pesan ke yang kamu blokir",
       blocked_me_sub:"Kamu tidak bisa lagi mengirim pesan di obrolan ini.",
@@ -4886,49 +4916,34 @@ svg{display:block}
 .reqCount{min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#FF3B6B;color:#fff;
   font-size:12px;font-weight:700;display:grid;place-items:center}
 .reqRow>svg{color:var(--t3);flex:none}
-/* ===== sohbet isteği kartı ===== */
-#chatReqBar{display:flex;flex-direction:column;gap:12px;
-  padding:14px 16px 15px;
-  background:linear-gradient(160deg, rgba(255,59,107,.13), rgba(123,91,255,.08) 70%, transparent);
-  border-bottom:1px solid rgba(255,255,255,.1);
-  animation:crIn .34s cubic-bezier(.22,1,.36,1);
-  transition:opacity .24s, transform .24s}
-@keyframes crIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
-#chatReqBar.done{opacity:0;transform:translateY(-8px)}
+/* ===== sohbet isteği şeridi — engel şeridiyle aynı tarz ===== */
+#chatReqBar{position:absolute;left:0;right:0;bottom:0;z-index:6;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px calc(var(--sab) + 14px);
+  background:var(--panelbg);border-top:1px solid var(--edge);
+  animation:crIn .3s cubic-bezier(.22,1,.36,1)}
+@keyframes crIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-/* bekleme hali (isteği ben gönderdim) — yatay, sakin */
-#chatReqBar.mine{flex-direction:row;align-items:center;gap:12px;
-  background:var(--surf1);border-bottom-color:var(--edge-soft)}
+/* isteği ben gönderdim: sadece bilgi, buton yok */
+#chatReqBar.mine{background:var(--surf1)}
 
-#chatReqBar .crTop{display:flex;align-items:center;gap:12px}
+#chatReqBar .cbTx{flex:1;min-width:0}
+#chatReqBar .cbTx b{display:block;font-size:14px;font-weight:600;color:var(--t1);
+  letter-spacing:-.018em;margin-bottom:2px}
+#chatReqBar .cbTx span{display:block;font-size:12.5px;color:var(--t3);line-height:1.45}
 
-#chatReqBar .crIcon{width:38px;height:38px;flex:none;border-radius:99px;
-  display:grid;place-items:center;color:#fff;
-  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
-  box-shadow:0 6px 16px -6px rgba(255,59,107,.7)}
-#chatReqBar .crIcon svg{width:18px;height:18px}
-#chatReqBar.mine .crIcon{background:var(--surf2);border:1px solid var(--edge);
-  color:var(--t2);box-shadow:none}
-/* bekleyen saat ikonu hafifçe nefes alsın */
-#chatReqBar .crIcon.pulse{animation:crPulse 2.4s ease-in-out infinite}
-@keyframes crPulse{0%,100%{opacity:.75}50%{opacity:1}}
-
-#chatReqBar .crTx{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
-#chatReqBar .crTx b{font-size:14px;font-weight:700;color:var(--t1);letter-spacing:-.02em}
-#chatReqBar .crTx span{font-size:12.5px;color:var(--t3);line-height:1.4;letter-spacing:-.01em}
-
-.chatReqBtns{display:flex;gap:9px}
-.chatReqBtns button{flex:1;height:42px;border-radius:13px;border:0;
-  display:flex;align-items:center;justify-content:center;gap:7px;
-  font-size:14px;font-weight:600;font-family:inherit;letter-spacing:-.016em;
-  transition:transform .12s, opacity .18s}
-.chatReqBtns button:active{transform:scale(.97)}
-.chatReqBtns button svg{width:16px;height:16px;flex:none}
-#chatReqAccept{background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
-  box-shadow:0 8px 20px -10px rgba(255,59,107,.85)}
-#chatReqAccept.busy{opacity:.72}
-#chatReqDecline{background:var(--surf2);color:var(--t2);border:1px solid var(--edge-soft)}
-/* kabul ederken dönen gösterge */
+#chatReqBar .crBtns{display:flex;align-items:center;gap:8px;flex:none}
+#chatReqBar .crBtns button{height:36px;border-radius:99px;border:0;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:13.5px;font-weight:600;font-family:inherit;letter-spacing:-.014em;
+  transition:transform .12s,opacity .18s}
+#chatReqBar .crBtns button:active{transform:scale(.94)}
+#chatReqBar .crBtns svg{width:15px;height:15px;flex:none}
+#chatReqAccept{padding:0 15px;background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  box-shadow:0 6px 16px -8px rgba(255,59,107,.8)}
+#chatReqAccept:disabled{opacity:.7}
+#chatReqDecline{width:36px;padding:0;background:var(--surf2);color:var(--t2);
+  border:1px solid var(--edge-soft)}
 .crSpin{width:15px;height:15px;flex:none;border-radius:99px;
   border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
   animation:crSpin .7s linear infinite}
@@ -5236,27 +5251,69 @@ svg{display:block}
   box-shadow:0 10px 24px -10px rgba(255,59,107,.7);transition:transform .12s}
 .cvApply:active{transform:scale(.98)}
 #cpCoverBtn.on .sIc{color:var(--accent)}
-.songSearchWrap{display:flex;align-items:center;gap:9px;margin:2px 16px 10px;height:44px;
-  padding:0 14px;border-radius:99px;background:var(--surf1,rgba(255,255,255,.06));
-  border:1px solid var(--edge-soft,rgba(255,255,255,.1));color:var(--t3)}
-.songSearchWrap input{flex:1;background:transparent;border:0;outline:0;color:var(--t1);
-  font-size:14.5px;font-family:inherit}
+/* arama kutusu — odaklanınca canlanır */
+.songSearchWrap{display:flex;align-items:center;gap:10px;margin:4px 16px 12px;height:46px;
+  padding:0 15px;border-radius:99px;background:var(--surf1);
+  border:1px solid var(--edge-soft);color:var(--t3);
+  transition:border-color .2s, background .2s}
+.songSearchWrap:focus-within{border-color:rgba(255,59,107,.5);background:var(--surf2)}
+.songSearchWrap svg{flex:none;transition:color .2s}
+.songSearchWrap:focus-within svg{color:var(--accent)}
+.songSearchWrap input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--t1);
+  font-size:15px;font-family:inherit;letter-spacing:-.014em}
 .songSearchWrap input::placeholder{color:var(--t3)}
-.songRow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 10px;
-  border-radius:14px;transition:background .15s}
-.songRow:active{background:var(--surf1,rgba(255,255,255,.06))}
-.songRow .songArt{width:44px;height:44px;border-radius:9px;flex:none;background:var(--avatar-bg,#22222A) center/cover no-repeat;
-  border:1px solid var(--edge,rgba(255,255,255,.1))}
+/* panelin başlığı biraz daha nefes alsın */
+#songSheet h3{margin-bottom:2px}
+#songSheet .shbox{max-height:82vh}
+#songSheet .shlist{padding:0 6px 8px}
+/* ===== ŞARKI PANELİ — yeniden tasarım ===== */
+.songTopHead{display:flex;align-items:center;gap:8px;padding:6px 16px 10px;
+  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.songTopHead .stFlame{font-size:14px}
+
+.songRow{display:flex;align-items:center;gap:13px;width:100%;text-align:left;
+  padding:8px 12px;border-radius:16px;transition:background .16s;position:relative}
+.songRow:active{background:var(--surf1)}
+
+/* sıra numarası — ilk üçü vurgulu */
+.songRank{width:22px;flex:none;text-align:center;font-size:12.5px;font-weight:800;
+  color:var(--t3);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.songRow:nth-child(2) .songRank,
+.songRow:nth-child(3) .songRank,
+.songRow:nth-child(4) .songRank{
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* kapak — kare, yumuşak köşe, ince halka */
+.songRow .songArt{width:50px;height:50px;border-radius:12px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat;
+  box-shadow:0 0 0 1px var(--edge), 0 4px 12px -6px rgba(0,0,0,.6);
+  transition:box-shadow .22s, transform .22s}
+
 .songRow .songTx{flex:1;min-width:0}
-.songRow .songTx b{display:block;font-size:14px;font-weight:600;letter-spacing:-.016em;
+.songRow .songTx b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.018em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
+.songRow .songTx span{display:block;font-size:12.5px;color:var(--t3);margin-top:2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.songRow .songTx span{display:block;font-size:12px;color:var(--t3);margin-top:1px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.songEmpty{padding:40px 24px;text-align:center;color:var(--t3);font-size:13px;line-height:1.6}
-.songPlay{flex:none;width:32px;height:32px;border-radius:99px;display:grid;place-items:center;
-  color:var(--t2);background:var(--surf1,rgba(255,255,255,.08));transition:all .18s}
-.songRow.playing .songPlay{color:#fff;background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
-.songRow.playing .songArt{box-shadow:0 0 0 2px #FF3B6B}
+
+/* dinle düğmesi */
+.songPlay{flex:none;width:34px;height:34px;border-radius:99px;display:grid;place-items:center;
+  color:var(--t2);background:var(--surf2);border:1px solid var(--edge-soft);
+  transition:all .2s}
+.songPlay:active{transform:scale(.9)}
+
+/* çalarken: kapak ışıldar, düğme gradyan olur */
+.songRow.playing .songArt{box-shadow:0 0 0 2px #FF3B6B, 0 6px 18px -6px rgba(255,59,107,.7);
+  transform:scale(1.03)}
+.songRow.playing .songPlay,.songPlay.on{color:#fff;border-color:transparent;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  box-shadow:0 4px 14px -6px rgba(255,59,107,.9)}
+.songRow.playing .songTx b{color:#fff}
+
+/* boş durum */
+.songEmpty{padding:56px 30px;text-align:center;color:var(--t3);font-size:13.5px;line-height:1.65}
+.songEmpty b{display:block;color:var(--t1);font-size:15px;font-weight:600;margin-bottom:6px}
+
 /* paylaşım ekranında şarkı çalarken */
 .cpSongLine.playing .mIc{position:relative}
 .cpSongLine.playing .mTx{color:#fff}
@@ -5684,7 +5741,7 @@ svg{display:block}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v162</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v166</span></div>
     </div>
   </section>
 </div>
@@ -6149,6 +6206,7 @@ window.DataHub = (function(){
     conv:      10000,   // sohbet listesi
     notifs:    10000,
     names:    300000,   // ad-soyad 5 dk (nadiren değişir)
+    top:    21600000,   // popüler şarkılar 6 saat (günlük liste)
     default:   20000
   };
 
@@ -8800,37 +8858,98 @@ function userCountry(){
   return 'TR';
 }
 
-// Kaynak 1: Apple Marketing Tools (güncel) — önizleme YOK, ad+sanatçı var
-async function topFromMarketingTools(cc){
-  const url = "https://rss.applemarketingtools.com/api/v2/"+cc+"/music/most-played/30/songs.json";
+/* itunes.apple.com üzerindeki günlük liste.
+   Bu adres tarayıcıdan okunabiliyor (şarkı arama da aynı adresi kullanıyor)
+   ve önizleme adreslerini doğrudan içeriyor — bu yüzden birincil kaynak. */
+async function topFromItunes(cc){
+  const url = "https://itunes.apple.com/"+cc+"/rss/topsongs/limit=40/json";
   const r = await fetch(url);
-  if(!r.ok) throw new Error("mt");
-  const j = await r.json();
-  const res = (j.feed && j.feed.results) ? j.feed.results : [];
-  return res.map(x=>({
-    title: x.name || "",
-    artist: x.artistName || "",
-    art: (x.artworkUrl100||"").replace("100x100bb","300x300bb"),
-    preview: null
-  })).filter(x=>x.title);
-}
-
-// Kaynak 2: eski iTunes RSS — bazı ülkelerde hâlâ çalışır, önizleme içerir
-async function topFromLegacyRss(cc){
-  const url = "https://itunes.apple.com/"+cc+"/rss/topsongs/limit=30/json";
-  const r = await fetch(url);
-  if(!r.ok) throw new Error("rss");
+  if(!r.ok) throw new Error("itunes rss");
   const j = await r.json();
   const entries = (j.feed && j.feed.entry) ? j.feed.entry : [];
   return entries.map(e=>({
+    id: (e.id && e.id.attributes) ? e.id.attributes["im:id"] : null,
     title:  e["im:name"] ? e["im:name"].label : "",
     artist: e["im:artist"] ? e["im:artist"].label : "",
-    art:    (e["im:image"] && e["im:image"].length)
-            ? e["im:image"][e["im:image"].length-1].label.replace(/\/\d+x\d+bb/, "/300x300bb") : "",
+    art: (e["im:image"] && e["im:image"].length)
+         ? e["im:image"][e["im:image"].length-1].label.replace(/\/\d+x\d+bb/, "/300x300bb")
+         : "",
     preview: (e.link||[]).map(L=>L.attributes)
              .filter(a=>a && a["im:assetType"]==="preview")
              .map(a=>a.href)[0] || null
   })).filter(x=>x.title);
+}
+
+/* Apple'ın resmi günlük listesi.
+   SORUN: Apple'ın RSS sunucusu tarayıcıdan okumaya izin vermiyor (CORS).
+   İstek gidiyor ama tarayıcı cevabı JavaScript'e vermiyor.
+   ÇÖZÜM: önce doğrudan denenir; olmazsa açık bir aktarma servisi üzerinden alınır. */
+function appleChartUrl(cc){
+  return "https://rss.marketingtools.apple.com/api/v2/"+cc+"/music/most-played/40/songs.json";
+}
+
+async function fetchChartJson(cc){
+  const direct = appleChartUrl(cc);
+
+  // 1) doğrudan dene (izin veriliyorsa en hızlısı)
+  try{
+    const r = await fetch(direct);
+    if(r.ok) return await r.json();
+  }catch(e){}
+
+  // 2) aktarma servisleri (tarayıcı engelini aşar)
+  const proxies = [
+    u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+    u => "https://corsproxy.io/?" + encodeURIComponent(u)
+  ];
+  for(const mk of proxies){
+    try{
+      const r = await fetch(mk(direct));
+      if(!r.ok) continue;
+      const txt = await r.text();
+      const j = JSON.parse(txt);
+      if(j && j.feed) return j;
+    }catch(e){}
+  }
+  throw new Error("chart unavailable");
+}
+
+async function topFromApple(cc){
+  const j = await fetchChartJson(cc);
+  const res = (j.feed && j.feed.results) ? j.feed.results : [];
+  return res.map(x=>({
+    id: x.id || null,
+    title: x.name || "",
+    artist: x.artistName || "",
+    art: (x.artworkUrl100||"").replace("100x100bb","300x300bb"),
+    preview: null                      // bu servis önizleme vermez → sonra eklenir
+  })).filter(x=>x.title);
+}
+
+// Listedeki şarkıların 30 saniyelik önizlemelerini iTunes'tan toplu çek.
+// Böylece hem sıralama Apple'ın resmi listesi olur hem de dinleme çalışır.
+async function attachPreviews(list){
+  const ids = list.map(x=>x.id).filter(Boolean);
+  if(!ids.length) return list;
+  try{
+    // iTunes lookup en fazla ~200 kimlik alır; listemiz 40 olduğu için tek istek yeter
+    const url = "https://itunes.apple.com/lookup?id="+ids.join(",")+"&entity=song&limit=200";
+    const r = await fetch(url);
+    if(!r.ok) return list;
+    const j = await r.json();
+    const byId = {};
+    (j.results||[]).forEach(t=>{
+      if(t.trackId) byId[String(t.trackId)] = t;
+    });
+    list.forEach(s=>{
+      const t = byId[String(s.id)];
+      if(t){
+        if(t.previewUrl) s.preview = t.previewUrl;
+        if(t.artworkUrl100) s.art = t.artworkUrl100.replace("100x100bb","300x300bb");
+      }
+    });
+  }catch(e){}
+  return list;
 }
 
 async function loadTopSongs(){
@@ -8841,31 +8960,37 @@ async function loadTopSongs(){
 
   let list=[];
   try{
-    list = await DataHub.get('top:'+cc, async()=>{
-      // sırayla dene, ilk dolu sonucu kullan
-      const sources=[topFromLegacyRss, topFromMarketingTools];
-      for(const fn of sources){
+    // Anahtara tarih eklenir: liste her gün otomatik tazelenir.
+    const today = new Date().toISOString().slice(0,10);
+    list = await DataHub.get('top:'+cc+':'+today, async()=>{
+      // 1) itunes.apple.com — tarayıcıdan okunabiliyor (arama da bu adresi kullanıyor)
+      //    ve önizleme adreslerini doğrudan veriyor. ÖNCELİKLİ KAYNAK.
+      for(const country of [cc, 'us']){
         try{
-          const out = await fn(cc);
+          const out = await topFromItunes(country);
           if(out && out.length) return out;
         }catch(e){}
       }
-      // ülkeye özel bulunamazsa ABD listesini dene
-      if(cc!=='us'){
-        for(const fn of sources){
-          try{
-            const out = await fn('us');
-            if(out && out.length) return out;
-          }catch(e){}
-        }
+      // 2) yedek: Apple'ın yeni listesi (tarayıcı engeli olabilir, aktarma denenir)
+      for(const country of [cc, 'us']){
+        try{
+          const out = await topFromApple(country);
+          if(out && out.length) return await attachPreviews(out);
+        }catch(e){}
       }
       return [];
     }, {fallback:[], timeout:9000});
   }catch(e){ list=[]; }
 
-  // Hiçbir kaynak çalışmadı: kullanıcıyı aramaya yönlendir (boş sayfa bırakma)
+  // Liste alınamadıysa boş bırakma: aramayı öne çıkar
   if(!list || !list.length){
-    box.innerHTML='<div class="songEmpty">'+t("song_empty")+'</div>';
+    box.innerHTML=
+      '<div class="songEmpty">'+
+        '<b>'+t("chart_off")+'</b>'+
+        t("song_search2")+
+      '</div>';
+    const inp=$("#songSearchInput");
+    if(inp) setTimeout(()=>inp.focus(), 120);
     return;
   }
 
@@ -9547,7 +9672,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v162";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v166";
   box.appendChild(ver);
 }
 
@@ -10540,12 +10665,19 @@ async function applyBlockUI(who){
 
   if(!st.byMe && !st.me){
     if(strip) strip.remove();
-    if(bar) bar.style.display="flex";
+    // Yazma kutusunu açmadan önce BEKLEYEN İSTEK var mı bak.
+    // (Yoksa istek şeridiyle üst üste biniyordu.)
+    const cc0 = (typeof chatOf==="function") ? chatOf(who) : null;
+    const pending = cc0 && cc0.requestState==='pending';
+    if(bar) bar.style.display = pending ? "none" : "flex";
+    if(pending && typeof renderChatRequestBar==="function") renderChatRequestBar(cc0);
     return st;
   }
 
-  // yazma kutusunu gizle
+  // yazma kutusunu ve istek şeridini gizle (çakışmasın)
   if(bar) bar.style.display="none";
+  const rq=document.getElementById("chatReqBar");
+  if(rq) rq.remove();
 
   if(!strip){
     strip=document.createElement("div");
@@ -10612,52 +10744,57 @@ async function openChat(who){
 }
 
 function renderChatRequestBar(c){
-  let bar=$("#chatReqBar");
+  let bar=document.getElementById("chatReqBar");
+  // Engel şeridi açıksa istek şeridi gösterilmez (ikisi aynı yerde durur)
+  if(document.getElementById("chatBlockStrip")){
+    if(bar) bar.remove();
+    return;
+  }
   const isPending = c.requestState==='pending';
   const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
   const msgBar=$("#msgBar");
-  // gelen bekleyen istekte yazma kutusunu gizle
-  if(msgBar) msgBar.style.display = (isPending && !iAmRequester) ? "none" : "flex";
-  if(!isPending){ if(bar) bar.remove(); return; }
 
+  if(!isPending){
+    if(bar) bar.remove();
+    if(msgBar) msgBar.style.display="flex";
+    return;
+  }
+
+  // Şerit, engel şeridiyle aynı yerde ve tarzda: sohbetin ALTINDA
   if(!bar){
-    bar=document.createElement("div");bar.id="chatReqBar";
-    const chatPanel=$("#chat");
-    const head=chatPanel.querySelector(".chatHead");
-    if(head&&head.nextSibling) chatPanel.insertBefore(bar, head.nextSibling);
-    else if(chatPanel) chatPanel.appendChild(bar);
+    bar=document.createElement("div");
+    bar.id="chatReqBar";
+    const panel=$("#chat");
+    if(panel) panel.appendChild(bar);
   }
 
   const ICO = {
     clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>',
-    mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.4"/><path d="m3.6 6.6 8.4 6 8.4-6"/></svg>',
     check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>',
     x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'
   };
 
   if(iAmRequester){
-    // --- BEN İSTEK GÖNDERDİM: bekleme durumu ---
+    // --- İSTEĞİ BEN GÖNDERDİM: karşı taraf kabul edene kadar yazamam ---
+    if(msgBar) msgBar.style.display="none";
     bar.className="chatReqBar mine";
     bar.innerHTML=
-      '<div class="crIcon pulse">'+ICO.clock+'</div>'+
-      '<div class="crTx">'+
+      '<div class="cbTx">'+
         '<b>'+t("req_sent2")+'</b>'+
         '<span>'+esc(who_or(c))+' '+t("req_waiting")+'</span>'+
       '</div>';
   }else{
-    // --- BANA İSTEK GELDİ: kabul / sil ---
+    // --- BANA İSTEK GELDİ: yazma kapalı, kabul/sil ---
+    if(msgBar) msgBar.style.display="none";
     bar.className="chatReqBar";
     bar.innerHTML=
-      '<div class="crTop">'+
-        '<div class="crIcon">'+ICO.mail+'</div>'+
-        '<div class="crTx">'+
-          '<b>'+t("req_new")+'</b>'+
-          '<span>'+esc(c.who)+' '+t("wants_msg")+'</span>'+
-        '</div>'+
+      '<div class="cbTx">'+
+        '<b>'+t("req_new")+'</b>'+
+        '<span>'+esc(c.who)+' '+t("wants_msg")+'</span>'+
       '</div>'+
-      '<div class="chatReqBtns">'+
-        '<button id="chatReqDecline" class="crGhost">'+ICO.x+'<span>'+t("delete")+'</span></button>'+
-        '<button id="chatReqAccept" class="crPrimary">'+ICO.check+'<span>'+t("accept")+'</span></button>'+
+      '<div class="crBtns">'+
+        '<button class="crGhost" id="chatReqDecline">'+ICO.x+'</button>'+
+        '<button class="crPrimary" id="chatReqAccept">'+ICO.check+'<span>'+t("accept")+'</span></button>'+
       '</div>';
 
     const accBtn=bar.querySelector('#chatReqAccept');
@@ -10665,20 +10802,18 @@ function renderChatRequestBar(c){
 
     accBtn.addEventListener('click',async ()=>{
       accBtn.disabled=true;
-      accBtn.classList.add("busy");
-      accBtn.innerHTML='<span class="crSpin"></span><span>'+t("sending")+'</span>';
+      accBtn.innerHTML='<span class="crSpin"></span>';
       if(window.__sb && c.convId){
         const {error}=await window.__sb.rpc('accept_conversation',{conv:c.convId});
         if(error){
           toast(t("err_generic2")+" "+error.message);
-          accBtn.disabled=false; accBtn.classList.remove("busy");
+          accBtn.disabled=false;
           accBtn.innerHTML=ICO.check+'<span>'+t("accept")+'</span>';
           return;
         }
       }
       c.requestState='accepted';
-      bar.classList.add("done");
-      setTimeout(()=>bar.remove(), 260);
+      bar.remove();
       if(msgBar) msgBar.style.display="flex";
       toast(c.who+" "+t("ok_chat_ok"));
       loadConversations();
@@ -10891,6 +11026,15 @@ async function sendMsg(){
   if(bs.byMe || bs.me){
     applyBlockUI(who);
     toast(bs.byMe ? t("blocked_send_mine") : t("blocked_send_other"));
+    return;
+  }
+
+  // İSTEK BEKLİYORSA: karşı taraf kabul etmeden ikinci mesaj gönderilemez
+  const cc0 = chatOf(who);
+  if(cc0 && cc0.requestState==='pending'){
+    const mine = window.__me && cc0.requesterId===window.__me.id;
+    toast(mine ? t("req_wait_toast") : t("req_accept_first"));
+    renderChatRequestBar(cc0);
     return;
   }
 

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v186</title>
+<title>Klipsy v187</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6003,7 +6003,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v186</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v187</span></div>
     </div>
   </section>
 </div>
@@ -10157,7 +10157,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v186";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v187";
   box.appendChild(ver);
 }
 
@@ -12775,40 +12775,57 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
   try{
     const cap = window.Capacitor;
     const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
-    const redirectTo = isNative
-      ? 'com.klipsy.app://login'
-      : (location.origin + location.pathname);
 
-    // --- adım adım durum bildirimi (sorun görünür olsun) ---
-    const step = (m)=>{ try{ gmsg(m,'ok'); }catch(e){} };
-
+    /* ---------- APK: YERLİ GOOGLE GİRİŞİ ----------
+       Tarayıcı hiç açılmaz. Android'in kendi hesap penceresi çıkar,
+       alınan kimlik jetonu doğrudan Supabase'e verilir.
+       Böylece "uygulamaya dönüş" sorunu tamamen ortadan kalkar. */
     if(isNative){
       const P = cap.Plugins || {};
-      step('1/4 Hazırlanıyor… Browser: ' + (P.Browser ? 'var' : 'YOK') +
-           ' · App: ' + (P.App ? 'var' : 'YOK'));
-    }
+      const SL = P.SocialLogin;
+      if(!SL){ gmsg('Giriş eklentisi bulunamadı','err'); return; }
 
-    const {data, error}=await sb.auth.signInWithOAuth({
-      provider:'google',
-      options:{ redirectTo, skipBrowserRedirect: isNative }
-    });
-    if(error){ gmsg('Hata: '+error.message,'err'); return; }
-
-    if(isNative){
-      if(!data || !data.url){ gmsg('Giriş adresi alınamadı','err'); return; }
-      step('2/4 Tarayıcı açılıyor…');
-      const P = cap.Plugins || {};
       try{
-        if(P.Browser && P.Browser.open){
-          await P.Browser.open({ url:data.url });
-        }else{
-          gmsg('Browser eklentisi yok — kuruluma bak','err');
-          window.open(data.url, '_system');
+        if(!window.__slReady){
+          await SL.initialize({
+            google: { webClientId: '432160300396-bd835s9a28m1vcg404ensbsoasep6jf1.apps.googleusercontent.com' }
+          });
+          window.__slReady = true;
         }
-      }catch(e){
-        gmsg('Tarayıcı açılamadı: '+(e&&e.message?e.message:e),'err');
+
+        const res = await SL.login({ provider:'google', options:{ scopes:['email','profile'] } });
+
+        // jeton farklı isimlerle gelebiliyor — hepsini dene
+        const r = (res && res.result) ? res.result : (res || {});
+        const idToken =
+          r.idToken ||
+          (r.credential && r.credential.idToken) ||
+          (r.accessToken && r.accessToken.idToken) ||
+          null;
+
+        if(!idToken){ gmsg('Kimlik jetonu alınamadı','err'); return; }
+
+        const { error:e2 } = await sb.auth.signInWithIdToken({
+          provider:'google',
+          token: idToken
+        });
+        if(e2){ gmsg('Giriş tamamlanamadı: '+e2.message,'err'); return; }
+
+        await enterApp();
+      }catch(err){
+        const m = (err && err.message) ? err.message : String(err);
+        if(/cancel/i.test(m)) return;          // kullanıcı vazgeçti
+        gmsg('Google girişi başarısız: '+m,'err');
       }
+      return;
     }
+
+    /* ---------- TARAYICI: normal yönlendirme ---------- */
+    const {error}=await sb.auth.signInWithOAuth({
+      provider:'google',
+      options:{ redirectTo: location.origin + location.pathname }
+    });
+    if(error){ gmsg(error.message||t("err_google"),'err'); }
   }catch(e){ gmsg(t("err_google_start"),'err'); }
 });
 

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v187</title>
+<title>Klipsy v188</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6003,7 +6003,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v187</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v188</span></div>
     </div>
   </section>
 </div>
@@ -10157,7 +10157,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v187";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v188";
   box.appendChild(ver);
 }
 
@@ -12793,7 +12793,9 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
           window.__slReady = true;
         }
 
-        const res = await SL.login({ provider:'google', options:{ scopes:['email','profile'] } });
+        // NOT: scopes istenmez — ek kurulum gerektiriyor ve gerekmiyor.
+        // Ad, e-posta ve fotoğraf varsayılan olarak geliyor.
+        const res = await SL.login({ provider:'google', options:{} });
 
         // jeton farklı isimlerle gelebiliyor — hepsini dene
         const r = (res && res.result) ? res.result : (res || {});

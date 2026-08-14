@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v188</title>
+<title>Klipsy v189</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6003,7 +6003,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v188</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v189</span></div>
     </div>
   </section>
 </div>
@@ -10157,7 +10157,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v188";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v189";
   box.appendChild(ver);
 }
 
@@ -12795,24 +12795,49 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
 
         // NOT: scopes istenmez — ek kurulum gerektiriyor ve gerekmiyor.
         // Ad, e-posta ve fotoğraf varsayılan olarak geliyor.
+        gmsg('Hesap penceresi açılıyor…','ok');
         const res = await SL.login({ provider:'google', options:{} });
 
-        // jeton farklı isimlerle gelebiliyor — hepsini dene
-        const r = (res && res.result) ? res.result : (res || {});
-        const idToken =
-          r.idToken ||
-          (r.credential && r.credential.idToken) ||
-          (r.accessToken && r.accessToken.idToken) ||
-          null;
+        // Gelen yanıtın içinde jetonu DERİNLEMESİNE ara
+        // (eklentiler jetonu farklı isim ve seviyelerde döndürebiliyor)
+        function findToken(o, depth){
+          if(!o || depth > 4) return null;
+          if(typeof o === 'string'){
+            // JWT biçimi: üç parça, noktayla ayrılmış
+            return (o.split('.').length === 3 && o.length > 100) ? o : null;
+          }
+          if(typeof o !== 'object') return null;
+          // önce bilinen isimler
+          for(const k of ['idToken','id_token','identityToken','token']){
+            const v = o[k];
+            if(typeof v === 'string' && v.split('.').length === 3) return v;
+          }
+          for(const k in o){
+            const v = findToken(o[k], depth+1);
+            if(v) return v;
+          }
+          return null;
+        }
 
-        if(!idToken){ gmsg('Kimlik jetonu alınamadı','err'); return; }
+        const idToken = findToken(res, 0);
 
-        const { error:e2 } = await sb.auth.signInWithIdToken({
+        if(!idToken){
+          // ne döndüğünü göster ki körlemesine kalmayalım
+          let özet = '';
+          try{ özet = JSON.stringify(res).slice(0,180); }catch(e){ özet = String(res); }
+          gmsg('Jeton yok. Gelen: '+özet, 'err');
+          return;
+        }
+        gmsg('Jeton alındı, Supabase\'e gönderiliyor…','ok');
+
+        const { data:d2, error:e2 } = await sb.auth.signInWithIdToken({
           provider:'google',
           token: idToken
         });
-        if(e2){ gmsg('Giriş tamamlanamadı: '+e2.message,'err'); return; }
+        if(e2){ gmsg('Supabase reddetti: '+e2.message,'err'); return; }
+        if(!d2 || !d2.session){ gmsg('Oturum oluşmadı','err'); return; }
 
+        gmsg('Giriş başarılı','ok');
         await enterApp();
       }catch(err){
         const m = (err && err.message) ? err.message : String(err);

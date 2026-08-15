@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v199</title>
+<title>Klipsy v201</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -3845,8 +3845,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Harita kütüphanesi burada YÜKLENMEZ.
+     Önceden burada duruyordu ve tüm uygulamanın açılışını bekletiyordu.
+     Artık sadece Zaman ekranı ilk açıldığında yükleniyor (ensureLeaflet). -->
 <style>
 :root{
   --bg:#000;
@@ -3858,7 +3859,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   --input-bg:rgba(255,255,255,.06); --input-bg-msg:rgba(255,255,255,.1); --input-bg-focus:rgba(255,255,255,.1);
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
   --top:52px; --tab:56px;
-  --sheetH:min(55vh,500px);   /* uygulama açılınca yeniden hesaplanır */
+  --sheetH:calc(min(55vh,500px) - 68px);   /* uygulama açılınca yeniden hesaplanır */
   --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
@@ -4439,6 +4440,15 @@ svg{display:block}
 .exItem .exGo{color:var(--t3);flex:none}
 .exEmpty{text-align:center;color:var(--t3);font-size:13px;padding:20px 12px}
 /* Leaflet karanlık uyumu */
+/* harita yüklenirken */
+.mapLoading{position:absolute;inset:0;display:grid;place-items:center;
+  background:#12121a;z-index:5}
+.mapLoading .mlSpin{width:30px;height:30px;border-radius:99px;
+  border:3px solid rgba(255,255,255,.14);border-top-color:var(--accent);
+  animation:crSpin .8s linear infinite}
+.mapFail{position:absolute;inset:0;display:grid;place-items:center;
+  background:#12121a;color:var(--t3);font-size:13.5px;text-align:center;padding:24px}
+
 .leaflet-container{background:#12121a!important;font-family:inherit}
 .leaflet-control-attribution{font-size:9px!important;background:rgba(0,0,0,.4)!important;color:#888!important}
 .leaflet-control-attribution a{color:#aaa!important}
@@ -6032,7 +6042,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v199</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v201</span></div>
     </div>
   </section>
 </div>
@@ -6668,7 +6678,7 @@ const ME=(window.__me&&window.__me.username)?window.__me.username:"sen";
 
 function setSheetH(){
   document.documentElement.style.setProperty("--sheetH",
-    Math.round(Math.min(window.innerHeight*0.55,500))+"px");
+    Math.round(Math.min(window.innerHeight*0.55,500) - 68)+"px");   // bir yorum satırı kadar kısa
 }
 function setVH(){
   const h=feed.clientHeight||$("#phone").clientHeight||window.innerHeight;
@@ -8168,8 +8178,67 @@ function mapTileUrl(){
     : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 }
 let _mapTileLayer=null;
-function initMap(){
-  if(typeof L==="undefined") return;
+/* Harita kütüphanesini SADECE gerektiğinde yükle.
+   Önce uygulamanın içindeki yerel kopya denenir (APK'da anında gelir),
+   yoksa internetten indirilir. */
+let _leafletReady = null;
+function ensureLeaflet(){
+  if(window.L) return Promise.resolve(true);
+  if(_leafletReady) return _leafletReady;
+
+  _leafletReady = new Promise((res)=>{
+    const kaynaklar = [
+      { css:'./lib/leaflet.css',                                  js:'./lib/leaflet.js' },
+      { css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',    js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' },
+      { css:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', js:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js' }
+    ];
+
+    let i = 0;
+    const dene = ()=>{
+      if(i >= kaynaklar.length){ res(false); return; }
+      const k = kaynaklar[i++];
+
+      // stil
+      if(!document.querySelector('link[data-leaflet]')){
+        const l = document.createElement('link');
+        l.rel='stylesheet'; l.href=k.css; l.setAttribute('data-leaflet','1');
+        document.head.appendChild(l);
+      }
+      // betik
+      const s = document.createElement('script');
+      s.src = k.js;
+      s.async = true;
+      s.onload = ()=>res(true);
+      s.onerror = ()=>{
+        s.remove();
+        const l=document.querySelector('link[data-leaflet]'); if(l) l.remove();
+        dene();                       // sıradaki kaynağı dene
+      };
+      document.head.appendChild(s);
+    };
+    dene();
+  });
+  return _leafletReady;
+}
+
+async function initMap(){
+  // kütüphane hazır değilse önce yükle (yükleniyor göstergesiyle)
+  if(typeof L === "undefined"){
+    const kap = document.getElementById("exploreMap");
+    if(kap && !kap.querySelector(".mapLoading")){
+      const y=document.createElement("div");
+      y.className="mapLoading";
+      y.innerHTML='<span class="mlSpin"></span>';
+      kap.appendChild(y);
+    }
+    const ok = await ensureLeaflet();
+    const y = kap ? kap.querySelector(".mapLoading") : null;
+    if(y) y.remove();
+    if(!ok || typeof L === "undefined"){
+      if(kap) kap.innerHTML='<div class="mapFail">'+t("no_conn2")+'</div>';
+      return;
+    }
+  }
   if(_map){ setTimeout(()=>_map.invalidateSize(),100); return; }
   _map=L.map("exploreMap",{zoomControl:true,attributionControl:true,
     preferCanvas:true, zoomAnimation:true, markerZoomAnimation:false,
@@ -10212,7 +10281,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v199";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v201";
   box.appendChild(ver);
 }
 

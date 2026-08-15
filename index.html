@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v201</title>
+<title>Klipsy v204</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4449,7 +4449,15 @@ svg{display:block}
 .mapFail{position:absolute;inset:0;display:grid;place-items:center;
   background:#12121a;color:var(--t3);font-size:13.5px;text-align:center;padding:24px}
 
-.leaflet-container{background:#12121a!important;font-family:inherit}
+/* Kutucuklar sert belirmesin, yumuşakça binsin (kopukluk hissini azaltır) */
+.leaflet-tile{ will-change:auto }
+.ktile{ transition:opacity .18s ease-out }
+/* Eski kutucuklar yenisi gelene kadar ekranda kalsın */
+.leaflet-tile-container img{ backface-visibility:hidden }
+/* Kaydırma sırasında görüntüyü zorlamayan ayarlar */
+.leaflet-container{background:#12121a!important;font-family:inherit;
+  -webkit-tap-highlight-color:transparent}
+.leaflet-pane{ will-change:transform }
 .leaflet-control-attribution{font-size:9px!important;background:rgba(0,0,0,.4)!important;color:#888!important}
 .leaflet-control-attribution a{color:#aaa!important}
 .leaflet-control-zoom{margin-top:calc(var(--sat) + 175px)!important;margin-left:12px!important;border:0!important}
@@ -6042,7 +6050,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v201</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v204</span></div>
     </div>
   </section>
 </div>
@@ -8178,6 +8186,153 @@ function mapTileUrl(){
     : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 }
 let _mapTileLayer=null;
+/* ============================================================
+   HARİTA KUTUCUK ÖNBELLEĞİ
+   Gezilen bölgelerin kutucukları cihazda saklanır; aynı yere
+   tekrar gidildiğinde ağa çıkılmadan anında gösterilir.
+   (Tüm dünyayı indirmek mümkün değil — terabaytlar tutar.)
+   ============================================================ */
+const TILE_CACHE = 'klipsy-tiles-v1';
+const _tileUrls = new WeakMap();      // temizlik için
+
+async function pruneTileCache(){
+  try{
+    if(!('caches' in window)) return;
+    const c = await caches.open(TILE_CACHE);
+    const keys = await c.keys();
+    if(keys.length > 1800){            // yaklaşık 60-80 MB
+      for(let i=0; i<600; i++) await c.delete(keys[i]);
+    }
+  }catch(e){}
+}
+
+function makeCachedTileLayer(url, opts){
+  // Cache Storage yoksa normal katman
+  if(!('caches' in window)) return L.tileLayer(url, opts);
+
+  const Cached = L.TileLayer.extend({
+    createTile: function(coords, done){
+      const img = document.createElement('img');
+      img.setAttribute('role','presentation');
+      img.alt = '';
+      const tileUrl = this.getTileUrl(coords);
+
+      const normalYükle = ()=>{
+        img.crossOrigin = '';
+        img.src = tileUrl;
+        img.onload  = ()=>done(null, img);
+        img.onerror = (e)=>done(e, img);
+      };
+
+      (async ()=>{
+        try{
+          const cache = await caches.open(TILE_CACHE);
+          let res = await cache.match(tileUrl);
+
+          if(!res){
+            res = await fetch(tileUrl, {mode:'cors'});
+            if(res && res.ok){
+              cache.put(tileUrl, res.clone()).catch(()=>{});
+            }
+          }
+          if(res && res.ok){
+            const blob = await res.blob();
+            const obj = URL.createObjectURL(blob);
+            _tileUrls.set(img, obj);
+            img.onload  = ()=>done(null, img);
+            img.onerror = ()=>{ normalYükle(); };
+            img.src = obj;
+            return;
+          }
+        }catch(e){}
+        normalYükle();
+      })();
+
+      return img;
+    },
+
+    // kutucuk ekrandan çıkınca belleği bırak
+    _abortLoading: function(){
+      L.TileLayer.prototype._abortLoading.call(this);
+    }
+  });
+
+  const layer = new Cached(url, opts);
+  layer.on('tileunload', (e)=>{
+    const u = _tileUrls.get(e.tile);
+    if(u){ try{ URL.revokeObjectURL(u); }catch(err){} _tileUrls.delete(e.tile); }
+  });
+  return layer;
+}
+
+/* ============================================================
+   YÖN TAHMİNLİ ÖN YÜKLEME
+   Kullanıcı haritayı hangi yöne kaydırıyorsa, o yöndeki kutucuklar
+   ekrana girmeden önce indirilir. Böylece kaydırma sırasında
+   boş alan görünmez.
+   ============================================================ */
+let _sonMerkez = null, _onYuklemeZaman = 0;
+
+function prefetchYonunde(map, layer){
+  if(!map || !layer || !('caches' in window)) return;
+
+  const merkez = map.getCenter();
+  const zoom = Math.round(map.getZoom());
+
+  if(!_sonMerkez){ _sonMerkez = merkez; return; }
+
+  // hareket yönü
+  const dLat = merkez.lat - _sonMerkez.lat;
+  const dLng = merkez.lng - _sonMerkez.lng;
+  _sonMerkez = merkez;
+
+  // çok küçük hareketlerde uğraşma
+  if(Math.abs(dLat) < 1e-5 && Math.abs(dLng) < 1e-5) return;
+
+  // çok sık çalışmasın
+  const şimdi = Date.now();
+  if(şimdi - _onYuklemeZaman < 400) return;
+  _onYuklemeZaman = şimdi;
+
+  try{
+    // ekranın bir sonraki halini tahmin et (hareketi ileri sar)
+    const hedef = L.latLng(merkez.lat + dLat*2.2, merkez.lng + dLng*2.2);
+    const boyut = map.getSize();
+    const nokta = map.project(hedef, zoom).subtract(boyut.divideBy(2));
+    const kutucukBoyut = 256;
+
+    const x0 = Math.floor(nokta.x / kutucukBoyut) - 1;
+    const y0 = Math.floor(nokta.y / kutucukBoyut) - 1;
+    const enX = Math.ceil(boyut.x / kutucukBoyut) + 2;
+    const enY = Math.ceil(boyut.y / kutucukBoyut) + 2;
+
+    const url = layer._url || mapTileUrl();
+    const altAlanlar = (layer.options && layer.options.subdomains) || 'abcd';
+    const enFazla = Math.pow(2, zoom);
+
+    caches.open(TILE_CACHE).then(cache=>{
+      let sayac = 0;
+      for(let x = x0; x < x0 + enX; x++){
+        for(let y = y0; y < y0 + enY; y++){
+          if(y < 0 || y >= enFazla) continue;
+          if(sayac++ > 40) return;              // aşırıya kaçma
+          const xw = ((x % enFazla) + enFazla) % enFazla;
+          const s = altAlanlar[(xw + y) % altAlanlar.length];
+          const u = url.replace('{s}', s).replace('{z}', zoom)
+                       .replace('{x}', xw).replace('{y}', y)
+                       .replace('{r}', '');
+          cache.match(u).then(varMi=>{
+            if(varMi) return;                    // zaten var
+            fetch(u, {mode:'cors'}).then(r=>{
+              if(r && r.ok) cache.put(u, r.clone()).catch(()=>{});
+            }).catch(()=>{});
+          }).catch(()=>{});
+        }
+      }
+    }).catch(()=>{});
+  }catch(e){}
+}
+
 /* Harita kütüphanesini SADECE gerektiğinde yükle.
    Önce uygulamanın içindeki yerel kopya denenir (APK'da anında gelir),
    yoksa internetten indirilir. */
@@ -8240,17 +8395,31 @@ async function initMap(){
     }
   }
   if(_map){ setTimeout(()=>_map.invalidateSize(),100); return; }
-  _map=L.map("exploreMap",{zoomControl:true,attributionControl:true,
-    preferCanvas:true, zoomAnimation:true, markerZoomAnimation:false,
-    fadeAnimation:false, inertiaDeceleration:2600
+  _map=L.map("exploreMap",{
+    zoomControl:true, attributionControl:true,
+    preferCanvas:true,
+    zoomAnimation:true, markerZoomAnimation:false,
+    fadeAnimation:true,              // kutucuklar yumuşak binsin
+    zoomSnap:0.5,                    // kademeli yakınlaşma (daha akıcı his)
+    wheelDebounceTime:24,
+    inertia:true, inertiaDeceleration:2200, inertiaMaxSpeed:1600,
+    easeLinearity:0.22
   }).setView([39.0,35.0],5);
-  _mapTileLayer=L.tileLayer(mapTileUrl(),{
+  _mapTileLayer=makeCachedTileLayer(mapTileUrl(),{
     attribution:'© OpenStreetMap © CARTO', maxZoom:19, subdomains:"abcd",
-    keepBuffer:4, updateWhenIdle:false, updateWhenZooming:false, updateInterval:120,
-    crossOrigin:true
+    /* AKICILIK (Google Haritalar hissi)
+       keepBuffer: ekran dışında hazır tutulan kutucuk halkası
+       updateInterval: istek sıklığı — düşük olması daha akıcı
+       updateWhenZooming: yakınlaşırken de güncelle */
+    keepBuffer:8, updateWhenIdle:false, updateWhenZooming:true, updateInterval:50,
+    crossOrigin:true, className:"ktile" 
   }).addTo(_map);
   // kullanıcı haritayı elle gezdirirse otomatik odaklamayı bırak
   _map.on("dragstart zoomstart", ()=>{ _mapUserMoved = true; });
+
+  // hareket yönündeki kutucukları önden indir
+  _map.on("move", ()=>{ prefetchYonunde(_map, _mapTileLayer); });
+  _map.on("moveend", ()=>{ _sonMerkez = _map.getCenter(); });
 
   // Konumu ÖNCE al, sonra pinleri çiz — harita başka şehre atlamasın.
   _posReady = (async()=>{
@@ -8295,6 +8464,7 @@ async function initMap(){
   })();
 
   bindLocBtn();
+  setTimeout(()=>{ try{ pruneTileCache(); }catch(e){} }, 4000);
 
   // konum gelene kadar en fazla 2sn bekle, sonra odaklan ve pinleri çiz
   (async()=>{
@@ -8403,10 +8573,14 @@ function drawUserDot(){
 function refreshMapTheme(){
   if(!_map||!_mapTileLayer) return;
   _map.removeLayer(_mapTileLayer);
-  _mapTileLayer=L.tileLayer(mapTileUrl(),{
+  _mapTileLayer=makeCachedTileLayer(mapTileUrl(),{
     attribution:'© OpenStreetMap © CARTO', maxZoom:19, subdomains:"abcd",
-    keepBuffer:4, updateWhenIdle:false, updateWhenZooming:false, updateInterval:120,
-    crossOrigin:true
+    /* AKICILIK (Google Haritalar hissi)
+       keepBuffer: ekran dışında hazır tutulan kutucuk halkası
+       updateInterval: istek sıklığı — düşük olması daha akıcı
+       updateWhenZooming: yakınlaşırken de güncelle */
+    keepBuffer:8, updateWhenIdle:false, updateWhenZooming:true, updateInterval:50,
+    crossOrigin:true, className:"ktile" 
   }).addTo(_map);
 }
 function momentIcon(g){
@@ -10281,7 +10455,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v201";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v204";
   box.appendChild(ver);
 }
 

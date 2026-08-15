@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v204</title>
+<title>Klipsy v205</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6050,7 +6050,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v204</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v205</span></div>
     </div>
   </section>
 </div>
@@ -8193,6 +8193,21 @@ let _mapTileLayer=null;
    (Tüm dünyayı indirmek mümkün değil — terabaytlar tutar.)
    ============================================================ */
 const TILE_CACHE = 'klipsy-tiles-v1';
+window.__tileStats = {hit:0, miss:0, saved:0, err:0};
+function paintTileStats(){
+  if(location.search.indexOf('tiles=1') < 0) return;
+  let el = document.getElementById('tileStats');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'tileStats';
+    el.style.cssText = 'position:fixed;left:8px;bottom:80px;z-index:99999;'+
+      'padding:5px 9px;border-radius:8px;background:rgba(0,0,0,.75);'+
+      'color:#7CFFB2;font:600 11px/1.4 ui-monospace,monospace;pointer-events:none';
+    document.body.appendChild(el);
+  }
+  const s = window.__tileStats;
+  el.textContent = 'önbellek: '+s.hit+' | ağ: '+s.miss+' | kayıt: '+s.saved+' | hata: '+s.err;
+}
 const _tileUrls = new WeakMap();      // temizlik için
 
 async function pruneTileCache(){
@@ -8229,12 +8244,17 @@ function makeCachedTileLayer(url, opts){
           const cache = await caches.open(TILE_CACHE);
           let res = await cache.match(tileUrl);
 
-          if(!res){
+          if(res){ window.__tileStats.hit++; }
+          else{
+            window.__tileStats.miss++;
             res = await fetch(tileUrl, {mode:'cors'});
             if(res && res.ok){
-              cache.put(tileUrl, res.clone()).catch(()=>{});
+              cache.put(tileUrl, res.clone())
+                .then(()=>{ window.__tileStats.saved++; })
+                .catch((e)=>{ window.__tileStats.err++; });
             }
           }
+          paintTileStats();
           if(res && res.ok){
             const blob = await res.blob();
             const obj = URL.createObjectURL(blob);
@@ -8258,9 +8278,14 @@ function makeCachedTileLayer(url, opts){
   });
 
   const layer = new Cached(url, opts);
+  // NOT: adres HEMEN serbest bırakılmaz. Bırakılınca kutucuk boşalıyor
+  // ve yeniden yükleniyormuş gibi görünüyordu. Gecikmeli bırakılır.
   layer.on('tileunload', (e)=>{
     const u = _tileUrls.get(e.tile);
-    if(u){ try{ URL.revokeObjectURL(u); }catch(err){} _tileUrls.delete(e.tile); }
+    if(u){
+      _tileUrls.delete(e.tile);
+      setTimeout(()=>{ try{ URL.revokeObjectURL(u); }catch(err){} }, 30000);
+    }
   });
   return layer;
 }
@@ -8318,9 +8343,13 @@ function prefetchYonunde(map, layer){
           if(sayac++ > 40) return;              // aşırıya kaçma
           const xw = ((x % enFazla) + enFazla) % enFazla;
           const s = altAlanlar[(xw + y) % altAlanlar.length];
+          // Gerçek kutucuk adresiyle BİREBİR aynı olmalı,
+          // yoksa önbellekte bulunamaz (özellikle {r} kısmı).
+          const rBit = (layer.options && layer.options.detectRetina &&
+                        L.Browser.retina) ? '@2x' : '';
           const u = url.replace('{s}', s).replace('{z}', zoom)
                        .replace('{x}', xw).replace('{y}', y)
-                       .replace('{r}', '');
+                       .replace('{r}', rBit);
           cache.match(u).then(varMi=>{
             if(varMi) return;                    // zaten var
             fetch(u, {mode:'cors'}).then(r=>{
@@ -10455,7 +10484,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v204";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v205";
   box.appendChild(ver);
 }
 

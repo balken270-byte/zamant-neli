@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v189</title>
+<title>Klipsy v191</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -3763,6 +3763,45 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
 <meta name="description" content="Yaşadığın anı, olduğu gibi paylaş.">
 
 <script>
+/* ============================================================
+   TANILAMA KAYDI
+   Uygulamada olan biteni kaydeder. Giriş ekranında logoya
+   5 kez dokununca açılır; içerik kopyalanabilir.
+   ============================================================ */
+window.__LOG = [];
+(function(){
+  function kaydet(tur, args){
+    try{
+      const zaman = new Date().toLocaleTimeString('tr-TR');
+      const metin = Array.from(args).map(function(a){
+        if (a instanceof Error) return a.name + ': ' + a.message;
+        if (typeof a === 'object') { try{ return JSON.stringify(a); }catch(e){ return String(a); } }
+        return String(a);
+      }).join(' ');
+      window.__LOG.push('[' + zaman + '] ' + tur + ' ' + metin);
+      if (window.__LOG.length > 300) window.__LOG.shift();
+      const kutu = document.getElementById('dbgBody');
+      if (kutu) kutu.textContent = window.__LOG.join('\n');
+    }catch(e){}
+  }
+
+  ['log','warn','error','info'].forEach(function(t){
+    const asil = console[t] ? console[t].bind(console) : function(){};
+    console[t] = function(){ kaydet(t.toUpperCase(), arguments); asil.apply(console, arguments); };
+  });
+
+  window.addEventListener('error', function(e){
+    kaydet('HATA', [ (e.message||'') + ' @ ' + (e.filename||'').split('/').pop() + ':' + (e.lineno||'') ]);
+  });
+  window.addEventListener('unhandledrejection', function(e){
+    kaydet('SÖZ-HATASI', [ (e.reason && e.reason.message) ? e.reason.message : String(e.reason) ]);
+  });
+
+  window.klog = function(){ kaydet('KLIPSY', arguments); };
+})();
+</script>
+
+<script>
 /* Service Worker — SADECE tarayıcıda gerekli.
    APK içinde dosyalar zaten cihazda olduğu için bu katman gereksiz;
    üstelik eski dosyayı servis edip karışıklık yaratabiliyor.
@@ -4936,6 +4975,22 @@ html.native button,html.native .tab{touch-action:manipulation}
   font-size:13px;font-weight:600;font-family:inherit;transition:transform .12s}
 .chatBlockStrip .cbBtn:active{transform:scale(.95)}
 
+/* tanılama ekranı */
+#dbgPanel{position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;
+  background:#0b0b10;color:#d8f5e3;font-family:ui-monospace,Menlo,Consolas,monospace}
+#dbgPanel.open{display:flex}
+#dbgPanel .dbgHead{display:flex;align-items:center;gap:10px;flex:none;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 12px;
+  border-bottom:1px solid rgba(255,255,255,.12);background:#12121a}
+#dbgPanel .dbgHead b{flex:1;font-size:14px;color:#fff;font-family:Inter,sans-serif}
+#dbgPanel .dbgBtns{display:flex;gap:7px}
+#dbgPanel .dbgBtns button{height:32px;padding:0 12px;border-radius:8px;border:0;
+  background:#26263a;color:#fff;font-size:12.5px;font-weight:600;font-family:Inter,sans-serif}
+#dbgPanel .dbgBtns button:active{background:#3a3a55}
+#dbgPanel pre{flex:1;overflow:auto;margin:0;padding:12px 14px;
+  font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;
+  -webkit-user-select:text;user-select:text}
+
 /* engellenenler listesi */
 .blRow{display:flex;align-items:center;gap:12px;padding:11px 4px;
   border-bottom:1px solid var(--edge-soft)}
@@ -5883,6 +5938,71 @@ html.native button,html.native .tab{touch-action:manipulation}
   </script>
 
   <script>
+  // Tanılama ekranı: giriş ekranındaki "Klipsy" yazısına 5 kez dokun
+  (function(){
+    function kur(){
+      const panel = document.getElementById('dbgPanel');
+      const body  = document.getElementById('dbgBody');
+      if(!panel || !body) return;
+
+      const göster = ()=>{
+        body.textContent = (window.__LOG||[]).join('\n') || '(kayıt yok)';
+        panel.classList.add('open');
+        body.scrollTop = body.scrollHeight;
+      };
+
+      // 5 dokunuşla aç
+      let sayac=0, sonDokunuş=0;
+      const tetik = document.querySelector('#gAuth .gbrand h1');
+      if(tetik){
+        tetik.addEventListener('click', ()=>{
+          const şimdi = Date.now();
+          sayac = (şimdi - sonDokunuş < 900) ? sayac+1 : 1;
+          sonDokunuş = şimdi;
+          if(sayac >= 5){ sayac = 0; göster(); }
+        });
+      }
+      // uygulama içinden de açılabilsin
+      window.showDebug = göster;
+
+      document.getElementById('dbgClose').addEventListener('click', ()=>panel.classList.remove('open'));
+      document.getElementById('dbgClear').addEventListener('click', ()=>{
+        window.__LOG = []; body.textContent = '(temizlendi)';
+      });
+      document.getElementById('dbgCopy').addEventListener('click', async ()=>{
+        const metin = (window.__LOG||[]).join('\n');
+        const btn = document.getElementById('dbgCopy');
+        try{
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            await navigator.clipboard.writeText(metin);
+          }else{
+            const ta=document.createElement('textarea');
+            ta.value=metin; ta.style.position='fixed'; ta.style.opacity='0';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); ta.remove();
+          }
+          btn.textContent='Kopyalandı';
+          setTimeout(()=>btn.textContent='Kopyala',1400);
+        }catch(e){
+          btn.textContent='Kopyalanamadı';
+          setTimeout(()=>btn.textContent='Kopyala',1400);
+        }
+      });
+
+      // açılış bilgisi
+      const cap = window.Capacitor;
+      klog('--- KLİPSY BAŞLADI ---');
+      klog('Ortam:', (cap && cap.isNativePlatform && cap.isNativePlatform()) ? 'APK' : 'Tarayıcı');
+      if(cap && cap.Plugins){
+        klog('Eklentiler:', Object.keys(cap.Plugins).join(', '));
+      }
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',kur);
+    else kur();
+  })();
+  </script>
+
+  <script>
   // Giriş ekranı dil seçici (alt sayfa)
   (function(){
     function init(){
@@ -6003,7 +6123,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v189</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v191</span></div>
     </div>
   </section>
 </div>
@@ -6217,6 +6337,19 @@ html.native button,html.native .tab{touch-action:manipulation}
       <div class="shlist" id="postMenuList"></div>
     </div>
   </section>
+
+  <!-- tanılama ekranı -->
+  <div id="dbgPanel" aria-hidden="true">
+    <div class="dbgHead">
+      <b>Tanılama Kaydı</b>
+      <div class="dbgBtns">
+        <button id="dbgCopy">Kopyala</button>
+        <button id="dbgClear">Temizle</button>
+        <button id="dbgClose">Kapat</button>
+      </div>
+    </div>
+    <pre id="dbgBody"></pre>
+  </div>
 
   <section class="panel" id="blockedPanel" aria-hidden="true">
     <div class="head">
@@ -10157,7 +10290,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v189";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v191";
   box.appendChild(ver);
 }
 
@@ -12783,10 +12916,12 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
     if(isNative){
       const P = cap.Plugins || {};
       const SL = P.SocialLogin;
+      klog('GİRİŞ: SocialLogin', SL ? 'bulundu' : 'YOK', '| eklentiler:', Object.keys(P).join(','));
       if(!SL){ gmsg('Giriş eklentisi bulunamadı','err'); return; }
 
       try{
         if(!window.__slReady){
+          klog('GİRİŞ: initialize başlıyor');
           await SL.initialize({
             google: { webClientId: '432160300396-bd835s9a28m1vcg404ensbsoasep6jf1.apps.googleusercontent.com' }
           });
@@ -12796,7 +12931,9 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
         // NOT: scopes istenmez — ek kurulum gerektiriyor ve gerekmiyor.
         // Ad, e-posta ve fotoğraf varsayılan olarak geliyor.
         gmsg('Hesap penceresi açılıyor…','ok');
+        klog('GİRİŞ: login başlıyor');
         const res = await SL.login({ provider:'google', options:{} });
+        klog('GİRİŞ: login döndü', res);
 
         // Gelen yanıtın içinde jetonu DERİNLEMESİNE ara
         // (eklentiler jetonu farklı isim ve seviyelerde döndürebiliyor)
@@ -12841,6 +12978,7 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
         await enterApp();
       }catch(err){
         const m = (err && err.message) ? err.message : String(err);
+        klog('GİRİŞ HATASI:', m);
         if(/cancel/i.test(m)) return;          // kullanıcı vazgeçti
         gmsg('Google girişi başarısız: '+m,'err');
       }

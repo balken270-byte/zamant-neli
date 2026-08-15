@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v194</title>
+<title>Klipsy v199</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -3762,44 +3762,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
 <link rel="apple-touch-icon" href="./icon.png">
 <meta name="description" content="Yaşadığın anı, olduğu gibi paylaş.">
 
-<script>
-/* ============================================================
-   TANILAMA KAYDI
-   Uygulamada olan biteni kaydeder. Giriş ekranında logoya
-   5 kez dokununca açılır; içerik kopyalanabilir.
-   ============================================================ */
-window.__LOG = [];
-(function(){
-  function kaydet(tur, args){
-    try{
-      const zaman = new Date().toLocaleTimeString('tr-TR');
-      const metin = Array.from(args).map(function(a){
-        if (a instanceof Error) return a.name + ': ' + a.message;
-        if (typeof a === 'object') { try{ return JSON.stringify(a); }catch(e){ return String(a); } }
-        return String(a);
-      }).join(' ');
-      window.__LOG.push('[' + zaman + '] ' + tur + ' ' + metin);
-      if (window.__LOG.length > 300) window.__LOG.shift();
-      const kutu = document.getElementById('dbgBody');
-      if (kutu) kutu.textContent = window.__LOG.join('\n');
-    }catch(e){}
-  }
 
-  ['log','warn','error','info'].forEach(function(t){
-    const asil = console[t] ? console[t].bind(console) : function(){};
-    console[t] = function(){ kaydet(t.toUpperCase(), arguments); asil.apply(console, arguments); };
-  });
-
-  window.addEventListener('error', function(e){
-    kaydet('HATA', [ (e.message||'') + ' @ ' + (e.filename||'').split('/').pop() + ':' + (e.lineno||'') ]);
-  });
-  window.addEventListener('unhandledrejection', function(e){
-    kaydet('SÖZ-HATASI', [ (e.reason && e.reason.message) ? e.reason.message : String(e.reason) ]);
-  });
-
-  window.klog = function(){ kaydet('KLIPSY', arguments); };
-})();
-</script>
 
 <script>
 /* Service Worker — SADECE tarayıcıda gerekli.
@@ -3895,6 +3858,7 @@ window.__LOG = [];
   --input-bg:rgba(255,255,255,.06); --input-bg-msg:rgba(255,255,255,.1); --input-bg-focus:rgba(255,255,255,.1);
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
   --top:52px; --tab:56px;
+  --sheetH:min(55vh,500px);   /* uygulama açılınca yeniden hesaplanır */
   --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
@@ -4203,7 +4167,8 @@ svg{display:block}
 /* alt navigasyon çubuğu bu üç ekranda da görünsün diye altta yer bırakıyoruz */
 #profile,#chats,#timeSheet{bottom:var(--tab)}
 .panel.open,.sheet.open{display:flex}
-.scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);opacity:0;animation:fadeIn .2s ease forwards}
+/* perde: arkadaki içerik hafifçe görünsün (yüzen kart tasarımı) */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;animation:fadeIn .2s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
 .panel{z-index:var(--z-notif);background:var(--panelbg);color:var(--t1);
   animation:panelIn .28s var(--ease)}
@@ -4257,14 +4222,15 @@ svg{display:block}
   color:var(--t3)}
 
 /* ============ yorumlar ============ */
-#comments{z-index:var(--z-comments);pointer-events:none}
+#comments{z-index:var(--z-comments)}
+#comments .scrim{pointer-events:auto}
 #comments.open{pointer-events:auto}
-.cbox{position:absolute;left:0;right:0;bottom:0;height:var(--sheetH);display:flex;flex-direction:column;
+.cbox{position:absolute;left:10px;right:10px;bottom:max(10px, var(--sab));
+  height:var(--sheetH);display:flex;flex-direction:column;overflow:hidden;
   background:var(--panelbg);color:var(--t1);
-  backdrop-filter:saturate(180%) blur(26px);-webkit-backdrop-filter:saturate(180%) blur(26px);
-  border-top:1px solid var(--edge-hi);border-radius:22px 22px 0 0;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 -20px 50px -20px rgba(0,0,0,.9);
-  transform:translateY(102%);transition:transform .34s var(--ease)}
+  border:1px solid var(--edge);border-radius:26px;
+  box-shadow:0 24px 60px -18px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.1);
+  transform:translateY(calc(100% + 24px));transition:transform .34s var(--ease)}
 #comments.open .cbox{transform:translateY(0)}
 .grip{width:38px;height:4px;border-radius:99px;background:var(--edge-hi);margin:9px auto 0;flex:none}
 .chead{flex:none;display:flex;align-items:center;gap:10px;padding:11px 14px 12px;border-bottom:1px solid var(--edge-soft)}
@@ -4305,8 +4271,8 @@ svg{display:block}
 .replybar b{color:var(--t1);font-weight:600}
 .replybar button{margin-left:auto;color:var(--t2);padding:4px}
 
-.cbar{flex:none;display:flex;align-items:center;gap:9px;padding:10px 12px calc(var(--sab) + 11px);
-  border-top:1px solid var(--edge-soft);background:rgba(255,255,255,.04)}
+.cbar{flex:none;display:flex;align-items:center;gap:9px;padding:10px 12px 12px;
+  border-top:1px solid var(--edge-soft);background:transparent}
 /* Yorum kutusu — renkler temaya bağlı olmalı.
    (Sabit beyaz yazı açık temada görünmez oluyordu.) */
 .cbar input{flex:1;min-width:0;height:44px;border-radius:99px;background:var(--surf2);
@@ -4429,13 +4395,19 @@ svg{display:block}
   font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.65);
   text-shadow:0 1px 6px rgba(0,0,0,.8)}
 /* alttan kayan an listesi */
-.exSheet{position:absolute;left:0;right:0;bottom:0;z-index:1000;
-  height:44%;display:flex;flex-direction:column;
-  background:var(--panelbg);border-radius:24px 24px 0 0;
-  border-top:1px solid var(--edge);
-  box-shadow:0 -18px 50px -20px #000;padding-bottom:calc(var(--sab) + 8px);
+/* panel dışına dokununca kapatan saydam katman */
+.exScrim{position:absolute;inset:0;z-index:999;display:none}
+.exSheet:not(.closed) ~ .exScrim,
+#timeSheet .exScrim.on{display:block}
+
+.exSheet{position:absolute;left:10px;right:10px;bottom:max(10px, var(--sab));z-index:1000;
+  height:44%;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--panelbg);border-radius:26px;
+  border:1px solid var(--edge);
+  box-shadow:0 24px 60px -18px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.1);
+  padding-bottom:10px;
   transition:height .3s var(--ease), transform .4s cubic-bezier(.22,1,.36,1), opacity .3s ease}
-.exSheet.closed{transform:translateY(100%);opacity:0;pointer-events:none}
+.exSheet.closed{transform:translateY(calc(100% + 24px));opacity:0;pointer-events:none}
 .exSheet.dragging{transition:none}
 /* artı buton (FAB) */
 .exFab{position:absolute;left:16px;bottom:calc(var(--sab) + 20px);z-index:1001;
@@ -4843,9 +4815,9 @@ video{background-color:#12121a}
 #feedPlace.open{display:block}
 #feedPlace .fpScrim{position:absolute;inset:0;background:rgba(0,0,0,.62);
   backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:fadeIn .2s ease}
-#feedPlace .fpBox{position:absolute;left:0;right:0;bottom:0;max-height:80vh;
-  display:flex;flex-direction:column;border-radius:24px 24px 0 0;
-  padding-bottom:calc(var(--sab) + 10px);
+#feedPlace .fpBox{position:absolute;left:10px;right:10px;bottom:max(10px, var(--sab));
+  max-height:80vh;display:flex;flex-direction:column;border-radius:26px;
+  padding-bottom:12px;border:1px solid var(--edge);
   background:var(--panelbg);color:var(--t1);border-top:1px solid var(--edge);
   box-shadow:0 -24px 60px -20px rgba(0,0,0,.9);
   animation:plUp .32s cubic-bezier(.22,1,.36,1)}
@@ -4892,9 +4864,9 @@ video{background-color:#12121a}
 #placeLayers.open{display:block}
 #placeLayers .plScrim{position:absolute;inset:0;background:rgba(0,0,0,.62);
   backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:fadeIn .2s ease}
-#placeLayers .plBox{position:absolute;left:0;right:0;bottom:0;max-height:76vh;
-  display:flex;flex-direction:column;border-radius:24px 24px 0 0;
-  padding-bottom:calc(var(--sab) + 10px);
+#placeLayers .plBox{position:absolute;left:10px;right:10px;bottom:max(10px, var(--sab));
+  max-height:76vh;display:flex;flex-direction:column;border-radius:26px;
+  padding-bottom:12px;border:1px solid var(--edge);
   background:var(--panelbg);color:var(--t1);
   border-top:1px solid var(--edge);
   box-shadow:0 -24px 60px -20px rgba(0,0,0,.9);
@@ -4975,29 +4947,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   font-size:13px;font-weight:600;font-family:inherit;transition:transform .12s}
 .chatBlockStrip .cbBtn:active{transform:scale(.95)}
 
-/* GEÇİCİ: tanılama düğmesi */
-#dbgFab{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 60px);z-index:2147483647;
-  width:38px;height:38px;border-radius:99px;display:grid;place-items:center;
-  background:rgba(20,200,120,.9);color:#04150c;border:2px solid rgba(255,255,255,.4);
-  box-shadow:0 4px 14px -4px rgba(0,0,0,.7)}
-#dbgFab svg{width:19px;height:19px}
-#dbgFab:active{transform:scale(.9)}
-
-/* tanılama ekranı */
-#dbgPanel{position:fixed;inset:0;z-index:2147483647;display:none;flex-direction:column;
-  background:#0b0b10;color:#d8f5e3;font-family:ui-monospace,Menlo,Consolas,monospace}
-#dbgPanel.open{display:flex}
-#dbgPanel .dbgHead{display:flex;align-items:center;gap:10px;flex:none;
-  padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 12px;
-  border-bottom:1px solid rgba(255,255,255,.12);background:#12121a}
-#dbgPanel .dbgHead b{flex:1;font-size:14px;color:#fff;font-family:Inter,sans-serif}
-#dbgPanel .dbgBtns{display:flex;gap:7px}
-#dbgPanel .dbgBtns button{height:32px;padding:0 12px;border-radius:8px;border:0;
-  background:#26263a;color:#fff;font-size:12.5px;font-weight:600;font-family:Inter,sans-serif}
-#dbgPanel .dbgBtns button:active{background:#3a3a55}
-#dbgPanel pre{flex:1;overflow:auto;margin:0;padding:12px 14px;
-  font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;
-  -webkit-user-select:text;user-select:text}
 
 /* engellenenler listesi */
 .blRow{display:flex;align-items:center;gap:12px;padding:11px 4px;
@@ -5121,12 +5070,14 @@ html.native button,html.native .tab{touch-action:manipulation}
   width:18px;height:18px;border-radius:0;background:none;backdrop-filter:none;
   filter:drop-shadow(0 1px 3px rgba(0,0,0,.9))}
 .arc .arcPlay svg{width:14px;height:14px}
-/* silme/kaydetme düğmesi */
-.arc .del{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:99px;
-  display:grid;place-items:center;color:#fff;opacity:0;transition:opacity .2s;
-  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.22);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.arc:active .del{opacity:1}
+/* silme/kaydetme düğmesi — sağ ALTTA ve her zaman görünür */
+.arc .del{position:absolute;bottom:5px;right:5px;top:auto;
+  width:26px;height:26px;border-radius:99px;
+  display:grid;place-items:center;color:#fff;opacity:1;
+  background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 2px 8px rgba(0,0,0,.5);
+  transition:transform .12s,background .16s}
+.arc .del:active{transform:scale(.88)}
 .arc .del:active{background:rgba(255,59,107,.85);opacity:1}
 .arc .del.save{color:#FFC857}
 .arc .del.save:active{background:rgba(255,200,87,.28)}
@@ -5309,12 +5260,25 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 /* gönderme sayfası */
 #shareSheet{z-index:66}
-.shbox{position:absolute;left:0;right:0;bottom:0;max-height:76%;display:flex;flex-direction:column;
-  background:var(--panelbg);color:var(--t1);border-top:1px solid var(--edge-hi);border-radius:24px 24px 0 0;
-  backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
-  box-shadow:0 -22px 50px -22px #000, inset 0 1px 0 rgba(255,255,255,.16);
-  padding-bottom:calc(var(--sab) + 10px);
-  transform:translateY(102%);transition:transform .34s var(--ease)}
+/* ===== ALT PANELLER — yüzen kart tasarımı =====
+   Ekrana yapışık değil: kenarlardan boşluklu, dört köşesi yuvarlak,
+   altta tam genişlikte kapatma düğmesi. */
+.shbox{position:absolute;left:10px;right:10px;bottom:max(10px, var(--sab));
+  max-height:78%;display:flex;flex-direction:column;
+  background:var(--panelbg);color:var(--t1);
+  border:1px solid var(--edge);border-radius:26px;
+  box-shadow:0 24px 60px -18px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.1);
+  padding-bottom:10px;overflow:hidden;
+  transform:translateY(calc(100% + 24px));transition:transform .34s var(--ease)}
+
+/* tutamak: yüzen kartta gerek yok, başlık yeterli */
+.shbox .grip{width:36px;height:4px;border-radius:99px;background:var(--edge);
+  margin:10px auto 2px;flex:none}
+
+/* başlık ortalanır (örnekteki gibi) */
+.shbox h3{text-align:center;font-size:16.5px;font-weight:700;letter-spacing:-.026em;
+  padding:8px 20px 12px;flex:none}
+
 #shareSheet.open .shbox{transform:translateY(0)}
 #followSheet{z-index:250}
 #followSheet .scrim{background:rgba(0,0,0,.68)}
@@ -5720,10 +5684,10 @@ html.native button,html.native .tab{touch-action:manipulation}
 .gLangSheet .glsScrim{position:absolute;inset:0;background:rgba(0,0,0,.6);
   backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
   animation:fadeIn .22s ease}
-.gLangSheet .glsBox{position:absolute;left:0;right:0;bottom:0;
-  max-height:78vh;display:flex;flex-direction:column;
-  padding:0 0 calc(var(--sab) + 14px);
-  border-radius:26px 26px 0 0;
+.gLangSheet .glsBox{position:absolute;left:10px;right:10px;bottom:max(10px, var(--sab));
+  height:min(45vh, 380px);display:flex;flex-direction:column;overflow:hidden;
+  padding:0 0 10px;
+  border-radius:26px;
   background:linear-gradient(180deg, rgba(26,26,34,.98), rgba(14,14,19,.99));
   border-top:1px solid rgba(255,255,255,.12);
   box-shadow:0 -24px 60px -20px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.09);
@@ -5735,7 +5699,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 .gLangSheet .glsHead{padding:8px 24px 14px;text-align:left}
 .gLangSheet .glsHead h3{font-size:19px;font-weight:700;letter-spacing:-.03em;color:#fff}
 .gLangSheet .glsHead p{font-size:13px;color:rgba(255,255,255,.45);margin-top:3px;letter-spacing:-.01em}
-.gLangSheet .glsList{overflow-y:auto;padding:0 12px;scrollbar-width:none}
+.gLangSheet .glsList{flex:1;min-height:0;overflow-y:auto;padding:0 12px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .gLangSheet .glsList::-webkit-scrollbar{display:none}
 .gLangSheet .glsList button{display:flex;align-items:center;gap:14px;width:100%;
   height:54px;padding:0 12px;border-radius:14px;background:none;border:0;
@@ -5945,88 +5909,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   })();
   </script>
 
-  <script>
-  // Tanılama ekranı: giriş ekranındaki "Klipsy" yazısına 5 kez dokun
-  (function(){
-    function kur(){
-      const panel = document.getElementById('dbgPanel');
-      const body  = document.getElementById('dbgBody');
-      if(!panel || !body) return;
 
-      const göster = ()=>{
-        body.textContent = (window.__LOG||[]).join('\n') || '(kayıt yok)';
-        panel.classList.add('open');
-        body.scrollTop = body.scrollHeight;
-      };
-
-      // AÇMA YOLLARI (birkaç seçenek, biri mutlaka çalışsın)
-
-      // 1) Ekranın SOL ÜST köşesine 2 saniye basılı tut
-      let bas=null;
-      document.addEventListener('touchstart', (e)=>{
-        const t=e.touches && e.touches[0];
-        if(!t) return;
-        if(t.clientX < 90 && t.clientY < 130){
-          bas = setTimeout(göster, 1500);
-        }
-      }, {passive:true});
-      document.addEventListener('touchend', ()=>{ if(bas){ clearTimeout(bas); bas=null; } }, {passive:true});
-      document.addEventListener('touchmove', ()=>{ if(bas){ clearTimeout(bas); bas=null; } }, {passive:true});
-
-      // 2) Herhangi bir yere hızlıca 6 kez dokun
-      let sayac=0, sonDokunuş=0;
-      document.addEventListener('click', ()=>{
-        const şimdi = Date.now();
-        sayac = (şimdi - sonDokunuş < 500) ? sayac+1 : 1;
-        sonDokunuş = şimdi;
-        if(sayac >= 6){ sayac = 0; göster(); }
-      }, true);
-
-      // 3) Adrese ?debug=1 eklenirse doğrudan açık gelsin
-      if(location.search.indexOf('debug=1') >= 0) setTimeout(göster, 900);
-
-      // 4) Sağ üstteki yeşil düğme
-      const fab = document.getElementById('dbgFab');
-      if(fab) fab.addEventListener('click', (e)=>{ e.stopPropagation(); göster(); });
-      // uygulama içinden de açılabilsin
-      window.showDebug = göster;
-
-      document.getElementById('dbgClose').addEventListener('click', ()=>panel.classList.remove('open'));
-      document.getElementById('dbgClear').addEventListener('click', ()=>{
-        window.__LOG = []; body.textContent = '(temizlendi)';
-      });
-      document.getElementById('dbgCopy').addEventListener('click', async ()=>{
-        const metin = (window.__LOG||[]).join('\n');
-        const btn = document.getElementById('dbgCopy');
-        try{
-          if(navigator.clipboard && navigator.clipboard.writeText){
-            await navigator.clipboard.writeText(metin);
-          }else{
-            const ta=document.createElement('textarea');
-            ta.value=metin; ta.style.position='fixed'; ta.style.opacity='0';
-            document.body.appendChild(ta); ta.select();
-            document.execCommand('copy'); ta.remove();
-          }
-          btn.textContent='Kopyalandı';
-          setTimeout(()=>btn.textContent='Kopyala',1400);
-        }catch(e){
-          btn.textContent='Kopyalanamadı';
-          setTimeout(()=>btn.textContent='Kopyala',1400);
-        }
-      });
-
-      // açılış bilgisi
-      const cap = window.Capacitor;
-      klog('--- KLİPSY BAŞLADI ---');
-      klog('Ortam:', (cap && cap.isNativePlatform && cap.isNativePlatform()) ? 'APK' : 'Tarayıcı');
-      if(cap && cap.Plugins){
-        klog('Eklentiler:', Object.keys(cap.Plugins).join(', '));
-      }
-    }
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',kur);
-    else kur();
-  })();
-  </script>
 
   <script>
   // Giriş ekranı dil seçici (alt sayfa)
@@ -6149,7 +6032,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v194</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v199</span></div>
     </div>
   </section>
 </div>
@@ -6209,6 +6092,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="sheet" id="comments" aria-hidden="true">
+    <div class="scrim" data-close="comments"></div>
     <div class="cbox">
       <div class="grip"></div>
       <div class="chead">
@@ -6268,6 +6152,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <svg id="exFabIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
 
+      <div class="exScrim" id="exScrim"></div>
       <div class="exSheet closed" id="exSheet">
         <div class="exGrip" id="exGrip"><div class="exHandle"></div></div>
         <div class="exSheetHead">
@@ -7872,7 +7757,8 @@ function openComments(id){
   paintAv($("#commAv"),ME);
   renderComments();
   const el=list.querySelector('[data-id="'+id+'"]');
-  if(el) el.querySelector(".pmedia").style.bottom="var(--sheetH)";
+  // NOT: Görsel artık küçültülmüyor. Panel yüzen kart olduğu için
+  // üstüne biniyor; küçültünce altında siyah bir boşluk kalıyordu.
   $("#tabbar").classList.add("away");
   feed.classList.add("locked");
   open("comments");
@@ -8354,6 +8240,27 @@ function initMap(){
 }
 
 // "konumuma dön" düğmesi
+// Zaman ekranındaki panel: dışına dokununca kapansın
+(function bindExScrim(){
+  const bind=()=>{
+    const sc=document.getElementById('exScrim');
+    const sh=document.getElementById('exSheet');
+    if(!sc||!sh||sc._b) return;
+    sc._b=1;
+    sc.addEventListener('click',()=>{
+      sh.classList.add('closed');
+      sc.classList.remove('on');
+    });
+    // panel açıldıkça katmanı da aç
+    const gozlemci=new MutationObserver(()=>{
+      sc.classList.toggle('on', !sh.classList.contains('closed'));
+    });
+    gozlemci.observe(sh,{attributes:true,attributeFilter:['class']});
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind);
+  else bind();
+})();
+
 function bindLocBtn(){
   const b=document.getElementById("exLocBtn");
   if(!b || b._bound) return;
@@ -10305,7 +10212,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v194";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v199";
   box.appendChild(ver);
 }
 
@@ -12434,7 +12341,6 @@ nextAt=Date.now()+HOLD;
 
   P.App.addListener('appUrlOpen', async (ev)=>{
     const url = (ev && ev.url) ? ev.url : '';
-    try{ gmsg('3/4 Dönüş alındı: '+url.slice(0,42)+'…','ok'); }catch(e){}
     if(url.indexOf('com.klipsy.app') !== 0){
       try{ gmsg('Beklenmeyen adres','err'); }catch(e){}
       return;
@@ -12454,7 +12360,6 @@ nextAt=Date.now()+HOLD;
         const errDesc = qs.get('error_description');
         if(errDesc){ say(errDesc); return; }
         if(code){
-          try{ gmsg('4/4 Oturum kuruluyor…','ok'); }catch(e){}
           const { error } = await sb.auth.exchangeCodeForSession(code);
           if(error){ say('Giriş tamamlanamadı: '+error.message); return; }
           await enterApp();
@@ -12931,12 +12836,12 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
     if(isNative){
       const P = cap.Plugins || {};
       const SL = P.SocialLogin;
-      klog('GİRİŞ: SocialLogin', SL ? 'bulundu' : 'YOK', '| eklentiler:', Object.keys(P).join(','));
+      (window.klog||function(){})('GİRİŞ: SocialLogin', SL ? 'bulundu' : 'YOK', '| eklentiler:', Object.keys(P).join(','));
       if(!SL){ gmsg('Giriş eklentisi bulunamadı','err'); return; }
 
       try{
         if(!window.__slReady){
-          klog('GİRİŞ: initialize başlıyor');
+          (window.klog||function(){})('GİRİŞ: initialize başlıyor');
           await SL.initialize({
             google: { webClientId: '432160300396-bd835s9a28m1vcg404ensbsoasep6jf1.apps.googleusercontent.com' }
           });
@@ -12945,10 +12850,9 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
 
         // NOT: scopes istenmez — ek kurulum gerektiriyor ve gerekmiyor.
         // Ad, e-posta ve fotoğraf varsayılan olarak geliyor.
-        gmsg('Hesap penceresi açılıyor…','ok');
-        klog('GİRİŞ: login başlıyor');
+        (window.klog||function(){})('GİRİŞ: login başlıyor');
         const res = await SL.login({ provider:'google', options:{} });
-        klog('GİRİŞ: login döndü', res);
+        (window.klog||function(){})('GİRİŞ: login döndü', res);
 
         // Gelen yanıtın içinde jetonu DERİNLEMESİNE ara
         // (eklentiler jetonu farklı isim ve seviyelerde döndürebiliyor)
@@ -12980,7 +12884,6 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
           gmsg('Jeton yok. Gelen: '+özet, 'err');
           return;
         }
-        gmsg('Jeton alındı, Supabase\'e gönderiliyor…','ok');
 
         const { data:d2, error:e2 } = await sb.auth.signInWithIdToken({
           provider:'google',
@@ -12989,11 +12892,10 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
         if(e2){ gmsg('Supabase reddetti: '+e2.message,'err'); return; }
         if(!d2 || !d2.session){ gmsg('Oturum oluşmadı','err'); return; }
 
-        gmsg('Giriş başarılı','ok');
         await enterApp();
       }catch(err){
         const m = (err && err.message) ? err.message : String(err);
-        klog('GİRİŞ HATASI:', m);
+        (window.klog||function(){})('GİRİŞ HATASI:', m);
         if(/cancel/i.test(m)) return;          // kullanıcı vazgeçti
         gmsg('Google girişi başarısız: '+m,'err');
       }
@@ -13177,25 +13079,5 @@ const _wallReady = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })
   gshow('gAuth');
 })();
 </script>
-  <!-- GEÇİCİ: tanılama düğmesi (iş bitince bu blok ve #dbgPanel silinecek) -->
-  <button id="dbgFab" aria-label="Tanılama">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M8 3.5h8M12 3.5v3"/><rect x="6" y="6.5" width="12" height="14" rx="5"/>
-      <path d="M6 11H3M21 11h-3M6 16H3M21 16h-3"/>
-    </svg>
-  </button>
-
-  <!-- tanılama ekranı -->
-  <div id="dbgPanel" aria-hidden="true">
-    <div class="dbgHead">
-      <b>Tanılama Kaydı</b>
-      <div class="dbgBtns">
-        <button id="dbgCopy">Kopyala</button>
-        <button id="dbgClear">Temizle</button>
-        <button id="dbgClose">Kapat</button>
-      </div>
-    </div>
-    <pre id="dbgBody"></pre>
-  </div>
 </body>
 </html>

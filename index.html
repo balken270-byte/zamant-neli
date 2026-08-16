@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v205</title>
+<title>Klipsy v206</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6050,7 +6050,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v205</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v206</span></div>
     </div>
   </section>
 </div>
@@ -8215,8 +8215,8 @@ async function pruneTileCache(){
     if(!('caches' in window)) return;
     const c = await caches.open(TILE_CACHE);
     const keys = await c.keys();
-    if(keys.length > 1800){            // yaklaşık 60-80 MB
-      for(let i=0; i<600; i++) await c.delete(keys[i]);
+    if(keys.length > 5000){        // çok seviye saklandığı için daha yüksek            // yaklaşık 60-80 MB
+      for(let i=0; i<1500; i++) await c.delete(keys[i]);
     }
   }catch(e){}
 }
@@ -8362,6 +8362,82 @@ function prefetchYonunde(map, layer){
   }catch(e){}
 }
 
+/* ============================================================
+   KOMŞU YAKINLAŞTIRMA SEVİYELERİNİ ÖNDEN AL
+   Her yakınlaştırma seviyesi ayrı bir kutucuk takımıdır.
+   Sadece bulunulan seviye saklanırsa, bir kademe yakınlaşınca
+   her şey yeniden iniyor. Bu yüzden bir üst ve bir alt seviye de
+   önden indirilir.
+   Maliyet dengesi: üst seviye ucuz (4 kat az kutucuk),
+   alt seviye pahalı (4 kat fazla) — o yüzden alt seviyede
+   sadece ekranın ortası alınır.
+   ============================================================ */
+let _komsuZaman = 0;
+
+function prefetchKomsuSeviyeler(map, layer){
+  if(!map || !layer || !('caches' in window)) return;
+
+  const şimdi = Date.now();
+  if(şimdi - _komsuZaman < 1500) return;      // sık çalışmasın
+  _komsuZaman = şimdi;
+
+  try{
+    const zoom = Math.round(map.getZoom());
+    const merkez = map.getCenter();
+    const boyut = map.getSize();
+    const kb = 256;
+    const url = layer._url || mapTileUrl();
+    const altAlanlar = (layer.options && layer.options.subdomains) || 'abcd';
+    const rBit = (layer.options && layer.options.detectRetina && L.Browser.retina) ? '@2x' : '';
+
+    // [seviye farkı, ekranın kaç katını al]
+    const planlar = [
+      [-1, 1.0],   // bir üst (uzak) — ucuz, tam ekran
+      [ 1, 0.55]   // bir alt (yakın) — pahalı, sadece orta bölge
+    ];
+
+    caches.open(TILE_CACHE).then(cache=>{
+      planlar.forEach(([fark, oran])=>{
+        const z = zoom + fark;
+        if(z < 3 || z > 19) return;
+
+        const nokta = map.project(merkez, z);
+        const genişlik = (boyut.x * oran) / 2;
+        const yükseklik = (boyut.y * oran) / 2;
+
+        const x0 = Math.floor((nokta.x - genişlik) / kb);
+        const x1 = Math.floor((nokta.x + genişlik) / kb);
+        const y0 = Math.floor((nokta.y - yükseklik) / kb);
+        const y1 = Math.floor((nokta.y + yükseklik) / kb);
+        const enFazla = Math.pow(2, z);
+
+        let sayac = 0;
+        for(let x = x0; x <= x1; x++){
+          for(let y = y0; y <= y1; y++){
+            if(y < 0 || y >= enFazla) continue;
+            if(sayac++ > 60) return;           // seviye başına üst sınır
+            const xw = ((x % enFazla) + enFazla) % enFazla;
+            const s = altAlanlar[(xw + y) % altAlanlar.length];
+            const u = url.replace('{s}', s).replace('{z}', z)
+                         .replace('{x}', xw).replace('{y}', y)
+                         .replace('{r}', rBit);
+            cache.match(u).then(varMi=>{
+              if(varMi) return;
+              fetch(u, {mode:'cors'}).then(r=>{
+                if(r && r.ok){
+                  cache.put(u, r.clone())
+                    .then(()=>{ window.__tileStats.saved++; paintTileStats(); })
+                    .catch(()=>{});
+                }
+              }).catch(()=>{});
+            }).catch(()=>{});
+          }
+        }
+      });
+    }).catch(()=>{});
+  }catch(e){}
+}
+
 /* Harita kütüphanesini SADECE gerektiğinde yükle.
    Önce uygulamanın içindeki yerel kopya denenir (APK'da anında gelir),
    yoksa internetten indirilir. */
@@ -8448,7 +8524,11 @@ async function initMap(){
 
   // hareket yönündeki kutucukları önden indir
   _map.on("move", ()=>{ prefetchYonunde(_map, _mapTileLayer); });
-  _map.on("moveend", ()=>{ _sonMerkez = _map.getCenter(); });
+  _map.on("moveend", ()=>{
+    _sonMerkez = _map.getCenter();
+    prefetchKomsuSeviyeler(_map, _mapTileLayer);   // komşu seviyeleri hazırla
+  });
+  _map.on("zoomend", ()=>{ prefetchKomsuSeviyeler(_map, _mapTileLayer); });
 
   // Konumu ÖNCE al, sonra pinleri çiz — harita başka şehre atlamasın.
   _posReady = (async()=>{
@@ -10484,7 +10564,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v205";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v206";
   box.appendChild(ver);
 }
 

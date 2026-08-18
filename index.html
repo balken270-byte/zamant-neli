@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v209</title>
+<title>Klipsy v211</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6082,7 +6082,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v209</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v211</span></div>
     </div>
   </section>
 </div>
@@ -6959,6 +6959,7 @@ async function loadFeed(){
     const me=window.__me;
     items = (data||[]).map(r=>{
       if(r.avatar_url) setRealAvatar(r.username, r.avatar_url);
+      if(r.display_name) setDisplayName(r.username, r.display_name);
       return {
       id:r.id, ts:new Date(r.created_at).getTime(),
       who:r.username, avatar:r.avatar_url,
@@ -6969,7 +6970,10 @@ async function loadFeed(){
       src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
       poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
       likes:r.like_count, views:r.view_count, cc:r.comment_count,
-      saved:false, liked:false,
+      // Bu üçü artık get_feed ile BİRLİKTE geliyor — ayrı istek yok,
+      // gecikmeli görünme sorunu ortadan kalktı.
+      saved: !!r.saved, liked: !!r.liked,
+      display: r.display_name || null,
       mine: me && r.author_id===me.id,
       comments:[],
       song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
@@ -6983,8 +6987,34 @@ async function loadFeed(){
     // İsimler ve beğeni/kaydet durumu arka planda gelip üstüne biner.
     render(); activeIdx=-1; syncActive();
 
-    // isimler (ad soyad) — geldiğinde kartlara yazılır
-    fetchDisplayNames().catch(()=>{});
+    // İsimler ve beğeni/kaydet durumu artık akışla birlikte geliyor.
+    // (Önceden üç ayrı istek daha gidiyordu; isimler ve kalpler geç doluyordu.)
+    //
+    // GÜVENLİK AĞI: Veritabanı henüz güncellenmemişse bu alanlar gelmez.
+    // O durumda eski yönteme dönülür ki hiçbir şey kaybolmasın.
+    const yeniSurum = (data && data.length)
+      ? Object.prototype.hasOwnProperty.call(data[0], 'liked')
+      : true;
+
+    if(yeniSurum){
+      if(typeof paintFeedNames==="function") paintFeedNames();
+    }else{
+      // eski veritabanı: bilgileri ayrı ayrı çek
+      console.warn('get_feed eski sürüm — yedek yol kullanılıyor');
+      fetchDisplayNames().catch(()=>{});
+      if(me && items.length){
+        const ids=items.map(x=>x.id);
+        Promise.all([
+          sb.from('likes').select('moment_id').eq('user_id',me.id).in('moment_id',ids),
+          sb.from('saves').select('moment_id').eq('user_id',me.id).in('moment_id',ids)
+        ]).then(([lk,sv])=>{
+          const L=new Set((lk.data||[]).map(x=>x.moment_id));
+          const S=new Set((sv.data||[]).map(x=>x.moment_id));
+          items.forEach(it=>{ it.liked=L.has(it.id); it.saved=S.has(it.id); });
+          list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
+        }).catch(()=>{});
+      }
+    }
 
     // kendi eski videolarımın kapağı yoksa arka planda üret
     setTimeout(()=>{ try{ backfillPosters(items.filter(x=>x.mine)); }catch(e){} }, 1500);
@@ -7014,6 +7044,14 @@ function paintFeedNames(){
       nmeEl.textContent=(uu&&uu.display_name)?uu.display_name:el._who;
     }
   });
+}
+
+/* İsim bilgisini yerel kayda yaz.
+   get_feed artık display_name döndürdüğü için isimler anında hazır olur. */
+function setDisplayName(username, display){
+  if(!username) return;
+  if(!USERS[username]) USERS[username]={name:username, followers:0, follows:0, moments:0, joined:Date.now()};
+  USERS[username].display_name = display || null;
 }
 
 async function fetchDisplayNames(){
@@ -7868,8 +7906,11 @@ async function loadComments(id){
     const roots=[];
     (data||[]).forEach(r=>{
       if(r.avatar_url) setRealAvatar(r.username, r.avatar_url);
+      if(r.display_name) setDisplayName(r.username, r.display_name);
       const node={id:r.id, who:r.username, text:r.body, ts:new Date(r.created_at).getTime(),
-        liked:false, open:false, replies:[], parent:r.parent_id};
+        // r.liked yoksa (eski veritabanı) false olur — sorun çıkmaz
+        liked: !!r.liked, likes: r.like_count||0,
+        open:false, replies:[], parent:r.parent_id};
       map[r.id]=node;
     });
     (data||[]).forEach(r=>{
@@ -10643,7 +10684,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v209";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v211";
   box.appendChild(ver);
 }
 
@@ -12522,6 +12563,21 @@ async function post(src,kind,mood,where,note,extra){
    TASLAKLAR — bağlantı yokken paylaşımlar kaybolmasın
    Anlar cihazda saklanır, internet gelince otomatik gönderilir.
    ============================================================ */
+/* Kaydedilen videonun GERÇEK türünü ve uzantısını bul.
+   MediaRecorder "video/mp4;codecs=h264,aac" gibi ek bilgi ekliyor;
+   depolama servisi bunu tanımıyor ve yüklemeyi reddediyor.
+   Bu yüzden noktalı virgülden öncesi alınır. */
+function mediaTipi(blob, kind){
+  let tip = (blob && blob.type) ? String(blob.type).split(';')[0].trim() : '';
+  if(!tip) tip = (kind === 'video') ? 'video/mp4' : 'image/jpeg';
+  const uzanti =
+    tip === 'video/mp4'  ? 'mp4'  :
+    tip === 'video/webm' ? 'webm' :
+    tip === 'image/webp' ? 'webp' :
+    (kind === 'video' ? 'mp4' : 'jpg');
+  return { tip, uzanti };
+}
+
 const DRAFT_KEY = 'klipsy_drafts_v1';
 
 function readDrafts(){
@@ -12694,9 +12750,13 @@ function startRec(){
     const longSide = Math.max(s.width||1080, s.height||1920);
     const fr = s.frameRate || 30;
 
-    if(longSide >= 1900)      vBits = fr >= 50 ? 9000000 : 6000000;
-    else if(longSide >= 1200) vBits = fr >= 50 ? 5500000 : 3800000;
-    else                      vBits = 2500000;
+    /* SINIR HESABI — depolama kovasının üst sınırı 25 MB.
+       30 saniyelik video için: 25 MB ≈ 6,6 Mbps toplam.
+       Ses payı (128 kbps) düşülünce video için güvenli üst sınır ~5,5 Mbps.
+       Bu değerler 30 saniyelik mobil izleme için fazlasıyla yeterli. */
+    if(longSide >= 1900)      vBits = fr >= 50 ? 5000000 : 4000000;
+    else if(longSide >= 1200) vBits = fr >= 50 ? 3500000 : 2800000;
+    else                      vBits = 2000000;
   }catch(e){}
 
   chunks=[];

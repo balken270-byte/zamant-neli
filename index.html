@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v207</title>
+<title>Klipsy v208</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      ok_deleted:"Silindi",
+      comment_delete_q:"Bu yorum silinsin mi?",
+      act_delete2:"Sil",
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
@@ -395,6 +398,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      ok_deleted:"Deleted",
+      comment_delete_q:"Delete this comment?",
+      act_delete2:"Delete",
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
@@ -760,6 +766,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      ok_deleted:"Eliminado",
+      comment_delete_q:"¿Eliminar este comentario?",
+      act_delete2:"Eliminar",
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
@@ -1125,6 +1134,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      ok_deleted:"تم الحذف",
+      comment_delete_q:"حذف هذا التعليق؟",
+      act_delete2:"حذف",
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
@@ -1490,6 +1502,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      ok_deleted:"Supprimé",
+      comment_delete_q:"Supprimer ce commentaire ?",
+      act_delete2:"Supprimer",
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
@@ -1855,6 +1870,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      ok_deleted:"Gelöscht",
+      comment_delete_q:"Diesen Kommentar löschen?",
+      act_delete2:"Löschen",
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
@@ -2220,6 +2238,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      ok_deleted:"Удалено",
+      comment_delete_q:"Удалить комментарий?",
+      act_delete2:"Удалить",
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
@@ -2585,6 +2606,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      ok_deleted:"Excluído",
+      comment_delete_q:"Excluir este comentário?",
+      act_delete2:"Excluir",
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
@@ -2950,6 +2974,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      ok_deleted:"हटा दिया गया",
+      comment_delete_q:"यह टिप्पणी हटाएँ?",
+      act_delete2:"हटाएँ",
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
@@ -3315,6 +3342,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      ok_deleted:"Dihapus",
+      comment_delete_q:"Hapus komentar ini?",
+      act_delete2:"Hapus",
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
@@ -4256,6 +4286,7 @@ svg{display:block}
 .cmeta span{font-size:12px;color:var(--t3)}
 .cmeta button{font-size:12px;font-weight:600;color:var(--t2);padding:2px 0}
 .cmeta button:active{opacity:.6}
+.cmeta .cdel{color:#FF6B85}
 .clike{align-self:flex-start;margin-top:2px;color:var(--t3);padding:4px;transition:transform .12s}
 .clike:active{transform:scale(.84)}
 .clike.on{color:var(--accent)}
@@ -5088,14 +5119,15 @@ html.native button,html.native .tab{touch-action:manipulation}
   width:18px;height:18px;border-radius:0;background:none;backdrop-filter:none;
   filter:drop-shadow(0 1px 3px rgba(0,0,0,.9))}
 .arc .arcPlay svg{width:14px;height:14px}
-/* silme/kaydetme düğmesi — sağ ALTTA ve her zaman görünür */
-.arc .del{position:absolute;bottom:5px;right:5px;top:auto;
-  width:26px;height:26px;border-radius:99px;
-  display:grid;place-items:center;color:#fff;opacity:1;
-  background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.28);
-  box-shadow:0 2px 8px rgba(0,0,0,.5);
-  transition:transform .12s,background .16s}
-.arc .del:active{transform:scale(.88)}
+/* silme/kaydetme düğmesi — çembersiz, sağ altta sade ikon */
+.arc .del{position:absolute;bottom:4px;right:4px;top:auto;
+  width:24px;height:24px;border-radius:0;
+  display:grid;place-items:center;color:#fff;opacity:.95;
+  background:none;border:0;box-shadow:none;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.9));
+  transition:transform .12s,opacity .16s}
+.arc .del:active{transform:scale(.85);opacity:.7}
+.arc .del svg{width:17px;height:17px}
 .arc .del:active{background:rgba(255,59,107,.85);opacity:1}
 .arc .del.save{color:#FFC857}
 .arc .del.save:active{background:rgba(255,200,87,.28)}
@@ -6050,7 +6082,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v207</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v208</span></div>
     </div>
   </section>
 </div>
@@ -7704,6 +7736,16 @@ function commentRow(c){
   const rb=document.createElement("button");rb.textContent=t("act_reply");
   rb.addEventListener("click",()=>setReply(c));
   meta.append(tm,rb);
+
+  // Kendi yorumunu silebilirsin (anın sahibi de silebilir)
+  const anıSahibi = (typeof items!=="undefined" && items[activeIdx] && items[activeIdx].mine);
+  if(c.who===ME || anıSahibi){
+    const db=document.createElement("button");
+    db.className="cdel";
+    db.textContent=t("act_delete2");
+    db.addEventListener("click",()=>deleteComment(c, row));
+    meta.append(db);
+  }
   body.append(line,meta);
   const lk=document.createElement("button");
   lk.className="clike"+(c.liked?" on":"");lk.innerHTML=I.heartsm;
@@ -7759,6 +7801,38 @@ function renderComments(){
   box.appendChild(f);
   box.scrollTop=keep;
 }
+/* Yorum silme — kendi yorumun ya da kendi anının altındaki yorumlar */
+async function deleteComment(c, rowEl){
+  if(!confirm(t("comment_delete_q"))) return;
+  const sb = window.__sb, me = window.__me;
+
+  if(rowEl){
+    rowEl.style.transition = "opacity .18s, transform .18s";
+    rowEl.style.opacity = "0";
+    rowEl.style.transform = "translateX(-14px)";
+    setTimeout(()=>{ try{ rowEl.remove(); }catch(e){} }, 190);
+  }
+
+  try{
+    const it = items[activeIdx];
+    if(it && Array.isArray(it.comments)){
+      const i = it.comments.indexOf(c);
+      if(i > -1) it.comments.splice(i, 1);
+      it.commentCount = Math.max(0, (it.commentCount||1) - 1);
+      const el = list.querySelectorAll(".post")[activeIdx];
+      if(el && el._sync) el._sync();
+    }
+  }catch(e){}
+
+  try{
+    if(sb && me && c.id && typeof isReal==="function" && isReal(c.id)){
+      const {error} = await sb.from('comments').delete().eq('id', c.id);
+      if(error) throw error;
+    }
+  }catch(e){ toast(t("err_generic")); return; }
+  toast(t("ok_deleted"));
+}
+
 function setReply(c,name){
   replyTarget=c;
   $("#replyTo").textContent=name||c.who;
@@ -10569,7 +10643,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v207";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v208";
   box.appendChild(ver);
 }
 

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v211</title>
+<title>Klipsy v212</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6082,7 +6082,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v211</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v212</span></div>
     </div>
   </section>
 </div>
@@ -10684,7 +10684,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v211";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v212";
   box.appendChild(ver);
 }
 
@@ -12494,10 +12494,11 @@ async function post(src,kind,mood,where,note,extra){
   try{
     // 1) medyayı depoya yükle
     const blob = (kind==="video" && extra && extra.blob) ? extra.blob : dataURLtoBlob(src);
-    const ext = kind==="video" ? "webm" : "jpg";
-    const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + ext;
+    // Gerçek tür ve uzantı (mp4 mi webm mi) kaydın kendisinden alınır
+    const mt = mediaTipi(blob, kind);
+    const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
     const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: blob.type || (kind==="video"?"video/webm":"image/jpeg"),
+      contentType: mt.tip,
       upsert:false
     });
     if(up.error) throw up.error;
@@ -12629,10 +12630,10 @@ async function sendDraft(d){
   const blob = dataURLtoBlobSafe(d.data);
   if(!blob) return false;
   try{
-    const ext = d.kind==="video" ? "webm" : "jpg";
-    const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
+    const mt = mediaTipi(blob, d.kind);
+    const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+mt.uzanti;
     const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: d.kind==="video" ? "video/webm" : "image/jpeg", upsert:false
+      contentType: mt.tip, upsert:false
     });
     if(up.error) throw up.error;
 

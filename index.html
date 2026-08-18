@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v206</title>
+<title>Klipsy v207</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6050,7 +6050,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v206</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v207</span></div>
     </div>
   </section>
 </div>
@@ -10041,6 +10041,11 @@ async function openMiniProfile(name){
   if(name===ME){ openProfile(ME); return; }
   const av=$("#mpAv");
   paintAv(av,name);
+  av.style.cursor="zoom-in";
+  av.onclick=()=>{
+    const src = avSrc(name);
+    if(src && typeof openImageViewer==="function") openImageViewer(src);
+  };
   $("#mpName").textContent=name;
   $("#mpHandle").textContent="@"+name;
   $("#mpBio").textContent="";
@@ -10564,7 +10569,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v206";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v207";
   box.appendChild(ver);
 }
 
@@ -10702,6 +10707,12 @@ function renderProfile(){
 
   const av=document.createElement("div");av.className="profav";
   paintAv(av,profName);
+  // dokununca tam ekran büyüt
+  av.style.cursor="zoom-in";
+  av.addEventListener("click",()=>{
+    const src = avSrc(profName);
+    if(src && typeof openImageViewer==="function") openImageViewer(src);
+  });
   if(own){
     const cam=document.createElement("button");cam.className="cam";cam.innerHTML=IC.cam;
     cam.setAttribute("aria-label",t("profile_photo_take"));
@@ -12152,6 +12163,14 @@ const MAX_REC=30;
 async function openCam(which){
   target=which;
   if(which==="profile"){camMode="photo";facing="user";}
+
+  // Profil fotoğrafı çekerken FOTOĞRAF/VİDEO seçicisi gizlenir.
+  // (Videoya basınca paylaşım ekranına düşüyordu — olmaması gereken bir akış.)
+  const modeRow = document.querySelector("#cam .modes") ||
+                  (document.querySelector("#cam .mode") ?
+                   document.querySelector("#cam .mode").parentElement : null);
+  if(modeRow) modeRow.style.display = (which==="profile") ? "none" : "";
+  setMode("photo");
   $("#camTitle").textContent=which==="profile"?t("profile_photo"):(which==="dm"?t("act_send_msg"):t("act_shoot_now"));
   $("#cam").classList.add("open");$("#cam").setAttribute("aria-hidden","false");
   _pushHistory("cam");
@@ -12232,6 +12251,17 @@ async function start(){
     $("#camFail").classList.add("on");
   }
 }
+/* Kamera kapandıktan hemen sonra, aynı dokunuş alttaki ızgaraya
+   geçip bir anı açıyordu. Kısa süre dokunuşları engelle. */
+function blockGhostTap(ms){
+  try{
+    const b=document.createElement('div');
+    b.style.cssText='position:fixed;inset:0;z-index:2147483000;background:transparent';
+    document.body.appendChild(b);
+    setTimeout(()=>{ try{ b.remove(); }catch(e){} }, ms||420);
+  }catch(e){}
+}
+
 function stopCam(){
   if(recorder&&recorder.state==="recording"){try{recorder.stop()}catch(e){}}
   recorder=null;clearInterval(recInt);
@@ -12643,14 +12673,14 @@ sh.addEventListener("pointerup",()=>{
   if(recorder&&recorder.state==="recording"){stopRec();return;}
   if(camMode==="video"){startRec();return;}
   const src=grab(); if(!src) return;
-  if(target==="profile"){closeCam();setAvatar(src);}
+  if(target==="profile"){closeCam();blockGhostTap();setAvatar(src);}
   else if(target==="dm"){closeCam();sendMedia(src);}
   else{closeCam();openCompose(src,"photo");}
 });
 sh.addEventListener("pointercancel",()=>{holding=false;clearTimeout(holdT);});
 $("#fakeShot").addEventListener("click",()=>{
   const src=frameImage(Date.now()%99991);
-  if(target==="profile"){closeCam();setAvatar(src);}
+  if(target==="profile"){closeCam();blockGhostTap();setAvatar(src);}
   else if(target==="dm"){closeCam();sendMedia(src);}
   else{closeCam();openCompose(src,"photo");}
 });

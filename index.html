@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v252</title>
+<title>Klipsy v255</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4715,13 +4715,33 @@ svg{display:block}
 .profnote{display:flex;gap:9px;padding:16px 0 4px;align-items:flex-start;border:0}
 .profnote p{font-size:12.5px;line-height:1.55;color:var(--t3)}
 
+/* ═══ BAŞKASININ PROFİLİ — GÖVDE DÜZENİ ═══
+   Gövde dikey akış: içerik az olsa da düğmeler en altta kalır. */
+#profile .profbody.otherProf{display:flex;flex-direction:column;
+  min-height:100%;box-sizing:border-box;
+  padding-bottom:calc(var(--sab) + 14px)}
+
+/* aradaki boşluğu emen esnek alan */
+#profile .profbody.otherProf .profSpacer{flex:1 1 auto;min-height:12px}
+
+/* biyografi: fotoğrafın dibinden başlamasın */
+#profile .profbody.otherProf .profbio{margin:30px 4px 0;padding:5px 0 0}
+
+/* bölümler arası nefes */
+#profile .profbody.otherProf .profdetail{margin:22px 4px 0}
+#profile .profbody.otherProf .profnote{margin:24px 4px 0;padding:0}
+
+/* eylem satırı en altta — gövdenin kendi alt dolgusu yeterli */
+#profile .profbody.otherProf .profActs{margin-top:auto;padding:22px 0 0;border:0}
+
 /* bölüm başlıkları */
 .secTitle{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
   color:var(--t3);margin:0 0 10px}
 
 /* eylem satırı — çizgisiz, ferah */
-.profActs{display:flex;gap:12px;padding:22px 0 calc(var(--sab) + 24px);
-  margin-top:10px;border:0}
+/* NOT: alt dolgu buraya EKLENMEZ — gövdenin kendi alt dolgusu var,
+   ikisi toplanınca düğmelerin altında kocaman boşluk kalıyordu. */
+.profActs{display:flex;gap:12px;padding:22px 0 0;margin-top:auto;border:0}
 .profActs .pAct{flex:1;height:50px;border-radius:15px;display:flex;align-items:center;
   justify-content:center;gap:7px;font-size:15px;font-weight:700;font-family:inherit;
   letter-spacing:-.02em;border:1px solid var(--edge);background:var(--surf1);color:var(--t1);
@@ -6338,7 +6358,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v252</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v255</span></div>
     </div>
   </section>
 </div>
@@ -11309,7 +11329,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v252";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v255";
   box.appendChild(ver);
 }
 

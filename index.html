@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v212</title>
+<title>Klipsy v214</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6082,7 +6082,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v212</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v214</span></div>
     </div>
   </section>
 </div>
@@ -6954,7 +6954,7 @@ const isReal=id=>typeof id==="string" && id.length>=32 && id.includes("-");
 async function loadFeed(){
   const sb=window.__sb; if(!sb) return;
   try{
-    const {data,error}=await sb.rpc('get_feed',{page_size:30});
+    const {data,error}=await sb.rpc('get_feed',{page_size:20})   // gereksiz veri çekmeyi azalt;
     if(error){ console.warn('feed:',error.message); return; }
     const me=window.__me;
     items = (data||[]).map(r=>{
@@ -10684,7 +10684,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v212";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v214";
   box.appendChild(ver);
 }
 
@@ -10729,18 +10729,42 @@ function makeArcVideo(src){
    Kapak sistemi sonradan eklendi; ondan önceki videoların kapağı yok.
    Bunlar profilde açılınca ilk kareden kapak üretilip sunucuya kaydedilir.
    Böylece bir daha hiç boş görünmezler. */
+/* VERİ KULLANIMI UYARISI
+   Bu işlem kapak üretmek için videoyu İNDİRİR. Kaydetme başarısız olursa
+   aynı videolar her açılışta tekrar tekrar iniyordu — ciddi veri israfı.
+   Artık: oturumda bir kez, en fazla 2 video, ve denenenler hatırlanıyor. */
 let _posterFixBusy = false;
+let _posterRunDone = false;
+
+function _posterDenendi(id){
+  try{
+    const s = JSON.parse(localStorage.getItem('klipsy_poster_tried') || '[]');
+    return s.includes(id);
+  }catch(e){ return false; }
+}
+function _posterDenendiYaz(id){
+  try{
+    const s = JSON.parse(localStorage.getItem('klipsy_poster_tried') || '[]');
+    if(!s.includes(id)){ s.push(id); localStorage.setItem('klipsy_poster_tried', JSON.stringify(s.slice(-200))); }
+  }catch(e){}
+}
+
 async function backfillPosters(list){
-  if(_posterFixBusy) return;
+  if(_posterFixBusy || _posterRunDone) return;   // oturumda tek sefer
+  if(!navigator.onLine) return;
   const sb=window.__sb, me=window.__me;
   if(!sb || !me) return;
 
   // kapağı olmayan, bana ait videolar
-  const eksik = (list||[]).filter(x=> x.kind==="video" && !x.poster && x.src && x.id);
-  if(!eksik.length) return;
+  // daha önce denenip başarısız olanları TEKRAR indirme
+  const eksik = (list||[]).filter(x=>
+    x.kind==="video" && !x.poster && x.src && x.id && !_posterDenendi(x.id));
+  if(!eksik.length){ _posterRunDone = true; return; }
 
   _posterFixBusy = true;
-  for(const it of eksik.slice(0,6)){          // her seferinde en fazla 6 tane
+  _posterRunDone = true;
+  for(const it of eksik.slice(0,2)){          // en fazla 2 video (veri tasarrufu)
+    _posterDenendiYaz(it.id);
     try{
       const blob = await makeVideoPoster(it.src);
       if(!blob) continue;
@@ -12417,10 +12441,14 @@ function grab(){
   const sx = Math.round((vw - sw)/2);
   const sy = Math.round((vh - sh)/2);
 
-  // Çıktı boyutu: kaynak izin veriyorsa 2160'a kadar çık (daha net kare)
-  const maxLong = 2160;
+  /* BOYUT / VERİ DENGESİ
+     2160 piksel ve %94 kalite ~2,5 MB dosya üretiyordu. Akışta 20 fotoğraf
+     görüntülemek 50 MB indirme demek — kotayı asıl tüketen buydu.
+     1440 piksel bir telefon ekranında farkı görülmeyecek kadar net,
+     ama dosya yaklaşık 5 kat küçülüyor. */
+  const maxLong = 1440;
   let cw, ch;
-  if(square){ cw = ch = Math.min(sw, 1440); }
+  if(square){ cw = ch = Math.min(sw, 1080); }
   else{
     ch = Math.min(sh, maxLong);
     cw = Math.round(ch * targetRatio);
@@ -12432,7 +12460,7 @@ function grab(){
   x.imageSmoothingQuality="high";
   if(facing==="user"){ x.translate(cw,0); x.scale(-1,1); }   // ön kamera aynalı
   x.drawImage(v, sx, sy, sw, sh, 0, 0, cw, ch);
-  return c.toDataURL("image/jpeg",.94);   // daha az sıkıştırma = daha net
+  return c.toDataURL("image/jpeg",.85);   // ekranda fark edilmez, dosya çok küçülür
 }
 function dataURLtoBlob(durl){
   const [head,b64]=durl.split(',');
@@ -12755,9 +12783,12 @@ function startRec(){
        30 saniyelik video için: 25 MB ≈ 6,6 Mbps toplam.
        Ses payı (128 kbps) düşülünce video için güvenli üst sınır ~5,5 Mbps.
        Bu değerler 30 saniyelik mobil izleme için fazlasıyla yeterli. */
-    if(longSide >= 1900)      vBits = fr >= 50 ? 5000000 : 4000000;
-    else if(longSide >= 1200) vBits = fr >= 50 ? 3500000 : 2800000;
-    else                      vBits = 2000000;
+    /* 30 saniyelik dikey video, telefon ekranı için:
+       3 Mbps zaten fazlasıyla net. 5 Mbps'te dosya 19 MB, 3 Mbps'te 11 MB.
+       Görüntüde fark yok, indirme maliyeti neredeyse yarı yarıya. */
+    if(longSide >= 1900)      vBits = fr >= 50 ? 3400000 : 2800000;
+    else if(longSide >= 1200) vBits = fr >= 50 ? 2600000 : 2100000;
+    else                      vBits = 1600000;
   }catch(e){}
 
   chunks=[];
@@ -13146,7 +13177,10 @@ async function liveWall(el){
   const sb=window.__sb;
   const MOOD_EM={huzur:"🌿",mutlu:"☀️",heyecan:"⚡",asik:"💗",huzun:"🌧️",
                  ozlem:"🕯️",saskin:"✨",sakin:"🌊",yorgun:"🌙",dusunce:"🌫️"};
-  const MAX_VIDEO = 10;
+  /* Giriş ekranında oynayan her video, ziyaretçi başına megabaytlarca
+     indirme demek. Ziyaretçi henüz üye bile değilken bu maliyet gereksiz.
+     Canlı his için 3 video yeterli; kalan kareler kapak resmi gösterir. */
+  const MAX_VIDEO = 3;
 
   function urlOf(path){
     if(!path) return null;
@@ -13160,7 +13194,8 @@ async function liveWall(el){
     if(!vurl) return false;
     const v=document.createElement('video');
     v.src=vurl;
-    v.loop=true; v.muted=true; v.playsInline=true; v.autoplay=true; v.preload='metadata';
+    v.loop=true; v.muted=true; v.playsInline=true; v.autoplay=true;
+    v.preload='none';   // veri tasarrufu: oynayınca yüklensin
     v.setAttribute('playsinline',''); v.setAttribute('muted','');
     v.controls=false; v.disablePictureInPicture=true;
     v.setAttribute('disableremoteplayback','');
@@ -13182,7 +13217,11 @@ async function liveWall(el){
   // Kareyi RESİM ile doldur
   // Resmi yükle ve YÜKLENDİĞİNDE bildir (açılış ekranı bunu bekliyor)
   function fillImage(tile, r){
-    const path = (r.media_kind==='video') ? (r.poster_path || r.media_path) : r.media_path;
+    /* ÖNEMLİ: Kapağı olmayan videoyu resim olarak yüklemek, TÜM VİDEO
+       DOSYASINI indirir ve sonuçta hiçbir şey gösteremez. Bu, giriş
+       ekranındaki en büyük veri israfıydı. Artık böyle içerik atlanır. */
+    if(r.media_kind === 'video' && !r.poster_path) return null;
+    const path = (r.media_kind === 'video') ? r.poster_path : r.media_path;
     const url = urlOf(path);
     if(!url) return null;
     return new Promise(done=>{
@@ -13212,7 +13251,7 @@ async function liveWall(el){
       .select('media_path,poster_path,media_kind,mood,created_at')
       .eq('is_removed',false)
       .order('created_at',{ascending:false})
-      .limit(60);
+      .limit(30);            // veri kullanımı için sınırlı
     if(error||!data||!data.length) return;
 
     const pool=data.filter(r=> !!(r.poster_path || r.media_path));

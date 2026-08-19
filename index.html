@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v214</title>
+<title>Klipsy v216</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6082,7 +6082,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v214</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v216</span></div>
     </div>
   </section>
 </div>
@@ -8808,9 +8808,18 @@ function refreshMapTheme(){
   }).addTo(_map);
 }
 function momentIcon(g){
-  // fotoğraf varsa yuvarlak önizleme, yoksa duygu emojisi
+  /* VERİ KULLANIMI — ÖNEMLİ
+     Her işaretçi 34 pikselik bir daire, ama görseli TAM BOYUTTA indiriyordu.
+     200 işaretçi = her harita açılışında yüzlerce megabayt.
+     Kapağı olmayan videolarda ise tüm video dosyası iniyordu.
+
+     Çözüm: işaretçilerde duygu simgesi gösterilir. Fotoğraf, pine
+     dokunulduğunda açılan panelde zaten tam boyutta görünüyor.
+     34 pikselde fotoğraf zaten seçilemiyordu; görsel kayıp yok. */
   const mood = (typeof g==="string") ? g : (g&&g.moodEmoji);
-  const thumb = (g&&typeof g==="object") ? g.thumb : null;
+  // Sadece KÜÇÜK önizleme kullanılır (~6 KB). Yoksa duygu simgesi gösterilir;
+  // tam boyutlu görsel asla indirilmez.
+  const thumb = (g && typeof g==="object") ? g.thumb : null;
   const isVid = (g&&typeof g==="object") ? (g.kind==="video") : false;
   let inner;
   if(thumb){
@@ -9155,19 +9164,17 @@ async function fetchMomentGeos(){
   if(window.__sb){
     try{
       const {data}=await window.__sb.from('moments')
-        .select('id, geo_lat, geo_lng, place_label, mood, media_path, media_kind, poster_path, created_at, author_id')
+        .select('id, geo_lat, geo_lng, place_label, mood, media_path, media_kind, poster_path, thumb_path, created_at, author_id')
         .eq('is_removed',false)
-        .not('geo_lat','is',null).order('created_at',{ascending:false}).limit(200);
+        .not('geo_lat','is',null).order('created_at',{ascending:false}).limit(120);
       (data||[]).forEach(r=>{
         if(r.geo_lat!=null&&r.geo_lng!=null){
           const mo=MOOD_BY_KEY[r.mood];
-          let thumb=null;
-          if(r.media_path){
-            // video ise kapak resmi, yoksa asıl dosya (transform ücretli planda)
-            try{
-              const p = (r.media_kind==='video' && r.poster_path) ? r.poster_path : r.media_path;
-              thumb = window.__sb.storage.from('moments').getPublicUrl(p).data.publicUrl;
-            }catch(e){}
+          // SADECE küçük önizleme (thumb_path). Yoksa görsel indirilmez.
+          let thumb = null;
+          if(r.thumb_path){
+            try{ thumb = window.__sb.storage.from('moments').getPublicUrl(r.thumb_path).data.publicUrl; }
+            catch(e){}
           }
           out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,
             moodEmoji:mo?mo.em:"📍", thumb:thumb, kind:r.media_kind,
@@ -10684,7 +10691,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v214";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v216";
   box.appendChild(ver);
 }
 
@@ -12547,12 +12554,31 @@ async function post(src,kind,mood,where,note,extra){
       }catch(e){ posterPath=null; }
     }
 
+    // 1c) HARİTA ÖNİZLEMESİ (128px, ~6 KB) — pinlerde bu kullanılır
+    let thumbPath = null;
+    try{
+      const thumbKaynak = (kind === "video")
+        ? ((extra && extra.cover) ? extra.cover : await makeVideoPoster(src))
+        : src;
+      if(thumbKaynak){
+        const tb = await makeThumb(thumbKaynak, 128);
+        if(tb){
+          thumbPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_t.jpg";
+          const tu = await sb.storage.from('moments').upload(thumbPath, tb, {
+            contentType:"image/jpeg", upsert:false
+          });
+          if(tu.error) thumbPath = null;
+        }
+      }
+    }catch(e){ thumbPath = null; }
+
     // 2) moments tablosuna kaydet
     const row = {
       author_id: me.id,
       media_path: path,
       media_kind: kind,
       poster_path: posterPath,
+      thumb_path: thumbPath,
       mood: mood ? mood.k : 'sakin',
       note: note || null,
       place_label: (extra && extra.shareLoc===false) ? null : (where && where!==t("no_location") ? where : null),
@@ -12596,6 +12622,37 @@ async function post(src,kind,mood,where,note,extra){
    MediaRecorder "video/mp4;codecs=h264,aac" gibi ek bilgi ekliyor;
    depolama servisi bunu tanımıyor ve yüklemeyi reddediyor.
    Bu yüzden noktalı virgülden öncesi alınır. */
+/* HARİTA ÖNİZLEMESİ ÜRET
+   Harita pinleri 34 piksel; tam boyutlu görseli indirmek israftı.
+   Paylaşım anında 128 pikselik minik bir kopya üretilip yüklenir (~6 KB).
+   Böylece pinlerde fotoğraf görünür ama veri maliyeti neredeyse sıfır. */
+function makeThumb(kaynak, boyut){
+  boyut = boyut || 128;
+  return new Promise(res=>{
+    try{
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = ()=>{
+        try{
+          const c = document.createElement('canvas');
+          c.width = boyut; c.height = boyut;
+          const x = c.getContext('2d');
+          x.imageSmoothingQuality = 'medium';
+          // ortadan kare kes
+          const k = Math.min(img.width, img.height);
+          const sx = (img.width  - k) / 2;
+          const sy = (img.height - k) / 2;
+          x.drawImage(img, sx, sy, k, k, 0, 0, boyut, boyut);
+          c.toBlob(b=>res(b || null), 'image/jpeg', 0.62);
+        }catch(e){ res(null); }
+      };
+      img.onerror = ()=>res(null);
+      setTimeout(()=>res(null), 5000);
+      img.src = (typeof kaynak === 'string') ? kaynak : URL.createObjectURL(kaynak);
+    }catch(e){ res(null); }
+  });
+}
+
 function mediaTipi(blob, kind){
   let tip = (blob && blob.type) ? String(blob.type).split(';')[0].trim() : '';
   if(!tip) tip = (kind === 'video') ? 'video/mp4' : 'image/jpeg';
@@ -13619,19 +13676,22 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 // Açılış (splash) ekranı görünürken duvarı gerçek anlarla doldurmaya başla.
 // Giriş ekranına geçmeden önce kısa bir süre bekleyip içeriğin yerleşmesini sağlıyoruz.
 // duvar arka planda dolsun — giriş ekranını BEKLETMEZ
-const _wallReady = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })();
-
+/* VERİ KULLANIMI — ÖNEMLİ
+   Giriş ekranı duvarı önceden HERKES için yükleniyordu; giriş yapmış
+   kullanıcılar o ekranı hiç görmediği hâlde onlarca görsel iniyordu.
+   Artık önce oturum kontrol edilir, duvar SADECE gerekiyorsa yüklenir. */
 (async()=>{
   const sres = await withTimeout(sb.auth.getSession(), 4000, {data:{session:null}});
   const session = sres && sres.data ? sres.data.session : null;
+
+  // Oturum varsa duvara hiç dokunma — doğrudan uygulamaya gir
   if(session){ await enterApp(); return; }
+
   setMode('login');
-  // Açılış ekranı, arka plan duvarı hazır olana kadar bekler (en fazla 2.5sn).
-  // Böylece giriş ekranı boş karelerle değil, dolu olarak açılır.
-  await Promise.race([
-    _wallReady,
-    new Promise(r=>setTimeout(r,2500))
-  ]);
+
+  // Oturum yok: giriş ekranı gösterilecek, duvarı şimdi yükle
+  const wall = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })();
+  await Promise.race([ wall, new Promise(r=>setTimeout(r,2500)) ]);
   gshow('gAuth');
 })();
 </script>

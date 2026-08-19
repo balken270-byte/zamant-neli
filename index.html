@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v219</title>
+<title>Klipsy v220</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6099,7 +6099,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v219</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v220</span></div>
     </div>
   </section>
 </div>
@@ -8276,6 +8276,19 @@ function exFilteredItems(){
   if(_exPlaceQuery && _exPlaceQuery.length>=2){
     const q=_exPlaceQuery.toLowerCase();
     list=list.filter(it=>(it.where||"").toLowerCase().includes(q));
+    return list;                       // arama yapılıyorsa mesafe sınırı uygulanmaz
+  }
+
+  /* YAKINDAKİ ANLAR — liste de haritayla aynı kuralı izler.
+     Konum biliniyorsa ve kullanıcı haritayı gezdirmemişse, yalnızca
+     belirli yarıçaptaki anlar listelenir. Uzaktaki bir şehre gitmek
+     isteyen haritayı oraya sürükler; sınır o an kalkar. */
+  if(_lastKnownPos && !_mapUserMoved){
+    const R = 50000;                    // 50 km
+    list = list.filter(it=>{
+      if(it.lat == null || it.lng == null) return false;   // konumsuz anlar burada görünmez
+      return metersBetween(_lastKnownPos.lat, _lastKnownPos.lng, it.lat, it.lng) <= R;
+    });
   }
   return list;
 }
@@ -10762,7 +10775,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v219";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v220";
   box.appendChild(ver);
 }
 
@@ -12652,9 +12665,16 @@ async function post(src,kind,mood,where,note,extra){
       thumb_path: thumbPath,
       mood: mood ? mood.k : 'sakin',
       note: note || null,
-      place_label: (extra && extra.shareLoc===false) ? null : (where && where!==t("no_location") ? where : null),
-      geo_lat: (extra && extra.la!=null && extra.shareLoc!==false) ? extra.la : null,
-      geo_lng: (extra && extra.lo!=null && extra.shareLoc!==false) ? extra.lo : null,
+      /* Konum paylaşımı KAPALIYSA tam adres yerine sadece şehir yazılır.
+         Koordinat da kabaca yuvarlanır (~10 km) — an haritada şehir
+         düzeyinde görünür ama kesin yeri belli olmaz. */
+      place_label: (where && where!==t("no_location"))
+        ? ((extra && extra.shareLoc===false) ? sadeceSehir(where) : where)
+        : null,
+      geo_lat: (extra && extra.la!=null)
+        ? ((extra.shareLoc===false) ? Math.round(extra.la*10)/10 : extra.la) : null,
+      geo_lng: (extra && extra.lo!=null)
+        ? ((extra.shareLoc===false) ? Math.round(extra.lo*10)/10 : extra.lo) : null,
       duration_ms: (extra && extra.durationMs) ? extra.durationMs : null,
       song_title: song ? song.title : null,
       song_artist: song ? song.artist : null,
@@ -12722,6 +12742,16 @@ function makeThumb(kaynak, boyut){
       img.src = (typeof kaynak === 'string') ? kaynak : URL.createObjectURL(kaynak);
     }catch(e){ res(null); }
   });
+}
+
+/* "Mahalle, İlçe, Şehir, Ülke" içinden sadece şehir ve ülkeyi al.
+   Konum paylaşımı kapalıyken bu kullanılır: tam adres gizlenir,
+   şehir bilgisi korunur. */
+function sadeceSehir(etiket){
+  if(!etiket) return null;
+  const p = String(etiket).split(',').map(s=>s.trim()).filter(Boolean);
+  if(p.length <= 1) return p[0] || null;
+  return p.slice(-2).join(', ');
 }
 
 function mediaTipi(blob, kind){
@@ -12797,9 +12827,9 @@ async function sendDraft(d){
     const row = {
       author_id: me.id, media_path: path, media_kind: d.kind, poster_path: null,
       mood: d.mood || 'sakin', note: d.note || null,
-      place_label: (ex.shareLoc===false) ? null : (d.where || null),
-      geo_lat: (ex.la!=null && ex.shareLoc!==false) ? ex.la : null,
-      geo_lng: (ex.lo!=null && ex.shareLoc!==false) ? ex.lo : null,
+      place_label: d.where ? ((ex.shareLoc===false) ? sadeceSehir(d.where) : d.where) : null,
+      geo_lat: (ex.la!=null) ? ((ex.shareLoc===false) ? Math.round(ex.la*10)/10 : ex.la) : null,
+      geo_lng: (ex.lo!=null) ? ((ex.shareLoc===false) ? Math.round(ex.lo*10)/10 : ex.lo) : null,
       duration_ms: ex.durationMs || null,
       song_title: d.song? d.song.title : null,
       song_artist: d.song? d.song.artist : null,

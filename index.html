@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v230</title>
+<title>Klipsy v231</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6145,7 +6145,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v230</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v231</span></div>
     </div>
   </section>
 </div>
@@ -7527,7 +7527,23 @@ function build(it){
       if(it.saved) sb.from('saves').insert({moment_id:it.id, user_id:uid}).then(()=>{});
       else sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',uid).then(()=>{});
     }
-    _savedCache=null; // kaydedilenler listesini tazele
+    /* Önbelleği SIFIRLAMA — sadece değişen anı ekle/çıkar.
+       Önceden her kaydetme işleminde liste bütünüyle yeniden indiriliyordu;
+       gereksiz veri kullanımıydı. */
+    if(Array.isArray(_savedCache)){
+      if(it.saved){
+        if(!_savedCache.some(x=>x.id===it.id)){
+          _savedCache.unshift({
+            id:it.id, who:it.who, kind:it.kind, src:it.src, poster:it.poster||null,
+            mood:it.mood, note:it.note, where:it.where,
+            ts:it.ts, likes:it.likes, views:it.views, cc:it.cc,
+            song:it.song||null, saved:true
+          });
+        }
+      }else{
+        _savedCache = _savedCache.filter(x=>x.id!==it.id);
+      }
+    }
     if($("#profile").classList.contains("open")) renderProfile();
   });
   av.addEventListener("click",()=>openProfile(it.who));
@@ -11044,7 +11060,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v230";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v231";
   box.appendChild(ver);
 }
 

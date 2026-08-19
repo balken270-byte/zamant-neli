@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v227</title>
+<title>Klipsy v229</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      moments_here:"an burada",
       no_moments_area:"Bu bölgede an yok — uzaklaştır ya da haritayı gezdir",
       map_load_fail:"Haritadaki anlar yüklenemedi",
       ok_deleted:"Silindi",
@@ -400,6 +401,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      moments_here:"moments here",
       no_moments_area:"No moments here — zoom out or pan the map",
       map_load_fail:"Couldn't load moments on the map",
       ok_deleted:"Deleted",
@@ -770,6 +772,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      moments_here:"momentos aquí",
       no_moments_area:"No hay momentos aquí: aleja o mueve el mapa",
       map_load_fail:"No se pudieron cargar los momentos",
       ok_deleted:"Eliminado",
@@ -1140,6 +1143,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      moments_here:"لحظات هنا",
       no_moments_area:"لا لحظات هنا — صغّر أو حرّك الخريطة",
       map_load_fail:"تعذّر تحميل اللحظات على الخريطة",
       ok_deleted:"تم الحذف",
@@ -1510,6 +1514,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      moments_here:"instants ici",
       no_moments_area:"Aucun instant ici — dézoome ou déplace la carte",
       map_load_fail:"Impossible de charger les instants",
       ok_deleted:"Supprimé",
@@ -1880,6 +1885,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      moments_here:"Momente hier",
       no_moments_area:"Keine Momente hier — herauszoomen oder Karte bewegen",
       map_load_fail:"Momente konnten nicht geladen werden",
       ok_deleted:"Gelöscht",
@@ -2250,6 +2256,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      moments_here:"моментов здесь",
       no_moments_area:"Здесь нет моментов — уменьши масштаб или подвинь карту",
       map_load_fail:"Не удалось загрузить моменты",
       ok_deleted:"Удалено",
@@ -2620,6 +2627,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      moments_here:"momentos aqui",
       no_moments_area:"Nenhum momento aqui — afaste ou mova o mapa",
       map_load_fail:"Não foi possível carregar os momentos",
       ok_deleted:"Excluído",
@@ -2990,6 +2998,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      moments_here:"पल यहाँ",
       no_moments_area:"यहाँ कोई पल नहीं — ज़ूम आउट करें या नक्शा घुमाएँ",
       map_load_fail:"मानचित्र पर पल लोड नहीं हो सके",
       ok_deleted:"हटा दिया गया",
@@ -3360,6 +3369,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      moments_here:"momen di sini",
       no_moments_area:"Tidak ada momen di sini — perkecil atau geser peta",
       map_load_fail:"Gagal memuat momen di peta",
       ok_deleted:"Dihapus",
@@ -4546,6 +4556,12 @@ svg{display:block}
 .zt-pin .ztPlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(45deg);z-index:2;
   width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.5);display:grid;place-items:center}
 .zt-pin.active .ztDrop{animation:pinbounce .5s ease}
+/* birden fazla anı temsil eden pin: adet rozeti */
+.zt-pin.zt-cluster{position:relative}
+.zt-pin .ztCount{position:absolute;top:-4px;right:-6px;min-width:18px;height:18px;
+  padding:0 4px;border-radius:99px;background:#FF3B6B;color:#fff;
+  font:700 11px/18px Inter,system-ui,sans-serif;text-align:center;
+  border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5);z-index:3}
 @keyframes pinbounce{0%,100%{transform:rotate(-45deg) scale(1)}50%{transform:rotate(-45deg) scale(1.25)}}
 .tbox h2{font-size:15.5px;font-weight:600;letter-spacing:-.024em;padding:16px 18px 4px}
 .tbox p{font-size:12.5px;color:var(--t3);padding:0 18px 10px;line-height:1.5}
@@ -6119,7 +6135,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v227</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v229</span></div>
     </div>
   </section>
 </div>
@@ -8786,7 +8802,7 @@ async function initMap(){
   (async()=>{
     await Promise.race([ _posReady, new Promise(r=>setTimeout(r,2000)) ]);
     if(_lastKnownPos && !_mapUserMoved){
-      mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 12, false);
+      mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, false);   // ~5 km görüş
       drawUserDot();
     }
     _map.invalidateSize();
@@ -9232,24 +9248,62 @@ function drawMomentPins(){
   _mapMarkers.forEach(m=>{ try{ _map.removeLayer(m); }catch(e){} });
   _mapMarkers = [];
 
-  // Görünen alandaki anlar + zaman filtresi (liste ile birebir aynı küme)
-  const goster = exFilteredItems();
+  const goster = exFilteredItems().filter(g=>
+    g.lat != null && g.lng != null && !isNaN(g.lat) && !isNaN(g.lng));
+
+  /* ÜST ÜSTE BİNME
+     Birbirine çok yakın anlar (ör. 265 m) haritada aynı noktaya düşüyor
+     ve alttaki pin görünmüyordu. Ekranda 40 pikselden yakın olanlar
+     TEK PİN altında toplanır, üzerinde adet yazar; dokununca hepsi listelenir. */
+  const gruplar = [];
+  const ESIK = 40;                       // piksel
 
   goster.forEach(g=>{
-    if(g.lat == null || g.lng == null || isNaN(g.lat) || isNaN(g.lng)) return;
-    const mk = L.marker([g.lat, g.lng], {icon: momentIcon(g)}).addTo(_map);
-    mk.on("click", ()=>{ openPlaceLayers(g); });
-    mk.bindTooltip((g.where || t("no_location")), {direction:"top", offset:[0,-30]});
+    let nokta;
+    try{ nokta = _map.latLngToLayerPoint([g.lat, g.lng]); }
+    catch(e){ nokta = null; }
+    if(!nokta){ gruplar.push({ana:g, uyeler:[g], lat:g.lat, lng:g.lng}); return; }
+
+    const yakin = gruplar.find(gr =>
+      gr.nokta && Math.abs(gr.nokta.x - nokta.x) < ESIK
+               && Math.abs(gr.nokta.y - nokta.y) < ESIK);
+
+    if(yakin) yakin.uyeler.push(g);
+    else gruplar.push({ana:g, uyeler:[g], lat:g.lat, lng:g.lng, nokta:nokta});
+  });
+
+  gruplar.forEach(gr=>{
+    const adet = gr.uyeler.length;
+    const ikon = (adet > 1) ? kumeIcon(gr.ana, adet) : momentIcon(gr.ana);
+    const mk = L.marker([gr.lat, gr.lng], {icon: ikon}).addTo(_map);
+
+    mk.on("click", ()=>{ openPlaceLayers(gr.ana); });
+    mk.bindTooltip(
+      adet > 1 ? (adet + " " + t("moments_here")) : (gr.ana.where || t("no_location")),
+      {direction:"top", offset:[0,-30]});
     _mapMarkers.push(mk);
   });
 
-  // Kaç pin çizildiğini başlıkta göster (liste ile karşılaştırmak için)
+  // kaç pin çizildi (liste ile karşılaştırmak için)
   try{
     const c = document.getElementById("exCount");
     if(c && !c.textContent.includes("pin")){
       c.textContent = c.textContent + " · " + _mapMarkers.length + " pin";
     }
   }catch(e){}
+}
+
+/* Birden fazla anı temsil eden pin: köşesinde adet rozeti */
+function kumeIcon(g, adet){
+  const thumb = g && g.thumb;
+  const ic = thumb
+    ? '<div class="ztDrop"><div class="ztImg" style="background-image:url('+thumb+')"></div></div>'
+    : '<div class="ztDrop"><span class="ztE">'+(g&&g.moodEmoji||"📍")+'</span></div>';
+  return L.divIcon({
+    className:"zt-pin zt-cluster",
+    html: ic + '<span class="ztCount">'+adet+'</span>',
+    iconSize:[34,34], iconAnchor:[17,34]
+  });
 }
 
 // kullanıcı haritayı kendisi gezdirdiyse otomatik odaklama yapma
@@ -10974,7 +11028,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v227";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v229";
   box.appendChild(ver);
 }
 
@@ -12949,8 +13003,11 @@ function makeThumb(kaynak, boyut){
 function sadeceSehir(etiket){
   if(!etiket) return null;
   const p = String(etiket).split(',').map(s=>s.trim()).filter(Boolean);
-  if(p.length <= 1) return p[0] || null;
-  return p.slice(-2).join(', ');
+  if(!p.length) return null;
+  if(p.length === 1) return p[0];
+  /* Nominatim genelde "Mahalle, İlçe, Şehir, Ülke" döndürür.
+     Konum gizliyken mahalle/ilçe yazmanın anlamı yok — SADECE ŞEHİR. */
+  return p[p.length - 2];
 }
 
 function mediaTipi(blob, kind){

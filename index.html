@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v229</title>
+<title>Klipsy v230</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      ok_moment_deleted:"An silindi",
       moments_here:"an burada",
       no_moments_area:"Bu bölgede an yok — uzaklaştır ya da haritayı gezdir",
       map_load_fail:"Haritadaki anlar yüklenemedi",
@@ -401,6 +402,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      ok_moment_deleted:"Moment deleted",
       moments_here:"moments here",
       no_moments_area:"No moments here — zoom out or pan the map",
       map_load_fail:"Couldn't load moments on the map",
@@ -772,6 +774,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      ok_moment_deleted:"Momento eliminado",
       moments_here:"momentos aquí",
       no_moments_area:"No hay momentos aquí: aleja o mueve el mapa",
       map_load_fail:"No se pudieron cargar los momentos",
@@ -1143,6 +1146,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      ok_moment_deleted:"تم حذف اللحظة",
       moments_here:"لحظات هنا",
       no_moments_area:"لا لحظات هنا — صغّر أو حرّك الخريطة",
       map_load_fail:"تعذّر تحميل اللحظات على الخريطة",
@@ -1514,6 +1518,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      ok_moment_deleted:"Instant supprimé",
       moments_here:"instants ici",
       no_moments_area:"Aucun instant ici — dézoome ou déplace la carte",
       map_load_fail:"Impossible de charger les instants",
@@ -1885,6 +1890,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      ok_moment_deleted:"Moment gelöscht",
       moments_here:"Momente hier",
       no_moments_area:"Keine Momente hier — herauszoomen oder Karte bewegen",
       map_load_fail:"Momente konnten nicht geladen werden",
@@ -2256,6 +2262,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      ok_moment_deleted:"Момент удалён",
       moments_here:"моментов здесь",
       no_moments_area:"Здесь нет моментов — уменьши масштаб или подвинь карту",
       map_load_fail:"Не удалось загрузить моменты",
@@ -2627,6 +2634,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      ok_moment_deleted:"Momento excluído",
       moments_here:"momentos aqui",
       no_moments_area:"Nenhum momento aqui — afaste ou mova o mapa",
       map_load_fail:"Não foi possível carregar os momentos",
@@ -2998,6 +3006,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      ok_moment_deleted:"पल हटाया गया",
       moments_here:"पल यहाँ",
       no_moments_area:"यहाँ कोई पल नहीं — ज़ूम आउट करें या नक्शा घुमाएँ",
       map_load_fail:"मानचित्र पर पल लोड नहीं हो सके",
@@ -3369,6 +3378,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      ok_moment_deleted:"Momen dihapus",
       moments_here:"momen di sini",
       no_moments_area:"Tidak ada momen di sini — perkecil atau geser peta",
       map_load_fail:"Gagal memuat momen di peta",
@@ -6135,7 +6145,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v229</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v230</span></div>
     </div>
   </section>
 </div>
@@ -9741,6 +9751,7 @@ function joinPlace(parts){
   return out.slice(0,2).join(", ");
 }
 
+let _sonSehir = null;   // son çözülen şehir adı
 async function reverseGeocode(la,lo){
   /* önce Nominatim: Türkiye'de mahalle/ilçe detayı daha iyi */
   try{
@@ -9751,6 +9762,7 @@ async function reverseGeocode(la,lo){
       const dist=a.city_district||a.district||a.municipality||a.town||a.county;
       const city=a.province||a.city||a.state;
       const s=joinPlace([spot||dist, city]);
+      _sonSehir = city || dist || null;      // konum gizliyken bu kullanılır
       if(s) return s;
       if(j.display_name) return j.display_name.split(",").slice(0,2).map(x=>x.trim()).join(", ");
     }
@@ -9767,6 +9779,7 @@ async function reverseGeocode(la,lo){
         if(deep.length) spot=deep[0].name;
       }
       const s=joinPlace([spot||j.locality, j.city||j.principalSubdivision]);
+      _sonSehir = j.city || j.principalSubdivision || null;
       if(s) return s;
       if(j.countryName) return j.countryName;
     }
@@ -9787,7 +9800,7 @@ function getLocation(){
     const acc=Math.round(pos.coords.accuracy||0);
     locState("wait","Konum bulundu",t("resolving"));
     const name=await reverseGeocode(la,lo);
-    place={name:name||(la.toFixed(4)+", "+lo.toFixed(4)),la,lo,acc};
+    place={name:name||(la.toFixed(4)+", "+lo.toFixed(4)), city:_sonSehir||null, la, lo, acc};
     locIcon("pin");
     locState(null,place.name,"±"+acc+" "+t("loc_accuracy"));
   },err=>{
@@ -10330,8 +10343,11 @@ $("#cpShare").addEventListener("click",()=>{
      Eskiden "Konum yok" gönderiliyordu; şehir bilgisi tamamen kayboluyordu
      ve an haritada hiç görünmüyordu.
      Artık: tam adres yerine SADECE "Şehir, Ülke" gönderilir. */
+  /* Konum gizliyken: mahalle/ilçe YAZILMAZ, sadece şehir.
+     Şehir adı ters coğrafi çözümlemeden ayrıca alınıyor; metni
+     parçalayarak tahmin etmeye çalışmak yanlış sonuç veriyordu. */
   const where = place
-    ? (shareLoc ? place.name : sadeceSehir(place.name))
+    ? (shareLoc ? place.name : (place.city || sadeceSehir(place.name)))
     : t("no_location");
   const d=draft,m=pickedMood,note=cpNote.value.trim();
   const extra={
@@ -11028,7 +11044,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v229";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v230";
   box.appendChild(ver);
 }
 
@@ -11635,18 +11651,40 @@ $("#cfNo").addEventListener("click",()=>{delTarget=null;close("confirm");});
 $("#cfYes").addEventListener("click",async ()=>{
   if(delTarget){
     const target=delTarget;
-    const i=items.findIndex(x=>x.id===target.id);
+
+    /* Anı GÖRÜNDÜĞÜ HER YERDEN aynı anda kaldır.
+       Önceden yalnızca akıştan siliniyordu; profil kendi önbelleğini
+       kullandığı için an ekranda kalmaya devam ediyor, ancak çıkıp
+       girince kayboluyordu. */
+    const i = items.findIndex(x=>x.id===target.id);
     if(i>=0) items.splice(i,1);
+
+    if(Array.isArray(_myMoments)){
+      const j = _myMoments.findIndex(x=>x.id===target.id);
+      if(j>=0) _myMoments.splice(j,1);
+    }
+    if(Array.isArray(_savedCache)){
+      const k = _savedCache.findIndex(x=>x.id===target.id);
+      if(k>=0) _savedCache.splice(k,1);
+    }
+    if(Array.isArray(_viewMoments)){
+      const v = _viewMoments.findIndex(x=>x.id===target.id);
+      if(v>=0) _viewMoments.splice(v,1);
+    }
+    _viewSon = "";                      // harita da tazelensin
+
     delTarget=null;
     render();activeIdx=-1;syncActive();renderProfile();
-    toast("An silindi");
+    if(typeof refreshExplore==="function") refreshExplore();
+    if(typeof drawMomentPins==="function" && _map) drawMomentPins();
+    toast(t("ok_moment_deleted"));
     close("confirm");
     // Supabase'ten gerçekten sil
     if(window.__sb && window.__me && isReal(target.id)){
       try{
         const {error}=await window.__sb.from('moments').delete().eq('id',target.id).eq('author_id',window.__me.id);
         if(error){ toast("Silinemedi: "+error.message); }
-        else{ await loadProfileData(ME); }
+        else{ loadProfileData(ME); }        // sayaçlar arka planda güncellensin
       }catch(e){ toast(t("err_delete")); }
     }
     return;
@@ -13005,9 +13043,9 @@ function sadeceSehir(etiket){
   const p = String(etiket).split(',').map(s=>s.trim()).filter(Boolean);
   if(!p.length) return null;
   if(p.length === 1) return p[0];
-  /* Nominatim genelde "Mahalle, İlçe, Şehir, Ülke" döndürür.
-     Konum gizliyken mahalle/ilçe yazmanın anlamı yok — SADECE ŞEHİR. */
-  return p[p.length - 2];
+  /* Bu uygulamada etiket "Mahalle, Şehir" biçiminde üretiliyor
+     (ülke eklenmiyor). Yani şehir SON parçadır. */
+  return p[p.length - 1];
 }
 
 function mediaTipi(blob, kind){

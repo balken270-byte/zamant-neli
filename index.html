@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v225</title>
+<title>Klipsy v227</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6119,7 +6119,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v225</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v227</span></div>
     </div>
   </section>
 </div>
@@ -8166,7 +8166,11 @@ $("#tabTime").addEventListener("click",()=>{
   const sheet=$("#exSheet"), fab=$("#exFab");
   if(sheet){ sheet.classList.add("closed"); sheet.style.height="44%"; }
   if(fab){ fab.classList.remove("open"); fab.setAttribute("aria-label",t("act_show_moments")); }
-  setTimeout(()=>{ initMap(); refreshExplore(); },80);
+  /* Zaman ekranına her girişte veriyi tazele.
+     Önceden aynı alan "zaten sorgulandı" sayılıp atlanıyordu; yeni
+     paylaşılan anlar haritada görünmüyordu. */
+  _viewSon = "";
+  setTimeout(()=>{ initMap(); refreshExplore(); scheduleViewLoad(200); },80);
 });
 
 // --- kaydırmalı zaman çizgisi ---
@@ -9238,6 +9242,14 @@ function drawMomentPins(){
     mk.bindTooltip((g.where || t("no_location")), {direction:"top", offset:[0,-30]});
     _mapMarkers.push(mk);
   });
+
+  // Kaç pin çizildiğini başlıkta göster (liste ile karşılaştırmak için)
+  try{
+    const c = document.getElementById("exCount");
+    if(c && !c.textContent.includes("pin")){
+      c.textContent = c.textContent + " · " + _mapMarkers.length + " pin";
+    }
+  }catch(e){}
 }
 
 // kullanıcı haritayı kendisi gezdirdiyse otomatik odaklama yapma
@@ -9364,8 +9376,8 @@ async function loadMomentsInView(){
   }catch(e){ console.warn('görünen alan:', e); }
 
   _viewBusy = false;
-  refreshExplore();
-  drawMomentPins();
+  refreshExplore();     // önce liste
+  drawMomentPins();     // sonra pinler (sayaç en sona eklenir)
 }
 
 // Kaydırma/yakınlaştırma bitince, kısa bir beklemeyle sorgula
@@ -9782,6 +9794,17 @@ function openCompose(src,kind,blob,durationMs){
   renderSongRow();
   // Ayarlar'daki "Konumu paylaş" tercihi burada geçerli olur
   shareLoc = (typeof prefLocation==="boolean") ? prefLocation : true;
+  /* Anahtarın görünümü ile gerçek durum ayrı çalışıyordu; kullanıcı
+     konumun açık mı kapalı mı olduğunu göremiyordu. Şimdi eşitleniyor. */
+  try{
+    const sw = $("#cpLocSw");
+    if(sw){
+      sw.classList.toggle("on", shareLoc);
+      sw.setAttribute("aria-checked", String(shareLoc));
+    }
+    const lc = $("#cpLoc");
+    if(lc) lc.classList.toggle("mute", !shareLoc);
+  }catch(e){}
   $("#cpLocSw").classList.add("on");
   $("#cpLoc").classList.remove("mute");
   $$("#cpMoods .moodchip").forEach(x=>{x.classList.remove("on");x.setAttribute("aria-pressed","false");});
@@ -10951,7 +10974,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v225";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v227";
   box.appendChild(ver);
 }
 
@@ -12848,9 +12871,9 @@ async function post(src,kind,mood,where,note,extra){
         ? ((extra && extra.shareLoc===false) ? sadeceSehir(where) : where)
         : null,
       geo_lat: (extra && extra.la!=null)
-        ? ((extra.shareLoc===false) ? Math.round(extra.la*10)/10 : extra.la) : null,
+        ? ((extra.shareLoc===false) ? Math.round(extra.la*100)/100 : extra.la) : null,
       geo_lng: (extra && extra.lo!=null)
-        ? ((extra.shareLoc===false) ? Math.round(extra.lo*10)/10 : extra.lo) : null,
+        ? ((extra.shareLoc===false) ? Math.round(extra.lo*100)/100 : extra.lo) : null,
       duration_ms: (extra && extra.durationMs) ? extra.durationMs : null,
       song_title: song ? song.title : null,
       song_artist: song ? song.artist : null,
@@ -13004,8 +13027,8 @@ async function sendDraft(d){
       author_id: me.id, media_path: path, media_kind: d.kind, poster_path: null,
       mood: d.mood || 'sakin', note: d.note || null,
       place_label: d.where ? ((ex.shareLoc===false) ? sadeceSehir(d.where) : d.where) : null,
-      geo_lat: (ex.la!=null) ? ((ex.shareLoc===false) ? Math.round(ex.la*10)/10 : ex.la) : null,
-      geo_lng: (ex.lo!=null) ? ((ex.shareLoc===false) ? Math.round(ex.lo*10)/10 : ex.lo) : null,
+      geo_lat: (ex.la!=null) ? ((ex.shareLoc===false) ? Math.round(ex.la*100)/100 : ex.la) : null,
+      geo_lng: (ex.lo!=null) ? ((ex.shareLoc===false) ? Math.round(ex.lo*100)/100 : ex.lo) : null,
       duration_ms: ex.durationMs || null,
       song_title: d.song? d.song.title : null,
       song_artist: d.song? d.song.artist : null,

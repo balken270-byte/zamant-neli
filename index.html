@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v222</title>
+<title>Klipsy v223</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6099,7 +6099,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v222</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v223</span></div>
     </div>
   </section>
 </div>
@@ -8268,42 +8268,33 @@ function setupTimelineDrag(){
 
 // filtreye uyan anlar (zaman + konum)
 function exFilteredItems(){
-  const f=TIME_FILTERS.find(x=>x[0]===_exFilter);
-  const sec=f?f[3]:0;
-  const now=Date.now();
-  let list=items.slice();
+  /* Kaynak: haritada O AN GÖRÜNEN alandaki anlar.
+     Böylece liste ile harita her zaman aynı şeyi gösterir. */
+  const f = TIME_FILTERS.find(x=>x[0]===_exFilter);
+  const sec = f ? f[3] : 0;
+  const now = Date.now();
+
+  let list = (_viewMoments && _viewMoments.length) ? _viewMoments.slice() : [];
+
   // zaman filtresi
-  if(_exFilter==="now") list=list.filter(it=>now-it.ts<3600*1000);
-  else if(_exFilter!=="all") list=list.filter(it=>now-it.ts < sec*1000);
-  // konum filtresi (arama kutusu doluysa)
-  if(_exPlaceQuery && _exPlaceQuery.length>=2){
-    const q=_exPlaceQuery.toLowerCase();
-    list=list.filter(it=>(it.where||"").toLowerCase().includes(q));
-    return list;                       // arama yapılıyorsa mesafe sınırı uygulanmaz
+  if(_exFilter === "now")       list = list.filter(it => now - it.ts < 3600*1000);
+  else if(_exFilter !== "all")  list = list.filter(it => now - it.ts < sec*1000);
+
+  // arama kutusu: yer adına göre daralt
+  if(_exPlaceQuery && _exPlaceQuery.length >= 2){
+    const q = _exPlaceQuery.toLowerCase();
+    list = list.filter(it => (it.where||"").toLowerCase().includes(q));
   }
 
-  /* YAKINDAKİ ANLAR — liste de haritayla aynı kuralı izler.
-     Konum biliniyorsa ve kullanıcı haritayı gezdirmemişse, yalnızca
-     belirli yarıçaptaki anlar listelenir. Uzaktaki bir şehre gitmek
-     isteyen haritayı oraya sürükler; sınır o an kalkar. */
-  if(_lastKnownPos && !_mapUserMoved){
-    const R = 50000;                                  // 50 km
-    const konumluVar = list.some(it => it.lat != null && it.lng != null);
-
-    // Hiçbir anda koordinat yoksa süzme (liste bomboş kalmasın)
-    if(konumluVar){
-      list = list.filter(it=>{
-        if(it.lat == null || it.lng == null) return false;
-        return metersBetween(_lastKnownPos.lat, _lastKnownPos.lng, it.lat, it.lng) <= R;
-      });
-
-      // En yakın olan en üstte
+  // Haritanın merkezine en yakın olan en üstte
+  try{
+    if(_map){
+      const c = _map.getCenter();
       list.sort((a,b)=>
-        metersBetween(_lastKnownPos.lat,_lastKnownPos.lng,a.lat,a.lng) -
-        metersBetween(_lastKnownPos.lat,_lastKnownPos.lng,b.lat,b.lng)
-      );
+        metersBetween(c.lat,c.lng,a.lat,a.lng) - metersBetween(c.lat,c.lng,b.lat,b.lng));
     }
-  }
+  }catch(e){}
+
   return list;
 }
 
@@ -8702,10 +8693,10 @@ async function initMap(){
   _map.on("dragstart", ()=>{ if(!_progMove) _mapUserMoved = true; });
   _map.on("zoomstart", ()=>{ if(!_progMove) _mapUserMoved = true; });
 
-  // Kullanıcı haritayı gezdirdiğinde liste de sınırsız hale gelir
-  _map.on("dragend", ()=>{
-    if(_mapUserMoved && typeof refreshExplore==="function") refreshExplore();
-  });
+  /* Harita her durduğunda o alandaki anları çek.
+     Araştırmadaki standart yöntem: moveend + kısa bekleme. */
+  _map.on("moveend", ()=>scheduleViewLoad(350));
+  _map.on("zoomend", ()=>scheduleViewLoad(250));
 
   // hareket yönündeki kutucukları önden indir
   _map.on("move", ()=>{ prefetchYonunde(_map, _mapTileLayer); });
@@ -8773,7 +8764,7 @@ async function initMap(){
     /* ÖNEMLİ: Liste, konum gelmeden önce çizilmişti (80 ms) ama konum
        ~2 sn sonra geliyor. Bu yüzden mesafe filtresi hiç uygulanmıyordu.
        Konum elimize geçtiğinde listeyi yeniden çiziyoruz. */
-    if(typeof refreshExplore === "function") refreshExplore();
+    scheduleViewLoad(120);          // ilk yükleme
   })();
 }
 
@@ -9205,46 +9196,21 @@ function closePlaceLayers(){
   }
 }
 
-async function drawMomentPins(){
-  if(!_map) return;
-  _mapMarkers.forEach(m=>_map.removeLayer(m));_mapMarkers=[];
-  const geos=await fetchMomentGeos();
-  const filtered=exFilteredItems();
-  const okIds=new Set(filtered.map(x=>x.id));
-  const bounds=[];
+function drawMomentPins(){
+  if(!_map || typeof L==="undefined") return;
+  _mapMarkers.forEach(m=>{ try{ _map.removeLayer(m); }catch(e){} });
+  _mapMarkers = [];
 
-  /* YAKINDAKİ ANLAR
-     Klipsy'nin fikri "çevrende ne oluyor" — dünyanın öbür ucundaki anlar
-     haritayı kalabalıklaştırıyor ve mesafe hissini bozuyordu.
-     Konum biliniyorsa belirli bir yarıçaptaki anlar gösterilir.
-     Kullanıcı haritayı gezdirirse sınır kalkar (uzağı da görebilsin). */
-  const YARICAP_M = 50000;                    // 50 km
-  const konum = _lastKnownPos;
-  const mesafeSiniriVar = !!konum && !_mapUserMoved;
+  // Görünen alandaki anlar + zaman filtresi (liste ile birebir aynı küme)
+  const goster = exFilteredItems();
 
-  geos.forEach(g=>{
-    if(_exFilter!=="all" && !okIds.has(g.id)) return;
-    if(mesafeSiniriVar &&
-       metersBetween(konum.lat, konum.lng, g.lat, g.lng) > YARICAP_M) return;
-    const mk=L.marker([g.lat,g.lng],{icon:momentIcon(g)}).addTo(_map);
-    mk.on("click",()=>{ openPlaceLayers(g); });
-    mk.bindTooltip((g.label||"An"),{direction:"top",offset:[0,-30]});
-    _mapMarkers.push(mk);bounds.push([g.lat,g.lng]);
+  goster.forEach(g=>{
+    if(g.lat == null || g.lng == null || isNaN(g.lat) || isNaN(g.lng)) return;
+    const mk = L.marker([g.lat, g.lng], {icon: momentIcon(g)}).addTo(_map);
+    mk.on("click", ()=>{ openPlaceLayers(g); });
+    mk.bindTooltip((g.where || t("no_location")), {direction:"top", offset:[0,-30]});
+    _mapMarkers.push(mk);
   });
-  // ODAKLAMA: "yakındaki anlar" mantığı — haritayı tüm ülkeye açma.
-  // Kullanıcının konumu biliniyorsa oraya, bilinmiyorsa EN YAKIN ana odaklan.
-  if(bounds.length && !_mapUserMoved){
-    try{
-      const me = _lastKnownPos;   // {lat,lng} — konum alındıysa dolu
-      if(me){
-        mapGoto(me.lat, me.lng, 12, false);
-      }else{
-        // konum yok: en son paylaşılan ana odaklan (şehir seviyesinde)
-        const first = bounds[0];
-        mapGoto(first[0], first[1], 12, false);
-      }
-    }catch(e){}
-  }
 }
 
 // kullanıcı haritayı kendisi gezdirdiyse otomatik odaklama yapma
@@ -9296,33 +9262,138 @@ async function fetchMomentGeos(){
   _geoCache=out;return out;
 }
 // Nominatim ile şehir/ülke ara (ücretsiz, anahtar yok)
+/* ============================================================
+   GÖRÜNEN ALANA GÖRE YÜKLEME
+   Harita uygulamalarının standart yöntemi: sabit bir yarıçap yerine
+   HARİTADA O AN GÖRÜNEN alan sorgulanır.
+
+   Avantajları:
+     • Kaydırdıkça o bölgenin anları gelir (sınırsız gezinme)
+     • Şehir küçükse hepsi görünür, büyükse yakınlaştırıp gezersin
+     • Liste ve harita otomatik olarak aynı şeyi gösterir
+     • Aramada bir yere gidince veri kendiliğinden yüklenir
+
+   Kaydırma bitince (moveend) 350 ms beklenir, sonra sorgu atılır.
+   ============================================================ */
+let _viewMoments = [];        // o an görünen alandaki anlar
+let _viewBusy = false;
+let _viewTimer = null;
+let _viewSon = "";            // aynı alanı tekrar sorgulama
+
+async function loadMomentsInView(){
+  if(!_map || !window.__sb) return;
+
+  const z = Math.round(_map.getZoom());
+  // Çok uzaktan bakılıyorsa sorgu atma (tüm dünya sorgusu anlamsız)
+  if(z < 7){
+    _viewMoments = [];
+    _viewSon = "world";
+    refreshExplore();
+    drawMomentPins();
+    return;
+  }
+
+  const b = _map.getBounds();
+  // küçük bir pay bırak: kenardaki anlar da gelsin
+  const pad = 0.15;
+  const dLat = (b.getNorth() - b.getSouth()) * pad;
+  const dLng = (b.getEast()  - b.getWest())  * pad;
+
+  const south = b.getSouth() - dLat, north = b.getNorth() + dLat;
+  const west  = b.getWest()  - dLng, east  = b.getEast()  + dLng;
+
+  const imza = [z, south.toFixed(3), north.toFixed(3), west.toFixed(3), east.toFixed(3)].join(",");
+  if(imza === _viewSon || _viewBusy) return;
+  _viewSon = imza;
+  _viewBusy = true;
+
+  try{
+    const { data, error } = await window.__sb.rpc('get_moments_in_bounds', {
+      south_lat: south, north_lat: north,
+      west_lng: west,  east_lng: east,
+      max_rows: 200
+    });
+    if(!error && Array.isArray(data)){
+      const S = window.__sb.storage.from('moments');
+      _viewMoments = data.map(r=>{
+        const mo = MOOD_BY_KEY[r.mood];
+        let thumb=null, poster=null;
+        try{
+          if(r.thumb_path)  thumb  = S.getPublicUrl(r.thumb_path).data.publicUrl;
+          if(r.poster_path) poster = S.getPublicUrl(r.poster_path).data.publicUrl;
+          if(!poster && r.media_kind!=='video' && r.media_path)
+            poster = S.getPublicUrl(r.media_path).data.publicUrl;
+        }catch(e){}
+        return {
+          id:r.id, who:r.username, ts:new Date(r.created_at).getTime(),
+          lat:Number(r.geo_lat), lng:Number(r.geo_lng),
+          where:r.place_label, mood:mo, moodEmoji:mo?mo.em:"📍",
+          kind:r.media_kind, thumb:thumb, poster:poster,
+          src: poster
+        };
+      });
+    }
+  }catch(e){ console.warn('görünen alan:', e); }
+
+  _viewBusy = false;
+  refreshExplore();
+  drawMomentPins();
+}
+
+// Kaydırma/yakınlaştırma bitince, kısa bir beklemeyle sorgula
+function scheduleViewLoad(ms){
+  clearTimeout(_viewTimer);
+  _viewTimer = setTimeout(loadMomentsInView, ms || 350);
+}
+
 let _exPlaceQuery=""; // aktif konum filtresi
 async function exSearch(q){
   q=(q||"").trim();
   _exPlaceQuery=q;
   if(q.length<2){ _exPlaceQuery=""; refreshExplore(); return; }
-  // önce listeyi bu şehre göre filtrele (yerel eşleşme)
-  refreshExplore();
-  // sonra haritayı oraya taşı
+
+  /* Aranan yere git. Harita oraya varınca "moveend" tetiklenir,
+     o bölgenin anları kendiliğinden yüklenir ve liste de güncellenir.
+     Yani arama, harita ve liste otomatik olarak senkron çalışır. */
   try{
-    const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(q),
+    const r = await fetch(
+      "https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(q),
       {headers:{"Accept-Language":"tr"}});
-    const arr=await r.json();
-    if(arr&&arr[0]&&_map){
-      const lat=parseFloat(arr[0].lat), lng=parseFloat(arr[0].lon);
-      mapGoto(lat, lng, 11, true);
+    const arr = await r.json();
+
+    if(arr && arr[0] && _map){
+      const lat = parseFloat(arr[0].lat), lng = parseFloat(arr[0].lon);
+
+      // Sonuç bir alan bildiriyorsa (şehir/ilçe) tam o alana odaklan
+      const bb = arr[0].boundingbox;
+      _progMove = true;
+      try{
+        if(bb && bb.length === 4){
+          _map.fitBounds([[parseFloat(bb[0]), parseFloat(bb[2])],
+                          [parseFloat(bb[1]), parseFloat(bb[3])]],
+                         {padding:[30,30], maxZoom:14, animate:true});
+        }else{
+          _map.setView([lat,lng], 13, {animate:true});
+        }
+      }catch(e){}
+      setTimeout(()=>{ _progMove = false; }, 900);
+
       if(_searchMarker) _map.removeLayer(_searchMarker);
-      _searchMarker=L.circleMarker([lat,lng],{radius:11,color:"#7B5BFF",fillColor:"#FF3B6B",fillOpacity:.55,weight:2}).addTo(_map);
+      _searchMarker = L.circleMarker([lat,lng],
+        {radius:11,color:"#7B5BFF",fillColor:"#FF3B6B",fillOpacity:.55,weight:2}).addTo(_map);
+
+      // yer adı süzmesini kaldır: artık harita alanı belirliyor
+      _exPlaceQuery = "";
     }
   }catch(e){}
 }
 $("#exInput").addEventListener("input",e=>{
   clearTimeout(_exSearchT);
   const v=e.target.value;
-  // liste anında güncellensin (yerel), harita gecikmeli (Nominatim kuralı)
-  _exPlaceQuery=v.trim();
+  // Yazarken listede de anlık daraltma yap, harita biraz gecikmeli gitsin
+  _exPlaceQuery = v.trim();
   refreshExplore();
-  _exSearchT=setTimeout(()=>exSearch(v),700);
+  _exSearchT = setTimeout(()=>exSearch(v), 700);
 });
 $("#tabProfile").addEventListener("click",()=>{closeMainPanels();setTab($("#tabProfile"));openProfile(ME);});
 
@@ -10801,7 +10872,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v222";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v223";
   box.appendChild(ver);
 }
 

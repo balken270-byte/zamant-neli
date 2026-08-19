@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v223</title>
+<title>Klipsy v225</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      no_moments_area:"Bu bölgede an yok — uzaklaştır ya da haritayı gezdir",
+      map_load_fail:"Haritadaki anlar yüklenemedi",
       ok_deleted:"Silindi",
       comment_delete_q:"Bu yorum silinsin mi?",
       act_delete2:"Sil",
@@ -398,6 +400,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      no_moments_area:"No moments here — zoom out or pan the map",
+      map_load_fail:"Couldn't load moments on the map",
       ok_deleted:"Deleted",
       comment_delete_q:"Delete this comment?",
       act_delete2:"Delete",
@@ -766,6 +770,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      no_moments_area:"No hay momentos aquí: aleja o mueve el mapa",
+      map_load_fail:"No se pudieron cargar los momentos",
       ok_deleted:"Eliminado",
       comment_delete_q:"¿Eliminar este comentario?",
       act_delete2:"Eliminar",
@@ -1134,6 +1140,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      no_moments_area:"لا لحظات هنا — صغّر أو حرّك الخريطة",
+      map_load_fail:"تعذّر تحميل اللحظات على الخريطة",
       ok_deleted:"تم الحذف",
       comment_delete_q:"حذف هذا التعليق؟",
       act_delete2:"حذف",
@@ -1502,6 +1510,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      no_moments_area:"Aucun instant ici — dézoome ou déplace la carte",
+      map_load_fail:"Impossible de charger les instants",
       ok_deleted:"Supprimé",
       comment_delete_q:"Supprimer ce commentaire ?",
       act_delete2:"Supprimer",
@@ -1870,6 +1880,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      no_moments_area:"Keine Momente hier — herauszoomen oder Karte bewegen",
+      map_load_fail:"Momente konnten nicht geladen werden",
       ok_deleted:"Gelöscht",
       comment_delete_q:"Diesen Kommentar löschen?",
       act_delete2:"Löschen",
@@ -2238,6 +2250,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      no_moments_area:"Здесь нет моментов — уменьши масштаб или подвинь карту",
+      map_load_fail:"Не удалось загрузить моменты",
       ok_deleted:"Удалено",
       comment_delete_q:"Удалить комментарий?",
       act_delete2:"Удалить",
@@ -2606,6 +2620,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      no_moments_area:"Nenhum momento aqui — afaste ou mova o mapa",
+      map_load_fail:"Não foi possível carregar os momentos",
       ok_deleted:"Excluído",
       comment_delete_q:"Excluir este comentário?",
       act_delete2:"Excluir",
@@ -2974,6 +2990,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      no_moments_area:"यहाँ कोई पल नहीं — ज़ूम आउट करें या नक्शा घुमाएँ",
+      map_load_fail:"मानचित्र पर पल लोड नहीं हो सके",
       ok_deleted:"हटा दिया गया",
       comment_delete_q:"यह टिप्पणी हटाएँ?",
       act_delete2:"हटाएँ",
@@ -3342,6 +3360,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      no_moments_area:"Tidak ada momen di sini — perkecil atau geser peta",
+      map_load_fail:"Gagal memuat momen di peta",
       ok_deleted:"Dihapus",
       comment_delete_q:"Hapus komentar ini?",
       act_delete2:"Hapus",
@@ -6099,7 +6119,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v223</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v225</span></div>
     </div>
   </section>
 </div>
@@ -8307,7 +8327,14 @@ function refreshExplore(){
     (_exPlaceQuery? '"'+_exPlaceQuery+'" '+t("no_moments_for") : t("no_moments_slot"));
   const box=$("#exList");box.innerHTML="";
   if(!list.length){
-    box.innerHTML='<div class="exEmpty">'+(_exPlaceQuery?t("no_moments_here"):t("no_moments_range"))+'</div>';
+    // Görünen alanda an yoksa ne yapılacağını söyle (boş ekran bırakma)
+    const z = _map ? Math.round(_map.getZoom()) : 12;
+    box.innerHTML =
+      '<div class="exEmpty">'+
+        (_exPlaceQuery
+          ? t("no_moments_here")
+          : (z >= 9 ? t("no_moments_area") : t("no_moments_range")))+
+      '</div>';
   }else{
     list.slice(0,60).forEach(it=>{
       const row=document.createElement("div");row.className="exItem";
@@ -9284,14 +9311,10 @@ async function loadMomentsInView(){
   if(!_map || !window.__sb) return;
 
   const z = Math.round(_map.getZoom());
-  // Çok uzaktan bakılıyorsa sorgu atma (tüm dünya sorgusu anlamsız)
-  if(z < 7){
-    _viewMoments = [];
-    _viewSon = "world";
-    refreshExplore();
-    drawMomentPins();
-    return;
-  }
+  /* Uzaklaştırıldığında da veri gelmeli — kullanıcı ülke geneline bakıp
+     "anlar nerede" diye görmek isteyebilir. Sadece aşırı uzakta (dünya
+     görünümü) satır sayısı kısıtlanır. */
+  const satirSiniri = (z >= 10) ? 200 : (z >= 6 ? 150 : 80);
 
   const b = _map.getBounds();
   // küçük bir pay bırak: kenardaki anlar da gelsin
@@ -9311,8 +9334,13 @@ async function loadMomentsInView(){
     const { data, error } = await window.__sb.rpc('get_moments_in_bounds', {
       south_lat: south, north_lat: north,
       west_lng: west,  east_lng: east,
-      max_rows: 200
+      max_rows: satirSiniri
     });
+    if(error){
+      // Sorgu yoksa/başarısızsa sessiz kalma — sebebi görünsün
+      console.warn('get_moments_in_bounds:', error.message);
+      toast(t("map_load_fail"));
+    }
     if(!error && Array.isArray(data)){
       const S = window.__sb.storage.from('moments');
       _viewMoments = data.map(r=>{
@@ -10221,10 +10249,16 @@ function closeCompose(back){
 $("#cpBack").addEventListener("click",()=>closeCompose(true));
 $("#cpShare").addEventListener("click",()=>{
   if(!draft) return;
-  const where=(shareLoc&&place)?place.name:t("no_location");
+  /* KONUM PAYLAŞIMI KAPALIYKEN
+     Eskiden "Konum yok" gönderiliyordu; şehir bilgisi tamamen kayboluyordu
+     ve an haritada hiç görünmüyordu.
+     Artık: tam adres yerine SADECE "Şehir, Ülke" gönderilir. */
+  const where = place
+    ? (shareLoc ? place.name : sadeceSehir(place.name))
+    : t("no_location");
   const d=draft,m=pickedMood,note=cpNote.value.trim();
   const extra={
-    shareLoc: shareLoc && !!place,
+    shareLoc: shareLoc && !!place,   // false ise şehir düzeyinde kaydedilir
     la: place?place.la:null,
     lo: place?place.lo:null,
     blob: d.blob||null,
@@ -10316,7 +10350,51 @@ function joinedText(ts){
   const d=new Date(ts);
   return d.getDate()+" "+AY[d.getMonth()]+" "+d.getFullYear()+t("joined2");
 }
-function myMoments(){ return items.filter(x=>x.mine); }
+/* PROFİL ARŞİVİ
+   Önceden akıştaki (items) anlardan süzülüyordu. Akış yalnızca son 20 anı
+   getirdiği için eski paylaşımlar profilde görünmüyordu.
+   Artık kullanıcının KENDİ anları ayrı sorguyla çekilir. */
+let _myMoments = null;          // önbellek
+
+function myMoments(){
+  if(_myMoments) return _myMoments;
+  return items.filter(x=>x.mine);      // henüz gelmediyse akıştan göster
+}
+
+async function loadMyMoments(){
+  const sb = window.__sb, me = window.__me;
+  if(!sb || !me) return;
+  try{
+    const { data, error } = await sb
+      .from('moments')
+      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms')
+      .eq('author_id', me.id)
+      .eq('is_removed', false)
+      .order('created_at', { ascending:false })
+      .limit(300);
+    if(error) throw error;
+
+    const S = sb.storage.from('moments');
+    _myMoments = (data||[]).map(r=>({
+      id:r.id, who:ME, mine:true,
+      ts:new Date(r.created_at).getTime(),
+      kind:r.media_kind,
+      src: S.getPublicUrl(r.media_path).data.publicUrl,
+      poster: r.poster_path ? S.getPublicUrl(r.poster_path).data.publicUrl : null,
+      mood: MOOD_BY_KEY[r.mood] || null,
+      note: r.note || "",
+      where: r.place_label || null,
+      lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
+      lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
+      likes:r.like_count, views:r.view_count, cc:r.comment_count,
+      comments:[], liked:false, saved:false,
+      song: r.song_title ? {title:r.song_title, artist:r.song_artist,
+                            art:r.song_art, preview:r.song_preview} : null
+    }));
+
+    if(document.getElementById("profile").classList.contains("open")) renderProfile();
+  }catch(e){ console.warn('kendi anlarım:', e); }
+}
 
 const IC={
   lock:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8.2 10.5V7.6a3.8 3.8 0 0 1 7.6 0v2.9"/></svg>',
@@ -10497,6 +10575,7 @@ async function openProfile(name){
   profName=name;
   renderProfile();
   open("profile");
+  if(name===ME) loadMyMoments();          // kendi anlarımın tamamını çek
   // gerçek profil verisini çek (an/takipçi/takip sayıları)
   const pdata=await loadProfileData(name);
   if(pdata && profName===name) renderProfile();
@@ -10872,7 +10951,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v223";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v225";
   box.appendChild(ver);
 }
 

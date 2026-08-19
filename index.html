@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v221</title>
+<title>Klipsy v222</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6099,7 +6099,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v221</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v222</span></div>
     </div>
   </section>
 </div>
@@ -6986,6 +6986,9 @@ async function loadFeed(){
       kind:r.media_kind,
       src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
       poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
+      // Mesafe filtresi için konum — get_feed artık bunları döndürüyor
+      lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
+      lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
       likes:r.like_count, views:r.view_count, cc:r.comment_count,
       // Bu üçü artık get_feed ile BİRLİKTE geliyor — ayrı istek yok,
       // gecikmeli görünme sorunu ortadan kalktı.
@@ -9234,11 +9237,11 @@ async function drawMomentPins(){
     try{
       const me = _lastKnownPos;   // {lat,lng} — konum alındıysa dolu
       if(me){
-        _map.setView([me.lat, me.lng], 12, {animate:false});
+        mapGoto(me.lat, me.lng, 12, false);
       }else{
         // konum yok: en son paylaşılan ana odaklan (şehir seviyesinde)
         const first = bounds[0];
-        _map.setView(first, 12, {animate:false});
+        mapGoto(first[0], first[1], 12, false);
       }
     }catch(e){}
   }
@@ -9307,7 +9310,7 @@ async function exSearch(q){
     const arr=await r.json();
     if(arr&&arr[0]&&_map){
       const lat=parseFloat(arr[0].lat), lng=parseFloat(arr[0].lon);
-      _map.setView([lat,lng],11,{animate:true});
+      mapGoto(lat, lng, 11, true);
       if(_searchMarker) _map.removeLayer(_searchMarker);
       _searchMarker=L.circleMarker([lat,lng],{radius:11,color:"#7B5BFF",fillColor:"#FF3B6B",fillOpacity:.55,weight:2}).addTo(_map);
     }
@@ -10798,7 +10801,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v221";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v222";
   box.appendChild(ver);
 }
 

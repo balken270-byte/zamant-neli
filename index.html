@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v216</title>
+<title>Klipsy v217</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4471,6 +4471,14 @@ svg{display:block}
 .exItem .exGo{color:var(--t3);flex:none}
 .exEmpty{text-align:center;color:var(--t3);font-size:13px;padding:20px 12px}
 /* Leaflet karanlık uyumu */
+/* panelde video işareti */
+.plItem .plThumb{position:relative}
+.plItem .plPlay{position:absolute;right:4px;bottom:4px;width:14px;height:14px;
+  border-radius:99px;background:rgba(0,0,0,.6);
+  box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.plItem .plPlay::after{content:"";position:absolute;left:5px;top:4px;
+  border-left:5px solid #fff;border-top:3px solid transparent;border-bottom:3px solid transparent}
+
 /* harita yüklenirken */
 .mapLoading{position:absolute;inset:0;display:grid;place-items:center;
   background:#12121a;z-index:5}
@@ -6082,7 +6090,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v216</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v217</span></div>
     </div>
   </section>
 </div>
@@ -9098,8 +9106,12 @@ async function openPlaceLayers(g){
       box.appendChild(h);
     }
     const row=document.createElement("button");row.className="plItem";
-    const th=x.thumb ? '<div class="plThumb" style="background-image:url('+x.thumb+')"></div>'
-                     : '<div class="plThumb plNo">'+(x.moodEmoji||"📍")+'</div>';
+    // önce minik önizleme, yoksa kapak, o da yoksa duygu simgesi
+    const gorsel = x.thumb || x.poster || null;
+    const th = gorsel
+      ? '<div class="plThumb" style="background-image:url('+gorsel+')"></div>'
+        + (x.kind==='video' ? '<span class="plPlay"></span>' : '')
+      : '<div class="plThumb plNo">'+(x.moodEmoji||"📍")+'</div>';
     row.innerHTML = th +
       '<div class="plMeta">'+
         '<b>'+esc(x.label||t("no_location"))+'</b>'+
@@ -9131,8 +9143,20 @@ async function drawMomentPins(){
   const filtered=exFilteredItems();
   const okIds=new Set(filtered.map(x=>x.id));
   const bounds=[];
+
+  /* YAKINDAKİ ANLAR
+     Klipsy'nin fikri "çevrende ne oluyor" — dünyanın öbür ucundaki anlar
+     haritayı kalabalıklaştırıyor ve mesafe hissini bozuyordu.
+     Konum biliniyorsa belirli bir yarıçaptaki anlar gösterilir.
+     Kullanıcı haritayı gezdirirse sınır kalkar (uzağı da görebilsin). */
+  const YARICAP_M = 50000;                    // 50 km
+  const konum = _lastKnownPos;
+  const mesafeSiniriVar = !!konum && !_mapUserMoved;
+
   geos.forEach(g=>{
     if(_exFilter!=="all" && !okIds.has(g.id)) return;
+    if(mesafeSiniriVar &&
+       metersBetween(konum.lat, konum.lng, g.lat, g.lng) > YARICAP_M) return;
     const mk=L.marker([g.lat,g.lng],{icon:momentIcon(g)}).addTo(_map);
     mk.on("click",()=>{ openPlaceLayers(g); });
     mk.bindTooltip((g.label||"An"),{direction:"top",offset:[0,-30]});
@@ -9170,14 +9194,22 @@ async function fetchMomentGeos(){
       (data||[]).forEach(r=>{
         if(r.geo_lat!=null&&r.geo_lng!=null){
           const mo=MOOD_BY_KEY[r.mood];
-          // SADECE küçük önizleme (thumb_path). Yoksa görsel indirilmez.
-          let thumb = null;
-          if(r.thumb_path){
-            try{ thumb = window.__sb.storage.from('moments').getPublicUrl(r.thumb_path).data.publicUrl; }
-            catch(e){}
-          }
+          /* thumb  → harita pinleri için minik önizleme (~6 KB)
+             poster → panelde gösterilecek kapak (video için)
+             Video dosyasının kendisi ASLA görsel olarak kullanılmaz;
+             tarayıcı onu çizemediği için kutu bembeyaz kalıyordu. */
+          let thumb = null, poster = null;
+          try{
+            const S = window.__sb.storage.from('moments');
+            if(r.thumb_path)  thumb  = S.getPublicUrl(r.thumb_path).data.publicUrl;
+            if(r.poster_path) poster = S.getPublicUrl(r.poster_path).data.publicUrl;
+            // fotoğraflarda kapak yoksa asıl görsel panelde kullanılabilir
+            if(!poster && r.media_kind !== 'video' && r.media_path){
+              poster = S.getPublicUrl(r.media_path).data.publicUrl;
+            }
+          }catch(e){}
           out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,
-            moodEmoji:mo?mo.em:"📍", thumb:thumb, kind:r.media_kind,
+            moodEmoji:mo?mo.em:"📍", thumb:thumb, poster:poster, kind:r.media_kind,
             ts:new Date(r.created_at).getTime(), author_id:r.author_id});
         }
       });
@@ -10691,7 +10723,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v216";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v217";
   box.appendChild(ver);
 }
 

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v217</title>
+<title>Klipsy v219</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4471,6 +4471,15 @@ svg{display:block}
 .exItem .exGo{color:var(--t3);flex:none}
 .exEmpty{text-align:center;color:var(--t3);font-size:13px;padding:20px 12px}
 /* Leaflet karanlık uyumu */
+/* görsel yoksa: simge göster (boş beyaz kutu kalmasın) */
+.exThumb.exNoImg{display:grid;place-items:center;font-size:19px;
+  background:var(--surf1);color:var(--t2)}
+.exThumb.hasVid{position:relative}
+.exThumb.hasVid::after{content:"";position:absolute;right:4px;bottom:4px;
+  width:0;height:0;border-left:7px solid #fff;
+  border-top:5px solid transparent;border-bottom:5px solid transparent;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}
+
 /* panelde video işareti */
 .plItem .plThumb{position:relative}
 .plItem .plPlay{position:absolute;right:4px;bottom:4px;width:14px;height:14px;
@@ -6090,7 +6099,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v217</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v219</span></div>
     </div>
   </section>
 </div>
@@ -8285,7 +8294,23 @@ function refreshExplore(){
     list.slice(0,60).forEach(it=>{
       const row=document.createElement("div");row.className="exItem";
       const th=document.createElement("span");th.className="exThumb";
-      if(it.src) th.style.backgroundImage='url("'+it.src+'")';
+      /* Video dosyası arka plan resmi olarak kullanılamaz — tarayıcı onu
+         çizemediği için kutu bembeyaz kalıyordu (üstelik tüm video boşuna
+         iniyordu). Videolarda kapak resmi, o da yoksa duygu simgesi. */
+      if(it.kind === "video"){
+        if(it.poster){
+          th.style.backgroundImage = 'url("'+it.poster+'")';
+          th.classList.add("hasVid");
+        }else{
+          th.classList.add("exNoImg");
+          th.textContent = it.mood ? it.mood.em : "🎬";
+        }
+      }else if(it.src){
+        th.style.backgroundImage = 'url("'+it.src+'")';
+      }else{
+        th.classList.add("exNoImg");
+        th.textContent = it.mood ? it.mood.em : "📍";
+      }
       const meta=document.createElement("div");meta.className="exMeta";
       const mo=it.mood;
       meta.innerHTML='<div class="exWho"><span class="exMood">'+(mo?mo.em:"")+'</span>'+it.who+'</div>'+
@@ -8643,7 +8668,12 @@ async function initMap(){
     crossOrigin:true, className:"ktile" 
   }).addTo(_map);
   // kullanıcı haritayı elle gezdirirse otomatik odaklamayı bırak
-  _map.on("dragstart zoomstart", ()=>{ _mapUserMoved = true; });
+  /* HATA DÜZELTMESİ
+     Haritayı biz odakladığımızda (setView) da "zoomstart" tetikleniyordu.
+     Bu yüzden mesafe filtresi daha ilk anda kapanıyor ve uzak şehirlerdeki
+     anlar da görünüyordu. Artık sadece GERÇEK dokunuş sayılıyor. */
+  _map.on("dragstart", ()=>{ if(!_progMove) _mapUserMoved = true; });
+  _map.on("zoomstart", ()=>{ if(!_progMove) _mapUserMoved = true; });
 
   // hareket yönündeki kutucukları önden indir
   _map.on("move", ()=>{ prefetchYonunde(_map, _mapTileLayer); });
@@ -8685,7 +8715,7 @@ async function initMap(){
           // konum gelince noktayı ve görünümü tazele
           drawUserDot();
           if(!_mapUserMoved && _map){
-            try{ _map.setView([_lastKnownPos.lat,_lastKnownPos.lng], 13, {animate:true}); }catch(e){}
+            mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, true);
           }
           res(_lastKnownPos);
         },
@@ -8702,7 +8732,7 @@ async function initMap(){
   (async()=>{
     await Promise.race([ _posReady, new Promise(r=>setTimeout(r,2000)) ]);
     if(_lastKnownPos && !_mapUserMoved){
-      try{ _map.setView([_lastKnownPos.lat,_lastKnownPos.lng], 12, {animate:false}); }catch(e){}
+      mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 12, false);
       drawUserDot();
     }
     _map.invalidateSize();
@@ -8744,7 +8774,7 @@ function bindLocBtn(){
     // Elde konum varsa hemen oraya git (bekletme), ama HER ZAMAN taze konum iste.
     if(_lastKnownPos){
       _mapUserMoved=false;
-      _map.setView([_lastKnownPos.lat,_lastKnownPos.lng], 13, {animate:true});
+      mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, true);
       drawUserDot();
     }
 
@@ -8759,7 +8789,7 @@ function bindLocBtn(){
             JSON.stringify({lat:_lastKnownPos.lat, lng:_lastKnownPos.lng, t:Date.now()}));
         }catch(e){}
         _mapUserMoved=false;
-        _map.setView([_lastKnownPos.lat,_lastKnownPos.lng], 14, {animate:true});
+        mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 14, true);
         drawUserDot();
         setTimeout(()=>b.classList.remove("on"), 900);
       },
@@ -9181,6 +9211,15 @@ async function drawMomentPins(){
 // kullanıcı haritayı kendisi gezdirdiyse otomatik odaklama yapma
 let _mapUserMoved = false;
 let _lastKnownPos = null;
+let _progMove = false;          // odaklama bizden mi geldi
+
+// Haritayı programla odakla — bunu kullanıcı hareketi sayma
+function mapGoto(lat, lng, zoom, animate){
+  if(!_map) return;
+  _progMove = true;
+  try{ _map.setView([lat,lng], zoom, {animate: !!animate}); }catch(e){}
+  setTimeout(()=>{ _progMove = false; }, 700);
+}
 let _posReady = null;
 async function fetchMomentGeos(){
   if(_geoCache) return _geoCache;
@@ -10723,7 +10762,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v217";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v219";
   box.appendChild(ver);
 }
 
@@ -13713,7 +13752,31 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
    kullanıcılar o ekranı hiç görmediği hâlde onlarca görsel iniyordu.
    Artık önce oturum kontrol edilir, duvar SADECE gerekiyorsa yüklenir. */
 (async()=>{
-  const sres = await withTimeout(sb.auth.getSession(), 4000, {data:{session:null}});
+  /* AÇILIŞ AKIŞI
+     Önceden oturum kontrolü ağa çıkıyordu. Bağlantı yavaşsa süre doluyor,
+     "oturum yok" sanılıyor ve giriş yapmış kullanıcıya giriş ekranı
+     gösteriliyordu. Artık önce cihazdaki kayıtlı oturuma bakılır:
+     varsa doğrudan uygulamaya girilir, tazeleme arka planda yapılır. */
+  function kayitliOturumVar(){
+    try{
+      for(let i=0; i<localStorage.length; i++){
+        const k = localStorage.key(i);
+        if(k && k.startsWith('sb-') && k.endsWith('-auth-token')){
+          const v = localStorage.getItem(k);
+          if(v && v.length > 20) return true;
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+
+  // Cihazda oturum kaydı varsa giriş ekranını hiç gösterme
+  if(kayitliOturumVar()){
+    await enterApp();
+    return;
+  }
+
+  const sres = await withTimeout(sb.auth.getSession(), 6000, {data:{session:null}});
   const session = sres && sres.data ? sres.data.session : null;
 
   // Oturum varsa duvara hiç dokunma — doğrudan uygulamaya gir

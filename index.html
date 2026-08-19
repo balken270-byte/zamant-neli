@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v220</title>
+<title>Klipsy v221</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6099,7 +6099,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v220</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v221</span></div>
     </div>
   </section>
 </div>
@@ -8284,11 +8284,22 @@ function exFilteredItems(){
      belirli yarıçaptaki anlar listelenir. Uzaktaki bir şehre gitmek
      isteyen haritayı oraya sürükler; sınır o an kalkar. */
   if(_lastKnownPos && !_mapUserMoved){
-    const R = 50000;                    // 50 km
-    list = list.filter(it=>{
-      if(it.lat == null || it.lng == null) return false;   // konumsuz anlar burada görünmez
-      return metersBetween(_lastKnownPos.lat, _lastKnownPos.lng, it.lat, it.lng) <= R;
-    });
+    const R = 50000;                                  // 50 km
+    const konumluVar = list.some(it => it.lat != null && it.lng != null);
+
+    // Hiçbir anda koordinat yoksa süzme (liste bomboş kalmasın)
+    if(konumluVar){
+      list = list.filter(it=>{
+        if(it.lat == null || it.lng == null) return false;
+        return metersBetween(_lastKnownPos.lat, _lastKnownPos.lng, it.lat, it.lng) <= R;
+      });
+
+      // En yakın olan en üstte
+      list.sort((a,b)=>
+        metersBetween(_lastKnownPos.lat,_lastKnownPos.lng,a.lat,a.lng) -
+        metersBetween(_lastKnownPos.lat,_lastKnownPos.lng,b.lat,b.lng)
+      );
+    }
   }
   return list;
 }
@@ -8688,6 +8699,11 @@ async function initMap(){
   _map.on("dragstart", ()=>{ if(!_progMove) _mapUserMoved = true; });
   _map.on("zoomstart", ()=>{ if(!_progMove) _mapUserMoved = true; });
 
+  // Kullanıcı haritayı gezdirdiğinde liste de sınırsız hale gelir
+  _map.on("dragend", ()=>{
+    if(_mapUserMoved && typeof refreshExplore==="function") refreshExplore();
+  });
+
   // hareket yönündeki kutucukları önden indir
   _map.on("move", ()=>{ prefetchYonunde(_map, _mapTileLayer); });
   _map.on("moveend", ()=>{
@@ -8750,6 +8766,11 @@ async function initMap(){
     }
     _map.invalidateSize();
     drawMomentPins();
+
+    /* ÖNEMLİ: Liste, konum gelmeden önce çizilmişti (80 ms) ama konum
+       ~2 sn sonra geliyor. Bu yüzden mesafe filtresi hiç uygulanmıyordu.
+       Konum elimize geçtiğinde listeyi yeniden çiziyoruz. */
+    if(typeof refreshExplore === "function") refreshExplore();
   })();
 }
 
@@ -8801,9 +8822,11 @@ function bindLocBtn(){
           localStorage.setItem('klipsy_last_pos',
             JSON.stringify({lat:_lastKnownPos.lat, lng:_lastKnownPos.lng, t:Date.now()}));
         }catch(e){}
-        _mapUserMoved=false;
+        _mapUserMoved=false;                 // yakındakiler filtresi geri gelsin
         mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 14, true);
         drawUserDot();
+        drawMomentPins();
+        if(typeof refreshExplore==="function") refreshExplore();
         setTimeout(()=>b.classList.remove("on"), 900);
       },
       ()=>{ b.classList.remove("on"); if(!_lastKnownPos) toast(t("loc_failed")); },
@@ -10775,7 +10798,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v220";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v221";
   box.appendChild(ver);
 }
 

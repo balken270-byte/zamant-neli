@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.78</title>
+<title>Klipsy 1.2.79</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      act_open_feed:"Akışta aç",
       z_pisces:"Balık",
       z_aquarius:"Kova",
       z_capricorn:"Oğlak",
@@ -423,6 +424,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      act_open_feed:"Open in feed",
       z_pisces:"Pisces",
       z_aquarius:"Aquarius",
       z_capricorn:"Capricorn",
@@ -816,6 +818,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      act_open_feed:"Abrir en el feed",
       z_pisces:"Piscis",
       z_aquarius:"Acuario",
       z_capricorn:"Capricornio",
@@ -1209,6 +1212,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      act_open_feed:"فتح في التدفق",
       z_pisces:"الحوت",
       z_aquarius:"الدلو",
       z_capricorn:"الجدي",
@@ -1602,6 +1606,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      act_open_feed:"Ouvrir dans le fil",
       z_pisces:"Poissons",
       z_aquarius:"Verseau",
       z_capricorn:"Capricorne",
@@ -1995,6 +2000,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      act_open_feed:"Im Feed öffnen",
       z_pisces:"Fische",
       z_aquarius:"Wassermann",
       z_capricorn:"Steinbock",
@@ -2388,6 +2394,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      act_open_feed:"Открыть в ленте",
       z_pisces:"Рыбы",
       z_aquarius:"Водолей",
       z_capricorn:"Козерог",
@@ -2781,6 +2788,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      act_open_feed:"Abrir no feed",
       z_pisces:"Peixes",
       z_aquarius:"Aquário",
       z_capricorn:"Capricórnio",
@@ -3174,6 +3182,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      act_open_feed:"फ़ीड में खोलें",
       z_pisces:"मीन",
       z_aquarius:"कुंभ",
       z_capricorn:"मकर",
@@ -3567,6 +3576,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      act_open_feed:"Buka di beranda",
       z_pisces:"Pisces",
       z_aquarius:"Aquarius",
       z_capricorn:"Capricorn",
@@ -5296,6 +5306,43 @@ video{background-color:#12121a}
 .zPickTx.ph{color:var(--placeholder)}
 .zPickArrow{width:19px;height:19px;flex:none;color:var(--t3)}
 
+/* ═══ ZAMAN EKRANI GÖRÜNTÜLEYİCİ ═══ */
+.mvWrap{position:fixed;inset:0;z-index:2147482000;display:none;background:#000}
+.mvWrap.open{display:block}
+.mvStage{position:absolute;inset:0;display:grid;place-items:center;padding:0}
+.mvStage img,.mvStage video{max-width:100%;max-height:100%;
+  width:auto;height:auto;object-fit:contain;display:block}
+.mvClose{position:absolute;top:calc(var(--sat) + 12px);right:16px;z-index:4;
+  width:38px;height:38px;border-radius:99px;display:grid;place-items:center;
+  color:#fff;border:0;background:rgba(0,0,0,.4);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.mvClose:active{transform:scale(.9)}
+.mvClose svg{width:19px;height:19px}
+.mvNav{position:absolute;top:50%;transform:translateY(-50%);z-index:4;
+  width:40px;height:40px;border-radius:99px;display:grid;place-items:center;
+  color:#fff;border:0;background:rgba(0,0,0,.36);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.mvNav:active{opacity:.7}
+.mvNav svg{width:20px;height:20px}
+.mvPrev{left:12px}
+.mvNext{right:12px}
+.mvBar{position:absolute;left:0;right:0;bottom:0;z-index:4;
+  display:flex;align-items:center;gap:12px;
+  padding:16px 16px calc(var(--sab) + 18px);
+  background:linear-gradient(to top,rgba(0,0,0,.82),transparent)}
+.mvWho{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.mvAv{width:34px;height:34px;border-radius:99px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat}
+.mvTx{min-width:0}
+.mvTx b{display:block;color:#fff;font-size:14.5px;font-weight:700;
+  letter-spacing:-.018em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mvTx i{display:block;font-style:normal;color:rgba(255,255,255,.72);
+  font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mvOpen{flex:none;height:36px;padding:0 15px;border-radius:99px;border:0;color:#fff;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  font:inherit;font-size:13px;font-weight:700;letter-spacing:-.014em}
+.mvOpen:active{transform:scale(.95)}
+
 /* burç seçme paneli */
 .zSheet{position:fixed;inset:0;z-index:2147483000;display:none}
 .zSheet.open{display:block}
@@ -6620,7 +6667,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.78</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.79</span></div>
     </div>
   </section>
 </div>
@@ -8665,8 +8712,21 @@ try{
   if(fpBtn) fpBtn.classList.toggle("on", !!feedPlace);
 }catch(e){ console.warn("feed place init:", e); }
 
-$("#tabFeed").addEventListener("click",()=>{closeMainPanels();setTab($("#tabFeed"));
-  feed.scrollTo({top:0,behavior:"smooth"});});
+/* Akış sekmesi:
+   - Başka bir sekmeden dönüldüyse KALDIĞIN YERDE devam eder.
+   - Zaten akıştayken tekrar dokunulursa en başa gider (alışılmış davranış). */
+$("#tabFeed").addEventListener("click",()=>{
+  const zatenAkista = !document.querySelector(".panel.open")
+                      && $("#tabFeed").classList.contains("on");
+  closeMainPanels();
+  setTab($("#tabFeed"));
+  if(zatenAkista){
+    feed.scrollTo({top:0,behavior:"smooth"});
+  }else{
+    // konumu koru: aktif kartı yeniden hizala
+    requestAnimationFrame(()=>{ try{ syncActive(); }catch(e){} });
+  }
+});
 $("#notifBtn").addEventListener("click",()=>{renderNotifs();open("notif");loadNotifs();});
 $("#notifBack").addEventListener("click",()=>{close("notif");setTab($("#tabFeed"));});
 // ============ KEŞFET (tam ekran harita + zaman şeridi + an listesi) ============
@@ -9735,13 +9795,108 @@ async function openPlaceLayers(g){
       '</div>'+
       '<span class="plGo"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>';
     row.addEventListener("click",()=>{
-      closePlaceLayers();
-      close("timeSheet");
-      resumeAt=Date.now()+RESUME*2;
-      goToPost(x.id);
+      /* Akışa atlamak yerine Zaman ekranının İÇİNDE göster.
+         Kullanıcı haritadaki yerini kaybetmiyor. */
+      momentGoruntule(near, near.indexOf(x));
     });
     box.appendChild(row);
   });
+}
+
+/* ═══ ZAMAN EKRANI GÖRÜNTÜLEYİCİ ═══
+   Haritadan seçilen an burada açılır; akışa geçilmez.
+   Yan yana kaydırarak aynı yerdeki diğer anlara geçilir. */
+let _mvList = [], _mvIdx = 0;
+
+function momentGoruntule(liste, idx){
+  _mvList = liste || [];
+  _mvIdx  = Math.max(0, idx||0);
+
+  let ov = document.getElementById("momentView");
+  if(!ov){
+    ov = document.createElement("div");
+    ov.id = "momentView";
+    ov.className = "mvWrap";
+    ov.innerHTML =
+      '<button class="mvClose" aria-label="'+t("close2")+'">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'+
+      '</button>'+
+      '<button class="mvNav mvPrev" aria-label="‹"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg></button>'+
+      '<button class="mvNav mvNext" aria-label="›"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>'+
+      '<div class="mvStage"></div>'+
+      '<div class="mvBar">'+
+        '<div class="mvWho"><span class="mvAv"></span><span class="mvTx"><b></b><i></i></span></div>'+
+        '<button class="mvOpen">'+t("act_open_feed")+'</button>'+
+      '</div>';
+    document.body.appendChild(ov);
+
+    ov.querySelector(".mvClose").addEventListener("click", momentKapat);
+    ov.querySelector(".mvPrev").addEventListener("click", ()=>momentKaydir(-1));
+    ov.querySelector(".mvNext").addEventListener("click", ()=>momentKaydir(1));
+    ov.querySelector(".mvOpen").addEventListener("click", ()=>{
+      const it = _mvList[_mvIdx];
+      momentKapat();
+      closePlaceLayers();
+      close("timeSheet");
+      resumeAt = Date.now() + RESUME*2;
+      if(it) goToPost(it.id);
+    });
+  }
+
+  momentCiz();
+  ov.classList.add("open");
+  if(typeof pauseFeedMedia==="function") pauseFeedMedia();
+}
+
+function momentCiz(){
+  const ov = document.getElementById("momentView");
+  if(!ov) return;
+  const it = _mvList[_mvIdx];
+  const sahne = ov.querySelector(".mvStage");
+  sahne.innerHTML = "";
+  if(!it) return;
+
+  const sb = window.__sb;
+  const S  = sb ? sb.storage.from('moments') : null;
+  const url = p => { try{ return S ? S.getPublicUrl(p).data.publicUrl : null; }catch(e){ return null; } };
+
+  if(it.kind === "video" && it.mediaPath){
+    const v = document.createElement("video");
+    v.src = url(it.mediaPath);
+    if(it.poster) v.poster = it.poster;
+    v.playsInline = true; v.controls = true; v.autoplay = true; v.loop = true;
+    sahne.appendChild(v);
+  }else{
+    const im = document.createElement("img");
+    im.src = it.poster || (it.mediaPath ? url(it.mediaPath) : "");
+    im.alt = "";
+    sahne.appendChild(im);
+  }
+
+  // kim, ne zaman, nerede
+  const av = ov.querySelector(".mvAv");
+  if(typeof paintAv === "function" && it.who){ av.className="mvAv"; paintAv(av, it.who); }
+  ov.querySelector(".mvTx b").textContent = it.who ? adiniGoster(it.who) : "";
+  ov.querySelector(".mvTx i").textContent =
+    (it.label ? it.label + " · " : "") + (it.ts ? rel(it.ts) : "");
+
+  ov.querySelector(".mvPrev").style.display = (_mvIdx > 0) ? "" : "none";
+  ov.querySelector(".mvNext").style.display = (_mvIdx < _mvList.length-1) ? "" : "none";
+}
+
+function momentKaydir(yon){
+  const y = _mvIdx + yon;
+  if(y < 0 || y >= _mvList.length) return;
+  _mvIdx = y;
+  momentCiz();
+}
+
+function momentKapat(){
+  const ov = document.getElementById("momentView");
+  if(!ov) return;
+  const v = ov.querySelector("video");
+  if(v){ try{ v.pause(); }catch(e){} }
+  ov.classList.remove("open");
 }
 
 function closePlaceLayers(){
@@ -9855,6 +10010,7 @@ async function fetchMomentGeos(){
             }
           }catch(e){}
           out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,
+            mediaPath:r.media_path, who:r.username||null,
             moodEmoji:mo?mo.em:"📍", thumb:thumb, poster:poster, kind:r.media_kind,
             ts:new Date(r.created_at).getTime(), author_id:r.author_id});
         }
@@ -9930,9 +10086,10 @@ async function loadMomentsInView(){
         return {
           id:r.id, who:r.username, ts:new Date(r.created_at).getTime(),
           lat:Number(r.geo_lat), lng:Number(r.geo_lng),
-          where:r.place_label, mood:mo, moodEmoji:mo?mo.em:"📍",
+          where:r.place_label, label:r.place_label,
+          mood:mo, moodEmoji:mo?mo.em:"📍",
           kind:r.media_kind, thumb:thumb, poster:poster,
-          src: poster
+          mediaPath:r.media_path, src: poster
         };
       });
     }
@@ -11798,7 +11955,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.78";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.79";
   box.appendChild(ver);
 }
 

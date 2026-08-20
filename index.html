@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy v255</title>
+<title>Klipsy 1.2.69</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      edit_profile:"Düzenle",
       about_person:"Hakkında",
       bio_empty_other:"Henüz bir şey yazmamış.",
       profile_note_short:"Paylaşımlar profilde durmaz, akışta yaşar.",
@@ -409,6 +410,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      edit_profile:"Edit",
       about_person:"About",
       bio_empty_other:"Hasn't written anything yet.",
       profile_note_short:"Moments don't live on profiles — they live in the feed.",
@@ -788,6 +790,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      edit_profile:"Editar",
       about_person:"Acerca de",
       bio_empty_other:"Aún no ha escrito nada.",
       profile_note_short:"Los momentos no quedan en el perfil, viven en el feed.",
@@ -1167,6 +1170,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      edit_profile:"تعديل",
       about_person:"نبذة",
       bio_empty_other:"لم يكتب شيئًا بعد.",
       profile_note_short:"اللحظات لا تبقى في الملف الشخصي، بل تعيش في التدفق.",
@@ -1546,6 +1550,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      edit_profile:"Modifier",
       about_person:"À propos",
       bio_empty_other:"N'a encore rien écrit.",
       profile_note_short:"Les instants ne restent pas sur le profil, ils vivent dans le fil.",
@@ -1925,6 +1930,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      edit_profile:"Bearbeiten",
       about_person:"Über",
       bio_empty_other:"Hat noch nichts geschrieben.",
       profile_note_short:"Momente bleiben nicht im Profil — sie leben im Feed.",
@@ -2304,6 +2310,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      edit_profile:"Изменить",
       about_person:"О себе",
       bio_empty_other:"Пока ничего не написал.",
       profile_note_short:"Моменты не хранятся в профиле — они живут в ленте.",
@@ -2683,6 +2690,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      edit_profile:"Editar",
       about_person:"Sobre",
       bio_empty_other:"Ainda não escreveu nada.",
       profile_note_short:"Os momentos não ficam no perfil, vivem no feed.",
@@ -3062,6 +3070,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      edit_profile:"संपादित करें",
       about_person:"परिचय",
       bio_empty_other:"अभी कुछ नहीं लिखा।",
       profile_note_short:"पल प्रोफ़ाइल पर नहीं, फ़ीड में रहते हैं।",
@@ -3441,6 +3450,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      edit_profile:"Ubah",
       about_person:"Tentang",
       bio_empty_other:"Belum menulis apa pun.",
       profile_note_short:"Momen tidak menetap di profil — hidupnya di beranda.",
@@ -4661,11 +4671,19 @@ svg{display:block}
     rgba(0,0,0,.10) 58%, rgba(0,0,0,.82) 100%)}
 
 /* üst şerit — çembersiz ikonlar */
-.hero.heroBig .heroBar{position:absolute;top:0;left:0;right:0;z-index:4;
-  display:flex;align-items:center;padding:calc(var(--sat) + 10px) 14px 0}
-.hero.heroBig .hbIcon{width:36px;height:36px;flex:none;border:0;background:none;
-  border-radius:0;display:grid;place-items:center;color:#fff;
-  filter:drop-shadow(0 2px 6px rgba(0,0,0,.65));transition:opacity .14s,transform .12s}
+/* düğmeler fotoğrafın üstünde: sol üstte geri, sağ üstte diğeri */
+.hero.heroBig .heroBar{position:absolute;top:0;left:0;right:0;z-index:6;
+  display:flex;align-items:center;
+  /* Fotoğraf kenarlardan 14px dışarı taşıyor; düğmeler ekran içinde
+     kalsın diye yan boşluk bunu telafi eder. */
+  padding:calc(var(--sat) + 12px) 18px 0;
+  pointer-events:none}
+.hero.heroBig .heroBar > *{pointer-events:auto}
+.hero.heroBig .hbIcon{width:38px;height:38px;flex:none;border:0;
+  border-radius:99px;display:grid;place-items:center;color:#fff;
+  background:rgba(0,0,0,.28);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:opacity .14s,transform .12s}
 .hero.heroBig .hbIcon:active{opacity:.6;transform:scale(.9)}
 .hero.heroBig .hbIcon svg{width:21px;height:21px}
 .hero.heroBig .hbEnd{margin-left:auto}
@@ -4675,28 +4693,9 @@ svg{display:block}
 
 
 /* alt blok */
-.hero.heroBig .heroMid{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 16px 16px}
-.hero.heroBig .heroRow{display:flex;align-items:flex-end;width:100%}
-.hero.heroBig .heroName{flex:1 1 auto;min-width:0;padding-right:10px;text-align:left}
-.hero.heroBig .heroName b{display:block;color:#fff;font-size:21px;font-weight:800;
-  letter-spacing:-.03em;line-height:1.25;text-shadow:0 2px 12px rgba(0,0,0,.6);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hero.heroBig .heroName span{display:block;color:rgba(255,255,255,.82);font-size:13px;
-  font-weight:500;margin-top:2px;text-shadow:0 1px 8px rgba(0,0,0,.55);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* ÖNEMLİ: temel .profstats kuralında width:100% var; burada geçersiz
    kılınmazsa sayaçlar tüm satırı kaplayıp ismi sıfıra eziyor. */
-.profstats.statsHero{display:flex;align-items:flex-end;flex:0 0 auto;
-  width:auto;max-width:66%;margin:0;padding:0;border:0;background:none;
-  border-radius:0}
 /* .stat temel kuralında flex:1 var — burada iptal edilmeli */
-.profstats.statsHero .stat{display:block;flex:0 0 auto;text-align:center;
-  padding:0 0 0 20px;min-width:0;cursor:pointer}
-.profstats.statsHero .stat b{display:block;font-size:17.5px;font-weight:800;color:#fff;
-  line-height:1.2;letter-spacing:-.025em;text-shadow:0 1px 8px rgba(0,0,0,.6)}
-.profstats.statsHero .stat span{display:block;font-size:11.5px;color:rgba(255,255,255,.85);
-  font-weight:500;line-height:1.3;margin-top:2px;text-shadow:0 1px 8px rgba(0,0,0,.55)}
-.profstats.statsHero .sep{display:none}
 
 /* ── Başkasının profilinde üst kısım: biyografi ve etiketler ── */
 .profbio{padding:16px 0 4px}
@@ -4719,13 +4718,15 @@ svg{display:block}
    Gövde dikey akış: içerik az olsa da düğmeler en altta kalır. */
 #profile .profbody.otherProf{display:flex;flex-direction:column;
   min-height:100%;box-sizing:border-box;
-  padding-bottom:calc(var(--sab) + 14px)}
+  padding-top:0;padding-bottom:calc(var(--sab) + 14px)}
+/* üst bar kalktığı için gövde en tepeden başlar */
+#profile .profbody{padding-top:0}
 
 /* aradaki boşluğu emen esnek alan */
 #profile .profbody.otherProf .profSpacer{flex:1 1 auto;min-height:12px}
 
 /* biyografi: fotoğrafın dibinden başlamasın */
-#profile .profbody.otherProf .profbio{margin:30px 4px 0;padding:5px 0 0}
+#profile .profbody.otherProf .profbio{margin:22px 4px 0;padding:5px 0 0}
 
 /* bölümler arası nefes */
 #profile .profbody.otherProf .profdetail{margin:22px 4px 0}
@@ -4733,6 +4734,67 @@ svg{display:block}
 
 /* eylem satırı en altta — gövdenin kendi alt dolgusu yeterli */
 #profile .profbody.otherProf .profActs{margin-top:auto;padding:22px 0 0;border:0}
+
+/* ═══ PROFİL KARTI (fotoğrafın altına biner) ═══ */
+.hero.heroBig{border-radius:0 0 4px 4px}
+
+
+/* kart */
+.profCard{position:relative;z-index:6;margin:-22px -14px 0;padding:18px 16px 4px;
+  background:var(--panelbg);border-radius:24px 24px 0 0}
+
+/* isim + takip */
+.pcNameRow{display:flex;align-items:center;gap:12px}
+.pcName{flex:1;min-width:0}
+.pcName b{display:block;font-size:19px;font-weight:800;letter-spacing:-.03em;
+  color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcName span{display:block;font-size:13px;color:var(--t3);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.pcFollow{flex:none;height:40px;padding:0 20px;border-radius:99px;border:0;color:#fff;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  font-size:14.5px;font-weight:700;font-family:inherit;letter-spacing:-.02em;
+  box-shadow:0 8px 20px -10px rgba(255,59,107,.9);transition:transform .12s}
+.pcFollow:active{transform:scale(.95)}
+.pcFollow.on{background:var(--surf2);color:var(--t2);
+  border:1px solid var(--edge-soft);box-shadow:none}
+
+/* mesaj: takip düğmesinin sağında */
+.pcMsg{flex:none;width:40px;height:40px;border-radius:99px;display:grid;place-items:center;
+  color:var(--t1);background:var(--surf1);border:1px solid var(--edge-soft);
+  transition:transform .12s}
+.pcMsg:active{transform:scale(.9)}
+.pcMsg svg{width:19px;height:19px}
+
+/* sayaç kartları — örnekteki gibi: üstte görseller, altta sayı ve etiket */
+.profstats.pcStats{display:flex;gap:9px;width:auto;margin:16px 0 0;padding:0;
+  background:none;border:0;border-radius:0;align-items:stretch}
+.profstats.pcStats .stat{flex:1 1 0;min-width:0;text-align:center;
+  background:var(--surf1);border:1px solid var(--edge-soft);border-radius:16px;
+  padding:11px 10px 12px;cursor:pointer;transition:transform .12s;
+  display:block}
+.profstats.pcStats .stat:active{transform:scale(.97)}
+
+/* görsel yığını: kendi satırında, sabit yükseklik (kartlar eşitlensin) */
+.profstats.pcStats .statAvs{display:block;height:26px;margin:0 0 8px;
+  font-size:0;line-height:0;white-space:nowrap;text-align:center}
+/* Görseller çemberi tam doldursun: kısayol yerine ayrı özellikler yazılır
+   (kısayol, sonradan atanan görselin boyutunu sıfırlıyordu). */
+.profstats.pcStats .statAvs i{display:inline-block;vertical-align:top;position:relative;
+  width:26px;height:26px;border-radius:99px;overflow:hidden;
+  background-color:var(--avatar-bg);
+  border:2px solid var(--surf1);margin-left:-9px;
+  box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.profstats.pcStats .statAvs i img{display:block;width:100%;height:100%;
+  object-fit:cover;border-radius:99px}
+.profstats.pcStats .statAvs i:first-child{margin-left:0}
+
+/* sayı ve etiket alt satırda */
+.profstats.pcStats .stat b{display:inline;font-size:15.5px;font-weight:800;
+  letter-spacing:-.02em;color:var(--t1);line-height:1.2}
+.profstats.pcStats .stat span:not(.statAvs){display:inline;font-size:11.5px;
+  color:var(--t3);font-weight:500;margin-left:5px}
+.profstats.pcStats .sep{display:none}
 
 /* bölüm başlıkları */
 .secTitle{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
@@ -6358,7 +6420,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy v255</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.69</span></div>
     </div>
   </section>
 </div>
@@ -7327,6 +7389,14 @@ function paintFeedNames(){
 
 /* İsim bilgisini yerel kayda yaz.
    get_feed artık display_name döndürdüğü için isimler anında hazır olur. */
+/* Görünen ad: ad-soyad varsa o, yoksa kullanıcı adı.
+   Listelerde her yerde bu kullanılır. */
+function adiniGoster(username){
+  if(!username) return "";
+  const u = USERS[username];
+  return (u && u.display_name) ? u.display_name : username;
+}
+
 function setDisplayName(username, display){
   if(!username) return;
   if(!USERS[username]) USERS[username]={name:username, followers:0, follows:0, moments:0, joined:Date.now()};
@@ -8123,7 +8193,7 @@ function renderComments(){
   const it=byId(commId); if(!it) return;
   const n=commCount(it);
   $("#commTitle").textContent=n?"Yorumlar · "+n:"Yorumlar";
-  $("#commSub").textContent=it.who+" · "+rel(it.ts);
+  $("#commSub").textContent=adiniGoster(it.who)+" · "+rel(it.ts);
   const box=$("#commList"),keep=box.scrollTop;
   box.innerHTML="";
   if(!it.comments.length){
@@ -8617,7 +8687,7 @@ function refreshExplore(){
       }
       const meta=document.createElement("div");meta.className="exMeta";
       const mo=it.mood;
-      meta.innerHTML='<div class="exWho"><span class="exMood">'+(mo?mo.em:"")+'</span>'+it.who+'</div>'+
+      meta.innerHTML='<div class="exWho"><span class="exMood">'+(mo?mo.em:"")+'</span>'+esc(adiniGoster(it.who))+'</div>'+
         '<div class="exWhere">'+(it.where||t("no_location"))+'</div>'+
         '<div class="exWhen">'+rel(it.ts)+'</div>';
       const go=document.createElement("span");go.className="exGo";
@@ -10835,7 +10905,7 @@ async function openFollowList(name, kind){
       box.innerHTML='<div class="chatEmpty">'+(kind==="followers"?t("no_followers"):t("no_following"))+'</div>';
       return;
     }
-    const {data:profs,error:e2}=await sb.from('profiles').select('username,avatar_url').in('id',ids);
+    const {data:profs,error:e2}=await sb.from('profiles').select('username,avatar_url,display_name').in('id',ids);
     if(e2){ box.innerHTML='<div class="chatEmpty">'+t("list_failed")+'</div>'; console.warn(e2); return; }
     const people=profs||[];
     if(!people.length){
@@ -10931,6 +11001,89 @@ async function openFollowList(name, kind){
   }catch(e){ box.innerHTML='<div class="chatEmpty">'+t("err_occurred")+'</div>'; console.warn(e); }
 }
 
+/* Sayaç kartlarına minik avatar yığını ekle.
+   "13 takipçi" soyut; üç yüz görmek somut. */
+const _statAvCache = {};      // profil yeniden çizilince kaybolmasın
+
+async function statAvatarlari(name){
+  const sb = window.__sb;
+  if(!sb) return;
+  if(_statAvCache[name]){ yigileriUygula(name); return; }
+  try{
+    const uid = await idOfUsername(name);
+    if(!uid) return;
+
+    const [fr, fg, mo] = await Promise.all([
+      sb.from('follows').select('follower_id').eq('followee_id', uid).limit(3),
+      sb.from('follows').select('followee_id').eq('follower_id', uid).limit(3),
+      sb.from('moments').select('thumb_path, poster_path, media_path, media_kind')
+        .eq('author_id', uid).eq('is_removed', false)
+        .order('created_at', {ascending:false}).limit(3)
+    ]);
+
+    const kimlikler = [
+      ...(fr.data||[]).map(x=>x.follower_id),
+      ...(fg.data||[]).map(x=>x.followee_id)
+    ];
+    let profiller = [];
+    if(kimlikler.length){
+      const r = await sb.from('profiles').select('id, username, avatar_url').in('id', kimlikler);
+      profiller = r.data || [];
+    }
+    const bul = id => profiller.find(p=>p.id===id);
+
+    const S = sb.storage.from('moments');
+    const anGorseller = (mo.data||[]).map(r=>{
+      const p = r.thumb_path || r.poster_path || (r.media_kind!=='video' ? r.media_path : null);
+      return p ? S.getPublicUrl(p).data.publicUrl : null;
+    }).filter(Boolean);
+
+    const takipciAv = (fr.data||[]).map(x=>{
+      const p = bul(x.follower_id);
+      return p ? (p.avatar_url || avatarImage(p.username)) : null;
+    }).filter(Boolean);
+
+    const takipAv = (fg.data||[]).map(x=>{
+      const p = bul(x.followee_id);
+      return p ? (p.avatar_url || avatarImage(p.username)) : null;
+    }).filter(Boolean);
+
+    _statAvCache[name] = [anGorseller, takipciAv, takipAv];
+    yigileriUygula(name);
+  }catch(e){}
+}
+
+/* Profil her yeniden çizildiğinde yığınlar siliniyordu; bu yüzden
+   önbellekten tekrar uygulanır. */
+function yigileriUygula(name){
+  const v = _statAvCache[name];
+  if(!v) return;
+  yigiKoy(0, v[0]); yigiKoy(1, v[1]); yigiKoy(2, v[2]);
+}
+
+function yigiKoy(sira, adresler){
+  try{
+    const kutular = document.querySelectorAll("#profBody .pcStats .stat");
+    const k = kutular[sira];
+    if(!k || !adresler || !adresler.length) return;
+    let y = k.querySelector(".statAvs");
+    if(!y){
+      y = document.createElement("span"); y.className = "statAvs";
+      k.insertBefore(y, k.firstChild);
+    }
+    y.innerHTML = "";
+    adresler.slice(0,3).forEach(src=>{
+      /* Arka plan yerine GÖRSEL elemanı: çembere tam oturur,
+         kare köşe kalmaz. */
+      const i = document.createElement("i");
+      const im = document.createElement("img");
+      im.src = src; im.alt = ""; im.loading = "lazy"; im.decoding = "async";
+      i.appendChild(im);
+      y.appendChild(i);
+    });
+  }catch(e){}
+}
+
 async function openProfile(name){
   /* Profil ZATEN AÇIKSA kapatıp yeniden açma.
      Kapat+aç ikilisi geri hareketi kayıtlarıyla çakışıyor ve panel
@@ -10954,6 +11107,7 @@ async function openProfile(name){
     if(body) body.scrollTop=0;
   }
   if(name===ME) loadMyMoments();          // kendi anlarımın tamamını çek
+  statAvatarlari(name);                   // sayaç kartlarına minik görseller
   // gerçek profil verisini çek (an/takipçi/takip sayıları)
   const pdata=await loadProfileData(name);
   if(pdata && profName===name) renderProfile();
@@ -11329,7 +11483,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy v255";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.69";
   box.appendChild(ver);
 }
 
@@ -11482,8 +11636,10 @@ function renderProfile(){
   /* Başkasının profilinde kendi başlık çubuğumuzu gizliyoruz;
      yeni tasarımda geri ve seçenekler düğmeleri zaten görselin üstünde. */
   try{
+    /* Üst bar tamamen kaldırıldı — fotoğraf en tepeden başlar.
+       Geri ve ayarlar düğmeleri fotoğrafın üstünde duruyor. */
     const head = document.querySelector("#profile .head");
-    if(head) head.style.display = own ? "" : "none";
+    if(head) head.style.display = "none";
     const body = document.querySelector("#profile .profbody");
     if(body) body.classList.toggle("otherProf", !own);
   }catch(e){}
@@ -11540,7 +11696,7 @@ function renderProfile(){
      Fotoğrafı olan da olmayan da güzel görünmeli. Bu yüzden arka plan
      her zaman marka gradyanı; fotoğraf varsa üstüne bulanık olarak biner.
      Avatar ortada, halkalı bir daire olarak durur. */
-  if(!own){
+  {
     hero.classList.add("heroBig");
     /* Gerçek fotoğrafı olan kullanıcıda ALANIN TAMAMI fotoğraf olur.
        Varsayılan avatar (üretilmiş görsel) gerilince çirkin duruyor;
@@ -11572,123 +11728,115 @@ function renderProfile(){
 
     // üst şerit: geri · seçenekler
     const bar = document.createElement("div"); bar.className = "heroBar";
-    const geri = document.createElement("button");
-    geri.className = "hbIcon"; geri.setAttribute("aria-label", t("close2"));
-    geri.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>';
-    geri.addEventListener("click", ()=>close("profile"));
+    /* Geri düğmesi HER ZAMAN var — kendi profilinde de.
+       (Önceden sadece başkasının profilinde vardı, o yüzden
+       kendi profiline bakarken hiç görünmüyordu.) */
+    const geriBtn = document.createElement("button");
+    geriBtn.className = "hbIcon";
+    geriBtn.setAttribute("aria-label", t("close2"));
+    geriBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>';
+    geriBtn.addEventListener("click", ()=>{
+      if(own){ close("profile"); setTab($("#tabFeed")); }
+      else close("profile");
+    });
+    bar.append(geriBtn);
 
-    const more = document.createElement("button");
-    more.className = "hbIcon hbEnd"; more.setAttribute("aria-label", t("options"));
-    more.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="18.5" r="1.9"/></svg>';
-    more.addEventListener("click", ()=>openProfileMenu(profName));
-    bar.append(geri, more);
+    if(own){
+      // kendi profilim: sağda ayarlar
+      const ayar = document.createElement("button");
+      ayar.className = "hbIcon hbEnd"; ayar.setAttribute("aria-label", t("settings"));
+      ayar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.500 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>';
+      ayar.addEventListener("click", ()=>open("settings"));
+      bar.append(ayar);
+    }else{
+      const more = document.createElement("button");
+      more.className = "hbIcon hbEnd"; more.setAttribute("aria-label", t("options"));
+      more.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="18.5" r="1.9"/></svg>';
+      more.addEventListener("click", ()=>openProfileMenu(profName));
+      bar.append(more);
+    }
 
 
-    // isim
-    const isim = document.createElement("div"); isim.className = "heroName";
+    hero.append(img, fade, bar);
+    box.appendChild(hero);
+
+    /* ── Fotoğrafın altına binen kart ──
+       Üstte isim + takip düğmesi, altında sayaç kartları. */
+    const kart = document.createElement("div"); kart.className = "profCard";
+
+    const isimSatir = document.createElement("div"); isimSatir.className = "pcNameRow";
+    const isim = document.createElement("div"); isim.className = "pcName";
     isim.innerHTML = '<b></b><span></span>';
     isim.querySelector("b").textContent = dispName;
     isim.querySelector("span").textContent = "@" + profName;
 
-    // sayaçlar ismin hemen altında, görselin üstünde
-    st.classList.add("statsHero");
+    const takipBtn = document.createElement("button");
+    const takipVar = following.has(profName);
+    takipBtn.className = "pcFollow" + (takipVar ? " on" : "");
+    takipBtn.textContent = takipVar ? t("following") : t("follow");
+    takipBtn.addEventListener("click", async ()=>{
+      const hedef = profName;
+      const vardi = following.has(hedef);
 
-    // isim solda, sayaçlar sağında — yan yana
-    const satir = document.createElement("div"); satir.className = "heroRow";
-    satir.append(isim, st);
+      // önce ekranda göster
+      if(vardi){ following.delete(hedef); takipBtn.classList.remove("on"); takipBtn.textContent=t("follow"); }
+      else     { following.add(hedef);    takipBtn.classList.add("on");    takipBtn.textContent=t("following"); }
 
-    const orta = document.createElement("div"); orta.className = "heroMid";
-    orta.append(satir);
-
-    hero.append(img, fade, bar, orta);
-    box.appendChild(hero);
-  }else{
-    const txt=document.createElement("div");txt.className="heroTxt";
-    txt.append(h3,hd,jn);
-    const top=document.createElement("div");top.className="heroTop";
-    top.append(av,txt);
-    inner.append(top,st);
-    hero.append(bg,tint,inner);
-  }
-
-  if(own){
-    const setBtn=document.createElement("button");setBtn.className="heroSet";setBtn.setAttribute("aria-label","Ayarlar");
-    setBtn.innerHTML='<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
-    setBtn.addEventListener("click",()=>{ renderSettings(); open("settings"); });
-    hero.appendChild(setBtn);
-  }
-  if(own) box.appendChild(hero);
-
-  /* biyografi */
-  const bioWrap=document.createElement("div");bioWrap.className="profbio";
-  const curBio = own ? (meUserBio()) : ((userOf(profName)||{}).bio||"");
-  if(own){
-    bioWrap.innerHTML='<div class="bioHead"><span>'+t("biography")+'</span><button class="bioEdit">'+(curBio?t("act_edit"):t("act_share2"))+'</button></div><p class="bioText"></p>';
-    bioWrap.querySelector(".bioText").textContent = curBio || t("f_bio_ph");
-    if(!curBio) bioWrap.querySelector(".bioText").classList.add("empty");
-    bioWrap.querySelector(".bioEdit").addEventListener("click",()=>editBio(curBio));
-    box.appendChild(bioWrap);
-  }else{
-    /* Biyografi yoksa da bölüm görünür: profil boş hissettirmesin,
-       dolu profillerle aynı düzende dursun. */
-    bioWrap.innerHTML='<div class="secTitle">'+t("biography")+'</div><p class="bioText"></p>';
-    const p = bioWrap.querySelector(".bioText");
-    if(curBio){
-      p.textContent = curBio;
-    }else{
-      p.textContent = t("bio_empty_other");
-      p.classList.add("empty");
-    }
-    box.appendChild(bioWrap);
-  }
-
-  /* eylem */
-  if(!own){
-    const row=document.createElement("div");
-    row.className="profActs";
-    const on=following.has(profName);
-    const b=document.createElement("button");
-    b.className="pAct pFollow"+(on?" on":"");
-    b.innerHTML=(on?IC.check+"<span>"+t("following")+"</span>":IC.plus+"<span>"+t("follow")+"</span>");
-    b.addEventListener("click",async ()=>{
-      const target=profName;
-      const wasFollowing=following.has(target);
-      const tu=userOf(target);
-      if(wasFollowing){following.delete(target);tu.followers=Math.max(0,(tu.followers||0)-1);meUser.follows=Math.max(0,(meUser.follows||0)-1);toast(t("ok_unfollowed"));}
-      else{following.add(target);tu.followers=(tu.followers||0)+1;meUser.follows=(meUser.follows||0)+1;toast(target+" takip ediliyor");}
-      renderProfile();
-      if(window.__sb && window.__me){
-        const uid=await idOfUsername(target);
-        if(!uid){ toast(t("err_user_nf")); return; }
-        let err=null;
-        if(wasFollowing){
-          const r=await window.__sb.from('follows').delete().eq('follower_id',window.__me.id).eq('followee_id',uid);
-          err=r.error;
-        }else{
-          const r=await window.__sb.from('follows').insert({follower_id:window.__me.id, followee_id:uid});
-          err=r.error;
-        }
-        if(err && !/duplicate/i.test(err.message)){
-          toast(t("err_follow")+" "+err.message);
-        }
-        const fresh=await loadProfileData(target);
-        if(fresh && profName===target) renderProfile();
-        await loadProfileData(ME);
-        if(profName===target) renderProfile();
+      try{
+        const sb=window.__sb, me=window.__me;
+        if(!sb||!me) return;
+        const puid = await idOfUsername(hedef);
+        if(!puid){ toast(t("err_user_nf")); return; }
+        if(vardi) await sb.from('follows').delete().eq('follower_id',me.id).eq('followee_id',puid);
+        else      await sb.from('follows').insert({follower_id:me.id, followee_id:puid});
+        loadProfileData(hedef).then(()=>{ if(profName===hedef) renderProfile(); });
+      }catch(e){
+        // başarısızsa geri al
+        if(vardi){ following.add(hedef); takipBtn.classList.add("on"); takipBtn.textContent=t("following"); }
+        else     { following.delete(hedef); takipBtn.classList.remove("on"); takipBtn.textContent=t("follow"); }
+        toast(t("err_generic"));
       }
     });
-    const dm=document.createElement("button");
-    dm.className="pAct pMsg";
-    dm.innerHTML=IC.chat+"<span>"+t("message")+"</span>";
-    dm.addEventListener("click",()=>{const n=profName;close("profile");openChats();openChat(n);});
-    row.append(b,dm);
-    /* Eylemler artık burada eklenmiyor.
-       Biyografi ve etiketler okunduktan SONRA, sayfanın altında görünsün. */
-    _profActsRow = row;
-  }else{
-    _profActsRow = null;
+
+    // mesaj: takip düğmesinin sağında yuvarlak ikon
+    const msgBtn = document.createElement("button");
+    msgBtn.className = "pcMsg";
+    msgBtn.setAttribute("aria-label", t("act_send_msg"));
+    msgBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.6 9.6 0 0 1-2.8-.4L4 21l1.5-4.2A8.3 8.3 0 0 1 4 11.5 8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>';
+    msgBtn.addEventListener("click", ()=>{ close("profile"); openChat(profName); });
+
+    if(own){
+      // kendi profilim: takip/mesaj yerine düzenleme
+      /* Profil fotoğrafı yükleme — düzenle düğmesinin solunda.
+         Eski tasarımda avatarın üstündeydi; yeni düzende avatar
+         tüm alanı kapladığı için ayrı bir düğme gerekiyor. */
+      const fotoBtn = document.createElement("button");
+      fotoBtn.className = "pcMsg";
+      fotoBtn.setAttribute("aria-label", t("profile_photo"));
+      fotoBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></svg>';
+      fotoBtn.addEventListener("click", ()=>openCam("profile"));
+
+      const duzenle = document.createElement("button");
+      duzenle.className = "pcFollow";
+      duzenle.textContent = t("edit_profile");
+      duzenle.addEventListener("click", ()=>openEditProfile());
+
+      isimSatir.append(isim, fotoBtn, duzenle);
+    }else{
+      isimSatir.append(isim, msgBtn, takipBtn);
+    }
+    kart.appendChild(isimSatir);
+
+    // sayaç kartları
+    st.classList.add("pcStats");
+    kart.appendChild(st);
+
+    box.appendChild(kart);
   }
 
+
+
+  /* biyografi */
   /* profil detayları (konum, iş, eğitim, burç, ilgi, bağlantı) */
   const pd = own ? meUser : (userOf(profName)||{});
   const chips=[];
@@ -11716,6 +11864,27 @@ function renderProfile(){
     det.innerHTML = (own ? '' : '<div class="secTitle">'+t("about_person")+'</div>') + html;
     box.appendChild(det);
   }
+  const bioWrap=document.createElement("div");bioWrap.className="profbio";
+  const curBio = own ? (meUserBio()) : ((userOf(profName)||{}).bio||"");
+  if(own){
+    bioWrap.innerHTML='<div class="bioHead"><span>'+t("biography")+'</span><button class="bioEdit">'+(curBio?t("act_edit"):t("act_share2"))+'</button></div><p class="bioText"></p>';
+    bioWrap.querySelector(".bioText").textContent = curBio || t("f_bio_ph");
+    if(!curBio) bioWrap.querySelector(".bioText").classList.add("empty");
+    bioWrap.querySelector(".bioEdit").addEventListener("click",()=>editBio(curBio));
+    box.appendChild(bioWrap);
+  }else{
+    /* Başkasının profilinde de biyografi görünür.
+       (Blokları yer değiştirirken bu dal kaybolmuştu.) */
+    bioWrap.innerHTML='<div class="secTitle">'+t("biography")+'</div><p class="bioText"></p>';
+    const p = bioWrap.querySelector(".bioText");
+    if(curBio){
+      p.textContent = curBio;
+    }else{
+      p.textContent = t("bio_empty_other");
+      p.classList.add("empty");
+    }
+    box.appendChild(bioWrap);
+  }
 
   /* açıklama */
   const note=document.createElement("div");note.className="profnote";
@@ -11732,7 +11901,8 @@ function renderProfile(){
     const bosluk = document.createElement("div");
     bosluk.className = "profSpacer";
     box.appendChild(bosluk);
-    if(_profActsRow) box.appendChild(_profActsRow);
+    // avatar yığınları (varsa) yeniden yerleşsin
+    setTimeout(()=>{ try{ yigileriUygula(profName); }catch(e){} }, 0);
     return;
   }
 
@@ -11995,7 +12165,7 @@ function renderSaved(box){
       c.style.backgroundImage='url("'+it.src+'")';
     }
     const g=document.createElement("div");g.className="grad";
-    const tm=document.createElement("div");tm.className="tm";tm.textContent=it.who;
+    const tm=document.createElement("div");tm.className="tm";tm.textContent=adiniGoster(it.who);
     c.append(g,tm);
     if(it.mood){
       const em=document.createElement("div");em.className="em";em.textContent=it.mood.em;

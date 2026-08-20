@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.87</title>
+<title>Klipsy 1.2.89</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5364,8 +5364,12 @@ video{background-color:#12121a}
 .acView{flex:1;min-height:0;position:relative;overflow:hidden;
   display:grid;place-items:center;touch-action:none}
 .acView img{max-width:none;width:100%;height:auto;display:block;
-  transform-origin:center center;will-change:transform;
+  grid-area:1/1;transform-origin:center center;will-change:transform;
   -webkit-user-drag:none;user-select:none}
+/* kenar boşluklarını dolduran bulanık zemin */
+.acView .acBg{filter:blur(22px) brightness(.85) saturate(1.06);
+  pointer-events:none;transform-origin:center center}
+.acView .acMain{position:relative;z-index:2}
 
 /* karartma + ortadaki şeffaf pencere */
 .acShade{position:absolute;inset:0;pointer-events:none;
@@ -6719,7 +6723,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.87</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.89</span></div>
     </div>
   </section>
 </div>
@@ -11972,7 +11976,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.87";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.89";
   box.appendChild(ver);
 }
 
@@ -14299,7 +14303,8 @@ function avatarKirp(src){
     ov.className = "acWrap";
     ov.innerHTML =
       '<div class="acView">'+
-        '<img alt="">'+
+        '<img class="acBg" alt="">'+
+        '<img class="acMain" alt="">'+
         '<div class="acShade"><div class="acHole"></div></div>'+
       '</div>'+
       '<div class="acHint"></div>'+
@@ -14334,12 +14339,20 @@ function avatarKirp(src){
   ov.querySelector(".acHint").textContent   = t("crop_hint2");
   ov.querySelector(".acFit").textContent    = t("crop_fill");
 
-  const img  = ov.querySelector("img");
+  const img  = ov.querySelector(".acMain");
   const zoom = ov.querySelector(".acZoom");
   let sc = 1, tx = 0, ty = 0;
 
+  const bg = ov.querySelector(".acBg");
+
   const uygula = ()=>{
     img.style.transform = "translate("+tx+"px,"+ty+"px) scale("+sc+")";
+    /* Zemin: kenar boşluklarının boş kalmayacağını gösterir.
+       Çerçeveyi her zaman dolduracak ölçekte, bulanık. */
+    if(bg && img.clientWidth){
+      const doldur = Math.max(cerG / img.clientWidth, cerY / img.clientHeight);
+      bg.style.transform = "scale(" + (doldur * 1.15) + ")";
+    }
   };
 
   /* OTOMATİK SIĞDIR: fotoğrafı çerçeveyi tam dolduracak en küçük
@@ -14384,6 +14397,7 @@ function avatarKirp(src){
      Kullanıcı isterse yakınlaştırıp bir bölümünü seçebilir. */
   img.onload = ()=>{ requestAnimationFrame(tamGoster); };
   img.src = src;
+  if(bg) bg.src = src;
 
   zoom.oninput = ()=>{ sc = Number(zoom.value)/100; uygula(); };
   ov.querySelector(".acFit").onclick = otoSigdir;
@@ -14419,21 +14433,56 @@ function avatarKirp(src){
       // ekran ölçüsü → çıktı ölçüsü katsayısı
       const k = cikG / kutu.width;
 
-      /* 1) BULANIK ZEMİN
-         Fotoğraf çerçeveyi tam doldurmuyorsa boşluk kalır.
-         O boşluğu, aynı fotoğrafın bulanık ve büyütülmüş haliyle
-         dolduruyoruz (Instagram'ın yöntemi). */
-      const nG = img.naturalWidth, nY = img.naturalHeight;
-      const kapla = Math.max(cikG / nG, cikY / nY);
-      const bG = nG * kapla, bY = nY * kapla;
-      try{ x.filter = "blur(28px) brightness(.82) saturate(1.1)"; }catch(e){}
-      x.drawImage(img, (cikG-bG)/2, (cikY-bY)/2, bG, bY);
-      try{ x.filter = "none"; }catch(e){}
-
-      /* 2) FOTOĞRAFIN KENDİSİ — kullanıcının seçtiği konum ve ölçekte */
+      // fotoğrafın çıktıdaki yeri ve boyutu
       const sol = (gorsel.left - kutu.left) * k;
       const ust = (gorsel.top  - kutu.top ) * k;
-      x.drawImage(img, sol, ust, gorsel.width * k, gorsel.height * k);
+      const gen = gorsel.width  * k;
+      const yuk = gorsel.height * k;
+
+      /* KENAR UZATMA (aynalama)
+         Fotoğraf çerçeveyi doldurmuyorsa kenarlarda boşluk kalır.
+         Bulanık büyütme yerine kenarları AYNALAYARAK uzatıyoruz:
+         içerik kenardan gerçekten devam ediyormuş gibi görünür,
+         renk ve doku tutar. Üstüne hafif bulanıklık verilerek
+         asıl fotoğraftan ayrışması sağlanır. */
+      const ayna = (tx, ty, yatay) => {
+        x.save();
+        if(yatay){ x.translate(tx, 0); x.scale(-1, 1); x.drawImage(img, 0, ust, gen, yuk); }
+        else     { x.translate(0, ty); x.scale(1, -1); x.drawImage(img, sol, 0, gen, yuk); }
+        x.restore();
+      };
+
+      try{ x.filter = "blur(16px) brightness(.88) saturate(1.05)"; }catch(e){}
+
+      // yatay boşluklar
+      if(sol > 0.5)            ayna(sol, 0, true);            // sol
+      if(sol + gen < cikG-0.5) ayna(sol + 2*gen, 0, true);    // sağ
+      // dikey boşluklar
+      if(ust > 0.5)            ayna(0, ust, false);           // üst
+      if(ust + yuk < cikY-0.5) ayna(0, ust + 2*yuk, false);   // alt
+
+      // köşeler: iki yönde birden aynalanmış kopya
+      if(sol > 0.5 && ust > 0.5){
+        x.save(); x.translate(sol, ust); x.scale(-1,-1);
+        x.drawImage(img, 0, 0, gen, yuk); x.restore();
+      }
+      if(sol + gen < cikG-0.5 && ust > 0.5){
+        x.save(); x.translate(sol + 2*gen, ust); x.scale(-1,-1);
+        x.drawImage(img, 0, 0, gen, yuk); x.restore();
+      }
+      if(sol > 0.5 && ust + yuk < cikY-0.5){
+        x.save(); x.translate(sol, ust + 2*yuk); x.scale(-1,-1);
+        x.drawImage(img, 0, 0, gen, yuk); x.restore();
+      }
+      if(sol + gen < cikG-0.5 && ust + yuk < cikY-0.5){
+        x.save(); x.translate(sol + 2*gen, ust + 2*yuk); x.scale(-1,-1);
+        x.drawImage(img, 0, 0, gen, yuk); x.restore();
+      }
+
+      try{ x.filter = "none"; }catch(e){}
+
+      /* FOTOĞRAFIN KENDİSİ — net, kullanıcının seçtiği konumda */
+      x.drawImage(img, sol, ust, gen, yuk);
 
       ov.classList.remove("open");
       setAvatar(c.toDataURL("image/jpeg", .88));

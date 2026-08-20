@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.89</title>
+<title>Klipsy 1.2.92</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5372,7 +5372,9 @@ video{background-color:#12121a}
 .acView .acMain{position:relative;z-index:2}
 
 /* karartma + ortadaki şeffaf pencere */
-.acShade{position:absolute;inset:0;pointer-events:none;
+/* Çerçeve ve karartma HER ZAMAN fotoğrafın ÜSTÜNDE olmalı.
+   Ana görsele katman değeri verilince altında kalıyordu. */
+.acShade{position:absolute;inset:0;pointer-events:none;z-index:5;
   display:grid;place-items:center}
 .acHole{border-radius:16px;
   box-shadow:0 0 0 1px rgba(255,255,255,.85),
@@ -6723,7 +6725,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.89</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.92</span></div>
     </div>
   </section>
 </div>
@@ -11976,7 +11978,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.89";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.92";
   box.appendChild(ver);
 }
 
@@ -13859,10 +13861,61 @@ async function start(){
 
     // --- GİZLİ TANILAMA ---
     // Normal kullanıcı görmez. Adrese ?cam=1 eklenirse gerçek değerleri gösterir.
+    /* EN GENİŞ AÇI — iki aşamalı
+       1) Cihazın yakınlaştırma ayarı varsa en düşük değere çek.
+       2) Cihazda AYRI bir geniş açı kamerası varsa ona geç.
+          (Bazı telefonlarda "ultra wide" ayrı bir aygıt olarak görünür;
+          facingMode ile seçilen kamera normal açılı olan olabiliyor.)
+       Desteklenmiyorsa hiçbir şey değiştirilmez. */
+    try{
+      const zt = stream.getVideoTracks()[0];
+      const cap = (zt && zt.getCapabilities) ? zt.getCapabilities() : null;
+      if(cap && typeof cap.zoom === "object" && cap.zoom.min != null){
+        const simdi = (zt.getSettings && zt.getSettings().zoom) || null;
+        if(simdi == null || simdi > cap.zoom.min){
+          await zt.applyConstraints({ advanced: [{ zoom: cap.zoom.min }] });
+        }
+      }
+    }catch(e){}
+
+    try{
+      if(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices){
+        const aygitlar = await navigator.mediaDevices.enumerateDevices();
+        const kameralar = aygitlar.filter(d=>d.kind === "videoinput");
+
+        // adında geniş açıya işaret eden kamerayı ara
+        const genisAci = kameralar.find(d=>{
+          const ad = (d.label||"").toLowerCase();
+          const onYuz = facing === "user";
+          const yon = onYuz ? /front|ön|self/i : /back|rear|arka/i;
+          return /ultra|wide|geniş|0\.5/.test(ad) && (kameralar.length < 3 || yon.test(ad));
+        });
+
+        const suanki = stream.getVideoTracks()[0];
+        const suankiId = (suanki && suanki.getSettings) ? suanki.getSettings().deviceId : null;
+
+        if(genisAci && genisAci.deviceId && genisAci.deviceId !== suankiId){
+          const yeni = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: genisAci.deviceId },
+                     width: { ideal: 1920 }, resizeMode: "none" },
+            audio: wantAudio
+          });
+          // eskisini kapat, yenisine geç
+          try{ stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+          stream = yeni;
+          $("#camVideo").srcObject = stream;
+        }
+      }
+    }catch(e){ /* geniş açı yoksa mevcut kamerayla devam */ }
+
     try{
       const st=stream.getVideoTracks()[0];
       const s=st && st.getSettings ? st.getSettings() : {};
-      const info = (s.width||"?")+"x"+(s.height||"?")+" @"+Math.round(s.frameRate||0)+"fps";
+      const zc = (st && st.getCapabilities) ? st.getCapabilities() : {};
+      const zBilgi = (s.zoom != null)
+        ? (" · zoom " + s.zoom + (zc.zoom ? " (min " + zc.zoom.min + ")" : ""))
+        : " · zoom yok";
+      const info = (s.width||"?")+"x"+(s.height||"?")+" @"+Math.round(s.frameRate||0)+"fps"+zBilgi;
       console.log("[Klipsy kamera]", info, s);
       if(location.search.indexOf("cam=1")>=0){
         let dbg=document.getElementById("camDbg");
@@ -14373,13 +14426,24 @@ function avatarKirp(src){
     zoom.max = String(Math.round(enBuyuk*100));
   }
 
+  /* ÇERÇEVEYİ DOLDUR
+     Ortalayarak doldurmak dikey fotoğraflarda yanlış yeri seçiyor:
+     selfie'de yüzün üstü kesilip burun-ağız bölgesi kalıyordu.
+     Portrelerde yüz genelde üst yarıdadır; bu yüzden görüntü aşağı
+     kaydırılarak fotoğrafın ÜST bölümü çerçeveye getirilir. */
   function otoSigdir(){
     if(!img.naturalWidth) return;
     olcekleriHesapla();
     const gG = img.clientWidth, gY = img.clientHeight;
     if(!gG || !gY) return;
-    sc = Math.max(cerG / gG, cerY / gY);   // açılışta çerçeveyi doldur
-    tx = 0; ty = 0;
+
+    sc = Math.max(cerG / gG, cerY / gY);       // çerçeveyi doldur
+    tx = 0;
+
+    // dikey taşma varsa üst bölüme hizala
+    const tasma = (gY * sc) - cerY;
+    ty = (tasma > 0) ? (tasma / 2) * 0.62 : 0;
+
     zoom.value = String(Math.round(sc*100));
     uygula();
   }

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.86</title>
+<title>Klipsy 1.2.87</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      crop_hint2:"Tamamı görünüyor · kaydır, yakınlaştır",
+      crop_fill:"Çerçeveyi doldur",
       crop_all:"Tamamını göster",
       crop_fit:"Otomatik sığdır",
       crop_hint:"Kaydır ve yakınlaştır",
@@ -427,6 +429,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      crop_hint2:"Full photo shown · drag and zoom",
+      crop_fill:"Fill frame",
       crop_all:"Show all",
       crop_fit:"Auto fit",
       crop_hint:"Drag and zoom",
@@ -824,6 +828,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      crop_hint2:"Foto completa · arrastra y acerca",
+      crop_fill:"Rellenar",
       crop_all:"Mostrar todo",
       crop_fit:"Ajustar",
       crop_hint:"Arrastra y acerca",
@@ -1221,6 +1227,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      crop_hint2:"الصورة كاملة · اسحب وكبّر",
+      crop_fill:"ملء الإطار",
       crop_all:"إظهار الكل",
       crop_fit:"ملاءمة تلقائية",
       crop_hint:"اسحب وكبّر",
@@ -1618,6 +1626,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      crop_hint2:"Photo entière · déplace et zoome",
+      crop_fill:"Remplir le cadre",
       crop_all:"Tout afficher",
       crop_fit:"Ajuster",
       crop_hint:"Déplace et zoome",
@@ -2015,6 +2025,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      crop_hint2:"Ganzes Foto · ziehen und zoomen",
+      crop_fill:"Rahmen füllen",
       crop_all:"Alles zeigen",
       crop_fit:"Einpassen",
       crop_hint:"Ziehen und zoomen",
@@ -2412,6 +2424,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      crop_hint2:"Всё фото · двигай и приближай",
+      crop_fill:"Заполнить",
       crop_all:"Показать всё",
       crop_fit:"Вписать",
       crop_hint:"Двигай и приближай",
@@ -2809,6 +2823,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      crop_hint2:"Foto inteira · arraste e amplie",
+      crop_fill:"Preencher",
       crop_all:"Mostrar tudo",
       crop_fit:"Ajustar",
       crop_hint:"Arraste e amplie",
@@ -3206,6 +3222,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      crop_hint2:"पूरी फ़ोटो · खींचें और ज़ूम करें",
+      crop_fill:"फ़्रेम भरें",
       crop_all:"सब दिखाएँ",
       crop_fit:"स्वतः फ़िट",
       crop_hint:"खींचें और ज़ूम करें",
@@ -3603,6 +3621,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      crop_hint2:"Foto penuh · geser dan perbesar",
+      crop_fill:"Isi bingkai",
       crop_all:"Tampilkan semua",
       crop_fit:"Paskan otomatis",
       crop_hint:"Geser dan perbesar",
@@ -6699,7 +6719,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.86</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.87</span></div>
     </div>
   </section>
 </div>
@@ -11952,7 +11972,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.86";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.87";
   box.appendChild(ver);
 }
 
@@ -14311,8 +14331,8 @@ function avatarKirp(src){
 
   ov.querySelector(".acCancel").textContent = t("cancel2");
   ov.querySelector(".acOk").textContent     = t("act_use");
-  ov.querySelector(".acHint").textContent   = t("crop_hint");
-  ov.querySelector(".acFit").textContent    = t("crop_all");
+  ov.querySelector(".acHint").textContent   = t("crop_hint2");
+  ov.querySelector(".acFit").textContent    = t("crop_fill");
 
   const img  = ov.querySelector("img");
   const zoom = ov.querySelector(".acZoom");
@@ -14359,11 +14379,14 @@ function avatarKirp(src){
     uygula();
   }
 
-  img.onload = ()=>{ requestAnimationFrame(otoSigdir); };
+  /* Açılışta fotoğrafın TAMAMI sığar — varsayılan avatarlarda olduğu gibi.
+     Kenarlarda kalan yer aynı fotoğrafın bulanık haliyle dolar.
+     Kullanıcı isterse yakınlaştırıp bir bölümünü seçebilir. */
+  img.onload = ()=>{ requestAnimationFrame(tamGoster); };
   img.src = src;
 
   zoom.oninput = ()=>{ sc = Number(zoom.value)/100; uygula(); };
-  ov.querySelector(".acFit").onclick = tamGoster;
+  ov.querySelector(".acFit").onclick = otoSigdir;
 
   let bx=0, by=0, suruk=false;
   const sahne = ov.querySelector(".acView");

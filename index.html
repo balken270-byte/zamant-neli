@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.69</title>
+<title>Klipsy 1.2.71</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6420,7 +6420,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.69</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.71</span></div>
     </div>
   </section>
 </div>
@@ -11483,7 +11483,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.69";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.71";
   box.appendChild(ver);
 }
 
@@ -11632,6 +11632,13 @@ function applyGalleryDensity(grid, count){
 let _profActsRow = null;   // takip/mesaj satırı — en sona eklenir
 
 function renderProfile(){
+  /* Profil her çizildiğinde sayaç görselleri siliniyordu.
+     Çizim bittikten sonra önbellekten yeniden yerleştirilir —
+     hem kendi profilinde hem başkasınınkinde. */
+  try{
+    requestAnimationFrame(()=>{ try{ yigileriUygula(profName); }catch(e){} });
+  }catch(e){}
+
   const own=profName===ME;
   /* Başkasının profilinde kendi başlık çubuğumuzu gizliyoruz;
      yeni tasarımda geri ve seçenekler düğmeleri zaten görselin üstünde. */
@@ -11746,7 +11753,11 @@ function renderProfile(){
       const ayar = document.createElement("button");
       ayar.className = "hbIcon hbEnd"; ayar.setAttribute("aria-label", t("settings"));
       ayar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.500 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>';
-      ayar.addEventListener("click", ()=>open("settings"));
+      ayar.addEventListener("click", ()=>{
+        // Panel açılmadan önce içeriği çiz — yoksa boş beyaz sayfa geliyordu
+        if(typeof renderSettings==="function") renderSettings();
+        open("settings");
+      });
       bar.append(ayar);
     }else{
       const more = document.createElement("button");
@@ -11901,8 +11912,6 @@ function renderProfile(){
     const bosluk = document.createElement("div");
     bosluk.className = "profSpacer";
     box.appendChild(bosluk);
-    // avatar yığınları (varsa) yeniden yerleşsin
-    setTimeout(()=>{ try{ yigileriUygula(profName); }catch(e){} }, 0);
     return;
   }
 

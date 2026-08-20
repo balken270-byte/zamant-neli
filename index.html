@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.84</title>
+<title>Klipsy 1.2.85</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6689,7 +6689,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.84</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.85</span></div>
     </div>
   </section>
 </div>
@@ -11942,7 +11942,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.84";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.85";
   box.appendChild(ver);
 }
 
@@ -13788,15 +13788,23 @@ async function start(){
     /* "advanced" listesi sırayla denenir ve BAŞARISIZ OLMAZ:
        önce 60 fps, olmazsa 1080p, olmazsa 30 fps kabul edilir.
        Orana yine karışmıyoruz (kamera geniş görüntüsünü versin). */
+    /* ÖNEMLİ — YAKINLAŞMA SORUNUNUN SEBEBİ:
+       Burada hem genişlik hem yükseklik 1920 isteniyordu; bu KARE oran
+       demek. Tarayıcı kameranın doğal 4:3 görüntüsünü kareye KIRPIYOR,
+       sensörün kenarları gidiyor ve görüntü yakınlaşmış gibi oluyor.
+
+       Doğrusu: tek bir boyut istemek. Yükseklik belirtilmezse kamera
+       kendi doğal oranını (genelde 4:3) tam görüş alanıyla verir.
+       resizeMode:"none" ile de "kırpma, olduğu gibi ver" denir. */
     const vcon = {
       facingMode: facing,
-      width:  { ideal: 1920 },
-      height: { ideal: 1920 },
+      width: { ideal: 1920 },              // SADECE genişlik — orana karışma
       frameRate: { ideal: 60, min: 24 },
+      resizeMode: "none",                  // kırpma yapma, doğal görüntüyü ver
       advanced: [
         { frameRate: { min: 60 } },          // 1. tercih: gerçek 60 fps
         { frameRate: { min: 50 } },
-        { width: { min: 1080 } },            // sonra çözünürlük
+        { width: { min: 1280 } },            // sonra çözünürlük
         { frameRate: { min: 30 } }
       ]
     };
@@ -13873,11 +13881,18 @@ $("#camClose").addEventListener("click",closeCam);
 $("#openCam").addEventListener("click",()=>openCam("post"));
 function grab(){
   const v=$("#camVideo"); if(!v.videoWidth) return null;
-  const square = target==="profile";
   const vw=v.videoWidth, vh=v.videoHeight;
 
-  // Hedef oran: profil için kare, diğerlerinde ekranla aynı (9:16)
-  const targetRatio = square ? 1 : (9/16);
+  /* PROFİL FOTOĞRAFI: burada HİÇ kırpma yapılmaz.
+     Önceden kareye kırpılıyor, sonra kırpma ekranında bir daha
+     kırpılıyordu — çift kırpma yüzünden görüntünün büyük kısmı
+     kayboluyordu. Artık tam kare kırpma ekranına gider,
+     tek kırpma orada yapılır. */
+  const tamKare = (target === "profile");
+  const square = false;
+
+  // Hedef oran: profilde kaynağın kendi oranı, diğerlerinde ekranla aynı (9:16)
+  const targetRatio = tamKare ? (vw/vh) : (9/16);
 
   // Kaynaktan ORTADAN, hedef orana uyan en büyük alanı kes (object-fit: cover mantığı)
   let sw, sh;
@@ -13896,7 +13911,8 @@ function grab(){
      görüntülemek 50 MB indirme demek — kotayı asıl tüketen buydu.
      1440 piksel bir telefon ekranında farkı görülmeyecek kadar net,
      ama dosya yaklaşık 5 kat küçülüyor. */
-  const maxLong = 1440;
+  // Profilde sonradan kırpılacağı için biraz daha yüksek çözünürlük bırakılır
+  const maxLong = tamKare ? 1800 : 1440;
   let cw, ch;
   if(square){ cw = ch = Math.min(sw, 1080); }
   else{

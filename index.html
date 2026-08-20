@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.85</title>
+<title>Klipsy 1.2.86</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      crop_all:"Tamamını göster",
       crop_fit:"Otomatik sığdır",
       crop_hint:"Kaydır ve yakınlaştır",
       act_use:"Kullan",
@@ -426,6 +427,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      crop_all:"Show all",
       crop_fit:"Auto fit",
       crop_hint:"Drag and zoom",
       act_use:"Use",
@@ -822,6 +824,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      crop_all:"Mostrar todo",
       crop_fit:"Ajustar",
       crop_hint:"Arrastra y acerca",
       act_use:"Usar",
@@ -1218,6 +1221,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      crop_all:"إظهار الكل",
       crop_fit:"ملاءمة تلقائية",
       crop_hint:"اسحب وكبّر",
       act_use:"استخدام",
@@ -1614,6 +1618,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      crop_all:"Tout afficher",
       crop_fit:"Ajuster",
       crop_hint:"Déplace et zoome",
       act_use:"Utiliser",
@@ -2010,6 +2015,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      crop_all:"Alles zeigen",
       crop_fit:"Einpassen",
       crop_hint:"Ziehen und zoomen",
       act_use:"Verwenden",
@@ -2406,6 +2412,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      crop_all:"Показать всё",
       crop_fit:"Вписать",
       crop_hint:"Двигай и приближай",
       act_use:"Применить",
@@ -2802,6 +2809,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      crop_all:"Mostrar tudo",
       crop_fit:"Ajustar",
       crop_hint:"Arraste e amplie",
       act_use:"Usar",
@@ -3198,6 +3206,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      crop_all:"सब दिखाएँ",
       crop_fit:"स्वतः फ़िट",
       crop_hint:"खींचें और ज़ूम करें",
       act_use:"उपयोग करें",
@@ -3594,6 +3603,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      crop_all:"Tampilkan semua",
       crop_fit:"Paskan otomatis",
       crop_hint:"Geser dan perbesar",
       act_use:"Gunakan",
@@ -6689,7 +6699,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.85</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.86</span></div>
     </div>
   </section>
 </div>
@@ -11942,7 +11952,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.85";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.86";
   box.appendChild(ver);
 }
 
@@ -14302,7 +14312,7 @@ function avatarKirp(src){
   ov.querySelector(".acCancel").textContent = t("cancel2");
   ov.querySelector(".acOk").textContent     = t("act_use");
   ov.querySelector(".acHint").textContent   = t("crop_hint");
-  ov.querySelector(".acFit").textContent    = t("crop_fit");
+  ov.querySelector(".acFit").textContent    = t("crop_all");
 
   const img  = ov.querySelector("img");
   const zoom = ov.querySelector(".acZoom");
@@ -14314,15 +14324,37 @@ function avatarKirp(src){
 
   /* OTOMATİK SIĞDIR: fotoğrafı çerçeveyi tam dolduracak en küçük
      ölçeğe getirir ve ortalar. Kullanıcı isterse elle oynatır. */
+  /* Ölçek sınırları:
+       en küçük → fotoğrafın TAMAMI çerçeveye sığar (boşluk kalabilir,
+                  o boşluk aynı fotoğrafın bulanık haliyle dolar)
+       en büyük → çerçeveyi dolduran ölçeğin üç katı
+     Böylece kullanıcı fotoğrafın tamamını görüp istediği kadarını seçer. */
+  let enKucuk = 1, enBuyuk = 3;
+  function olcekleriHesapla(){
+    const gG = img.clientWidth, gY = img.clientHeight;
+    if(!gG || !gY) return;
+    enKucuk = Math.min(cerG / gG, cerY / gY);      // tamamı sığsın
+    const doldur = Math.max(cerG / gG, cerY / gY); // çerçeveyi doldur
+    enBuyuk = doldur * 3;
+    zoom.min = String(Math.round(enKucuk*100));
+    zoom.max = String(Math.round(enBuyuk*100));
+  }
+
   function otoSigdir(){
     if(!img.naturalWidth) return;
-    const gG = img.clientWidth, gY = img.clientHeight;   // ölçeksiz boyut
+    olcekleriHesapla();
+    const gG = img.clientWidth, gY = img.clientHeight;
     if(!gG || !gY) return;
-    sc = Math.max(cerG / gG, cerY / gY);                 // çerçeveyi doldur
-    if(sc < 1) sc = 1;
+    sc = Math.max(cerG / gG, cerY / gY);   // açılışta çerçeveyi doldur
     tx = 0; ty = 0;
-    zoom.min = String(Math.round(sc*100));
-    zoom.max = String(Math.round(sc*100) + 200);
+    zoom.value = String(Math.round(sc*100));
+    uygula();
+  }
+
+  // fotoğrafın tamamını göster
+  function tamGoster(){
+    olcekleriHesapla();
+    sc = enKucuk; tx = 0; ty = 0;
     zoom.value = String(Math.round(sc*100));
     uygula();
   }
@@ -14331,7 +14363,7 @@ function avatarKirp(src){
   img.src = src;
 
   zoom.oninput = ()=>{ sc = Number(zoom.value)/100; uygula(); };
-  ov.querySelector(".acFit").onclick = otoSigdir;
+  ov.querySelector(".acFit").onclick = tamGoster;
 
   let bx=0, by=0, suruk=false;
   const sahne = ov.querySelector(".acView");
@@ -14350,24 +14382,35 @@ function avatarKirp(src){
 
   ov.querySelector(".acOk").onclick = ()=>{
     try{
-      /* Çerçevenin içine denk gelen bölgeyi kes. */
       const kutu   = delik.getBoundingClientRect();
       const gorsel = img.getBoundingClientRect();
 
-      const olcek = img.naturalWidth / gorsel.width;
-      const sx = Math.max(0, (kutu.left - gorsel.left) * olcek);
-      const sy = Math.max(0, (kutu.top  - gorsel.top ) * olcek);
-      const sw = Math.min(img.naturalWidth  - sx, kutu.width  * olcek);
-      const sh = Math.min(img.naturalHeight - sy, kutu.height * olcek);
-
-      // çıktı da aynı oranda olsun ki ekranda birebir otursun
+      // çıktı, profil alanıyla aynı oranda
       const cikG = 1200;
       const cikY = Math.round(cikG / oran);
       const c = document.createElement("canvas");
       c.width = cikG; c.height = cikY;
       const x = c.getContext("2d");
       x.imageSmoothingQuality = "high";
-      x.drawImage(img, sx, sy, sw, sh, 0, 0, cikG, cikY);
+
+      // ekran ölçüsü → çıktı ölçüsü katsayısı
+      const k = cikG / kutu.width;
+
+      /* 1) BULANIK ZEMİN
+         Fotoğraf çerçeveyi tam doldurmuyorsa boşluk kalır.
+         O boşluğu, aynı fotoğrafın bulanık ve büyütülmüş haliyle
+         dolduruyoruz (Instagram'ın yöntemi). */
+      const nG = img.naturalWidth, nY = img.naturalHeight;
+      const kapla = Math.max(cikG / nG, cikY / nY);
+      const bG = nG * kapla, bY = nY * kapla;
+      try{ x.filter = "blur(28px) brightness(.82) saturate(1.1)"; }catch(e){}
+      x.drawImage(img, (cikG-bG)/2, (cikY-bY)/2, bG, bY);
+      try{ x.filter = "none"; }catch(e){}
+
+      /* 2) FOTOĞRAFIN KENDİSİ — kullanıcının seçtiği konum ve ölçekte */
+      const sol = (gorsel.left - kutu.left) * k;
+      const ust = (gorsel.top  - kutu.top ) * k;
+      x.drawImage(img, sol, ust, gorsel.width * k, gorsel.height * k);
 
       ov.classList.remove("open");
       setAvatar(c.toDataURL("image/jpeg", .88));

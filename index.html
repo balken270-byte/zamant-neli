@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.3.8</title>
+<title>Klipsy 1.4.0</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5469,6 +5469,7 @@ video{background-color:#12121a}
 .epField textarea::placeholder{color:var(--placeholder)}
 .epField textarea:focus{border-color:rgba(255,59,107,.55);background:var(--input-bg-focus);outline:none}
 .epField .epCount{font-variant-numeric:tabular-nums}
+.epField .epCount.dolu{color:#FF3B6B;font-weight:700}
 .epSave{padding:8px 16px;border-radius:99px;background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
   color:#fff;border:0;font-size:14px;font-weight:600;letter-spacing:-.01em;
   box-shadow:0 4px 12px -4px rgba(255,59,107,.5);transition:transform .12s}
@@ -6754,7 +6755,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.8</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.0</span></div>
     </div>
   </section>
 </div>
@@ -11689,6 +11690,8 @@ function openEditProfile(){
   bTa.addEventListener("input",()=>{
     _epVals.bio=bTa.value;
     bCt.textContent=String(bTa.value.length);
+    // sınıra yaklaşınca uyar
+    bCt.classList.toggle("dolu", bTa.value.length > 180);
   });
 
   // --- cinsiyet seçici (varsayılan avatar rengini belirler) ---
@@ -11746,7 +11749,10 @@ $("#epSave").addEventListener("click",async ()=>{
   const patch={};
   epFields().forEach(([key])=>{ patch[key]=(_epVals[key]||"").trim()||null; });
   patch.gender = _epVals.gender || null;   // cinsiyet (avatar rengi)
-  patch.bio    = (_epVals.bio||"").trim() || null;
+  /* Biyografi 200 karakterle sınırlı (veritabanı kısıtı da 200).
+     Fazlası kırpılır ki sunucudan hata dönmesin. */
+  const bioMetin = (_epVals.bio||"").trim();
+  patch.bio = bioMetin ? bioMetin.slice(0, 200) : null;
   patch.zodiac = _epVals.zodiac || null;
   const {error}=await window.__sb.from('profiles').update(patch).eq('id',window.__me.id);
   if(error){ toast("Kaydedilemedi: "+error.message); return; }
@@ -12056,7 +12062,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.8";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.0";
   box.appendChild(ver);
 }
 
@@ -13999,8 +14005,14 @@ async function start(kayitSurerken){
       }
     }catch(e){}
 
+    /* GENİŞ AÇI ARAMASI — SADECE ARKA KAMERA
+       Ön kamerada bu arama iki soruna yol açıyordu:
+       1) İkinci bir kamera isteği yapıldığı için açılış gecikiyordu.
+       2) Yanlış aygıt seçilebiliyor, görüntü ters yönde hareket ediyordu.
+       Ön kameralarda zaten ayrı geniş açı aygıtı neredeyse hiç yok. */
     try{
-      if(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices){
+      if(facing === "environment" &&
+         navigator.mediaDevices && navigator.mediaDevices.enumerateDevices){
         const aygitlar = await navigator.mediaDevices.enumerateDevices();
         const kameralar = aygitlar.filter(d=>d.kind === "videoinput");
 

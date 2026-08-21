@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.92</title>
+<title>Klipsy 1.2.96</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4839,8 +4839,12 @@ svg{display:block}
    Fotoğraflı ve fotoğrafsız profiller AYNI görünür:
    üstte görsel alanı, altında solda isim, sağda sayaçlar. */
 
+/* Alan oranı 4:5 (dikey).
+   Kamera 3:4 dikey görüntü veriyor; ekran yüksekliğine bağlı oran
+   kullanınca fotoğrafın üçte biri kırpılıyordu. 4:5 ile kayıp %6'ya
+   iniyor ve her cihazda AYNI oran oluşuyor. */
 .hero.heroBig{position:relative;margin:0 -14px;padding:0;overflow:hidden;display:block;
-  height:42vh;min-height:250px;max-height:380px;border-radius:0;
+  aspect-ratio:4/5;height:auto;max-height:62vh;border-radius:0;
   background:linear-gradient(160deg,#FF3B6B 0%, #A34BE0 48%, #5B6BFF 100%)}
 
 /* Fotoğraf: alanı kaplar */
@@ -4929,8 +4933,12 @@ svg{display:block}
 
 
 /* kart */
-.profCard{position:relative;z-index:6;margin:-22px -14px 0;padding:18px 16px 4px;
-  background:var(--panelbg);border-radius:24px 24px 0 0}
+/* Kart, fotoğrafın ALT KISMININ ÜZERİNE biner.
+   Fotoğraf 4:5 oranında (tam oturur) ama fazlalık kısım kartın
+   arkasında kalır — kapak fotoğrafı mantığı. */
+.profCard{position:relative;z-index:6;margin:-34% -14px 0;padding:20px 16px 4px;
+  background:var(--panelbg);border-radius:26px 26px 0 0;
+  box-shadow:0 -10px 30px -12px rgba(0,0,0,.5)}
 
 /* isim + takip */
 .pcNameRow{display:flex;align-items:center;gap:12px}
@@ -6725,7 +6733,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.92</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.96</span></div>
     </div>
   </section>
 </div>
@@ -11978,7 +11986,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.92";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.96";
   box.appendChild(ver);
 }
 
@@ -13894,6 +13902,13 @@ async function start(){
         const suanki = stream.getVideoTracks()[0];
         const suankiId = (suanki && suanki.getSettings) ? suanki.getSettings().deviceId : null;
 
+        // tanılama için hangi kameranın kullanıldığını sakla
+        try{
+          const kullanilan = kameralar.find(d=>d.deviceId === suankiId);
+          window.__camLabel = (genisAci ? genisAci.label : (kullanilan ? kullanilan.label : "")) || "";
+          if(window.__camLabel.length > 26) window.__camLabel = window.__camLabel.slice(0,26)+"…";
+        }catch(e){}
+
         if(genisAci && genisAci.deviceId && genisAci.deviceId !== suankiId){
           const yeni = await navigator.mediaDevices.getUserMedia({
             video: { deviceId: { exact: genisAci.deviceId },
@@ -13912,10 +13927,11 @@ async function start(){
       const st=stream.getVideoTracks()[0];
       const s=st && st.getSettings ? st.getSettings() : {};
       const zc = (st && st.getCapabilities) ? st.getCapabilities() : {};
+      const kamAdi = (s.deviceId && window.__camLabel) ? (" · "+window.__camLabel) : "";
       const zBilgi = (s.zoom != null)
         ? (" · zoom " + s.zoom + (zc.zoom ? " (min " + zc.zoom.min + ")" : ""))
         : " · zoom yok";
-      const info = (s.width||"?")+"x"+(s.height||"?")+" @"+Math.round(s.frameRate||0)+"fps"+zBilgi;
+      const info = (s.width||"?")+"x"+(s.height||"?")+" @"+Math.round(s.frameRate||0)+"fps"+zBilgi+kamAdi;
       console.log("[Klipsy kamera]", info, s);
       if(location.search.indexOf("cam=1")>=0){
         let dbg=document.getElementById("camDbg");
@@ -14374,10 +14390,9 @@ function avatarKirp(src){
      O alan: ekran genişliği × (%42 ekran yüksekliği, 250-380 arası).
      Önceden 3:4 dikey kesiliyordu; alan ise neredeyse kare olduğu için
      fotoğraf oturmuyordu. */
-  const alanG = (document.getElementById("phone") || document.body).clientWidth
-                || window.innerWidth;
-  const alanY = Math.max(250, Math.min(window.innerHeight * 0.42, 380));
-  const oran  = alanG / alanY;          // genişlik / yükseklik
+  /* Profil alanıyla AYNI oran: 4:5 (genişlik/yükseklik = 0.8).
+     Sabit olduğu için her cihazda aynı sonucu verir. */
+  const oran = 4/5;
 
   /* Çerçeve: ekran genişliğinin tamamına yakın, profil oranında.
      Fotoğrafın tamamı görünür; çerçeve dışı karartılır. */

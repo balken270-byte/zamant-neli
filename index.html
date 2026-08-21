@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.5.1</title>
+<title>Klipsy 1.5.3</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4713,6 +4713,15 @@ svg{display:block}
 .nrow{display:flex;align-items:center;gap:13px;padding:12px 16px;width:100%;
   text-align:left;background:none;border:0;position:relative;transition:background .15s}
 .nrow:active{background:var(--surf1)}
+
+/* Bildirimdeki an küçük resmi.
+   Ölçü hem kutuya hem görsele veriliyor; biri uygulanmazsa
+   görsel doğal boyutunda kalıp ekranı kaplıyordu. */
+.nrow .nthumb{flex:0 0 42px;width:42px;height:42px;max-width:42px;max-height:42px;
+  border-radius:11px;overflow:hidden;margin-left:auto;display:block;
+  background:var(--surf1);border:1px solid var(--edge-soft)}
+.nrow .nthumb img{width:42px;height:42px;max-width:42px;max-height:42px;
+  object-fit:cover;display:block;border-radius:11px}
 .nrow.unseen{background:linear-gradient(90deg, rgba(255,59,107,.08), transparent 55%)}
 .nrow.unseen::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;
   border-radius:0 3px 3px 0;background:linear-gradient(180deg,#FF3B6B,#7B5BFF)}
@@ -6918,7 +6927,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.1</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.3</span></div>
     </div>
   </section>
 </div>
@@ -8021,6 +8030,52 @@ function renderNotifs(){
     grp.forEach(n=>box.appendChild(notifRow(n)));
   });
 }
+/* Bir anın küçük resmini bulur.
+   Önce bellekteki listelerde arar; yoksa sunucudan getirip önbelleğe alır. */
+const _anKucukResim = {};
+
+function anKucukResim(id){
+  if(!id) return null;
+  if(_anKucukResim[id] !== undefined) return _anKucukResim[id];
+
+  // yüklü listelerde ara
+  let bulunan = null;
+  try{
+    const kaynaklar = [
+      (typeof items !== "undefined" ? items : null),
+      (typeof _myMoments !== "undefined" ? _myMoments : null),
+      (typeof _savedCache !== "undefined" ? _savedCache : null)
+    ];
+    for(const liste of kaynaklar){
+      if(!Array.isArray(liste)) continue;
+      const m = liste.find(x=>x && x.id===id);
+      if(m){ bulunan = m.thumb || m.poster || m.src || null; break; }
+    }
+  }catch(e){}
+
+  if(bulunan){ _anKucukResim[id] = bulunan; return bulunan; }
+
+  // sunucudan getir (bir kez), gelince listeyi tazele
+  _anKucukResim[id] = null;
+  try{
+    const sb = window.__sb;
+    if(sb){
+      sb.from('moments')
+        .select('thumb_path, poster_path, media_path, media_kind')
+        .eq('id', id).single()
+        .then(({data:d})=>{
+          if(!d) return;
+          const yol = d.thumb_path || d.poster_path ||
+                      (d.media_kind !== 'video' ? d.media_path : null);
+          if(!yol) return;
+          _anKucukResim[id] = sb.storage.from('moments').getPublicUrl(yol).data.publicUrl;
+          if($("#notif") && $("#notif").classList.contains("open")) renderNotifs();
+        }).catch(()=>{});
+    }
+  }catch(e){}
+  return null;
+}
+
 function notifRow(n){
   const b=document.createElement("button");
   b.className="nrow"+(n.seen?"":" unseen");
@@ -8063,6 +8118,24 @@ function notifRow(n){
   const tm=document.createElement("span");tm.className="ntime";tm.textContent=rel(n.ts);
   tx.appendChild(tm);
   b.appendChild(tx);
+
+  /* Sağ tarafta anın küçük resmi.
+     Hangi paylaşımın kastedildiği metni okumadan anlaşılsın.
+     Harita pinlerinde kullandığımız küçük görsel kullanılır (~6 KB),
+     ek veri yükü neredeyse yok. Takip bildiriminde an olmadığı için
+     gösterilmez. */
+  if(n.postId && n.type !== "follow"){
+    const kap = document.createElement("span");
+    kap.className = "nthumb";
+    const gorsel = anKucukResim(n.postId);
+    if(gorsel){
+      const im = document.createElement("img");
+      im.src = gorsel; im.alt = ""; im.loading = "lazy"; im.decoding = "async";
+      im.addEventListener("error", ()=>kap.remove(), {once:true});
+      kap.appendChild(im);
+      b.appendChild(kap);
+    }
+  }
 
   b.addEventListener("click",()=>{
     n.seen=true;paintDot();renderNotifs();
@@ -12243,7 +12316,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.1";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.3";
   box.appendChild(ver);
 }
 

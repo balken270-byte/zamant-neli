@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.4.2</title>
+<title>Klipsy 1.4.4</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      nt_send_fail:"Gönderilemedi",
+      nt_sent:"Gönderildi — bildirim birkaç saniyede gelir",
+      nt_sending:"Gönderiliyor…",
+      nt_db_fail:"Sunucuya ulaşılamadı",
+      nt_no_token:"Cihaz anahtarı alınamadı",
+      nt_ready:"Cihaz kaydedildi, tekrar dene",
+      nt_registering:"Cihaz kaydediliyor…",
+      nt_no_perm:"Bildirim izni verilmedi",
+      nt_no_plugin:"Bildirim eklentisi bulunamadı",
+      notif_test_sub:"Kurulumun çalıştığını doğrula",
+      notif_test:"Test bildirimi gönder",
       crop_hint3:"Kaydırarak görünecek yeri seç",
       crop_reset:"Başa dön",
       crop_hint2:"Tamamı görünüyor · kaydır, yakınlaştır",
@@ -431,6 +442,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      nt_send_fail:"Couldn't send",
+      nt_sent:"Sent — notification arrives in a few seconds",
+      nt_sending:"Sending…",
+      nt_db_fail:"Couldn't reach the server",
+      nt_no_token:"Couldn't get device token",
+      nt_ready:"Device registered, try again",
+      nt_registering:"Registering device…",
+      nt_no_perm:"Notification permission denied",
+      nt_no_plugin:"Notification plugin not found",
+      notif_test_sub:"Check that setup works",
+      notif_test:"Send test notification",
       crop_hint3:"Drag to choose what shows",
       crop_reset:"Reset",
       crop_hint2:"Full photo shown · drag and zoom",
@@ -832,6 +854,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      nt_send_fail:"No se pudo enviar",
+      nt_sent:"Enviado: llegará en unos segundos",
+      nt_sending:"Enviando…",
+      nt_db_fail:"No se pudo conectar",
+      nt_no_token:"No se obtuvo el token",
+      nt_ready:"Dispositivo registrado, inténtalo de nuevo",
+      nt_registering:"Registrando dispositivo…",
+      nt_no_perm:"Permiso denegado",
+      nt_no_plugin:"Complemento no encontrado",
+      notif_test_sub:"Comprueba que todo funciona",
+      notif_test:"Enviar notificación de prueba",
       crop_hint3:"Arrastra para elegir qué se ve",
       crop_reset:"Restablecer",
       crop_hint2:"Foto completa · arrastra y acerca",
@@ -1233,6 +1266,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      nt_send_fail:"تعذّر الإرسال",
+      nt_sent:"تم الإرسال — سيصل خلال ثوانٍ",
+      nt_sending:"جارٍ الإرسال…",
+      nt_db_fail:"تعذّر الوصول إلى الخادم",
+      nt_no_token:"تعذّر الحصول على رمز الجهاز",
+      nt_ready:"تم تسجيل الجهاز، حاول مجددًا",
+      nt_registering:"جارٍ تسجيل الجهاز…",
+      nt_no_perm:"لم يُمنح إذن الإشعارات",
+      nt_no_plugin:"لم يتم العثور على الإضافة",
+      notif_test_sub:"تحقّق من عمل الإعداد",
+      notif_test:"إرسال إشعار تجريبي",
       crop_hint3:"اسحب لاختيار الجزء الظاهر",
       crop_reset:"إعادة",
       crop_hint2:"الصورة كاملة · اسحب وكبّر",
@@ -1634,6 +1678,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      nt_send_fail:"Échec de l'envoi",
+      nt_sent:"Envoyé — arrive dans quelques secondes",
+      nt_sending:"Envoi…",
+      nt_db_fail:"Serveur injoignable",
+      nt_no_token:"Jeton d'appareil non obtenu",
+      nt_ready:"Appareil enregistré, réessaie",
+      nt_registering:"Enregistrement de l'appareil…",
+      nt_no_perm:"Autorisation refusée",
+      nt_no_plugin:"Extension introuvable",
+      notif_test_sub:"Vérifie que tout fonctionne",
+      notif_test:"Envoyer une notification test",
       crop_hint3:"Fais glisser pour choisir",
       crop_reset:"Réinitialiser",
       crop_hint2:"Photo entière · déplace et zoome",
@@ -2035,6 +2090,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      nt_send_fail:"Senden fehlgeschlagen",
+      nt_sent:"Gesendet — kommt in wenigen Sekunden",
+      nt_sending:"Wird gesendet…",
+      nt_db_fail:"Server nicht erreichbar",
+      nt_no_token:"Gerätetoken nicht erhalten",
+      nt_ready:"Gerät registriert, erneut versuchen",
+      nt_registering:"Gerät wird registriert…",
+      nt_no_perm:"Berechtigung nicht erteilt",
+      nt_no_plugin:"Benachrichtigungs-Plugin fehlt",
+      notif_test_sub:"Prüfen, ob alles funktioniert",
+      notif_test:"Testbenachrichtigung senden",
       crop_hint3:"Ziehen, um den Ausschnitt zu wählen",
       crop_reset:"Zurücksetzen",
       crop_hint2:"Ganzes Foto · ziehen und zoomen",
@@ -2436,6 +2502,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      nt_send_fail:"Не удалось отправить",
+      nt_sent:"Отправлено — придёт через несколько секунд",
+      nt_sending:"Отправка…",
+      nt_db_fail:"Сервер недоступен",
+      nt_no_token:"Не удалось получить токен",
+      nt_ready:"Устройство зарегистрировано, повторите",
+      nt_registering:"Регистрация устройства…",
+      nt_no_perm:"Разрешение не выдано",
+      nt_no_plugin:"Плагин уведомлений не найден",
+      notif_test_sub:"Проверить настройку",
+      notif_test:"Отправить тестовое уведомление",
       crop_hint3:"Двигай, чтобы выбрать кадр",
       crop_reset:"Сбросить",
       crop_hint2:"Всё фото · двигай и приближай",
@@ -2837,6 +2914,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      nt_send_fail:"Falha ao enviar",
+      nt_sent:"Enviado — chega em alguns segundos",
+      nt_sending:"Enviando…",
+      nt_db_fail:"Servidor inacessível",
+      nt_no_token:"Não foi possível obter o token",
+      nt_ready:"Dispositivo registrado, tente novamente",
+      nt_registering:"Registrando dispositivo…",
+      nt_no_perm:"Permissão negada",
+      nt_no_plugin:"Plugin não encontrado",
+      notif_test_sub:"Verifique se está funcionando",
+      notif_test:"Enviar notificação de teste",
       crop_hint3:"Arraste para escolher",
       crop_reset:"Redefinir",
       crop_hint2:"Foto inteira · arraste e amplie",
@@ -3238,6 +3326,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      nt_send_fail:"भेजा नहीं जा सका",
+      nt_sent:"भेजा गया — कुछ सेकंड में आएगा",
+      nt_sending:"भेजा जा रहा है…",
+      nt_db_fail:"सर्वर तक नहीं पहुँच सके",
+      nt_no_token:"डिवाइस टोकन नहीं मिला",
+      nt_ready:"डिवाइस पंजीकृत, फिर से आज़माएँ",
+      nt_registering:"डिवाइस पंजीकृत हो रहा है…",
+      nt_no_perm:"अनुमति नहीं दी गई",
+      nt_no_plugin:"सूचना प्लगइन नहीं मिला",
+      notif_test_sub:"जाँचें कि सेटअप काम करता है",
+      notif_test:"परीक्षण सूचना भेजें",
       crop_hint3:"खींचकर चुनें क्या दिखे",
       crop_reset:"रीसेट",
       crop_hint2:"पूरी फ़ोटो · खींचें और ज़ूम करें",
@@ -3639,6 +3738,17 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      nt_send_fail:"Gagal mengirim",
+      nt_sent:"Terkirim — tiba dalam beberapa detik",
+      nt_sending:"Mengirim…",
+      nt_db_fail:"Server tidak terjangkau",
+      nt_no_token:"Token perangkat gagal didapat",
+      nt_ready:"Perangkat terdaftar, coba lagi",
+      nt_registering:"Mendaftarkan perangkat…",
+      nt_no_perm:"Izin ditolak",
+      nt_no_plugin:"Plugin notifikasi tidak ditemukan",
+      notif_test_sub:"Pastikan pengaturan berfungsi",
+      notif_test:"Kirim notifikasi uji",
       crop_hint3:"Geser untuk memilih bagian",
       crop_reset:"Atur ulang",
       crop_hint2:"Foto penuh · geser dan perbesar",
@@ -6755,7 +6865,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.2</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.4</span></div>
     </div>
   </section>
 </div>
@@ -12007,6 +12117,24 @@ function renderSettings(){
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
     t("notifs_setting"), t("s_notif_sub"), prefNotif,
     (on)=>{ prefNotif=on; savePref('notif_enabled',on); toast(on?t("s_notif_on"):t("s_notif_off")); }));
+
+  /* TEST BİLDİRİMİ — kurulumun çalışıp çalışmadığını görmek için.
+     Cihaz anahtarı alınmış mı, sunucuya kaydedilmiş mi kontrol eder
+     ve sonucu açıkça söyler. Sadece uygulamada (APK) görünür. */
+  (function(){
+    const cap = window.Capacitor;
+    if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+
+    const satir = document.createElement("button");
+    satir.className = "setRow";
+    satir.innerHTML =
+      '<span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></span>'+
+      '<span class="tx"><b>'+t("notif_test")+'</b><i>'+t("notif_test_sub")+'</i></span>'+
+      '<span class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>';
+
+    satir.addEventListener("click", bildirimTest);
+    g2.appendChild(satir);
+  })();
   g2.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
     t("share_loc"), t("loc_in_moments"), prefLocation,
@@ -12062,7 +12190,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.2";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.4";
   box.appendChild(ver);
 }
 
@@ -15079,7 +15207,15 @@ async function bildirimKur(){
 
   const P = cap.Plugins || {};
   const PN = P.PushNotifications;
-  if(!PN){ console.warn("bildirim eklentisi yok"); return; }
+  if(!PN){
+    /* Eklenti henüz yüklenmemiş olabilir; bir kez daha dene.
+       (Sürüm kurulumundan sonra ilk açılışta görülebiliyor.) */
+    if(!bildirimKur._tekrar){
+      bildirimKur._tekrar = true;
+      setTimeout(()=>{ try{ bildirimKur(); }catch(e){} }, 2500);
+    }
+    return;
+  }
 
   try{
     // izin
@@ -15142,6 +15278,60 @@ async function bildirimKur(){
 
     await PN.register();
   }catch(e){ console.warn("bildirim kurulumu:", e); }
+}
+
+/* Bildirim kurulumunu sınar ve sonucu adım adım bildirir.
+   Nerede takıldığı belli olsun diye her aşama ayrı kontrol edilir. */
+async function bildirimTest(){
+  const cap = window.Capacitor;
+  const P = (cap && cap.Plugins) || {};
+  const PN = P.PushNotifications;
+
+  if(!PN){ toast(t("nt_no_plugin")); return; }
+
+  try{
+    // 1) izin
+    let izin = await PN.checkPermissions();
+    if(izin.receive !== "granted"){
+      izin = await PN.requestPermissions();
+      if(izin.receive !== "granted"){ toast(t("nt_no_perm")); return; }
+    }
+
+    // 2) cihaz anahtarı sunucuda var mı
+    const sb = window.__sb, me = window.__me;
+    if(!sb || !me){ toast(t("err_generic")); return; }
+
+    const { data: cihazlar, error } = await sb
+      .from("device_tokens").select("token").eq("user_id", me.id);
+
+    if(error){ toast(t("nt_db_fail")); return; }
+
+    if(!cihazlar || cihazlar.length === 0){
+      // anahtar yok → yeniden kaydolmayı dene
+      toast(t("nt_registering"));
+      await PN.register();
+      setTimeout(async ()=>{
+        const { data: tekrar } = await sb
+          .from("device_tokens").select("token").eq("user_id", me.id);
+        toast((tekrar && tekrar.length) ? t("nt_ready") : t("nt_no_token"));
+      }, 2500);
+      return;
+    }
+
+    // 3) kendine test bildirimi gönder
+    toast(t("nt_sending"));
+    const { error: hata } = await sb.from("notifications").insert({
+      user_id: me.id,
+      actor_id: me.id,
+      kind: "like"
+    });
+
+    if(hata){ toast(t("nt_send_fail")); return; }
+    setTimeout(()=>toast(t("nt_sent")), 1200);
+
+  }catch(e){
+    toast(t("nt_send_fail"));
+  }
 }
 
 /* Çıkışta cihaz anahtarını sil — başkasına bildirim gitmesin */
@@ -15808,8 +15998,9 @@ async function enterApp(){
       .subscribe();
   }catch(e){ console.warn('realtime msg:',e); }
 
-  // telefon bildirimlerini kur (APK'da)
-  try{ bildirimKur(); }catch(e){}
+  /* Telefon bildirimleri. Uygulama tam yerleşsin diye kısa bir
+     gecikmeyle sorulur; açılışta üst üste izin penceresi çıkmasın. */
+  setTimeout(()=>{ try{ bildirimKur(); }catch(e){} }, 1800);
 }
 window.__logout = async () => {
   // anında geri bildirim ver — kullanıcı donmuş sanmasın

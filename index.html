@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.4.1</title>
+<title>Klipsy 1.4.2</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6755,7 +6755,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.1</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.2</span></div>
     </div>
   </section>
 </div>
@@ -12062,7 +12062,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.1";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.2";
   box.appendChild(ver);
 }
 
@@ -15069,6 +15069,91 @@ nextAt=Date.now()+HOLD;
   });
 })();
 
+/* ═══ TELEFON BİLDİRİMLERİ (APK) ═══
+   Uygulama kapalıyken de bildirim gelmesi için cihaz anahtarı alınır
+   ve sunucuya kaydedilir. Bildirimi Firebase iletir.
+   Tarayıcıda çalışmaz, sessizce atlanır. */
+async function bildirimKur(){
+  const cap = window.Capacitor;
+  if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+
+  const P = cap.Plugins || {};
+  const PN = P.PushNotifications;
+  if(!PN){ console.warn("bildirim eklentisi yok"); return; }
+
+  try{
+    // izin
+    let izin = await PN.checkPermissions();
+    if(izin.receive !== "granted"){
+      izin = await PN.requestPermissions();
+    }
+    if(izin.receive !== "granted") return;
+
+    // Android bildirim kanalı (ses ve önem düzeyi için)
+    try{
+      await PN.createChannel({
+        id: "klipsy",
+        name: "Klipsy",
+        description: "Beğeni, yorum, mesaj",
+        importance: 5,
+        visibility: 1,
+        sound: "default",
+        vibration: true,
+        lights: true,
+        lightColor: "#FF3B6B"
+      });
+    }catch(e){}
+
+    // anahtar geldiğinde sunucuya yaz
+    PN.addListener("registration", async (t)=>{
+      try{
+        const sb = window.__sb, me = window.__me;
+        if(!sb || !me || !t || !t.value) return;
+        await sb.from("device_tokens").upsert({
+          token: t.value,
+          user_id: me.id,
+          platform: "android",
+          updated_at: new Date().toISOString()
+        }, { onConflict: "token" });
+      }catch(e){ console.warn("cihaz anahtarı:", e); }
+    });
+
+    PN.addListener("registrationError", e=>console.warn("bildirim kaydı:", e));
+
+    // uygulama AÇIKKEN bildirim gelirse: listeyi tazele
+    PN.addListener("pushNotificationReceived", ()=>{
+      try{ if(typeof loadNotifs === "function") loadNotifs(); }catch(e){}
+    });
+
+    // bildirime DOKUNULUNCA ilgili yere git
+    PN.addListener("pushNotificationActionPerformed", (olay)=>{
+      try{
+        const d = (olay && olay.notification && olay.notification.data) || {};
+        if(d.kind === "message"){
+          setTab($("#tabMsg")); if(typeof openChats==="function") openChats();
+        }else if(d.moment_id){
+          setTab($("#tabFeed"));
+          if(typeof goToPost === "function") goToPost(d.moment_id);
+        }else{
+          if(typeof renderNotifs === "function"){ renderNotifs(); open("notif"); }
+        }
+      }catch(e){}
+    });
+
+    await PN.register();
+  }catch(e){ console.warn("bildirim kurulumu:", e); }
+}
+
+/* Çıkışta cihaz anahtarını sil — başkasına bildirim gitmesin */
+async function bildirimKapat(){
+  try{
+    const cap = window.Capacitor;
+    if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+    const sb = window.__sb, me = window.__me;
+    if(sb && me) await sb.from("device_tokens").delete().eq("user_id", me.id);
+  }catch(e){}
+}
+
 /* APK ayarları: görsel yükü hafiflet, uygulama hissi ver */
 (function nativeTuning(){
   const cap = window.Capacitor;
@@ -15722,6 +15807,9 @@ async function enterApp(){
         })
       .subscribe();
   }catch(e){ console.warn('realtime msg:',e); }
+
+  // telefon bildirimlerini kur (APK'da)
+  try{ bildirimKur(); }catch(e){}
 }
 window.__logout = async () => {
   // anında geri bildirim ver — kullanıcı donmuş sanmasın
@@ -15739,6 +15827,7 @@ window.__logout = async () => {
     document.body.appendChild(ov);
   }catch(e){}
 
+  try{ await bildirimKapat(); }catch(e){}
   // yerel oturumu hemen temizle (sunucu cevabını bekleme)
   try{ await sb.auth.signOut({ scope:'local' }); }
   catch(e){ try{ await sb.auth.signOut(); }catch(e2){} }

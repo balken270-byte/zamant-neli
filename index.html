@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.2.96</title>
+<title>Klipsy 1.3.1</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4839,17 +4839,16 @@ svg{display:block}
    Fotoğraflı ve fotoğrafsız profiller AYNI görünür:
    üstte görsel alanı, altında solda isim, sağda sayaçlar. */
 
-/* Alan oranı 4:5 (dikey).
-   Kamera 3:4 dikey görüntü veriyor; ekran yüksekliğine bağlı oran
-   kullanınca fotoğrafın üçte biri kırpılıyordu. 4:5 ile kayıp %6'ya
-   iniyor ve her cihazda AYNI oran oluşuyor. */
 .hero.heroBig{position:relative;margin:0 -14px;padding:0;overflow:hidden;display:block;
-  aspect-ratio:4/5;height:auto;max-height:62vh;border-radius:0;
+  height:42vh;min-height:250px;max-height:380px;border-radius:0;
   background:linear-gradient(160deg,#FF3B6B 0%, #A34BE0 48%, #5B6BFF 100%)}
 
 /* Fotoğraf: alanı kaplar */
+/* Fotoğraf alandan uzun olduğu için hangi kısmının görüneceği
+   ayarlanabilir. Kendi profilinde yukarı/aşağı sürüklenir. */
 .hero.heroBig .heroPhoto{position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;display:block;z-index:0}
+  object-fit:cover;object-position:center 50%;display:block;z-index:0;
+  transition:object-position .05s linear}
 
 /* Varsayılan avatar: profil fotoğrafı GİBİ tüm alanı kaplar.
    Avatar kare üretildiği için "cover" ile kenarları hafif kırpılır,
@@ -4936,9 +4935,8 @@ svg{display:block}
 /* Kart, fotoğrafın ALT KISMININ ÜZERİNE biner.
    Fotoğraf 4:5 oranında (tam oturur) ama fazlalık kısım kartın
    arkasında kalır — kapak fotoğrafı mantığı. */
-.profCard{position:relative;z-index:6;margin:-34% -14px 0;padding:20px 16px 4px;
-  background:var(--panelbg);border-radius:26px 26px 0 0;
-  box-shadow:0 -10px 30px -12px rgba(0,0,0,.5)}
+.profCard{position:relative;z-index:6;margin:-22px -14px 0;padding:18px 16px 4px;
+  background:var(--panelbg);border-radius:24px 24px 0 0}
 
 /* isim + takip */
 .pcNameRow{display:flex;align-items:center;gap:12px}
@@ -6733,7 +6731,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.2.96</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.1</span></div>
     </div>
   </section>
 </div>
@@ -11986,7 +11984,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.2.96";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.1";
   box.appendChild(ver);
 }
 
@@ -12213,7 +12211,9 @@ function renderProfile(){
        o durumda marka gradyanı + ortada daire kullanılır. */
     /* Arka plan katmanları yerine DOĞRUDAN görsel elemanı kullanıyoruz.
        Katmanlı yöntemde fotoğraf bazen hiç görünmüyordu; bu daha güvenilir. */
-    const foto = (REALAV && REALAV[profName]) ? REALAV[profName] : null;
+    const fotoHam = (REALAV && REALAV[profName]) ? REALAV[profName] : null;
+    // eski sürümlerden kalan "#pos=" eki varsa temizle
+    const foto = fotoHam ? fotoHam.split("#")[0] : null;
     const img = document.createElement("img");
     img.alt = "";
     img.decoding = "async";
@@ -12222,6 +12222,9 @@ function renderProfile(){
       hero.classList.add("hasPhoto");
       img.className = "heroPhoto";
       img.src = foto;
+
+      /* NOT: Konum ayarı artık FOTOĞRAF ÇEKİLİRKEN yapılıyor
+         (kırpma ekranında). Profilde sürükleme yok. */
       // görsel inmezse gradyana dön
       img.addEventListener("error", ()=>{
         hero.classList.remove("hasPhoto");
@@ -14390,9 +14393,13 @@ function avatarKirp(src){
      O alan: ekran genişliği × (%42 ekran yüksekliği, 250-380 arası).
      Önceden 3:4 dikey kesiliyordu; alan ise neredeyse kare olduğu için
      fotoğraf oturmuyordu. */
-  /* Profil alanıyla AYNI oran: 4:5 (genişlik/yükseklik = 0.8).
-     Sabit olduğu için her cihazda aynı sonucu verir. */
-  const oran = 4/5;
+  /* Çerçeve, profil başlığının GERÇEK oranında olmalı:
+     genişlik = ekran, yükseklik = ekranın %42'si (250-380 arası).
+     Kullanıcı burada ne seçerse profilde birebir o görünür. */
+  const alanG = (document.getElementById("phone") || document.body).clientWidth
+                || window.innerWidth;
+  const alanY = Math.max(250, Math.min(window.innerHeight * 0.42, 380));
+  const oran  = alanG / alanY;
 
   /* Çerçeve: ekran genişliğinin tamamına yakın, profil oranında.
      Fotoğrafın tamamı görünür; çerçeve dışı karartılır. */

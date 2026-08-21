@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.5.3</title>
+<title>Klipsy 1.5.5</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      n_messaged:"sana mesaj gönderdi",
+      n_comment_liked:"yorumunu beğendi",
+      n_replied:"yorumuna yanıt verdi",
       chat_unmuted:"Sohbetin sesi açıldı",
       chat_muted:"Sohbet sessize alındı",
       chat_unmute:"Sesi aç",
@@ -447,6 +450,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      n_messaged:"sent you a message",
+      n_comment_liked:"liked your comment",
+      n_replied:"replied to your comment",
       chat_unmuted:"Conversation unmuted",
       chat_muted:"Conversation muted",
       chat_unmute:"Unmute",
@@ -864,6 +870,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      n_messaged:"te envió un mensaje",
+      n_comment_liked:"le gustó tu comentario",
+      n_replied:"respondió a tu comentario",
       chat_unmuted:"Sonido reactivado",
       chat_muted:"Conversación silenciada",
       chat_unmute:"Reactivar sonido",
@@ -1281,6 +1290,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      n_messaged:"أرسل لك رسالة",
+      n_comment_liked:"أعجب بتعليقك",
+      n_replied:"ردّ على تعليقك",
       chat_unmuted:"تم إلغاء كتم المحادثة",
       chat_muted:"تم كتم المحادثة",
       chat_unmute:"إلغاء الكتم",
@@ -1698,6 +1710,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      n_messaged:"t'a envoyé un message",
+      n_comment_liked:"a aimé ton commentaire",
+      n_replied:"a répondu à ton commentaire",
       chat_unmuted:"Sourdine désactivée",
       chat_muted:"Conversation en sourdine",
       chat_unmute:"Réactiver",
@@ -2115,6 +2130,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      n_messaged:"hat dir geschrieben",
+      n_comment_liked:"gefällt dein Kommentar",
+      n_replied:"hat auf deinen Kommentar geantwortet",
       chat_unmuted:"Stummschaltung aufgehoben",
       chat_muted:"Chat stummgeschaltet",
       chat_unmute:"Stummschaltung aufheben",
@@ -2532,6 +2550,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      n_messaged:"отправил вам сообщение",
+      n_comment_liked:"понравился ваш комментарий",
+      n_replied:"ответил на ваш комментарий",
       chat_unmuted:"Уведомления включены",
       chat_muted:"Уведомления отключены",
       chat_unmute:"Включить уведомления",
@@ -2949,6 +2970,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      n_messaged:"enviou uma mensagem",
+      n_comment_liked:"curtiu seu comentário",
+      n_replied:"respondeu ao seu comentário",
       chat_unmuted:"Som reativado",
       chat_muted:"Conversa silenciada",
       chat_unmute:"Reativar som",
@@ -3366,6 +3390,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      n_messaged:"आपको संदेश भेजा",
+      n_comment_liked:"आपकी टिप्पणी पसंद की",
+      n_replied:"आपकी टिप्पणी का उत्तर दिया",
       chat_unmuted:"बातचीत अनम्यूट की गई",
       chat_muted:"बातचीत म्यूट की गई",
       chat_unmute:"अनम्यूट करें",
@@ -3783,6 +3810,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      n_messaged:"mengirimimu pesan",
+      n_comment_liked:"menyukai komentarmu",
+      n_replied:"membalas komentarmu",
       chat_unmuted:"Obrolan dibunyikan",
       chat_muted:"Obrolan dibisukan",
       chat_unmute:"Bunyikan",
@@ -6927,7 +6957,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.3</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.5</span></div>
     </div>
   </section>
 </div>
@@ -8095,6 +8125,7 @@ function notifRow(n){
     follow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
     comment:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3-.5L3 21l1.5-4.5A8.4 8.4 0 1 1 21 11.5z"/></svg>'
   };
+  // reply ve comment_like da yorum ailesinden sayılır
   const kind=(n.type==="like"||n.type==="follow")?n.type:"comment";
   const bd=document.createElement("span");
   bd.className="nbadge "+kind;
@@ -8106,9 +8137,12 @@ function notifRow(n){
   const tx=document.createElement("span");tx.className="ntext";
   const strong=document.createElement("b");strong.textContent=n.who||"";
   const rest=document.createElement("span");
-  if(n.type==="like")        rest.textContent=" "+t("n_liked");
-  else if(n.type==="follow") rest.textContent=" "+t("n_followed");
-  else                       rest.textContent=" "+t("n_commented");
+  if(n.type==="like")             rest.textContent=" "+t("n_liked");
+  else if(n.type==="follow")      rest.textContent=" "+t("n_followed");
+  else if(n.type==="reply")       rest.textContent=" "+t("n_replied");
+  else if(n.type==="comment_like")rest.textContent=" "+t("n_comment_liked");
+  else if(n.type==="message")     rest.textContent=" "+t("n_messaged");
+  else                            rest.textContent=" "+t("n_commented");
   tx.appendChild(strong); tx.appendChild(rest);
 
   if(n.type!=="like" && n.type!=="follow" && n.text){
@@ -8127,11 +8161,30 @@ function notifRow(n){
   if(n.postId && n.type !== "follow"){
     const kap = document.createElement("span");
     kap.className = "nthumb";
-    const gorsel = anKucukResim(n.postId);
+    /* Bildirim verisindeki görsel TAM ADRES olmayabilir; depolama yolu
+       olarak gelirse doğrudan kullanılamaz ve görsel kaybolur.
+       Bu yüzden adres olup olmadığı kontrol edilip gerekirse çevrilir. */
+    let gorsel = null;
+    try{
+      const ham = n.postMedia;
+      if(ham){
+        gorsel = /^(https?:|data:|blob:)/.test(ham)
+          ? ham
+          : (window.__sb
+              ? window.__sb.storage.from('moments').getPublicUrl(ham).data.publicUrl
+              : null);
+      }
+    }catch(e){}
+    if(!gorsel) gorsel = anKucukResim(n.postId);
     if(gorsel){
       const im = document.createElement("img");
       im.src = gorsel; im.alt = ""; im.loading = "lazy"; im.decoding = "async";
-      im.addEventListener("error", ()=>kap.remove(), {once:true});
+      im.addEventListener("error", ()=>{
+        // adres çalışmadıysa yedek kaynağı dene, o da yoksa kutuyu kaldır
+        const yedek = anKucukResim(n.postId);
+        if(yedek && yedek !== im.src){ im.src = yedek; return; }
+        kap.remove();
+      }, {once:true});
       kap.appendChild(im);
       b.appendChild(kap);
     }
@@ -8140,8 +8193,31 @@ function notifRow(n){
   b.addEventListener("click",()=>{
     n.seen=true;paintDot();renderNotifs();
     markNotifSeen([n.id]);          // sunucuya da yaz (yenileyince geri gelmesin)
+
+    // takip → profile
     if(n.type==="follow"){ close("notif"); openProfile(n.who); return; }
-    if(n.postId){ close("notif"); setTab($("#tabFeed")); goToPost(n.postId); }
+
+    // mesaj → sohbete
+    if(n.type==="message"){ close("notif"); openChat(n.who); return; }
+
+    /* Yorum türlerinde ana git ve YORUMLARI AÇ — kullanıcı hangi
+       yoruma geldiğini görsün. Önceden sadece akışa gidiyordu. */
+    if(n.postId){
+      close("notif"); setTab($("#tabFeed")); goToPost(n.postId);
+      const yorumTuru = (n.type==="comment" || n.type==="reply" || n.type==="comment_like");
+      if(yorumTuru){
+        setTimeout(()=>{
+          try{
+            const it = (items||[]).find(x=>x && x.id===n.postId);
+            if(it && typeof openComments==="function") openComments(it);
+          }catch(e){}
+        }, 700);
+      }
+      return;
+    }
+
+    // an yoksa hiç değilse profile götür
+    if(n.who){ close("notif"); openProfile(n.who); }
   });
   return b;
 }
@@ -12316,7 +12392,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.3";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.5";
   box.appendChild(ver);
 }
 

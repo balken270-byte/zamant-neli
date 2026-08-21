@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.4.4</title>
+<title>Klipsy 1.4.6</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      nt_fcm_fail:"Firebase bağlantısı kurulamadı",
       nt_send_fail:"Gönderilemedi",
       nt_sent:"Gönderildi — bildirim birkaç saniyede gelir",
       nt_sending:"Gönderiliyor…",
@@ -442,6 +443,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      nt_fcm_fail:"Firebase connection failed",
       nt_send_fail:"Couldn't send",
       nt_sent:"Sent — notification arrives in a few seconds",
       nt_sending:"Sending…",
@@ -854,6 +856,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      nt_fcm_fail:"Fallo de conexión con Firebase",
       nt_send_fail:"No se pudo enviar",
       nt_sent:"Enviado: llegará en unos segundos",
       nt_sending:"Enviando…",
@@ -1266,6 +1269,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      nt_fcm_fail:"فشل الاتصال بـ Firebase",
       nt_send_fail:"تعذّر الإرسال",
       nt_sent:"تم الإرسال — سيصل خلال ثوانٍ",
       nt_sending:"جارٍ الإرسال…",
@@ -1678,6 +1682,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      nt_fcm_fail:"Connexion Firebase échouée",
       nt_send_fail:"Échec de l'envoi",
       nt_sent:"Envoyé — arrive dans quelques secondes",
       nt_sending:"Envoi…",
@@ -2090,6 +2095,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      nt_fcm_fail:"Firebase-Verbindung fehlgeschlagen",
       nt_send_fail:"Senden fehlgeschlagen",
       nt_sent:"Gesendet — kommt in wenigen Sekunden",
       nt_sending:"Wird gesendet…",
@@ -2502,6 +2508,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      nt_fcm_fail:"Не удалось подключиться к Firebase",
       nt_send_fail:"Не удалось отправить",
       nt_sent:"Отправлено — придёт через несколько секунд",
       nt_sending:"Отправка…",
@@ -2914,6 +2921,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      nt_fcm_fail:"Falha na conexão com o Firebase",
       nt_send_fail:"Falha ao enviar",
       nt_sent:"Enviado — chega em alguns segundos",
       nt_sending:"Enviando…",
@@ -3326,6 +3334,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      nt_fcm_fail:"Firebase कनेक्शन विफल",
       nt_send_fail:"भेजा नहीं जा सका",
       nt_sent:"भेजा गया — कुछ सेकंड में आएगा",
       nt_sending:"भेजा जा रहा है…",
@@ -3738,6 +3747,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      nt_fcm_fail:"Koneksi Firebase gagal",
       nt_send_fail:"Gagal mengirim",
       nt_sent:"Terkirim — tiba dalam beberapa detik",
       nt_sending:"Mengirim…",
@@ -6865,7 +6875,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.4</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.6</span></div>
     </div>
   </section>
 </div>
@@ -12190,7 +12200,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.4";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.6";
   box.appendChild(ver);
 }
 
@@ -15218,6 +15228,47 @@ async function bildirimKur(){
   }
 
   try{
+    /* ÖNEMLİ: Dinleyiciler izinden ÖNCE kurulur.
+       Önceden izin yoksa fonksiyon erken çıkıyor ve dinleyici hiç
+       kurulmuyordu. Kullanıcı izni sonradan verince anahtar geliyor
+       ama yakalayan olmadığı için kayboluyordu. */
+    if(!bildirimKur._dinleyiciKuruldu){
+      bildirimKur._dinleyiciKuruldu = true;
+
+      PN.addListener("registration", async (t)=>{
+        try{
+          const sb = window.__sb, me = window.__me;
+          if(!sb || !me || !t || !t.value) return;
+          await sb.from("device_tokens").upsert({
+            token: t.value,
+            user_id: me.id,
+            platform: "android",
+            updated_at: new Date().toISOString()
+          }, { onConflict: "token" });
+        }catch(e){ console.warn("cihaz anahtarı:", e); }
+      });
+
+      PN.addListener("registrationError", e=>console.warn("bildirim kaydı:", e));
+
+      PN.addListener("pushNotificationReceived", ()=>{
+        try{ if(typeof loadNotifs === "function") loadNotifs(); }catch(e){}
+      });
+
+      PN.addListener("pushNotificationActionPerformed", (olay)=>{
+        try{
+          const d = (olay && olay.notification && olay.notification.data) || {};
+          if(d.kind === "message"){
+            setTab($("#tabMsg")); if(typeof openChats==="function") openChats();
+          }else if(d.moment_id){
+            setTab($("#tabFeed"));
+            if(typeof goToPost === "function") goToPost(d.moment_id);
+          }else{
+            if(typeof renderNotifs === "function"){ renderNotifs(); open("notif"); }
+          }
+        }catch(e){}
+      });
+    }
+
     // izin
     let izin = await PN.checkPermissions();
     if(izin.receive !== "granted"){
@@ -15239,42 +15290,6 @@ async function bildirimKur(){
         lightColor: "#FF3B6B"
       });
     }catch(e){}
-
-    // anahtar geldiğinde sunucuya yaz
-    PN.addListener("registration", async (t)=>{
-      try{
-        const sb = window.__sb, me = window.__me;
-        if(!sb || !me || !t || !t.value) return;
-        await sb.from("device_tokens").upsert({
-          token: t.value,
-          user_id: me.id,
-          platform: "android",
-          updated_at: new Date().toISOString()
-        }, { onConflict: "token" });
-      }catch(e){ console.warn("cihaz anahtarı:", e); }
-    });
-
-    PN.addListener("registrationError", e=>console.warn("bildirim kaydı:", e));
-
-    // uygulama AÇIKKEN bildirim gelirse: listeyi tazele
-    PN.addListener("pushNotificationReceived", ()=>{
-      try{ if(typeof loadNotifs === "function") loadNotifs(); }catch(e){}
-    });
-
-    // bildirime DOKUNULUNCA ilgili yere git
-    PN.addListener("pushNotificationActionPerformed", (olay)=>{
-      try{
-        const d = (olay && olay.notification && olay.notification.data) || {};
-        if(d.kind === "message"){
-          setTab($("#tabMsg")); if(typeof openChats==="function") openChats();
-        }else if(d.moment_id){
-          setTab($("#tabFeed"));
-          if(typeof goToPost === "function") goToPost(d.moment_id);
-        }else{
-          if(typeof renderNotifs === "function"){ renderNotifs(); open("notif"); }
-        }
-      }catch(e){}
-    });
 
     await PN.register();
   }catch(e){ console.warn("bildirim kurulumu:", e); }
@@ -15307,14 +15322,37 @@ async function bildirimTest(){
     if(error){ toast(t("nt_db_fail")); return; }
 
     if(!cihazlar || cihazlar.length === 0){
-      // anahtar yok → yeniden kaydolmayı dene
+      /* Anahtar yok. Kendi dinleyicimizi kurup yeniden kaydolalım —
+         böylece anahtarın gelip gelmediğini kesin görürüz ve gelirse
+         hemen kaydederiz. Hata varsa sebebi de gösterilir. */
       toast(t("nt_registering"));
+
+      let geldi = false;
+      const dinleyici = await PN.addListener("registration", async (tk)=>{
+        geldi = true;
+        try{
+          await sb.from("device_tokens").upsert({
+            token: tk.value, user_id: me.id, platform: "android",
+            updated_at: new Date().toISOString()
+          }, { onConflict: "token" });
+          toast(t("nt_ready"));
+        }catch(e){ toast(t("nt_db_fail")); }
+        try{ dinleyici.remove(); }catch(e){}
+      });
+
+      const hataDinleyici = await PN.addListener("registrationError", (e)=>{
+        geldi = true;
+        const m = (e && (e.error || e.message)) ? String(e.error || e.message) : "";
+        toast(t("nt_fcm_fail") + (m ? (": " + m.slice(0,60)) : ""));
+        try{ hataDinleyici.remove(); }catch(e2){}
+      });
+
       await PN.register();
-      setTimeout(async ()=>{
-        const { data: tekrar } = await sb
-          .from("device_tokens").select("token").eq("user_id", me.id);
-        toast((tekrar && tekrar.length) ? t("nt_ready") : t("nt_no_token"));
-      }, 2500);
+
+      setTimeout(()=>{
+        if(!geldi) toast(t("nt_no_token"));
+        try{ dinleyici.remove(); hataDinleyici.remove(); }catch(e){}
+      }, 6000);
       return;
     }
 

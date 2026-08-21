@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.3.1</title>
+<title>Klipsy 1.3.3</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      crop_hint3:"Kaydırarak görünecek yeri seç",
+      crop_reset:"Başa dön",
       crop_hint2:"Tamamı görünüyor · kaydır, yakınlaştır",
       crop_fill:"Çerçeveyi doldur",
       crop_all:"Tamamını göster",
@@ -429,6 +431,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      crop_hint3:"Drag to choose what shows",
+      crop_reset:"Reset",
       crop_hint2:"Full photo shown · drag and zoom",
       crop_fill:"Fill frame",
       crop_all:"Show all",
@@ -828,6 +832,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      crop_hint3:"Arrastra para elegir qué se ve",
+      crop_reset:"Restablecer",
       crop_hint2:"Foto completa · arrastra y acerca",
       crop_fill:"Rellenar",
       crop_all:"Mostrar todo",
@@ -1227,6 +1233,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      crop_hint3:"اسحب لاختيار الجزء الظاهر",
+      crop_reset:"إعادة",
       crop_hint2:"الصورة كاملة · اسحب وكبّر",
       crop_fill:"ملء الإطار",
       crop_all:"إظهار الكل",
@@ -1626,6 +1634,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      crop_hint3:"Fais glisser pour choisir",
+      crop_reset:"Réinitialiser",
       crop_hint2:"Photo entière · déplace et zoome",
       crop_fill:"Remplir le cadre",
       crop_all:"Tout afficher",
@@ -2025,6 +2035,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      crop_hint3:"Ziehen, um den Ausschnitt zu wählen",
+      crop_reset:"Zurücksetzen",
       crop_hint2:"Ganzes Foto · ziehen und zoomen",
       crop_fill:"Rahmen füllen",
       crop_all:"Alles zeigen",
@@ -2424,6 +2436,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      crop_hint3:"Двигай, чтобы выбрать кадр",
+      crop_reset:"Сбросить",
       crop_hint2:"Всё фото · двигай и приближай",
       crop_fill:"Заполнить",
       crop_all:"Показать всё",
@@ -2823,6 +2837,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      crop_hint3:"Arraste para escolher",
+      crop_reset:"Redefinir",
       crop_hint2:"Foto inteira · arraste e amplie",
       crop_fill:"Preencher",
       crop_all:"Mostrar tudo",
@@ -3222,6 +3238,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      crop_hint3:"खींचकर चुनें क्या दिखे",
+      crop_reset:"रीसेट",
       crop_hint2:"पूरी फ़ोटो · खींचें और ज़ूम करें",
       crop_fill:"फ़्रेम भरें",
       crop_all:"सब दिखाएँ",
@@ -3621,6 +3639,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      crop_hint3:"Geser untuk memilih bagian",
+      crop_reset:"Atur ulang",
       crop_hint2:"Foto penuh · geser dan perbesar",
       crop_fill:"Isi bingkai",
       crop_all:"Tampilkan semua",
@@ -5367,7 +5387,7 @@ video{background-color:#12121a}
   background:#07070B;flex-direction:column}
 .acWrap.open{display:flex}
 
-.acView{flex:1;min-height:0;position:relative;overflow:hidden;
+.acView{flex:1 1 auto;min-height:0;position:relative;overflow:hidden;
   display:grid;place-items:center;touch-action:none}
 .acView img{max-width:none;width:100%;height:auto;display:block;
   grid-area:1/1;transform-origin:center center;will-change:transform;
@@ -5387,9 +5407,10 @@ video{background-color:#12121a}
              0 0 0 9999px rgba(0,0,0,.62)}
 
 .acHint{flex:none;text-align:center;color:rgba(255,255,255,.6);
-  font-size:12.5px;padding:14px 24px 0;letter-spacing:-.01em}
+  font-size:12.5px;padding:12px 24px 0;letter-spacing:-.01em}
 
-.acZoom{flex:none;margin:14px 22px 0;height:4px;border-radius:99px;
+/* Kaydıraç: alt çubuğun ÜSTÜNDE, ekran içinde kalır. */
+.acZoom{flex:none;margin:16px 22px 0;height:4px;border-radius:99px;
   appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.2)}
 .acZoom::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;
   border-radius:99px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
@@ -5397,7 +5418,7 @@ video{background-color:#12121a}
   background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 
 .acBar{flex:none;display:flex;align-items:center;gap:10px;
-  padding:16px 18px calc(var(--sab) + 20px)}
+  padding:14px 18px calc(var(--sab) + 16px)}
 .acCancel,.acOk,.acFit{flex:none;height:44px;padding:0 18px;border-radius:99px;
   font:inherit;font-size:14.5px;font-weight:700;letter-spacing:-.02em;border:0}
 .acCancel{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
@@ -6731,7 +6752,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.1</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.3</span></div>
     </div>
   </section>
 </div>
@@ -7438,7 +7459,13 @@ function relLong(ms){
 }
 function dateOf(ms){const d=new Date(ms);return d.getDate()+" "+AY[d.getMonth()]+" "+d.getFullYear();}
 function clockOf(ms){const d=new Date(ms);return pad(d.getHours())+":"+pad(d.getMinutes());}
-function nf(n){return n>=1000?(n/1000).toFixed(1).replace(".",",")+" B":String(n);}
+/* Sayı biçimlendirme — boş/geçersiz değerde "undefined" yazmasın,
+   sıfırda da görünür kalsın. */
+function nf(n){
+  const s = Number(n);
+  const v = Number.isFinite(s) ? s : 0;
+  return v >= 1000 ? (v/1000).toFixed(1).replace(".",",")+" B" : String(v);
+}
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 
 const I={
@@ -11451,13 +11478,16 @@ function yigiKoy(sira, adresler){
   try{
     const kutular = document.querySelectorAll("#profBody .pcStats .stat");
     const k = kutular[sira];
-    if(!k || !adresler || !adresler.length) return;
+    if(!k) return;
+    /* Yığın HER ZAMAN oluşturulur — görsel olmasa bile yer kaplar,
+       böylece üç kartın sayı ve etiketleri aynı hizada durur. */
     let y = k.querySelector(".statAvs");
     if(!y){
       y = document.createElement("span"); y.className = "statAvs";
       k.insertBefore(y, k.firstChild);
     }
     y.innerHTML = "";
+    if(!adresler || !adresler.length) return;
     adresler.slice(0,3).forEach(src=>{
       /* Arka plan yerine GÖRSEL elemanı: çembere tam oturur,
          kare köşe kalmaz. */
@@ -11984,7 +12014,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.1";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.3";
   box.appendChild(ver);
 }
 
@@ -12346,6 +12376,8 @@ function renderProfile(){
 
     // sayaç kartları
     st.classList.add("pcStats");
+    // görseller gelmeden önce de hizalama bozulmasın: boş yığınları kur
+    setTimeout(()=>{ try{ yigiKoy(0,null); yigiKoy(1,null); yigiKoy(2,null); }catch(e){} }, 0);
     kart.appendChild(st);
 
     box.appendChild(kart);
@@ -14411,8 +14443,8 @@ function avatarKirp(src){
 
   ov.querySelector(".acCancel").textContent = t("cancel2");
   ov.querySelector(".acOk").textContent     = t("act_use");
-  ov.querySelector(".acHint").textContent   = t("crop_hint2");
-  ov.querySelector(".acFit").textContent    = t("crop_fill");
+  ov.querySelector(".acHint").textContent   = t("crop_hint3");
+  ov.querySelector(".acFit").textContent    = t("crop_reset");
 
   const img  = ov.querySelector(".acMain");
   const zoom = ov.querySelector(".acZoom");
@@ -14437,13 +14469,16 @@ function avatarKirp(src){
                   o boşluk aynı fotoğrafın bulanık haliyle dolar)
        en büyük → çerçeveyi dolduran ölçeğin üç katı
      Böylece kullanıcı fotoğrafın tamamını görüp istediği kadarını seçer. */
+  /* En küçük ölçek = ÇERÇEVEYİ DOLDURAN ölçek.
+     Daha da küçültülebilseydi kenarlarda boşluk oluşurdu; artık
+     çerçeve her zaman dolu. Kullanıcı yukarı aşağı kaydırarak
+     hangi kısmın görüneceğini seçer. */
   let enKucuk = 1, enBuyuk = 3;
   function olcekleriHesapla(){
     const gG = img.clientWidth, gY = img.clientHeight;
     if(!gG || !gY) return;
-    enKucuk = Math.min(cerG / gG, cerY / gY);      // tamamı sığsın
-    const doldur = Math.max(cerG / gG, cerY / gY); // çerçeveyi doldur
-    enBuyuk = doldur * 3;
+    enKucuk = Math.max(cerG / gG, cerY / gY);   // çerçeveyi doldur
+    enBuyuk = enKucuk * 3;
     zoom.min = String(Math.round(enKucuk*100));
     zoom.max = String(Math.round(enBuyuk*100));
   }
@@ -14467,25 +14502,20 @@ function avatarKirp(src){
     ty = (tasma > 0) ? (tasma / 2) * 0.62 : 0;
 
     zoom.value = String(Math.round(sc*100));
-    uygula();
+    sinirla(); uygula();
   }
 
-  // fotoğrafın tamamını göster
-  function tamGoster(){
-    olcekleriHesapla();
-    sc = enKucuk; tx = 0; ty = 0;
-    zoom.value = String(Math.round(sc*100));
-    uygula();
-  }
+  // başa dön: çerçeveyi dolduran en küçük ölçek, üst hizalı
+  function tamGoster(){ otoSigdir(); }
 
   /* Açılışta fotoğrafın TAMAMI sığar — varsayılan avatarlarda olduğu gibi.
      Kenarlarda kalan yer aynı fotoğrafın bulanık haliyle dolar.
      Kullanıcı isterse yakınlaştırıp bir bölümünü seçebilir. */
-  img.onload = ()=>{ requestAnimationFrame(tamGoster); };
+  img.onload = ()=>{ requestAnimationFrame(otoSigdir); };
   img.src = src;
   if(bg) bg.src = src;
 
-  zoom.oninput = ()=>{ sc = Number(zoom.value)/100; uygula(); };
+  zoom.oninput = ()=>{ sc = Number(zoom.value)/100; sinirla(); uygula(); };
   ov.querySelector(".acFit").onclick = otoSigdir;
 
   let bx=0, by=0, suruk=false;
@@ -14494,10 +14524,22 @@ function avatarKirp(src){
     if(e.touches.length!==1) return;
     suruk=true; bx=e.touches[0].clientX-tx; by=e.touches[0].clientY-ty;
   };
+  /* Kaydırma sınırı: fotoğraf çerçeveden ayrılamaz.
+     Böylece hiçbir kenarda boşluk oluşmaz. */
+  function sinirla(){
+    const gen = img.clientWidth  * sc;
+    const yuk = img.clientHeight * sc;
+    const maxX = Math.max(0, (gen - cerG) / 2);
+    const maxY = Math.max(0, (yuk - cerY) / 2);
+    tx = Math.max(-maxX, Math.min(maxX, tx));
+    ty = Math.max(-maxY, Math.min(maxY, ty));
+  }
+
   sahne.ontouchmove = e=>{
     if(!suruk || e.touches.length!==1) return;
     e.preventDefault();
-    tx=e.touches[0].clientX-bx; ty=e.touches[0].clientY-by; uygula();
+    tx=e.touches[0].clientX-bx; ty=e.touches[0].clientY-by;
+    sinirla(); uygula();
   };
   sahne.ontouchend = ()=>{ suruk=false; };
 

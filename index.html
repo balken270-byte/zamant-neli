@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.3.3</title>
+<title>Klipsy 1.3.6</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -4868,7 +4868,7 @@ svg{display:block}
    ayarlanabilir. Kendi profilinde yukarı/aşağı sürüklenir. */
 .hero.heroBig .heroPhoto{position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;object-position:center 50%;display:block;z-index:0;
-  transition:object-position .05s linear}
+  will-change:transform;transform-origin:center top}
 
 /* Varsayılan avatar: profil fotoğrafı GİBİ tüm alanı kaplar.
    Avatar kare üretildiği için "cover" ile kenarları hafif kırpılır,
@@ -5409,16 +5409,18 @@ video{background-color:#12121a}
 .acHint{flex:none;text-align:center;color:rgba(255,255,255,.6);
   font-size:12.5px;padding:12px 24px 0;letter-spacing:-.01em}
 
-/* Kaydıraç: alt çubuğun ÜSTÜNDE, ekran içinde kalır. */
-.acZoom{flex:none;margin:16px 22px 0;height:4px;border-radius:99px;
+/* Alt bölüm: kaydıraç ve düğmeler tek kutuda, ekrana sabit.
+   Ayrı ayrıyken görüntü alanı bunları aşağı itip taşırıyordu. */
+.acFoot{flex:none;padding:14px 0 calc(var(--sab) + 16px)}
+.acZoom{display:block;width:calc(100% - 44px);margin:0 22px 14px;
+  height:4px;border-radius:99px;
   appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.2)}
 .acZoom::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;
   border-radius:99px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .acZoom::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:99px;
   background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 
-.acBar{flex:none;display:flex;align-items:center;gap:10px;
-  padding:14px 18px calc(var(--sab) + 16px)}
+.acBar{display:flex;align-items:center;gap:10px;padding:0 18px}
 .acCancel,.acOk,.acFit{flex:none;height:44px;padding:0 18px;border-radius:99px;
   font:inherit;font-size:14.5px;font-weight:700;letter-spacing:-.02em;border:0}
 .acCancel{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
@@ -6752,7 +6754,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.3</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.6</span></div>
     </div>
   </section>
 </div>
@@ -8136,7 +8138,9 @@ function build(it){
   }
   function toggleLike(force){
     if(force&&it.liked) return false;
-    it.liked=!it.liked;it.likes+=it.liked?1:-1;
+    it.liked=!it.liked;
+    // sayaç eksiye düşemez
+    it.likes = Math.max(0, (Number(it.likes)||0) + (it.liked ? 1 : -1));
     refreshLike();
     // Supabase'e yaz (gerçek kayıtsa)
     if(isReal(it.id) && window.__sb && window.__me){
@@ -8144,7 +8148,7 @@ function build(it){
       if(it.liked){
         sb.from('likes').insert({moment_id:it.id, user_id:uid}).then(({error})=>{
           if(error && !/duplicate/i.test(error.message)) {
-            it.liked=false;it.likes--;refreshLike();
+            it.liked=false; it.likes=Math.max(0,(Number(it.likes)||0)-1); refreshLike();
             toast(t("err_like_add")+" "+error.message);
           }
         });
@@ -8153,6 +8157,19 @@ function build(it){
           if(error) toast(t("err_like_del")+" "+error.message);
         });
       }
+
+      /* Sunucudaki GERÇEK sayacı geri oku.
+         Yerel sayım yanlış başlamışsa (ör. an listede yokken 0 kabul
+         edilmişse) burada düzelir. */
+      setTimeout(()=>{
+        sb.from('moments').select('like_count').eq('id', it.id).single()
+          .then(({data:d})=>{
+            if(d && d.like_count != null && d.like_count !== it.likes){
+              it.likes = d.like_count;
+              refreshLike();
+            }
+          }).catch(()=>{});
+      }, 700);
     }
     return true;
   }
@@ -9941,6 +9958,9 @@ function zamanAnGoster(x){
   }catch(e){}
 
   if(!it){
+    /* An yüklü listelerde yoksa sayaçları SIFIR yazmak yanlış —
+       beğeni ve görüntülenme 0 görünüyordu. Gerçek değerleri
+       sunucudan çekiyoruz. */
     it = {
       id:x.id, who:x.who||"", mine:(x.who===ME),
       ts:x.ts||Date.now(),
@@ -9951,6 +9971,28 @@ function zamanAnGoster(x){
       note:"", where: x.where||x.label||null,
       likes:0, views:0, cc:0, comments:[], liked:false, saved:false, song:null
     };
+
+    if(sb && x.id){
+      sb.from('moments')
+        .select('like_count, comment_count, view_count, note, duration_ms, song_title, song_artist, song_art, song_preview')
+        .eq('id', x.id).single()
+        .then(({data:d})=>{
+          if(!d) return;
+          it.likes = d.like_count||0;
+          it.cc    = d.comment_count||0;
+          it.views = d.view_count||0;
+          it.note  = d.note||"";
+          if(d.song_title) it.song = {title:d.song_title, artist:d.song_artist,
+                                      art:d.song_art, preview:d.song_preview};
+          // görüntüleyici açıksa sayıları tazele
+          if(typeof openArchiveView==="function" &&
+             document.getElementById("arcView") &&
+             document.getElementById("arcView").classList.contains("open")){
+            openArchiveView(it);
+          }
+        })
+        .catch(()=>{});
+    }
   }
   if(typeof openArchiveView==="function") openArchiveView(it);
 }
@@ -12014,7 +12056,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.3";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.6";
   box.appendChild(ver);
 }
 
@@ -12253,8 +12295,35 @@ function renderProfile(){
       img.className = "heroPhoto";
       img.src = foto;
 
-      /* NOT: Konum ayarı artık FOTOĞRAF ÇEKİLİRKEN yapılıyor
-         (kırpma ekranında). Profilde sürükleme yok. */
+      /* Fotoğrafa dokununca tam ekran açılır — başkasının profilinde
+         de fotoğrafın tamamı görülebilsin. */
+      img.style.cursor = "zoom-in";
+      img.addEventListener("click", ()=>{
+        if(typeof openImageViewer === "function") openImageViewer(foto);
+      });
+
+      /* FACEBOOK TARZI KAYDIRMA
+         Sayfa aşağı kaydıkça fotoğraf daha yavaş hareket eder,
+         hafifçe büyür — derinlik hissi verir. */
+      if(!hero._paralaks){
+        hero._paralaks = true;
+        const govde = document.getElementById("profBody");
+        if(govde){
+          let bekle = false;
+          govde.addEventListener("scroll", ()=>{
+            if(bekle) return;
+            bekle = true;
+            requestAnimationFrame(()=>{
+              bekle = false;
+              const y = govde.scrollTop;
+              const f = hero.querySelector(".heroPhoto, .heroAvatar");
+              if(f) f.style.transform =
+                "translateY(" + (y * 0.35).toFixed(1) + "px) scale(" + (1 + y/2600).toFixed(3) + ")";
+            });
+          }, {passive:true});
+        }
+      }
+
       // görsel inmezse gradyana dön
       img.addEventListener("error", ()=>{
         hero.classList.remove("hasPhoto");
@@ -14412,12 +14481,14 @@ function avatarKirp(src){
         '<div class="acShade"><div class="acHole"></div></div>'+
       '</div>'+
       '<div class="acHint"></div>'+
-      '<div class="acBar">'+
-        '<button class="acCancel"></button>'+
-        '<button class="acFit"></button>'+
-        '<button class="acOk"></button>'+
-      '</div>'+
-      '<input class="acZoom" type="range" min="100" max="300" value="100">';
+      '<div class="acFoot">'+
+        '<input class="acZoom" type="range" min="100" max="300" value="100">'+
+        '<div class="acBar">'+
+          '<button class="acCancel"></button>'+
+          '<button class="acFit"></button>'+
+          '<button class="acOk"></button>'+
+        '</div>'+
+      '</div>';
     document.body.appendChild(ov);
   }
 

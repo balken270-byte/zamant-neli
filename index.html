@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.4.7</title>
+<title>Klipsy 1.5.0</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6875,7 +6875,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.7</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.0</span></div>
     </div>
   </section>
 </div>
@@ -12200,7 +12200,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.7";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.0";
   box.appendChild(ver);
 }
 
@@ -13057,38 +13057,79 @@ function preview(c){
 }
 
 let _chatActiveTab='main';
+/* SOHBET LİSTESİ ÇİZİMİ
+   Önceden her çağrıda liste tamamen siliniyor ve baştan kuruluyordu.
+   Bir mesaj gelse bile tüm satırlar yok edilip yeniden yaratılıyor,
+   bu da gözle görülür bir "gidip gelme" ve donmaya yol açıyordu.
+
+   Artık satırlar KORUNUYOR: sırası değişen taşınıyor, içeriği değişen
+   güncelleniyor, kalkanlar siliniyor. Değişmeyen satıra dokunulmuyor. */
 function renderChats(){
   sortChats();
   const mainBox=$("#chatList"), reqBox=$("#chatReqList");
 
-  const incomingRequests = chats.filter(c=>c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id));
-  const mainList = chats.filter(c=>!(c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id)));
+  const istekler = chats.filter(c=>c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id));
+  const anaListe = chats.filter(c=>!(c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id)));
 
-  // sekme rozeti
   const dot=$("#chatTabDot");
-  if(dot) dot.classList.toggle("hide", incomingRequests.length===0);
+  if(dot) dot.classList.toggle("hide", istekler.length===0);
 
-  // Mesajlar sekmesi
-  mainBox.innerHTML="";
-  if(!mainList.length){
-    const e=document.createElement("div");e.className="chatEmpty";
-    e.innerHTML=t("no_msgs")+"<br>"+t("no_msgs_hint");
-    mainBox.appendChild(e);
-  }else{
-    mainList.forEach(c=>mainBox.appendChild(buildChatRow(c,false)));
-  }
-
-  // Mesaj istekleri sekmesi
-  reqBox.innerHTML="";
-  if(!incomingRequests.length){
-    const e=document.createElement("div");e.className="chatEmpty";
-    e.innerHTML=t("no_requests");
-    reqBox.appendChild(e);
-  }else{
-    incomingRequests.forEach(c=>reqBox.appendChild(buildChatRow(c,true)));
-  }
+  listeyiEsitle(mainBox, anaListe, false, t("no_msgs")+"<br>"+t("no_msgs_hint"));
+  listeyiEsitle(reqBox,  istekler, true,  t("no_requests"));
 
   setChatTab(_chatActiveTab);
+}
+
+/* Bir listeyi hedeflenen duruma en az işlemle getirir. */
+function listeyiEsitle(kutu, veri, istekMi, bosMetin){
+  if(!kutu) return;
+
+  if(!veri.length){
+    if(!kutu.querySelector(".chatEmpty")){
+      kutu.innerHTML="";
+      const e=document.createElement("div");e.className="chatEmpty";
+      e.innerHTML=bosMetin;
+      kutu.appendChild(e);
+    }
+    return;
+  }
+
+  const bos = kutu.querySelector(".chatEmpty");
+  if(bos) bos.remove();
+
+  // mevcut satırları anahtarla eşle
+  const mevcut = new Map();
+  Array.from(kutu.children).forEach(el=>{
+    if(el.dataset && el.dataset.who) mevcut.set(el.dataset.who, el);
+  });
+
+  const kalacak = new Set();
+
+  veri.forEach((c, sira)=>{
+    kalacak.add(c.who);
+    let el = mevcut.get(c.who);
+
+    // yoksa yeni satır kur
+    if(!el){
+      el = buildChatRow(c, istekMi);
+      el.dataset.who = c.who;
+    }else{
+      // varsa içeriğini tazele (satır nesnesi korunur)
+      const yeni = buildChatRow(c, istekMi);
+      yeni.dataset.who = c.who;
+      if(yeni.innerHTML !== el.innerHTML){
+        el.replaceWith(yeni);
+        el = yeni;
+      }
+    }
+
+    // sırasını düzelt
+    const suanki = kutu.children[sira];
+    if(suanki !== el) kutu.insertBefore(el, suanki || null);
+  });
+
+  // listeden çıkanları kaldır
+  mevcut.forEach((el, who)=>{ if(!kalacak.has(who)) el.remove(); });
 }
 
 function setChatTab(tab){
@@ -13194,7 +13235,7 @@ async function loadConversations(){
 function openChats(){
   if($("#profile").classList.contains("open")) close("profile");
   if($("#timeSheet").classList.contains("open")) close("timeSheet");
-  renderChats();open("chats");loadConversations();
+  renderChats(); open("chats"); loadConversations();
 }
 /* ===== ENGELLENENLER LİSTESİ ===== */
 async function openBlockedList(){
@@ -13398,8 +13439,7 @@ async function confirmBlock(who){
     // sohbeti KAPATMA — engel şeridini göster (kullanıcı durumu görsün)
     if(chatWho===who) await applyBlockUI(who);
     try{ DataHub.invalidate(); }catch(e){}
-    loadConversations();
-    renderChats();
+    loadConversations();   // içinde renderChats zaten çağrılıyor
     loadFeed();
   }catch(e){ toast(t("err_generic")); }
 }
@@ -13458,7 +13498,6 @@ async function confirmDeleteChat(who){
   try{ DataHub.invalidate('conv:'); }catch(e){}
   renderChats();
   await loadConversations();
-  renderChats();
   toast(t("t_deleted"));
 }
 
@@ -13664,7 +13703,6 @@ function renderChatRequestBar(c){
       }
       chats=chats.filter(x=>x!==c);
       close('chat');
-      renderChats();
       loadConversations();
     });
   }
@@ -13897,8 +13935,20 @@ async function sendMsg(){
       return;
     }
     localMsg.id=data; localMsg._pending=false;
-    // conv id'yi öğren ve mesajları tazele (ilk mesajsa sohbet yeni oluştu)
-    if(!_convId[who]){ await loadMessages(who); }
+    /* İlk mesajsa sohbet yeni oluşmuştur; sadece o durumda kimlik
+       çözülür. Önceden her gönderimde tüm sohbet yeniden yükleniyordu. */
+    if(!_convId[who]){
+      try{
+        const uid2 = await idOfUsername(who);
+        if(uid2){
+          const lo = me.id<uid2 ? me.id : uid2, hi = me.id<uid2 ? uid2 : me.id;
+          const {data:conv} = await sb.from('conversations')
+            .select('id').eq('user_a',lo).eq('user_b',hi).maybeSingle();
+          if(conv) _convId[who] = conv.id;
+        }
+      }catch(e){}
+      sohbetleriTazeleGecikmeli();
+    }
     if(chatWho===who) renderChat();
   }catch(e){ toast(t("err_msg")); }
 }
@@ -15447,36 +15497,70 @@ window.__onNewNotification = () => {
 };
 
 // canlı mesaj: yeni mesaj düşünce
-window.__onNewMessage = async (m) => {
+window.__onNewMessage = async (n) => {
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return;
-  // açık sohbetin conv id'si (gerekirse çözülür)
-  let openConv = chatWho ? _convId[chatWho] : null;
-  if(chatWho && !openConv){
-    const uid=await idOfUsername(chatWho);
-    if(uid){
-      const lo=me.id<uid?me.id:uid, hi=me.id<uid?uid:me.id;
-      const {data:conv}=await sb.from('conversations').select('id').eq('user_a',lo).eq('user_b',hi).maybeSingle();
-      if(conv){ openConv=conv.id; _convId[chatWho]=conv.id; }
+
+  /* Açık sohbetteyse: yalnızca yeni mesajları çek ve ekle.
+     Kapalıysa: sohbet listesini kısa bir gecikmeyle, TEK SEFER tazele.
+     Önceden her mesajda tüm liste baştan çiziliyordu. */
+  const gonderen = n && n.actor_id ? n.actor_id : null;
+
+  if(chatWho){
+    const uid = await idOfUsername(chatWho);
+    if(uid && gonderen && uid === gonderen){
+      await mesajlariTazele(chatWho);      // sadece bu sohbet
+      return;
     }
   }
-  if(openConv && m.conv_id===openConv){
-    const c=chatOf(chatWho);
-    if(!c.msgs.some(x=>x.id===m.id)){
+
+  sohbetleriTazeleGecikmeli();
+  toast(t("msg_new"));
+};
+
+/* Sohbet listesini gereksiz yere üst üste tazelemeyi önler.
+   Arka arkaya on mesaj gelse bile tek sorgu yapılır. */
+let _convTazeleT = null;
+function sohbetleriTazeleGecikmeli(){
+  clearTimeout(_convTazeleT);
+  _convTazeleT = setTimeout(()=>{ try{ loadConversations(); }catch(e){} }, 400);
+}
+
+/* Açık sohbete SADECE yeni mesajları ekler — tüm geçmişi yeniden
+   yüklemez, ekranı da baştan çizmez. */
+async function mesajlariTazele(who){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me||!who) return;
+  const convId = _convId[who];
+  if(!convId){ await loadMessages(who); return; }
+
+  try{
+    const { data, error } = await sb.rpc('get_messages', { conv: convId });
+    if(error || !Array.isArray(data)) return;
+
+    const c = chatOf(who);
+    if(!c) return;
+    const varOlan = new Set((c.msgs||[]).map(x=>x.id).filter(Boolean));
+    let eklendi = 0;
+
+    data.forEach(m=>{
+      if(varOlan.has(m.id)) return;
       c.msgs.push({
-        id:m.id, me:false, text:m.body||"",
-        media:m.media_path?sb.storage.from('moments').getPublicUrl(m.media_path).data.publicUrl:null,
-        moment:m.moment_id||null, kind:m.kind, ts:new Date(m.created_at).getTime()
+        id:m.id, me:(m.sender_id===me.id), text:m.body||"",
+        media:m.media_path ? sb.storage.from('moments').getPublicUrl(m.media_path).data.publicUrl : null,
+        moment:m.moment_id||null, kind:m.kind,
+        ts:new Date(m.created_at).getTime()
       });
+      eklendi++;
+    });
+
+    if(eklendi && chatWho===who){
       renderChat();
       const b=$("#msgList"); if(b) b.scrollTop=b.scrollHeight;
-      sb.rpc('get_messages',{conv:openConv}).catch(()=>{});
     }
-  }else{
-    loadConversations();
-    toast(t("msg_new"));
-  }
-};
+  }catch(e){}
+}
+
 setInterval(()=>{
   list.querySelectorAll(".post").forEach(el=>{if(el._sync) el._sync();});
   syncActive();
@@ -16025,14 +16109,23 @@ async function enterApp(){
       .subscribe();
   }catch(e){ console.warn('realtime notif:',e); }
 
-  // canlı mesaj: yeni mesaj düşünce (kendi gönderdiğim hariç)
+  /* CANLI MESAJ — ÖNEMLİ DÜZELTME
+     Önceden bu dinleyicide HİÇBİR FİLTRE yoktu: uygulamadaki herkesin
+     attığı her mesaj bu cihaza geliyor, her seferinde tüm sohbet listesi
+     yeniden çiziliyordu. Hem gereksiz veri hem donma sebebiydi.
+
+     Artık yalnızca BANA gelen bildirimler dinleniyor; bildirim kaydı
+     zaten user_id ile süzülü olduğu için başkasının trafiği hiç gelmiyor. */
   try{
     sb.channel('msg-'+user.id)
       .on('postgres_changes',
-        { event:'INSERT', schema:'public', table:'messages' },
+        { event:'INSERT', schema:'public', table:'notifications',
+          filter:'user_id=eq.'+user.id },
         (payload) => {
-          const m=payload.new;
-          if(m && m.sender_id!==user.id){ try{DataHub.invalidate('conv:');}catch(e){} if(window.__onNewMessage) window.__onNewMessage(m); }
+          const n = payload.new;
+          if(!n || n.kind !== 'message') return;
+          try{ DataHub.invalidate('conv:'); }catch(e){}
+          if(window.__onNewMessage) window.__onNewMessage(n);
         })
       .subscribe();
   }catch(e){ console.warn('realtime msg:',e); }

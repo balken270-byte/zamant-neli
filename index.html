@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.5.0</title>
+<title>Klipsy 1.5.1</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      chat_unmuted:"Sohbetin sesi açıldı",
+      chat_muted:"Sohbet sessize alındı",
+      chat_unmute:"Sesi aç",
+      chat_mute:"Sohbeti sessize al",
       nt_fcm_fail:"Firebase bağlantısı kurulamadı",
       nt_send_fail:"Gönderilemedi",
       nt_sent:"Gönderildi — bildirim birkaç saniyede gelir",
@@ -443,6 +447,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      chat_unmuted:"Conversation unmuted",
+      chat_muted:"Conversation muted",
+      chat_unmute:"Unmute",
+      chat_mute:"Mute conversation",
       nt_fcm_fail:"Firebase connection failed",
       nt_send_fail:"Couldn't send",
       nt_sent:"Sent — notification arrives in a few seconds",
@@ -856,6 +864,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      chat_unmuted:"Sonido reactivado",
+      chat_muted:"Conversación silenciada",
+      chat_unmute:"Reactivar sonido",
+      chat_mute:"Silenciar conversación",
       nt_fcm_fail:"Fallo de conexión con Firebase",
       nt_send_fail:"No se pudo enviar",
       nt_sent:"Enviado: llegará en unos segundos",
@@ -1269,6 +1281,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      chat_unmuted:"تم إلغاء كتم المحادثة",
+      chat_muted:"تم كتم المحادثة",
+      chat_unmute:"إلغاء الكتم",
+      chat_mute:"كتم المحادثة",
       nt_fcm_fail:"فشل الاتصال بـ Firebase",
       nt_send_fail:"تعذّر الإرسال",
       nt_sent:"تم الإرسال — سيصل خلال ثوانٍ",
@@ -1682,6 +1698,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      chat_unmuted:"Sourdine désactivée",
+      chat_muted:"Conversation en sourdine",
+      chat_unmute:"Réactiver",
+      chat_mute:"Mettre en sourdine",
       nt_fcm_fail:"Connexion Firebase échouée",
       nt_send_fail:"Échec de l'envoi",
       nt_sent:"Envoyé — arrive dans quelques secondes",
@@ -2095,6 +2115,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      chat_unmuted:"Stummschaltung aufgehoben",
+      chat_muted:"Chat stummgeschaltet",
+      chat_unmute:"Stummschaltung aufheben",
+      chat_mute:"Chat stummschalten",
       nt_fcm_fail:"Firebase-Verbindung fehlgeschlagen",
       nt_send_fail:"Senden fehlgeschlagen",
       nt_sent:"Gesendet — kommt in wenigen Sekunden",
@@ -2508,6 +2532,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      chat_unmuted:"Уведомления включены",
+      chat_muted:"Уведомления отключены",
+      chat_unmute:"Включить уведомления",
+      chat_mute:"Отключить уведомления",
       nt_fcm_fail:"Не удалось подключиться к Firebase",
       nt_send_fail:"Не удалось отправить",
       nt_sent:"Отправлено — придёт через несколько секунд",
@@ -2921,6 +2949,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      chat_unmuted:"Som reativado",
+      chat_muted:"Conversa silenciada",
+      chat_unmute:"Reativar som",
+      chat_mute:"Silenciar conversa",
       nt_fcm_fail:"Falha na conexão com o Firebase",
       nt_send_fail:"Falha ao enviar",
       nt_sent:"Enviado — chega em alguns segundos",
@@ -3334,6 +3366,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      chat_unmuted:"बातचीत अनम्यूट की गई",
+      chat_muted:"बातचीत म्यूट की गई",
+      chat_unmute:"अनम्यूट करें",
+      chat_mute:"बातचीत म्यूट करें",
       nt_fcm_fail:"Firebase कनेक्शन विफल",
       nt_send_fail:"भेजा नहीं जा सका",
       nt_sent:"भेजा गया — कुछ सेकंड में आएगा",
@@ -3747,6 +3783,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      chat_unmuted:"Obrolan dibunyikan",
+      chat_muted:"Obrolan dibisukan",
+      chat_unmute:"Bunyikan",
+      chat_mute:"Bisukan obrolan",
       nt_fcm_fail:"Koneksi Firebase gagal",
       nt_send_fail:"Gagal mengirim",
       nt_sent:"Terkirim — tiba dalam beberapa detik",
@@ -5962,6 +6002,9 @@ html.native button,html.native .tab{touch-action:manipulation}
   display:grid;place-items:center;font-size:17px;font-weight:600;color:var(--t2)}
 .crow2 .mid{flex:1;min-width:0}
 .crow2 .top{display:flex;align-items:baseline;gap:8px}
+.crow2 .nm .muteDot{display:inline-flex;width:13px;height:13px;margin-left:5px;
+  color:var(--t3);vertical-align:-1px}
+.crow2 .nm .muteDot svg{width:13px;height:13px}
 .crow2 .nm{font-size:14.5px;font-weight:600;letter-spacing:-.018em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2 .tm{margin-left:auto;font-size:11.5px;color:var(--t3);white-space:nowrap}
@@ -6875,7 +6918,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.1</span></div>
     </div>
   </section>
 </div>
@@ -12200,7 +12243,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.1";
   box.appendChild(ver);
 }
 
@@ -13148,7 +13191,14 @@ function buildChatRow(c, isRequestRow){
   const av=document.createElement("span");av.className="av";paintAv(av,c.who);
   const mid=document.createElement("div");mid.className="mid";
   const top=document.createElement("div");top.className="top";
-  const nm=document.createElement("span");nm.className="nm";nm.textContent=c.who;
+  const nm=document.createElement("span");nm.className="nm";
+  nm.textContent = (typeof adiniGoster === "function") ? adiniGoster(c.who) : c.who;
+  // sessize alınmışsa küçük bir çan göstergesi
+  if(typeof _sessizSohbetler !== "undefined" && _sessizSohbetler.has(c.who)){
+    const s=document.createElement("span"); s.className="muteDot";
+    s.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6 8c0 7-3 9-3 9h13"/><path d="m3 3 18 18"/></svg>';
+    nm.appendChild(s);
+  }
   const tm=document.createElement("span");tm.className="tm";
   const l=lastOf(c);tm.textContent=l?rel(l.ts):"";
   top.append(nm,tm);
@@ -13230,6 +13280,7 @@ async function loadConversations(){
     });
     paintDmDot();
     if($("#chats").classList.contains("open")) renderChats();
+    sessizleriYukle();
   }catch(e){ console.warn(e); }
 }
 function openChats(){
@@ -13375,6 +13426,67 @@ function openProfileMenu(who){
   open("chatMenu");
 }
 
+/* ═══ SOHBETİ SESSİZE ALMA ═══
+   Kişiye özel: bir taraf sessize alınca diğeri etkilenmez.
+   Sunucuda saklanır, böylece telefon bildirimleri de susar. */
+const _sessizSohbetler = new Set();
+
+async function sessizleriYukle(){
+  try{
+    const sb=window.__sb, me=window.__me;
+    if(!sb||!me) return;
+    const { data } = await sb.from('chat_mutes').select('conv_id').eq('user_id', me.id);
+    _sessizSohbetler.clear();
+    // conv id → kullanıcı adı eşlemesi
+    (data||[]).forEach(r=>{
+      for(const ad in _convId){ if(_convId[ad] === r.conv_id) _sessizSohbetler.add(ad); }
+    });
+    if(typeof renderChats === "function") renderChats();
+  }catch(e){}
+}
+
+async function sohbetSessizDegistir(who){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me||!who) return;
+
+  let convId = _convId[who];
+  if(!convId){
+    try{
+      const uid = await idOfUsername(who);
+      if(uid){
+        const lo = me.id<uid ? me.id : uid, hi = me.id<uid ? uid : me.id;
+        const { data:conv } = await sb.from('conversations')
+          .select('id').eq('user_a',lo).eq('user_b',hi).maybeSingle();
+        if(conv){ convId = conv.id; _convId[who] = conv.id; }
+      }
+    }catch(e){}
+  }
+  if(!convId){ toast(t("err_generic")); return; }
+
+  const sessizdi = _sessizSohbetler.has(who);
+
+  // önce ekranda göster
+  if(sessizdi) _sessizSohbetler.delete(who); else _sessizSohbetler.add(who);
+  if(typeof renderChats === "function") renderChats();
+
+  try{
+    if(sessizdi){
+      await sb.from('chat_mutes').delete()
+        .eq('user_id', me.id).eq('conv_id', convId);
+      toast(t("chat_unmuted"));
+    }else{
+      await sb.from('chat_mutes')
+        .upsert({ user_id: me.id, conv_id: convId }, { onConflict: 'user_id,conv_id' });
+      toast(t("chat_muted"));
+    }
+  }catch(e){
+    // başarısızsa geri al
+    if(sessizdi) _sessizSohbetler.add(who); else _sessizSohbetler.delete(who);
+    if(typeof renderChats === "function") renderChats();
+    toast(t("err_generic"));
+  }
+}
+
 function openChatMenu(who){
   _chatMenuWho = who;
   const box=$("#cmList");
@@ -13397,6 +13509,17 @@ function openChatMenu(who){
     flag:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4.5h13l-2.4 4 2.4 4H5"/></svg>',
     trash:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V5h5v2M6.5 7l1 13h9l1-13"/></svg>'
   };
+
+  /* Sessize al — bu sohbete özel.
+     Karşı taraf bundan etkilenmez, sadece senin bildirimlerin susar. */
+  const sessizIkon = _sessizSohbetler.has(who)
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/></svg>'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6 8c0 7-3 9-3 9h13"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/><path d="m3 3 18 18"/></svg>';
+
+  row(sessizIkon,
+      _sessizSohbetler.has(who) ? t("chat_unmute") : t("chat_mute"),
+      false,
+      ()=>{ close("chatMenu"); sohbetSessizDegistir(who); });
 
   // profile git
   row(IC2.user, t("act_show_profile"), false, ()=>{

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.4.6</title>
+<title>Klipsy 1.4.7</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6875,7 +6875,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.6</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.4.7</span></div>
     </div>
   </section>
 </div>
@@ -12200,7 +12200,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.4.7";
   box.appendChild(ver);
 }
 
@@ -15356,15 +15356,16 @@ async function bildirimTest(){
       return;
     }
 
-    // 3) kendine test bildirimi gönder
+    /* 3) kendine test bildirimi gönder.
+       Tabloya doğrudan yazılmaz — bildirimler sunucu tarafında
+       oluşturulur. Güvenli fonksiyon üzerinden gidilir. */
     toast(t("nt_sending"));
-    const { error: hata } = await sb.from("notifications").insert({
-      user_id: me.id,
-      actor_id: me.id,
-      kind: "like"
-    });
+    const { error: hata } = await sb.rpc("send_test_notification");
 
-    if(hata){ toast(t("nt_send_fail")); return; }
+    if(hata){
+      toast(t("nt_send_fail") + ": " + String(hata.message||"").slice(0,50));
+      return;
+    }
     setTimeout(()=>toast(t("nt_sent")), 1200);
 
   }catch(e){

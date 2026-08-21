@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.3.6</title>
+<title>Klipsy 1.3.8</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -6754,7 +6754,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.6</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.3.8</span></div>
     </div>
   </section>
 </div>
@@ -12056,7 +12056,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.3.8";
   box.appendChild(ver);
 }
 
@@ -13916,15 +13916,22 @@ async function openCam(which){
   $("#camFail").classList.remove("on");
   setMode(camMode);await start();
 }
-async function start(){
-  stopCam();
+async function start(kayitSurerken){
+  /* Kayıt sürerken kamera değiştiriliyorsa ses ve kayıt korunur;
+     yalnızca görüntü kaynağı değişir. */
+  const kayitVar = !!kayitSurerken && recorder && recorder.state === "recording";
+  // kayıt sürüyorsa ses izinin referansı korunur (yeni akışta ses istenmez)
+  stopCam(kayitVar);
   const v=$("#camVideo");v.classList.toggle("mirror",facing==="user");
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$("#camFail").classList.add("on");return;}
   // izin beklenirken video boş kalır → sade bir zemin göster (çirkin ikon çıkmasın)
   const camPanel=$("#cam");
   if(camPanel) camPanel.classList.add("waiting");
   try{
-    const wantAudio=(camMode==="video");
+    /* Kayıt sürerken kamera değiştiriliyorsa ses YENİDEN istenmez;
+       mevcut ses izi kayda bağlı kalmaya devam eder. Aksi halde
+       ses kesilir ve videonun ortasında sessizlik oluşur. */
+    const wantAudio = (camMode==="video") && !kayitVar;
     // DİKEY akış iste: önizleme 9:16 gösterirken kayıt yatay geliyordu.
     // Bu yüzden çekilen video/fotoğraf ekranda görülenden çok farklı çıkıyordu.
     /* GÖRÜŞ ALANI (FOV) NOTU — önemli:
@@ -13968,6 +13975,8 @@ async function start(){
         audio: wantAudio ? {echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:2} : false
       });
     }
+    /* Kayıt sürerken kamera değiştiyse, önceki ses izi kayda bağlı
+       kalmaya devam ediyor. Yeni akışta ses yok; bu normaldir. */
     v.srcObject=stream;await v.play().catch(()=>{});
     if(camPanel) camPanel.classList.remove("waiting");
 
@@ -14066,13 +14075,25 @@ function blockGhostTap(ms){
   }catch(e){}
 }
 
-function stopCam(){
+function stopCam(kayitKoru){
+  /* kayitKoru: kayıt sürerken kamera değiştiriliyor demektir.
+     Kayıt ve ses izi korunur, yalnızca görüntü izi kapatılır. */
+  if(kayitKoru){
+    if(stream){
+      stream.getVideoTracks().forEach(t=>t.stop());   // sadece görüntü
+    }
+    $("#camVideo").srcObject = null;
+    return;
+  }
+
   if(recorder&&recorder.state==="recording"){try{recorder.stop()}catch(e){}}
   recorder=null;clearInterval(recInt);
   $("#recTime").classList.remove("on");$("#recProg").classList.remove("on");
   $("#shutter").classList.remove("rec");
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
   $("#camVideo").srcObject=null;
+  // tuval kaydı varsa durdur
+  if(typeof tuvalDurdur === "function") tuvalDurdur();
 }
 function closeCam(){
   stopCam();
@@ -14083,7 +14104,18 @@ function closeCam(){
 }
 function setMode(m){camMode=m;$$(".mode").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));}
 $$(".mode").forEach(b=>b.addEventListener("click",()=>{if(camMode!==b.dataset.mode){setMode(b.dataset.mode);start();}}));
-$("#flip").addEventListener("click",()=>{facing=facing==="user"?"environment":"user";start();});
+$("#flip").addEventListener("click", async ()=>{
+  facing = facing==="user" ? "environment" : "user";
+
+  /* KAYIT SIRASINDA KAMERA DEĞİŞTİRME
+     Kayıt tuval üzerinden yapıldığı için kamera değişse de kayıt
+     kesilmez; yeni görüntü aynı videonun devamı olarak işlenir. */
+  if(recorder && recorder.state === "recording"){
+    await start(true);          // sessiz yeniden başlat: kayıt bozulmaz
+    return;
+  }
+  start();
+});
 $("#camClose").addEventListener("click",closeCam);
 $("#openCam").addEventListener("click",()=>openCam("post"));
 function grab(){
@@ -14720,6 +14752,75 @@ async function setAvatar(src){
     toast(t("err_photo")+" "+(e.message||"hata"));
   }
 }
+/* ═══ TUVAL ÜZERİNDEN KAYIT ═══
+   Kayıt doğrudan kamera akışına bağlanırsa, kamera değiştirilince
+   kayıt kopar. Bunun yerine her kare bir tuvale çizilir ve kayıt
+   tuvalden alınır. Kamera değişse de tuval aynı kalır, video kesintisiz
+   devam eder. Ses izi ayrıca eklenir. */
+let _tuval=null, _tctx=null, _tRAF=null, _tStream=null, _tAudio=null;
+
+function tuvalBaslat(fps){
+  const v = $("#camVideo");
+  if(!v || !v.videoWidth) return null;
+
+  // dikey 9:16 kare
+  const yuk = Math.min(v.videoHeight, 1920);
+  const gen = Math.round(yuk * 9 / 16);
+
+  if(!_tuval){
+    _tuval = document.createElement("canvas");
+    _tctx  = _tuval.getContext("2d", { alpha:false });
+  }
+  _tuval.width = gen; _tuval.height = yuk;
+
+  const ciz = ()=>{
+    _tRAF = requestAnimationFrame(ciz);
+    const vv = $("#camVideo");
+    if(!vv || !vv.videoWidth) return;
+
+    // kaynağı 9:16'ya ortalayarak kırp
+    const vw = vv.videoWidth, vh = vv.videoHeight;
+    const hedef = gen / yuk;
+    let sw = vw, sh = Math.round(vw / hedef);
+    if(sh > vh){ sh = vh; sw = Math.round(vh * hedef); }
+    const sx = Math.round((vw - sw) / 2), sy = Math.round((vh - sh) / 2);
+
+    // ön kamerada ayna görüntüsü
+    const ayna = document.querySelector("#camVideo.mirror");
+    _tctx.save();
+    if(ayna){ _tctx.translate(gen, 0); _tctx.scale(-1, 1); }
+    _tctx.drawImage(vv, sx, sy, sw, sh, 0, 0, gen, yuk);
+    _tctx.restore();
+  };
+  cancelAnimationFrame(_tRAF);
+  ciz();
+
+  _tStream = _tuval.captureStream(fps || 30);
+
+  // ses izini ekle
+  try{
+    const ses = stream ? stream.getAudioTracks()[0] : null;
+    if(ses){ _tAudio = ses; _tStream.addTrack(ses); }
+  }catch(e){}
+
+  return _tStream;
+}
+
+function tuvalDurdur(){
+  cancelAnimationFrame(_tRAF); _tRAF = null;
+  if(_tStream){
+    try{ _tStream.getVideoTracks().forEach(t=>t.stop()); }catch(e){}
+    _tStream = null;
+  }
+  /* ÖNEMLİ: Ses izi, kamera değişince eski akışta kalıyor ve
+     "stream" değişkeni yenilendiği için normal kapatmayla durmuyordu.
+     Mikrofon açık kalırdı. Burada açıkça durduruluyor. */
+  if(_tAudio){
+    try{ _tAudio.stop(); }catch(e){}
+    _tAudio = null;
+  }
+}
+
 function startRec(){
   if(!stream||!window.MediaRecorder) return;
 
@@ -14768,15 +14869,25 @@ function startRec(){
   const opts = type
     ? { mimeType:type, videoBitsPerSecond:vBits, audioBitsPerSecond:128000 }
     : { videoBitsPerSecond:vBits, audioBitsPerSecond:128000 };
+  /* Kayıt kaynağı: tuval. Böylece kayıt sırasında kamera değiştirilebilir.
+     Tuval kurulamazsa doğrudan kamera akışına düşülür. */
+  let kaynak = null;
   try{
-    recorder = new MediaRecorder(stream, opts);
+    const fr = (stream && stream.getVideoTracks()[0] &&
+                stream.getVideoTracks()[0].getSettings().frameRate) || 30;
+    kaynak = tuvalBaslat(Math.min(Math.round(fr), 30));
+  }catch(e){ kaynak = null; }
+  if(!kaynak) kaynak = stream;
+
+  try{
+    recorder = new MediaRecorder(kaynak, opts);
   }catch(e){
-    // bit hızı reddedilirse sade kurulumla dene
-    try{ recorder = type ? new MediaRecorder(stream,{mimeType:type}) : new MediaRecorder(stream); }
+    try{ recorder = type ? new MediaRecorder(kaynak,{mimeType:type}) : new MediaRecorder(kaynak); }
     catch(e2){ return; }
   }
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
   recorder.onstop=()=>{
+    tuvalDurdur();
     const blob=new Blob(chunks,{type:chunks[0]?chunks[0].type:"video/webm"});
     const durMs=(recSecs||0)*1000;
     closeCam();openCompose(URL.createObjectURL(blob),"video",blob,durMs);

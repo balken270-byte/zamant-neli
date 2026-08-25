@@ -145,23 +145,26 @@
   /* ══════════════════════════════════════════════════════════════════
      İZİNLER
      ══════════════════════════════════════════════════════════════════ */
-  async function izinIste() {
+  async function izinIste(sesGerekli) {
     if (!yerelMi()) return true;      // web'de getUserMedia kendi sorar
 
-    const P = (cap().Plugins || {});
-    const K = P.Camera;
-
+    /* Eklentinin KENDİ izin arayüzü kullanılır (sürüm 8.7'den beri).
+       Önceden başka bir eklentinin izin arayüzü deneniyordu; o eklenti
+       kurulu olmadığı için izin hiç istenmiyor ve kamera açılmıyordu. */
+    const P = CP();
     try {
-      if (K && K.checkPermissions) {
-        let d = await K.checkPermissions();
-        if (d.camera !== "granted") {
-          d = await K.requestPermissions({ permissions: ["camera"] });
+      if (P.checkPermissions) {
+        let d = await P.checkPermissions({ disableAudio: !sesGerekli });
+        const eksik = (d.camera !== "granted") ||
+                      (sesGerekli && d.microphone !== "granted");
+        if (eksik && P.requestPermissions) {
+          d = await P.requestPermissions({ disableAudio: !sesGerekli });
         }
         if (d.camera !== "granted") throw KameraHatasi(HATA.IZIN_YOK);
       }
     } catch (e) {
       if (e && e.tur) throw e;
-      // izin arayüzü yoksa eklentinin kendi akışına güvenilir
+      throw KameraHatasi(hataCevir(e), e);
     }
     return true;
   }
@@ -186,7 +189,7 @@
       yay("hazirlaniyor");
 
       try {
-        await izinIste();
+        await izinIste(secenek.ses !== false);
 
         if (durum.yerel) await yerelBaslat(secenek);
         else             await webBaslat(secenek);
@@ -205,41 +208,45 @@
   }
 
   async function yerelBaslat(secenek) {
-    /* toBack:true → önizleme tarayıcının ARKASINA yerleşir.
-
-       ÖLÇÜ: Eklentinin kendi "fill" seçeneği kullanılır. Belgede
-       genişlik veya yükseklik verilirse bu seçeneğin kabul edilmediği
-       yazıyor; bu yüzden ölçü elle verilmez.
-
-       SES: Kamera açılırken ses İSTENMEZ. Ses yalnızca kayıt anında
-       açılır — böylece fotoğraf modunda mikrofon boşuna açılmaz. */
-    const temel = {
+    /* SEÇENEKLER — belgeye göre düzeltildi:
+         enableZoom      KALDIRILMIŞ bir seçenek; gönderilmez.
+                         Yakınlaştırma artık setZoom ile yapılıyor.
+         enableVideoMode Video kaydı için ŞART. Varsayılanı kapalı;
+                         açılmadığı için kayıt hiç başlamıyordu.
+         aspectRatio     'fill' → önizleme ekranı doldurur.
+         aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
+         storeToFile     BURADA verilmez; verilirse fotoğraf base64
+                         yerine dosya yolu döner. */
+    const secenekler = {
       position: yonNative(durum.yon),
       toBack: true,
-      enableZoom: true,
-      enableHighResolution: true,
+      aspectRatio: "fill",
+      aspectMode: "cover",
+      enableVideoMode: true,
       lockAndroidOrientation: true,
-      disableAudio: true,
+      disableAudio: secenek.ses === false,
+      videoQuality: "high",
+      includeSafeAreaInsets: false,
     };
-    if (secenek.kap)   temel.parent    = secenek.kap;
-    if (secenek.sinif) temel.className = secenek.sinif;
+    if (secenek.kap)   secenekler.parent    = secenek.kap;
+    if (secenek.sinif) secenekler.className = secenek.sinif;
 
-    /* storeToFile BURADA VERİLMEZ: verilirse fotoğraf çekimi base64
-       yerine dosya yolu döndürür. */
-
-    let kuruldu = false;
+    let sonuc = null;
     try {
-      await CP().start(Object.assign({ aspectRatio: "fill" }, temel));
-      kuruldu = true;
+      sonuc = await CP().start(secenekler);
     } catch (e) {
-      yay("bilgi", { kod: "fill_desteklenmiyor" });
+      /* Kamera zaten açık kalmış olabilir (önceki ekran düzgün
+         kapanmadıysa). "force" ile oturumu tazeleyip yeniden dene. */
+      try {
+        sonuc = await CP().start(Object.assign({ force: true }, secenekler));
+      } catch (e2) {
+        throw e2;
+      }
     }
 
-    if (!kuruldu) {
-      const eg = Math.round(global.innerWidth);
-      const ey = Math.round(global.innerHeight);
-      await CP().start(Object.assign({ x: 0, y: 0, width: eg, height: ey }, temel));
-    }
+    durum.coz = sonuc
+      ? { g: sonuc.width, y: sonuc.height, x: sonuc.x, y0: sonuc.y }
+      : null;
 
     document.documentElement.classList.add("camNativeOn");
     durum.coz = { g: g, y: y, fps: null };
@@ -414,20 +421,22 @@
 
              Eklenti sürümleri arasında seçenek adları değişebiliyor;
              sade çağrı önce denenir, olmazsa seçenekli çağrı. */
-          /* Ses ve dosya seçenekleri KAYIT ANINDA verilir, kamera
-             açılırken değil. Belgede örnek de bu şekilde. */
-          const kayitAyar = { disableAudio: false, storeToFile: true };
+          /* Kayıt seçenekleri belgeye göre:
+               maxDuration  süre sınırı (saniye) — kayıt kendi durur
+               disableAudio sesli kayıt için false
+               videoQuality çözünürlük
+             Süre sınırı burada verildiği için kendi zamanlayıcımız
+             yalnızca yedek olarak çalışır. */
           try{
-            await CP().startRecordVideo(kayitAyar);
+            await CP().startRecordVideo({
+              disableAudio: false,
+              maxDuration: enFazlaSn,
+              videoQuality: "high",
+            });
           }catch(e1){
-            // eski sürümler seçeneksiz çağrı bekliyor olabilir
-            try{
-              await CP().startRecordVideo();
-            }catch(e2){
-              const ay = String((e1 && e1.message) || (e2 && e2.message) || "");
-              yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e1, ayrinti: ay });
-              throw e1;
-            }
+            const ay = String((e1 && e1.message) || "");
+            yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e1, ayrinti: ay });
+            throw e1;
           }
         } else {
           if (!webAkis) return false;
@@ -550,6 +559,20 @@
     }
   }
 
+  /* Kayıt kendiliğinden bittiğinde (süre/dosya sınırı) eklenti haber
+     verir. Uygulamanın haberi olsun diye yakalanır. */
+  (function bagla() {
+    if (!yerelMi()) return;
+    try {
+      CP().addListener("recordingFinished", function (d) {
+        if (!durum.kaydediyor) return;
+        durum.kaydediyor = false;
+        clearTimeout(kayitZamanlayici);
+        yay("kayitKendiBitti", { yol: d && d.videoFilePath, sebep: d && d.reason });
+      });
+    } catch (e) {}
+  })();
+
   /* ══════════════════════════════════════════════════════════════════
      FLAŞ VE YAKINLAŞTIRMA
      ══════════════════════════════════════════════════════════════════ */
@@ -578,7 +601,10 @@
   async function yakinlastir(deger) {
     const d = Math.max(1, Number(deger) || 1);
     if (durum.yerel) {
-      try { await CP().setZoom({ zoom: d }); durum.yakinlik = d; } catch (e) {}
+      /* Belgede parametre adı "level" — "zoom" değil.
+         Yanlış adla çağrı sessizce işe yaramıyordu. */
+      try { await CP().setZoom({ level: d, autoFocus: true }); durum.yakinlik = d; }
+      catch (e) {}
       return durum.yakinlik;
     }
     try {
@@ -595,7 +621,16 @@
 
   /* En geniş açı: cihaz destekliyorsa yakınlaştırmayı en düşüğe çeker. */
   async function enGenisAci() {
-    if (durum.yerel) { try { await CP().setZoom({ zoom: 1 }); } catch (e) {} return; }
+    if (durum.yerel) {
+      /* En geniş açı: cihazın bildirdiği en düşük yakınlaştırma. */
+      try {
+        const z = await CP().getZoom();
+        const enAz = (z && typeof z.min === "number") ? z.min : 1;
+        await CP().setZoom({ level: enAz, autoFocus: true });
+        durum.yakinlik = enAz;
+      } catch (e) {}
+      return;
+    }
     try {
       const iz = webAkis && webAkis.getVideoTracks()[0];
       const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;

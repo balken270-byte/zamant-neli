@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.7.2</title>
+<title>Klipsy 1.7.3</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5444,10 +5444,23 @@ video{background-color:#12121a}
    diğer her şey GİZLENİR; yalnızca kamera düğmeleri kalır. */
 .camRoot{position:absolute;inset:0;z-index:0;pointer-events:none}
 
-/* tarayıcıyı saydamlaştır */
+/* SAYDAMLIK — ÖNİZLEMENİN GÖRÜNMESİ İÇİN ŞART
+   Yalnızca gövdeyi saydam yapmak YETMEZ: gövde ile arayüz arasındaki
+   HER öğe saydam olmalı. Aralarda zemini olan tek bir kutu kalırsa
+   önizleme görünmez ve ekran siyah kalır. */
 html.camNativeOn,
 html.camNativeOn body,
-html.camNativeOn #phone{background:transparent !important}
+html.camNativeOn #phone,
+html.camNativeOn #app,
+html.camNativeOn #cam,
+html.camNativeOn #cam > div,
+html.camNativeOn #cam > section,
+html.camNativeOn .camRoot,
+html.camNativeOn #camRoot{
+  background:transparent !important;
+  background-color:transparent !important;
+  background-image:none !important;
+}
 
 /* KAMERA DIŞINDAKİ HER ŞEYİ GİZLE
    Tek tek saymak yerine kural tersine çevrildi: kamera paneli
@@ -7122,7 +7135,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.2</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.3</span></div>
     </div>
   </section>
 </div>
@@ -12648,7 +12661,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.2";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.3";
   box.appendChild(ver);
 }
 

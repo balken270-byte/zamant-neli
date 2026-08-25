@@ -206,48 +206,43 @@
 
   async function yerelBaslat(secenek) {
     /* toBack:true → önizleme tarayıcının ARKASINA yerleşir.
-       Düğmeler üstte kalır, görüntü donanımdan doğrudan ekrana çizilir.
 
-       EKRANI DOLDURMA
-         Kamera sensörü 4:3 görüntü verir, telefon ekranı ise uzundur.
-         Önizlemeye ekran ölçüsü verilirse görüntü ortada ŞERİT halinde
-         kalır, üstü altı boş görünür.
-         Bunun yerine önizleme ekrandan TAŞACAK kadar büyütülür ve
-         ortalanır — kenarlardan taşan kısım görünmez, ekran dolar.
-         (Fotoğraf uygulamalarının yaptığı da budur.) */
-    const eg = Math.round(global.innerWidth);
-    const ey = Math.round(global.innerHeight);
+       ÖLÇÜ: Eklentinin kendi "fill" seçeneği kullanılır. Belgede
+       genişlik veya yükseklik verilirse bu seçeneğin kabul edilmediği
+       yazıyor; bu yüzden ölçü elle verilmez.
 
-    const sensorOran = 3 / 4;                 // dikeyde genişlik/yükseklik
-    let g = eg, y = ey, x = 0, ust = 0;
-
-    const gerekenG = Math.ceil(ey * sensorOran);
-    if (gerekenG >= eg) {
-      // yüksekliğe göre doldur, yanlardan taşsın
-      g = gerekenG; y = ey;
-      x = Math.round((eg - g) / 2);
-    } else {
-      // genişliğe göre doldur, alttan üstten taşsın
-      g = eg; y = Math.ceil(eg / sensorOran);
-      ust = Math.round((ey - y) / 2);
-    }
-
-    await CP().start({
+       SES: Kamera açılırken ses İSTENMEZ. Ses yalnızca kayıt anında
+       açılır — böylece fotoğraf modunda mikrofon boşuna açılmaz. */
+    const temel = {
       position: yonNative(durum.yon),
-      parent: secenek.kap || "camRoot",
-      className: secenek.sinif || "camNativePreview",
       toBack: true,
-      x: x, y: ust,
-      width: g, height: y,
-      disableAudio: secenek.ses === false,
       enableZoom: true,
-      storeToFile: true,
       enableHighResolution: true,
       lockAndroidOrientation: true,
-    });
+      disableAudio: true,
+    };
+    if (secenek.kap)   temel.parent    = secenek.kap;
+    if (secenek.sinif) temel.className = secenek.sinif;
+
+    /* storeToFile BURADA VERİLMEZ: verilirse fotoğraf çekimi base64
+       yerine dosya yolu döndürür. */
+
+    let kuruldu = false;
+    try {
+      await CP().start(Object.assign({ aspectRatio: "fill" }, temel));
+      kuruldu = true;
+    } catch (e) {
+      yay("bilgi", { kod: "fill_desteklenmiyor" });
+    }
+
+    if (!kuruldu) {
+      const eg = Math.round(global.innerWidth);
+      const ey = Math.round(global.innerHeight);
+      await CP().start(Object.assign({ x: 0, y: 0, width: eg, height: ey }, temel));
+    }
 
     document.documentElement.classList.add("camNativeOn");
-    durum.coz = { g: g, y: y, fps: null, ekranG: eg, ekranY: ey };
+    durum.coz = { g: g, y: y, fps: null };
   }
 
   async function webBaslat(secenek) {
@@ -415,8 +410,25 @@
       try {
         if (durum.yerel) {
           /* Kayıt donanım kodlayıcıyla yapılır: görüntü hiç
-             JavaScript'ten geçmez. Donmanın asıl sebebi buydu. */
-          await CP().startRecordVideo({ storeToFile: true });
+             JavaScript'ten geçmez. Donmanın asıl sebebi buydu.
+
+             Eklenti sürümleri arasında seçenek adları değişebiliyor;
+             sade çağrı önce denenir, olmazsa seçenekli çağrı. */
+          /* Ses ve dosya seçenekleri KAYIT ANINDA verilir, kamera
+             açılırken değil. Belgede örnek de bu şekilde. */
+          const kayitAyar = { disableAudio: false, storeToFile: true };
+          try{
+            await CP().startRecordVideo(kayitAyar);
+          }catch(e1){
+            // eski sürümler seçeneksiz çağrı bekliyor olabilir
+            try{
+              await CP().startRecordVideo();
+            }catch(e2){
+              const ay = String((e1 && e1.message) || (e2 && e2.message) || "");
+              yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e1, ayrinti: ay });
+              throw e1;
+            }
+          }
         } else {
           if (!webAkis) return false;
 

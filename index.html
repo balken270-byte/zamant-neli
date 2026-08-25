@@ -6,7 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.6.0</title>
+<title>Klipsy 1.7.0</title>
+<script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5372,6 +5373,23 @@ video{background-color:#12121a}
   border:3px solid rgba(255,255,255,.16);border-top-color:#FF3B6B;
   animation:crSpin .8s linear infinite}
 #cam video.mirror{transform:scaleX(-1)}
+
+/* ═══ YEREL KAMERA ÖNİZLEMESİ ═══
+   Android önizlemesi HTML'in ARKASINA çizilir. Görünebilmesi için
+   önündeki katmanların saydam olması gerekir; aksi halde ekran
+   siyah kalır ve "kamera açılmıyor" sanılır. */
+.camRoot{position:absolute;inset:0;z-index:0;pointer-events:none}
+.camNativeOn #cam{background:transparent}
+.camNativeOn #cam .camStage,
+.camNativeOn #cam .camWrap{background:transparent}
+.camNativeOn #camVideo{display:none}          /* yerelde video etiketi gereksiz */
+.camNativeOn body,
+.camNativeOn #phone{background:transparent}
+/* Arayüz önizlemenin ÜSTÜNDE kalmalı */
+.camNativeOn #cam .camTop,
+.camNativeOn #cam .camBottom,
+.camNativeOn #cam .modes,
+.camNativeOn #cam .shutterWrap{z-index:5;position:relative}
 .camtop{position:relative;z-index:2;padding:calc(var(--sat) + 12px) 14px 0;display:flex;align-items:center;justify-content:space-between}
 .camtop .title{font-size:14px;font-weight:600;letter-spacing:-.018em;
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:7px 14px;border-radius:99px;
@@ -7020,7 +7038,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.6.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.0</span></div>
     </div>
   </section>
 </div>
@@ -7179,7 +7197,8 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section id="cam" aria-hidden="true">
-    <video id="camVideo" playsinline muted autoplay></video>
+    <div id="camRoot" class="camRoot"></div>
+      <video id="camVideo" playsinline muted autoplay></video>
     <div class="camtop">
       <button class="iconbtn" id="camClose" aria-label="Kapat">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
@@ -12545,7 +12564,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.6.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.0";
   box.appendChild(ver);
 }
 
@@ -14536,10 +14555,42 @@ async function openCam(which){
   setMode(camMode);await start();
 }
 async function start(kayitSurerken){
-  /* Kayıt sürerken kamera değiştiriliyorsa ses ve kayıt korunur;
-     yalnızca görüntü kaynağı değişir. */
+  /* ═══ KAMERA MOTORU ═══
+     Kamera katmanı (klipsy-kamera.js) yüklüyse ONU kullanırız:
+       uygulamada  → Android'in kendi kamerası, donanım kaydı
+       webde       → arka kamera, doğrudan kayıt
+     Katman yoksa eski tarayıcı yoluna düşülür (bozulma olmasın). */
+  if(window.Kamera){
+    try{
+      const v=$("#camVideo");
+      v.classList.toggle("mirror", facing==="user" && !Kamera.yerelMi());
+      $("#camFail").classList.remove("on");
+      const camPanel=$("#cam");
+      if(camPanel) camPanel.classList.add("waiting");
+
+      if(!kayitSurerken) await Kamera.durdur();
+      await Kamera.baslat({
+        yon: facing==="user" ? "on" : "arka",
+        ses: (camMode==="video"),
+        kap: "camRoot",
+        video: "camVideo"
+      });
+      await Kamera.enGenisAci();
+
+      if(camPanel) camPanel.classList.remove("waiting");
+      document.documentElement.classList.toggle("camNativeOn", Kamera.yerelMi());
+      return;
+    }catch(e){
+      const camPanel=$("#cam");
+      if(camPanel) camPanel.classList.remove("waiting");
+      $("#camFail").classList.add("on");
+      console.warn("[Klipsy] kamera:", e && e.tur, e);
+      return;
+    }
+  }
+
+  /* ── ESKİ YOL (katman yoksa) ── */
   const kayitVar = !!kayitSurerken && recorder && recorder.state === "recording";
-  // kayıt sürüyorsa ses izinin referansı korunur (yeni akışta ses istenmez)
   stopCam(kayitVar);
   const v=$("#camVideo");v.classList.toggle("mirror",facing==="user");
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$("#camFail").classList.add("on");return;}
@@ -14701,6 +14752,14 @@ function blockGhostTap(ms){
 }
 
 function stopCam(kayitKoru){
+  if(window.Kamera && !kayitKoru){
+    try{ Kamera.durdur(); }catch(e){}
+    document.documentElement.classList.remove("camNativeOn");
+    $("#recTime").classList.remove("on");$("#recProg").classList.remove("on");
+    $("#shutter").classList.remove("rec");
+    clearInterval(recInt);
+    return;
+  }
   /* kayitKoru: kayıt sürerken kamera değiştiriliyor demektir.
      Kayıt ve ses izi korunur, yalnızca görüntü izi kapatılır. */
   if(kayitKoru){
@@ -14735,6 +14794,20 @@ $("#flip").addEventListener("click", async ()=>{
   /* KAYIT SIRASINDA KAMERA DEĞİŞTİRME
      Kayıt tuval üzerinden yapıldığı için kamera değişse de kayıt
      kesilmez; yeni görüntü aynı videonun devamı olarak işlenir. */
+  /* Katman varsa çevirmeyi o yapar. Uygulamada kayıt BÖLÜNMEZ. */
+  if(window.Kamera){
+    const d = Kamera.durum();
+    if(d.kaydediyor && !Kamera.kayittaCevirmeVar()){
+      facing = facing==="user" ? "environment" : "user";   // geri al
+      toast(t("rec_flip_off"));
+      return;
+    }
+    await Kamera.cevir();
+    const v=$("#camVideo");
+    if(v) v.classList.toggle("mirror", facing==="user" && !Kamera.yerelMi());
+    return;
+  }
+
   if(recorder && recorder.state === "recording"){
     if(!prefFlipWhileRec){
       // özellik kapalı: kayıt bölünmesin, kullanıcıyı bilgilendir
@@ -15546,6 +15619,51 @@ function startRec(){
     if(s>=MAX_REC) stopRec();
   },1000);
 }
+/* ═══ KAYIT — KATMAN YOLU ═══
+   Sayaç, ilerleme çubuğu ve süre sınırı burada yönetilir;
+   asıl kayıt donanımda yapılır. */
+async function kayitBaslatUI(){
+  if(!window.Kamera) return;
+  const enFazla = 30;                       // saniye
+
+  const ok = await Kamera.kayitBaslat({ enFazlaSn: enFazla });
+  if(!ok){ toast(t("err_generic")); return; }
+
+  $("#shutter").classList.add("rec");
+  $("#recTime").classList.add("on");
+  $("#recProg").classList.add("on");
+
+  clearInterval(recInt);
+  recInt = setInterval(()=>{
+    const ms = Kamera.gecenSure();
+    const sn = Math.floor(ms/1000);
+    const el = $("#recTime");
+    if(el) el.textContent = "0:" + String(sn).padStart(2,"0");
+    const pr = $("#recProg span") || $("#recProg");
+    if(pr && pr.style) pr.style.width = Math.min(100, (ms/(enFazla*1000))*100) + "%";
+    if(sn >= enFazla) clearInterval(recInt);
+  }, 100);
+}
+
+async function kayitBitirVeAc(){
+  if(!window.Kamera) return;
+  clearInterval(recInt);
+  $("#shutter").classList.remove("rec");
+  $("#recTime").classList.remove("on");
+  $("#recProg").classList.remove("on");
+
+  const sonuc = await Kamera.kayitBitir();
+  if(!sonuc || !sonuc.blob){ toast(t("err_generic")); return; }
+
+  /* Paylaşım ekranı veri adresi bekliyor; parçayı adrese çeviriyoruz.
+     Dosya bellekte tutulmaz, adres kapanınca serbest bırakılır. */
+  const adres = URL.createObjectURL(sonuc.blob);
+  closeCam();
+
+  if(target==="dm"){ sendMedia(adres,"video",sonuc.sure); }
+  else{ openCompose(adres,"video",sonuc.sure); }
+}
+
 function stopRec(){
   clearInterval(recInt);
   $("#shutter").classList.remove("rec");$("#recTime").classList.remove("on");
@@ -15556,11 +15674,32 @@ const sh=$("#shutter");
 sh.addEventListener("pointerdown",e=>{
   e.preventDefault();holding=true;
   if(camMode==="video") return;
-  holdT=setTimeout(()=>{if(holding){setMode("video");start().then(startRec);}},420);
+  holdT=setTimeout(()=>{
+    if(!holding) return;
+    setMode("video");
+    if(window.Kamera){ start().then(()=>kayitBaslatUI()); }
+    else { start().then(startRec); }
+  },420);
 });
-sh.addEventListener("pointerup",()=>{
+sh.addEventListener("pointerup", async ()=>{
   if(!holding) return;
   holding=false;clearTimeout(holdT);
+
+  /* ═══ KAMERA KATMANI YOLU ═══ */
+  if(window.Kamera){
+    const d = Kamera.durum();
+    if(d.kaydediyor){ await kayitBitirVeAc(); return; }
+    if(camMode==="video"){ await kayitBaslatUI(); return; }
+
+    const foto = await Kamera.fotoCek({ kalite: 88 });
+    if(!foto) return;
+    if(target==="profile"){ closeCam(); blockGhostTap(); avatarKirp(foto); }
+    else if(target==="dm"){ closeCam(); sendMedia(foto); }
+    else { closeCam(); openCompose(foto,"photo"); }
+    return;
+  }
+
+  /* ── eski yol ── */
   if(recorder&&recorder.state==="recording"){stopRec();return;}
   if(camMode==="video"){startRec();return;}
   const src=grab(); if(!src) return;

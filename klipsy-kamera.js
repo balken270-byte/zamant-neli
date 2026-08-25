@@ -1,296 +1,627 @@
 /* ============================================================================
    KLİPSY — KAMERA KATMANI
    ============================================================================
-   NEDEN AYRI DOSYA
-     Kamera bu uygulamanın bel kemiği. Tarayıcı yolu (getUserMedia +
-     MediaRecorder) telefonda akıcı değil: görüntü tarayıcıdan geçiyor,
-     kayıt yazılımla yapılıyor ve kare düşüyor.
+   Kamera bu uygulamanın bel kemiği. Bu dosya kameranın TEK giriş noktasıdır;
+   uygulamanın geri kalanı kamera ayrıntılarını bilmez.
 
-     Bu katman iki yolu ayırır:
-       UYGULAMADA  → Android'in kendi kamerası (CameraX). Önizleme ve kayıt
-                     donanımda yapılır, tarayıcı hiç karışmaz. TikTok'un
-                     yaptığı da budur.
-       WEB'DE      → getUserMedia ile arka kamera. Denemek isteyen görsün;
-                     ciddi çekim uygulamada yapılır.
+   İKİ YOL
+     UYGULAMA (APK)  → Android'in kendi kamerası (CameraX).
+                       Önizleme donanımdan doğrudan ekrana çizilir, kayıt
+                       donanım kodlayıcıyla yapılır. Görüntü hiç JavaScript'ten
+                       geçmez. Kayıt sırasında kamera çevirmek de bedavadır.
+     WEB             → getUserMedia, yalnızca arka kamera, doğrudan kayıt.
+                       Tuval KULLANILMAZ: her kareyi JavaScript ile kopyalamak
+                       kaydı dondurur. Web bir vitrindir; ciddi çekim uygulamada.
 
-   KULLANIM
-     await Kamera.baslat({ yon:'arka' });   // önizlemeyi aç
-     await Kamera.cevir();                  // ön/arka
-     const foto  = await Kamera.fotoCek();  // data URL döner
-     await Kamera.kayitBaslat();
-     const video = await Kamera.kayitBitir(); // { blob, sure }
+   TASARIM KURALLARI
+     1. Hiçbir hata sessizce yutulmaz. Her hata sınıflandırılır ve bildirilir.
+     2. Kaynaklar her yolda serbest bırakılır (hata olsa bile).
+     3. Aynı anda iki işlem çalışmaz; işlemler sıraya alınır.
+     4. Uygulama arka plana geçince kamera bırakılır, dönünce geri alınır.
+
+   HIZLI KULLANIM
+     Kamera.olay(e => console.log(e.tur, e));
+     await Kamera.baslat({ yon:'arka' });
+     const foto = await Kamera.fotoCek();
+     await Kamera.kayitBaslat({ enFazlaSn: 30 });
+     const video = await Kamera.kayitBitir();   // { blob, sure, tur }
      await Kamera.durdur();
-
-   Kamera.yerelMi() → uygulamada mı çalışıyor
    ============================================================================ */
 
 (function (global) {
   "use strict";
 
-  /* ── Ortam tespiti ─────────────────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════════════════
+     HATA TÜRLERİ
+     Çağıran taraf hatayı ayırt edebilsin diye sınıflandırılır.
+     Kullanıcıya gösterilecek metin uygulamanın çeviri dosyasından gelir.
+     ══════════════════════════════════════════════════════════════════ */
+  const HATA = {
+    IZIN_YOK:        "izin_yok",
+    KAMERA_YOK:      "kamera_yok",
+    MESGUL:          "mesgul",
+    DESTEKSIZ:       "desteksiz",
+    GUVENSIZ_BAGLAM: "guvensiz_baglam",
+    KAYIT_HATASI:    "kayit_hatasi",
+    BILINMEYEN:      "bilinmeyen",
+  };
+
+  function hataCevir(e) {
+    const ad  = (e && (e.name || e.code)) ? String(e.name || e.code) : "";
+    const msj = (e && e.message) ? String(e.message) : "";
+    const hepsi = (ad + " " + msj).toLowerCase();
+
+    if (/notallowed|permission|denied|izin/.test(hepsi))        return HATA.IZIN_YOK;
+    if (/notfound|devicesnotfound|nocamera/.test(hepsi))        return HATA.KAMERA_YOK;
+    if (/notreadable|trackstart|inuse|busy/.test(hepsi))        return HATA.MESGUL;
+    if (/notsupported|typeerror/.test(hepsi))                   return HATA.DESTEKSIZ;
+    if (/secure|https/.test(hepsi))                             return HATA.GUVENSIZ_BAGLAM;
+    return HATA.BILINMEYEN;
+  }
+
+  function KameraHatasi(tur, asil) {
+    const h = new Error("Kamera: " + tur);
+    h.tur = tur;
+    h.asil = asil || null;
+    return h;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     ORTAM
+     ══════════════════════════════════════════════════════════════════ */
+  function cap() { return global.Capacitor || null; }
+
   function yerelMi() {
     try {
-      const c = global.Capacitor;
+      const c = cap();
       if (!c || !c.isNativePlatform || !c.isNativePlatform()) return false;
-      const P = c.Plugins || {};
-      return !!P.CameraPreview;
+      return !!((c.Plugins || {}).CameraPreview);
     } catch (e) { return false; }
   }
 
-  function eklenti() {
-    const c = global.Capacitor;
+  function CP() {
+    const c = cap();
     return (c && c.Plugins && c.Plugins.CameraPreview) || null;
   }
 
-  /* ── Durum ─────────────────────────────────────────────────────────── */
+  function guvenliBaglamMi() {
+    if (yerelMi()) return true;
+    return !!(global.isSecureContext ||
+              location.protocol === "https:" ||
+              /^(localhost|127\.0\.0\.1)$/.test(location.hostname));
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     OLAY YAYINI
+     Uygulama kameranın durumunu buradan izler; yoklama yapmaz.
+     ══════════════════════════════════════════════════════════════════ */
+  const dinleyiciler = [];
+
+  function olay(geriCagri) {
+    if (typeof geriCagri !== "function") return function () {};
+    dinleyiciler.push(geriCagri);
+    return function () {
+      const i = dinleyiciler.indexOf(geriCagri);
+      if (i >= 0) dinleyiciler.splice(i, 1);
+    };
+  }
+
+  function yay(tur, veri) {
+    const e = Object.assign({ tur: tur, zaman: Date.now() }, veri || {});
+    dinleyiciler.forEach(function (f) { try { f(e); } catch (x) {} });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     DURUM
+     ══════════════════════════════════════════════════════════════════ */
   const durum = {
     acik: false,
+    hazirlaniyor: false,
     kaydediyor: false,
-    yon: "arka",          // 'arka' | 'on'
+    yon: "arka",
+    flas: "off",
+    yakinlik: 1,
     kayitBaslangic: 0,
+    yerel: false,
+    coz: null,
   };
 
-  let webAkis = null;     // web yolunda MediaStream
-  let webKayit = null;    // web yolunda MediaRecorder
+  let webAkis = null;
+  let webKayit = null;
   let webParcalar = [];
+  let kayitZamanlayici = null;
 
-  const yonNative = (y) => (y === "on" ? "front" : "rear");
+  /* Aynı anda iki işlem çalışmasın diye basit bir sıra.
+     Kullanıcı çevirme düğmesine hızlı iki kez basarsa ikinci istek
+     birincisi bitmeden başlamaz. */
+  let sira = Promise.resolve();
+  function sirala(is) {
+    sira = sira.then(is, is);
+    return sira;
+  }
+
+  function yonNative(y) { return y === "on" ? "front" : "rear"; }
+
+  /* ══════════════════════════════════════════════════════════════════
+     İZİNLER
+     ══════════════════════════════════════════════════════════════════ */
+  async function izinIste() {
+    if (!yerelMi()) return true;      // web'de getUserMedia kendi sorar
+
+    const P = (cap().Plugins || {});
+    const K = P.Camera;
+
+    try {
+      if (K && K.checkPermissions) {
+        let d = await K.checkPermissions();
+        if (d.camera !== "granted") {
+          d = await K.requestPermissions({ permissions: ["camera"] });
+        }
+        if (d.camera !== "granted") throw KameraHatasi(HATA.IZIN_YOK);
+      }
+    } catch (e) {
+      if (e && e.tur) throw e;
+      // izin arayüzü yoksa eklentinin kendi akışına güvenilir
+    }
+    return true;
+  }
 
   /* ══════════════════════════════════════════════════════════════════
      BAŞLAT
      ══════════════════════════════════════════════════════════════════ */
-  async function baslat(secenek) {
+  function baslat(secenek) {
     secenek = secenek || {};
-    if (durum.acik) return;
+    return sirala(async function () {
+      if (durum.acik || durum.hazirlaniyor) return;
 
-    durum.yon = secenek.yon || "arka";
+      if (!guvenliBaglamMi()) {
+        const h = KameraHatasi(HATA.GUVENSIZ_BAGLAM);
+        yay("hata", { hataTuru: h.tur, hata: h });
+        throw h;
+      }
 
-    if (yerelMi()) {
-      /* Yerel önizleme, HTML'in ARKASINA yerleşir (toBack).
-         Böylece düğmeler ve yazılar üstte kalır, görüntü donanımdan
-         doğrudan ekrana çizilir — tarayıcı katmanı yok. */
-      const CP = eklenti();
-      await CP.start({
-        position: yonNative(durum.yon),
-        parent: secenek.kap || "camRoot",
-        className: "camNativePreview",
-        toBack: true,
-        x: 0, y: 0,
-        width: Math.round(global.innerWidth),
-        height: Math.round(global.innerHeight),
-        disableAudio: false,      // video kaydında ses gerekiyor
-        enableZoom: true,
-        storeToFile: true,
-        enableHighResolution: true,
-      });
+      durum.hazirlaniyor = true;
+      durum.yerel = yerelMi();
+      durum.yon = secenek.yon || "arka";
+      yay("hazirlaniyor");
 
-      // gövdeye işaret: arka plan saydam olmalı, yoksa önizleme görünmez
-      document.documentElement.classList.add("camNativeOn");
-      durum.acik = true;
-      return;
+      try {
+        await izinIste();
+
+        if (durum.yerel) await yerelBaslat(secenek);
+        else             await webBaslat(secenek);
+
+        durum.acik = true;
+        durum.hazirlaniyor = false;
+        yay("basladi", { yerel: durum.yerel, yon: durum.yon, coz: durum.coz });
+      } catch (e) {
+        durum.hazirlaniyor = false;
+        await temizle();
+        const tur = (e && e.tur) ? e.tur : hataCevir(e);
+        yay("hata", { hataTuru: tur, hata: e });
+        throw KameraHatasi(tur, e);
+      }
+    });
+  }
+
+  async function yerelBaslat(secenek) {
+    /* toBack:true → önizleme HTML'in ARKASINA yerleşir.
+       Düğmeler ve yazılar üstte kalır, görüntü donanımdan doğrudan
+       ekrana çizilir. Tarayıcı katmanı devreye girmez. */
+    const g = Math.round(global.innerWidth);
+    const y = Math.round(global.innerHeight);
+
+    await CP().start({
+      position: yonNative(durum.yon),
+      parent: secenek.kap || "camRoot",
+      className: secenek.sinif || "camNativePreview",
+      toBack: true,
+      x: 0, y: 0,
+      width: g, height: y,
+      disableAudio: secenek.ses === false,
+      enableZoom: true,
+      storeToFile: true,
+      enableHighResolution: true,
+      lockAndroidOrientation: true,
+    });
+
+    document.documentElement.classList.add("camNativeOn");
+    durum.coz = { g: g, y: y, fps: null };
+  }
+
+  async function webBaslat(secenek) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw KameraHatasi(HATA.DESTEKSIZ);
     }
 
-    /* ── WEB YOLU ──
-       Yalnızca arka kamera. Orana karışılmaz; kamera kendi geniş
-       görüntüsünü versin (istenirse sensör kenarları kırpılıyor). */
-    const kisit = {
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1920 },
-        frameRate: { ideal: 30, min: 24 },
-      },
-      audio: secenek.ses !== false,
-    };
+    /* GÖRÜŞ ALANI NOTU
+       Kameradan belirli bir EN-BOY ORANI istemek, tarayıcının sensör
+       görüntüsünü kırpmasına yol açar; görüntü yakınlaşmış gibi olur.
+       Bu yüzden orana karışılmaz, yalnızca genişlik istenir. */
+    const sesVar = secenek.ses !== false;
+    const denemeler = [
+      { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
+                 frameRate: { ideal: 30, min: 24 }, resizeMode: "none" }, audio: sesVar },
+      { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } }, audio: sesVar },
+      { video: true, audio: sesVar },
+    ];
 
-    webAkis = await navigator.mediaDevices.getUserMedia(kisit);
+    let sonHata = null;
+    for (let i = 0; i < denemeler.length; i++) {
+      try { webAkis = await navigator.mediaDevices.getUserMedia(denemeler[i]); break; }
+      catch (e) { sonHata = e; }
+    }
+    if (!webAkis) throw sonHata || KameraHatasi(HATA.BILINMEYEN);
+
+    const iz = webAkis.getVideoTracks()[0];
+    const a = (iz && iz.getSettings) ? iz.getSettings() : {};
+    durum.coz = { g: a.width || null, y: a.height || null, fps: Math.round(a.frameRate || 0) };
 
     const v = document.getElementById(secenek.video || "camVideo");
     if (v) {
       v.srcObject = webAkis;
       v.muted = true;
       v.playsInline = true;
+      v.setAttribute("playsinline", "");
       try { await v.play(); } catch (e) {}
     }
-    durum.acik = true;
+
+    /* Kamera dışarıdan kesilirse (başka uygulama aldı) sessizce donmuş
+       görünmesin; uygulamaya haber ver. */
+    if (iz) {
+      iz.addEventListener("ended", function () {
+        yay("kesildi");
+        durum.acik = false;
+      });
+    }
   }
 
   /* ══════════════════════════════════════════════════════════════════
-     DURDUR
+     DURDUR / TEMİZLE
      ══════════════════════════════════════════════════════════════════ */
-  async function durdur() {
-    if (!durum.acik) return;
+  async function temizle() {
+    clearTimeout(kayitZamanlayici); kayitZamanlayici = null;
 
-    if (durum.kaydediyor) {
-      try { await kayitBitir(); } catch (e) {}
+    if (webKayit) {
+      try { if (webKayit.state !== "inactive") webKayit.stop(); } catch (e) {}
+      webKayit = null;
     }
+    webParcalar = [];
+
+    if (webAkis) {
+      try { webAkis.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+      webAkis = null;
+    }
+
+    const v = document.getElementById("camVideo");
+    if (v) { try { v.srcObject = null; } catch (e) {} }
 
     if (yerelMi()) {
-      try { await eklenti().stop(); } catch (e) {}
+      try { await CP().stop(); } catch (e) {}
       document.documentElement.classList.remove("camNativeOn");
-    } else {
-      if (webAkis) {
-        try { webAkis.getTracks().forEach((t) => t.stop()); } catch (e) {}
-        webAkis = null;
-      }
-      const v = document.getElementById("camVideo");
-      if (v) v.srcObject = null;
     }
 
-    durum.acik = false;
+    durum.kaydediyor = false;
+  }
+
+  function durdur() {
+    return sirala(async function () {
+      if (!durum.acik && !durum.hazirlaniyor) return;
+      if (durum.kaydediyor) { try { await kayitBitirIc(); } catch (e) {} }
+      await temizle();
+      durum.acik = false;
+      durum.coz = null;
+      yay("durdu");
+    });
   }
 
   /* ══════════════════════════════════════════════════════════════════
      KAMERA ÇEVİR
      ══════════════════════════════════════════════════════════════════ */
-  async function cevir() {
-    if (!durum.acik) return;
-    durum.yon = durum.yon === "on" ? "arka" : "on";
+  function cevir() {
+    return sirala(async function () {
+      if (!durum.acik) return durum.yon;
 
-    if (yerelMi()) {
-      /* Yerel tarafta çevirme kaydı BÖLMEZ — CameraX akışı sürdürür.
-         Tarayıcı yolunda bu mümkün değildi. */
-      try { await eklenti().flip(); } catch (e) {}
-      return;
-    }
+      if (durum.yerel) {
+        /* Yerel tarafta çevirme kaydı BÖLMEZ — CameraX akışı sürdürür. */
+        try {
+          await CP().flip();
+          durum.yon = durum.yon === "on" ? "arka" : "on";
+          yay("cevrildi", { yon: durum.yon });
+        } catch (e) {
+          yay("hata", { hataTuru: hataCevir(e), hata: e });
+        }
+        return durum.yon;
+      }
 
-    /* Web'de yalnızca arka kamera destekleniyor; çevirme yok.
-       (Ön kamera isteyen uygulamayı kullanır.) */
-    durum.yon = "arka";
+      /* Web: yalnızca arka kamera desteklenir. */
+      yay("bilgi", { kod: "web_tek_kamera" });
+      return durum.yon;
+    });
   }
 
   /* ══════════════════════════════════════════════════════════════════
      FOTOĞRAF
      ══════════════════════════════════════════════════════════════════ */
-  async function fotoCek(kalite) {
-    if (!durum.acik) return null;
-    kalite = kalite || 88;
+  function fotoCek(secenek) {
+    secenek = secenek || {};
+    const kalite = secenek.kalite || 88;
 
-    if (yerelMi()) {
-      const r = await eklenti().capture({ quality: kalite });
-      const v = r && (r.value || r.base64 || r.data);
-      if (!v) return null;
-      return /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
-    }
+    return sirala(async function () {
+      if (!durum.acik) return null;
 
-    /* Web: görüntüden kare al. Tek seferlik olduğu için maliyeti yok —
-       sürekli çizim yapılmıyor. */
-    const v = document.getElementById("camVideo");
-    if (!v || !v.videoWidth) return null;
+      try {
+        if (durum.yerel) {
+          const r = await CP().capture({ quality: kalite });
+          const v = r && (r.value || r.base64 || r.data);
+          if (!v) throw KameraHatasi(HATA.BILINMEYEN);
+          const veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
+          yay("foto", { boyut: veri.length });
+          return veri;
+        }
 
-    const c = document.createElement("canvas");
-    c.width = v.videoWidth;
-    c.height = v.videoHeight;
-    c.getContext("2d").drawImage(v, 0, 0);
-    return c.toDataURL("image/jpeg", kalite / 100);
+        /* Web: görüntüden TEK kare alınır. Sürekli çizim yok. */
+        const v = document.getElementById("camVideo");
+        if (!v || !v.videoWidth) return null;
+
+        const c = document.createElement("canvas");
+        c.width = v.videoWidth;
+        c.height = v.videoHeight;
+        const x = c.getContext("2d");
+        x.imageSmoothingQuality = "high";
+        x.drawImage(v, 0, 0);
+        const veri = c.toDataURL("image/jpeg", kalite / 100);
+        yay("foto", { boyut: veri.length });
+        return veri;
+      } catch (e) {
+        const tur = (e && e.tur) ? e.tur : hataCevir(e);
+        yay("hata", { hataTuru: tur, hata: e });
+        return null;
+      }
+    });
   }
 
   /* ══════════════════════════════════════════════════════════════════
      VİDEO KAYDI
      ══════════════════════════════════════════════════════════════════ */
-  async function kayitBaslat() {
-    if (!durum.acik || durum.kaydediyor) return;
+  function kayitBaslat(secenek) {
+    secenek = secenek || {};
+    const enFazlaSn = secenek.enFazlaSn || 30;
 
-    if (yerelMi()) {
-      /* Kayıt donanımda yapılır: görüntü hiç JavaScript'ten geçmez.
-         Donmanın asıl sebebi buydu. */
-      await eklenti().startRecordVideo({ storeToFile: true });
-      durum.kaydediyor = true;
-      durum.kayitBaslangic = Date.now();
-      return;
-    }
+    return sirala(async function () {
+      if (!durum.acik || durum.kaydediyor) return false;
 
-    /* Web: doğrudan akıştan kayıt. Tuval KULLANILMAZ —
-       her kareyi JavaScript ile kopyalamak kaydı dondurur. */
-    if (!webAkis) return;
-
-    const turler = [
-      "video/mp4;codecs=h264,aac",
-      "video/webm;codecs=vp9,opus",
-      "video/webm;codecs=vp8,opus",
-      "video/webm",
-    ];
-    let tur = "";
-    for (const t of turler) {
-      if (global.MediaRecorder && MediaRecorder.isTypeSupported(t)) { tur = t; break; }
-    }
-
-    webParcalar = [];
-    try {
-      webKayit = tur
-        ? new MediaRecorder(webAkis, { mimeType: tur, videoBitsPerSecond: 3400000 })
-        : new MediaRecorder(webAkis);
-    } catch (e) {
-      webKayit = new MediaRecorder(webAkis);
-    }
-
-    webKayit.ondataavailable = (e) => { if (e.data && e.data.size) webParcalar.push(e.data); };
-    webKayit.start(250);
-    durum.kaydediyor = true;
-    durum.kayitBaslangic = Date.now();
-  }
-
-  async function kayitBitir() {
-    if (!durum.kaydediyor) return null;
-    const sure = Date.now() - durum.kayitBaslangic;
-
-    if (yerelMi()) {
-      const r = await eklenti().stopRecordVideo();
-      durum.kaydediyor = false;
-      const yol = r && (r.videoFilePath || r.value || r.path);
-      if (!yol) return null;
-
-      /* Dosya yolunu tarayıcının okuyabileceği adrese çevir,
-         sonra yükleme için veri parçasına dönüştür. */
-      let blob = null;
       try {
-        const c = global.Capacitor;
-        const adres = (c && c.convertFileSrc) ? c.convertFileSrc(yol) : yol;
-        const cevap = await fetch(adres);
-        blob = await cevap.blob();
-      } catch (e) {}
+        if (durum.yerel) {
+          /* Kayıt donanım kodlayıcıyla yapılır: görüntü hiç
+             JavaScript'ten geçmez. Donmanın asıl sebebi buydu. */
+          await CP().startRecordVideo({ storeToFile: true });
+        } else {
+          if (!webAkis) return false;
 
-      return { blob: blob, yol: yol, sure: sure };
-    }
+          const turler = [
+            "video/mp4;codecs=h264,aac",
+            "video/webm;codecs=vp9,opus",
+            "video/webm;codecs=vp8,opus",
+            "video/webm",
+          ];
+          let tur = "";
+          for (let i = 0; i < turler.length; i++) {
+            if (global.MediaRecorder && MediaRecorder.isTypeSupported(turler[i])) {
+              tur = turler[i]; break;
+            }
+          }
 
-    // web
-    return await new Promise((coz) => {
-      if (!webKayit) { durum.kaydediyor = false; coz(null); return; }
-      webKayit.onstop = () => {
-        const tur = webParcalar[0] ? webParcalar[0].type : "video/webm";
-        const blob = new Blob(webParcalar, { type: tur });
-        webParcalar = [];
-        webKayit = null;
+          webParcalar = [];
+          const ayar = { videoBitsPerSecond: secenek.bitHizi || 3400000 };
+          if (tur) ayar.mimeType = tur;
+
+          try { webKayit = new MediaRecorder(webAkis, ayar); }
+          catch (e) { webKayit = new MediaRecorder(webAkis); }
+
+          webKayit.ondataavailable = function (e) {
+            if (e.data && e.data.size) webParcalar.push(e.data);
+          };
+          webKayit.onerror = function (e) {
+            yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
+          };
+          webKayit.start(250);
+        }
+
+        durum.kaydediyor = true;
+        durum.kayitBaslangic = Date.now();
+        yay("kayitBasladi", { enFazlaSn: enFazlaSn });
+
+        /* Süre sınırı: kullanıcı durdurmayı unutursa kayıt kendiliğinden
+           biter, dosya şişmez. */
+        clearTimeout(kayitZamanlayici);
+        kayitZamanlayici = setTimeout(function () {
+          yay("kayitSuresiDoldu");
+          kayitBitir().catch(function () {});
+        }, enFazlaSn * 1000);
+
+        return true;
+      } catch (e) {
         durum.kaydediyor = false;
-        coz({ blob: blob, yol: null, sure: sure });
-      };
-      try { webKayit.stop(); } catch (e) { durum.kaydediyor = false; coz(null); }
+        const tur = (e && e.tur) ? e.tur : hataCevir(e);
+        yay("hata", { hataTuru: tur, hata: e });
+        return false;
+      }
     });
   }
 
+  function kayitBitir() {
+    return sirala(function () { return kayitBitirIc(); });
+  }
+
+  async function kayitBitirIc() {
+    if (!durum.kaydediyor) return null;
+    clearTimeout(kayitZamanlayici); kayitZamanlayici = null;
+
+    const sure = Date.now() - durum.kayitBaslangic;
+
+    try {
+      if (durum.yerel) {
+        const r = await CP().stopRecordVideo();
+        durum.kaydediyor = false;
+
+        const yol = r && (r.videoFilePath || r.value || r.path);
+        if (!yol) throw KameraHatasi(HATA.KAYIT_HATASI);
+
+        /* Dosya yolunu tarayıcının okuyabileceği adrese çevirip
+           yükleme için veri parçasına dönüştür. */
+        let blob = null;
+        try {
+          const c = cap();
+          const adres = (c && c.convertFileSrc) ? c.convertFileSrc(yol) : yol;
+          const cevap = await fetch(adres);
+          blob = await cevap.blob();
+        } catch (e) {
+          yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
+        }
+
+        const sonuc = {
+          blob: blob, yol: yol, sure: sure,
+          tur: (blob && blob.type) || "video/mp4",
+        };
+        yay("kayitBitti", { sure: sure, boyut: blob ? blob.size : 0 });
+        return sonuc;
+      }
+
+      // web
+      return await new Promise(function (coz) {
+        if (!webKayit) { durum.kaydediyor = false; coz(null); return; }
+
+        webKayit.onstop = function () {
+          const tur = webParcalar[0] ? webParcalar[0].type : "video/webm";
+          const blob = new Blob(webParcalar, { type: tur });
+          webParcalar = [];
+          webKayit = null;
+          durum.kaydediyor = false;
+          yay("kayitBitti", { sure: sure, boyut: blob.size });
+          coz({ blob: blob, yol: null, sure: sure, tur: tur });
+        };
+
+        try { webKayit.stop(); }
+        catch (e) {
+          durum.kaydediyor = false;
+          yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
+          coz(null);
+        }
+      });
+    } catch (e) {
+      durum.kaydediyor = false;
+      const tur = (e && e.tur) ? e.tur : hataCevir(e);
+      yay("hata", { hataTuru: tur, hata: e });
+      return null;
+    }
+  }
+
   /* ══════════════════════════════════════════════════════════════════
-     EK AYARLAR
+     FLAŞ VE YAKINLAŞTIRMA
      ══════════════════════════════════════════════════════════════════ */
   async function flas(mod) {
-    if (!yerelMi()) return;
-    try { await eklenti().setFlashMode({ flashMode: mod || "off" }); } catch (e) {}
+    mod = mod || "off";
+    if (durum.yerel) {
+      try { await CP().setFlashMode({ flashMode: mod }); durum.flas = mod; }
+      catch (e) { yay("hata", { hataTuru: hataCevir(e), hata: e }); }
+      return durum.flas;
+    }
+
+    /* Web'de flaş yalnızca "torch" olarak ve cihaz destekliyorsa çalışır. */
+    try {
+      const iz = webAkis && webAkis.getVideoTracks()[0];
+      const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
+      if (y && y.torch) {
+        await iz.applyConstraints({
+          advanced: [{ torch: (mod === "torch" || mod === "on") }],
+        });
+        durum.flas = mod;
+      }
+    } catch (e) {}
+    return durum.flas;
   }
 
   async function yakinlastir(deger) {
-    if (!yerelMi()) return;
-    try { await eklenti().setZoom({ zoom: deger }); } catch (e) {}
+    const d = Math.max(1, Number(deger) || 1);
+    if (durum.yerel) {
+      try { await CP().setZoom({ zoom: d }); durum.yakinlik = d; } catch (e) {}
+      return durum.yakinlik;
+    }
+    try {
+      const iz = webAkis && webAkis.getVideoTracks()[0];
+      const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
+      if (y && y.zoom) {
+        const s = Math.min(Math.max(d, y.zoom.min), y.zoom.max);
+        await iz.applyConstraints({ advanced: [{ zoom: s }] });
+        durum.yakinlik = s;
+      }
+    } catch (e) {}
+    return durum.yakinlik;
   }
 
-  /* ── Dışa açılan arayüz ─────────────────────────────────────────── */
+  /* En geniş açı: cihaz destekliyorsa yakınlaştırmayı en düşüğe çeker. */
+  async function enGenisAci() {
+    if (durum.yerel) { try { await CP().setZoom({ zoom: 1 }); } catch (e) {} return; }
+    try {
+      const iz = webAkis && webAkis.getVideoTracks()[0];
+      const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
+      if (y && y.zoom && y.zoom.min != null) {
+        await iz.applyConstraints({ advanced: [{ zoom: y.zoom.min }] });
+      }
+    } catch (e) {}
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     YAŞAM DÖNGÜSÜ
+     Uygulama arka plana geçince kamera bırakılır: pil tükenmez, başka
+     uygulamalar kamerayı kullanabilir, kamera ışığı yanık kalmaz.
+     Öne dönünce geri açılır. Kayıt sürüyorsa dokunulmaz.
+     ══════════════════════════════════════════════════════════════════ */
+  let arkaPlandaKapandi = false;
+  let sonSecenek = null;
+
+  document.addEventListener("visibilitychange", async function () {
+    if (document.hidden) {
+      if (durum.acik && !durum.kaydediyor) {
+        arkaPlandaKapandi = true;
+        try { await durdur(); } catch (e) {}
+      }
+    } else if (arkaPlandaKapandi) {
+      arkaPlandaKapandi = false;
+      try { await baslat(sonSecenek || {}); } catch (e) {}
+    }
+  });
+
+  /* ══════════════════════════════════════════════════════════════════
+     DIŞA AÇILAN ARAYÜZ
+     ══════════════════════════════════════════════════════════════════ */
   global.Kamera = {
-    baslat: baslat,
+    HATA: HATA,
+
+    baslat: function (s) { sonSecenek = s || {}; return baslat(s); },
     durdur: durdur,
     cevir: cevir,
+
     fotoCek: fotoCek,
     kayitBaslat: kayitBaslat,
     kayitBitir: kayitBitir,
+
     flas: flas,
     yakinlastir: yakinlastir,
+    enGenisAci: enGenisAci,
+
+    olay: olay,
     yerelMi: yerelMi,
-    durum: () => Object.assign({}, durum),
+    guvenliBaglamMi: guvenliBaglamMi,
+
+    /* Kayıt sırasında kamera çevirmek YALNIZCA uygulamada mümkün.
+       Web'de MediaRecorder akış değişince kaydı durdurur. */
+    kayittaCevirmeVar: function () { return yerelMi(); },
+
+    durum: function () { return Object.assign({}, durum); },
+    gecenSure: function () {
+      return durum.kaydediyor ? (Date.now() - durum.kayitBaslangic) : 0;
+    },
   };
 })(window);

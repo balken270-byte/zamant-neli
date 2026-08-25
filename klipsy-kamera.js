@@ -205,18 +205,39 @@
   }
 
   async function yerelBaslat(secenek) {
-    /* toBack:true → önizleme HTML'in ARKASINA yerleşir.
-       Düğmeler ve yazılar üstte kalır, görüntü donanımdan doğrudan
-       ekrana çizilir. Tarayıcı katmanı devreye girmez. */
-    const g = Math.round(global.innerWidth);
-    const y = Math.round(global.innerHeight);
+    /* toBack:true → önizleme tarayıcının ARKASINA yerleşir.
+       Düğmeler üstte kalır, görüntü donanımdan doğrudan ekrana çizilir.
+
+       EKRANI DOLDURMA
+         Kamera sensörü 4:3 görüntü verir, telefon ekranı ise uzundur.
+         Önizlemeye ekran ölçüsü verilirse görüntü ortada ŞERİT halinde
+         kalır, üstü altı boş görünür.
+         Bunun yerine önizleme ekrandan TAŞACAK kadar büyütülür ve
+         ortalanır — kenarlardan taşan kısım görünmez, ekran dolar.
+         (Fotoğraf uygulamalarının yaptığı da budur.) */
+    const eg = Math.round(global.innerWidth);
+    const ey = Math.round(global.innerHeight);
+
+    const sensorOran = 3 / 4;                 // dikeyde genişlik/yükseklik
+    let g = eg, y = ey, x = 0, ust = 0;
+
+    const gerekenG = Math.ceil(ey * sensorOran);
+    if (gerekenG >= eg) {
+      // yüksekliğe göre doldur, yanlardan taşsın
+      g = gerekenG; y = ey;
+      x = Math.round((eg - g) / 2);
+    } else {
+      // genişliğe göre doldur, alttan üstten taşsın
+      g = eg; y = Math.ceil(eg / sensorOran);
+      ust = Math.round((ey - y) / 2);
+    }
 
     await CP().start({
       position: yonNative(durum.yon),
       parent: secenek.kap || "camRoot",
       className: secenek.sinif || "camNativePreview",
       toBack: true,
-      x: 0, y: 0,
+      x: x, y: ust,
       width: g, height: y,
       disableAudio: secenek.ses === false,
       enableZoom: true,
@@ -226,7 +247,7 @@
     });
 
     document.documentElement.classList.add("camNativeOn");
-    durum.coz = { g: g, y: y, fps: null };
+    durum.coz = { g: g, y: y, fps: null, ekranG: eg, ekranY: ey };
   }
 
   async function webBaslat(secenek) {

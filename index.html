@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.5.5</title>
+<title>Klipsy 1.6.0</title>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -17,6 +17,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      rec_flip_off:"Kayıt sırasında kamera değiştirme kapalı",
+      rec_flip_off2:"Kapatıldı — kayıt en akıcı halde",
+      rec_flip_on:"Açıldı — kayıt daha az akıcı olabilir",
+      rec_flip_sub:"Tek videoda ön ve arka kamera. Kayıt akıcılığını düşürebilir.",
+      rec_flip_title:"Kayıtta kamera değiştir",
       n_messaged:"sana mesaj gönderdi",
       n_comment_liked:"yorumunu beğendi",
       n_replied:"yorumuna yanıt verdi",
@@ -450,6 +455,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      rec_flip_off:"Flipping while recording is off",
+      rec_flip_off2:"Off — recording at best smoothness",
+      rec_flip_on:"On — recording may be less smooth",
+      rec_flip_sub:"Front and back in one video. May reduce smoothness.",
+      rec_flip_title:"Flip camera while recording",
       n_messaged:"sent you a message",
       n_comment_liked:"liked your comment",
       n_replied:"replied to your comment",
@@ -870,6 +880,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      rec_flip_off:"Cambio de cámara al grabar desactivado",
+      rec_flip_off2:"Desactivado: grabación más fluida",
+      rec_flip_on:"Activado: la grabación puede ser menos fluida",
+      rec_flip_sub:"Frontal y trasera en un vídeo. Puede reducir la fluidez.",
+      rec_flip_title:"Cambiar cámara al grabar",
       n_messaged:"te envió un mensaje",
       n_comment_liked:"le gustó tu comentario",
       n_replied:"respondió a tu comentario",
@@ -1290,6 +1305,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      rec_flip_off:"تبديل الكاميرا أثناء التسجيل مُعطّل",
+      rec_flip_off2:"مُعطّل — التسجيل بأفضل سلاسة",
+      rec_flip_on:"مُفعّل — قد يقل سلاسة التسجيل",
+      rec_flip_sub:"الأمامية والخلفية في فيديو واحد. قد يقلّل السلاسة.",
+      rec_flip_title:"تبديل الكاميرا أثناء التسجيل",
       n_messaged:"أرسل لك رسالة",
       n_comment_liked:"أعجب بتعليقك",
       n_replied:"ردّ على تعليقك",
@@ -1710,6 +1730,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      rec_flip_off:"Changement pendant l'enregistrement désactivé",
+      rec_flip_off2:"Désactivé — enregistrement le plus fluide",
+      rec_flip_on:"Activé — l'enregistrement peut être moins fluide",
+      rec_flip_sub:"Avant et arrière dans une vidéo. Peut réduire la fluidité.",
+      rec_flip_title:"Changer de caméra pendant l'enregistrement",
       n_messaged:"t'a envoyé un message",
       n_comment_liked:"a aimé ton commentaire",
       n_replied:"a répondu à ton commentaire",
@@ -2130,6 +2155,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      rec_flip_off:"Wechsel während Aufnahme ist aus",
+      rec_flip_off2:"Aus — Aufnahme am flüssigsten",
+      rec_flip_on:"An — Aufnahme evtl. weniger flüssig",
+      rec_flip_sub:"Front und Rück in einem Video. Kann Flüssigkeit mindern.",
+      rec_flip_title:"Kamera während Aufnahme wechseln",
       n_messaged:"hat dir geschrieben",
       n_comment_liked:"gefällt dein Kommentar",
       n_replied:"hat auf deinen Kommentar geantwortet",
@@ -2550,6 +2580,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      rec_flip_off:"Смена камеры при записи выключена",
+      rec_flip_off2:"Выключено — запись максимально плавная",
+      rec_flip_on:"Включено — запись может быть менее плавной",
+      rec_flip_sub:"Обе камеры в одном видео. Может снизить плавность.",
+      rec_flip_title:"Смена камеры при записи",
       n_messaged:"отправил вам сообщение",
       n_comment_liked:"понравился ваш комментарий",
       n_replied:"ответил на ваш комментарий",
@@ -2970,6 +3005,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      rec_flip_off:"Troca durante a gravação desativada",
+      rec_flip_off2:"Desativado — gravação mais fluida",
+      rec_flip_on:"Ativado — a gravação pode ficar menos fluida",
+      rec_flip_sub:"Frontal e traseira num vídeo. Pode reduzir a fluidez.",
+      rec_flip_title:"Trocar câmera ao gravar",
       n_messaged:"enviou uma mensagem",
       n_comment_liked:"curtiu seu comentário",
       n_replied:"respondeu ao seu comentário",
@@ -3390,6 +3430,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      rec_flip_off:"रिकॉर्डिंग में कैमरा बदलना बंद है",
+      rec_flip_off2:"बंद — रिकॉर्डिंग सबसे स्मूद",
+      rec_flip_on:"चालू — रिकॉर्डिंग कम स्मूद हो सकती है",
+      rec_flip_sub:"एक वीडियो में दोनों कैमरे। स्मूदनेस घट सकती है।",
+      rec_flip_title:"रिकॉर्डिंग में कैमरा बदलें",
       n_messaged:"आपको संदेश भेजा",
       n_comment_liked:"आपकी टिप्पणी पसंद की",
       n_replied:"आपकी टिप्पणी का उत्तर दिया",
@@ -3810,6 +3855,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      rec_flip_off:"Ganti kamera saat merekam nonaktif",
+      rec_flip_off2:"Nonaktif — rekaman paling lancar",
+      rec_flip_on:"Aktif — rekaman bisa kurang lancar",
+      rec_flip_sub:"Depan dan belakang dalam satu video. Bisa mengurangi kelancaran.",
+      rec_flip_title:"Ganti kamera saat merekam",
       n_messaged:"mengirimimu pesan",
       n_comment_liked:"menyukai komentarmu",
       n_replied:"membalas komentarmu",
@@ -5110,9 +5160,22 @@ svg{display:block}
 
 /* ── Başkasının profilinde üst kısım: biyografi ve etiketler ── */
 .profbio{padding:16px 0 4px}
-#profile .profbody .profbio .bioText{font-size:14.5px;line-height:1.62;color:var(--t2);
-  letter-spacing:-.008em}
-#profile .profbody .profbio .bioText.empty{color:var(--t3);font-style:italic}
+/* Biyografi metni — okunaklı ve derli toplu.
+   Önceki hali dağınık duruyordu: satırlar fazla açık, harf aralığı
+   ve genişlik ayarı yoktu. */
+#profile .profbody .profbio .bioText{
+  font-size:15px;
+  line-height:1.5;
+  color:var(--t1);
+  letter-spacing:-.014em;
+  font-weight:450;
+  max-width:34em;                 /* çok uzun satırlar okumayı zorlaştırır */
+  white-space:pre-wrap;           /* kullanıcının satır atlamalarını koru */
+  overflow-wrap:anywhere;         /* uzun kelime taşmasın */
+  text-wrap:pretty;               /* satır sonlarını dengele */
+}
+#profile .profbody .profbio .bioText.empty{color:var(--t3);font-style:normal;
+  font-weight:400;opacity:.75}
 
 /* bilgi etiketleri: daha ferah, sarmalı */
 .profdet{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0 4px}
@@ -6957,7 +7020,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.5.5</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.6.0</span></div>
     </div>
   </section>
 </div>
@@ -8203,15 +8266,19 @@ function notifRow(n){
     /* Yorum türlerinde ana git ve YORUMLARI AÇ — kullanıcı hangi
        yoruma geldiğini görsün. Önceden sadece akışa gidiyordu. */
     if(n.postId){
-      close("notif"); setTab($("#tabFeed")); goToPost(n.postId);
+      close("notif");
       const yorumTuru = (n.type==="comment" || n.type==="reply" || n.type==="comment_like");
-      if(yorumTuru){
-        setTimeout(()=>{
-          try{
-            const it = (items||[]).find(x=>x && x.id===n.postId);
-            if(it && typeof openComments==="function") openComments(it);
-          }catch(e){}
-        }, 700);
+      const akistaVar = !!list.querySelector('[data-id="'+n.postId+'"]');
+
+      if(akistaVar){
+        setTab($("#tabFeed"));
+        goToPost(n.postId, yorumTuru ? (anId)=>{
+          const it = (items||[]).find(x=>x && x.id===anId);
+          if(it && typeof openComments==="function") openComments(it);
+        } : null);
+      }else{
+        // akışta yoksa doğrudan görüntüleyicide aç
+        goToPost(n.postId);
       }
       return;
     }
@@ -8723,7 +8790,24 @@ function syncActive(){
     seenIds.add(seenIt.id);
     seenIt.views++;
     if(window.__sb && isReal(seenIt.id)){
-      window.__sb.rpc('mark_view',{target:seenIt.id}).catch(()=>{});
+      /* Görüntülenme kaydı.
+         Hata SESSİZCE yutulmamalı — bu yüzden sayacın neden
+         artmadığı uzun süre görünmedi. Artık kayıtlara yazılıyor
+         ve gerçek sayaç geri okunuyor. */
+      window.__sb.rpc('mark_view',{target:seenIt.id})
+        .then(({error})=>{
+          if(error){ console.warn('[Klipsy] görüntülenme:', error.message, error); return; }
+          // sunucudaki gerçek değeri al
+          window.__sb.from('moments').select('view_count').eq('id',seenIt.id).single()
+            .then(({data:d})=>{
+              if(d && typeof d.view_count === 'number'){
+                seenIt.views = d.view_count;
+                const n2=list.querySelectorAll(".post")[idx];
+                if(n2 && n2._sync) n2._sync();
+              }
+            }).catch(()=>{});
+        })
+        .catch(e=>console.warn('[Klipsy] görüntülenme çağrısı:', e));
     }
     const node=list.querySelectorAll(".post")[idx];
     if(node&&node._sync) node._sync();
@@ -8810,10 +8894,27 @@ document.addEventListener("visibilitychange",()=>{
   }
 });
 
-function goToPost(id){
-  const el=list.querySelector('[data-id="'+id+'"]');
-  if(!el) return;
-  el.scrollIntoView({behavior:"smooth",block:"start"});
+/* Bir ana git.
+   ÖNEMLİ: An akışta yüklü değilse eskiden hiçbir şey olmuyordu —
+   bildirime dokunulunca ekran öylece kalıyordu. Akış yalnızca son
+   20 anı tutuyor; daha eski bir an için bu her zaman böyleydi.
+   Artık yüklü değilse an sunucudan çekilip görüntüleyicide açılır. */
+function goToPost(id, sonra){
+  const el = list.querySelector('[data-id="'+id+'"]');
+  if(el){
+    el.scrollIntoView({behavior:"smooth",block:"start"});
+    if(typeof sonra === "function") setTimeout(()=>sonra(id), 500);
+    return true;
+  }
+
+  // akışta yok: görüntüleyicide aç
+  try{
+    if(typeof zamanAnGoster === "function"){
+      zamanAnGoster({ id: id });
+      return true;
+    }
+  }catch(e){}
+  return false;
 }
 
 /* ---------- yorumlar ---------- */
@@ -8847,7 +8948,47 @@ function commentRow(c){
   const lk=document.createElement("button");
   lk.className="clike"+(c.liked?" on":"");lk.innerHTML=I.heartsm;
   lk.setAttribute("aria-label",t("act_like_comment"));
-  lk.addEventListener("click",()=>{c.liked=!c.liked;lk.classList.toggle("on",c.liked);});
+  /* YORUM BEĞENİSİ
+     Önceden yalnızca ekranda renk değişiyordu; sunucuya HİÇ yazılmıyordu.
+     Bu yüzden beğeni kalıcı olmuyor, karşı tarafa bildirim de gitmiyordu. */
+  lk.addEventListener("click", async ()=>{
+    const oncekiDurum = !!c.liked;
+    c.liked = !oncekiDurum;
+    lk.classList.toggle("on", c.liked);
+
+    // sayaç varsa onu da güncelle
+    if(typeof c.likes === "number"){
+      c.likes = Math.max(0, c.likes + (c.liked ? 1 : -1));
+      const sayi = lk.querySelector("em");
+      if(sayi) sayi.textContent = c.likes ? nf(c.likes) : "";
+    }
+
+    try{
+      const sb = window.__sb, me = window.__me;
+      if(!sb || !me || !isReal(c.id)) return;
+
+      if(c.liked){
+        const { error } = await sb.from('comment_likes')
+          .upsert({ comment_id: c.id, user_id: me.id },
+                  { onConflict: 'comment_id,user_id' });
+        if(error) throw error;
+      }else{
+        const { error } = await sb.from('comment_likes')
+          .delete().eq('comment_id', c.id).eq('user_id', me.id);
+        if(error) throw error;
+      }
+    }catch(e){
+      // başarısızsa eski haline döndür
+      c.liked = oncekiDurum;
+      lk.classList.toggle("on", c.liked);
+      if(typeof c.likes === "number"){
+        c.likes = Math.max(0, c.likes + (c.liked ? 1 : -1));
+        const sayi = lk.querySelector("em");
+        if(sayi) sayi.textContent = c.likes ? nf(c.likes) : "";
+      }
+      console.warn('yorum beğenisi:', e);
+    }
+  });
   row.append(av,body,lk);
   frag.appendChild(row);
 
@@ -12197,6 +12338,10 @@ function themeRow(){
 }
 
 // tercihler (bellek + Supabase)
+/* Kayıt sırasında kamera değiştirme.
+   KAPALI olmalı: açıkken her kare JavaScript ile kopyalanıyor ve
+   kayıt gözle görülür şekilde donuyor. İsteyen ayarlardan açabilir. */
+let prefFlipWhileRec = (()=>{ try{ return localStorage.getItem('klipsy_flip_rec')==='1'; }catch(e){ return false; } })();
 let prefNotif=true, prefLocation=true;
 
 /* Konum izni gerçekten var mı? Yoksa istemeyi dener.
@@ -12317,6 +12462,14 @@ function renderSettings(){
   g2.innerHTML='<div class="setLabel">Gizlilik ve bildirim</div>';
   g2.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+    t("rec_flip_title"), t("rec_flip_sub"), prefFlipWhileRec,
+    (on)=>{
+      prefFlipWhileRec = on;
+      try{ localStorage.setItem('klipsy_flip_rec', on ? '1' : '0'); }catch(e){}
+      toast(on ? t("rec_flip_on") : t("rec_flip_off2"));
+    }));
+
+  g2.appendChild(toggleRow(
     t("notifs_setting"), t("s_notif_sub"), prefNotif,
     (on)=>{ prefNotif=on; savePref('notif_enabled',on); toast(on?t("s_notif_on"):t("s_notif_off")); }));
 
@@ -12392,7 +12545,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.5.5";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.6.0";
   box.appendChild(ver);
 }
 
@@ -14583,6 +14736,12 @@ $("#flip").addEventListener("click", async ()=>{
      Kayıt tuval üzerinden yapıldığı için kamera değişse de kayıt
      kesilmez; yeni görüntü aynı videonun devamı olarak işlenir. */
   if(recorder && recorder.state === "recording"){
+    if(!prefFlipWhileRec){
+      // özellik kapalı: kayıt bölünmesin, kullanıcıyı bilgilendir
+      facing = facing==="user" ? "environment" : "user";   // değişikliği geri al
+      toast(t("rec_flip_off"));
+      return;
+    }
     await start(true);          // sessiz yeniden başlat: kayıt bozulmaz
     return;
   }
@@ -15235,8 +15394,10 @@ function tuvalBaslat(fps){
   const v = $("#camVideo");
   if(!v || !v.videoWidth) return null;
 
-  // dikey 9:16 kare
-  const yuk = Math.min(v.videoHeight, 1920);
+  /* Tuval yolu açıkken çözünürlük 1280'e sınırlanır.
+     1080p'de her kareyi JavaScript ile kopyalamak telefonu zorluyor;
+     720p'de yük yarıdan aza iniyor ve kayıt akıcı kalıyor. */
+  const yuk = Math.min(v.videoHeight, 1280);
   const gen = Math.round(yuk * 9 / 16);
 
   if(!_tuval){
@@ -15341,15 +15502,23 @@ function startRec(){
   const opts = type
     ? { mimeType:type, videoBitsPerSecond:vBits, audioBitsPerSecond:128000 }
     : { videoBitsPerSecond:vBits, audioBitsPerSecond:128000 };
-  /* Kayıt kaynağı: tuval. Böylece kayıt sırasında kamera değiştirilebilir.
-     Tuval kurulamazsa doğrudan kamera akışına düşülür. */
-  let kaynak = null;
-  try{
-    const fr = (stream && stream.getVideoTracks()[0] &&
-                stream.getVideoTracks()[0].getSettings().frameRate) || 30;
-    kaynak = tuvalBaslat(Math.min(Math.round(fr), 30));
-  }catch(e){ kaynak = null; }
-  if(!kaynak) kaynak = stream;
+  /* KAYIT KAYNAĞI — AKICILIK İÇİN KRİTİK
+     Varsayılan: DOĞRUDAN kamera akışı. Bu donanım yoludur; görüntü
+     hiç JavaScript'ten geçmez, telefon işlemcisi yorulmaz.
+
+     Tuval yolu yalnızca kullanıcı "kayıt sırasında kamera değiştirme"
+     özelliğini açtıysa kullanılır. O yol her kareyi JavaScript ile
+     kopyaladığı için 1080p'de belirgin donmaya yol açıyordu. */
+  let kaynak = stream;
+
+  if(prefFlipWhileRec){
+    try{
+      const fr = (stream && stream.getVideoTracks()[0] &&
+                  stream.getVideoTracks()[0].getSettings().frameRate) || 30;
+      const t = tuvalBaslat(Math.min(Math.round(fr), 30));
+      if(t) kaynak = t;
+    }catch(e){}
+  }
 
   try{
     recorder = new MediaRecorder(kaynak, opts);

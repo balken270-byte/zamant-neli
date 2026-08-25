@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.7.5</title>
+<title>Klipsy 1.7.6</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7145,7 +7145,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.5</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.6</span></div>
     </div>
   </section>
 </div>
@@ -12671,7 +12671,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.5";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.6";
   box.appendChild(ver);
 }
 
@@ -14959,7 +14959,28 @@ $("#flip").addEventListener("click", async ()=>{
       toast(t("rec_flip_off"));
       return;
     }
+    /* Kamera değişirken önizleme bir an kapanıyor ve arkadaki beyaz
+       zemin görünüyordu. Geçiş boyunca siyah bir örtü gösterilir. */
+    let ortu = document.getElementById("camFlipMask");
+    if(!ortu){
+      ortu = document.createElement("div");
+      ortu.id = "camFlipMask";
+      ortu.style.cssText =
+        "position:absolute;inset:0;z-index:3;background:#000;opacity:0;"+
+        "pointer-events:none;transition:opacity .12s";
+      const kap = $("#cam");
+      if(kap) kap.appendChild(ortu);
+    }
+    ortu.style.transition = "none";
+    ortu.style.opacity = "1";
+
     await Kamera.cevir();
+
+    setTimeout(()=>{
+      ortu.style.transition = "opacity .22s";
+      ortu.style.opacity = "0";
+    }, 260);
+
     const v=$("#camVideo");
     if(v) v.classList.toggle("mirror", facing==="user" && !Kamera.yerelMi());
     return;
@@ -15790,15 +15811,26 @@ async function kayitBaslatUI(){
   $("#recTime").classList.add("on");
   $("#recProg").classList.add("on");
 
+  /* Sayaç ORİJİNAL yapıyı kullanır:
+       <div class="rectime"><i></i><span>0:00 / 0:30</span></div>
+       <div class="recprog"><i></i></div>
+     Önceden bu yapı ezilip düz metin yazılıyordu; kırmızı nokta ve
+     ilerleme çubuğu kayboluyor, görünüm bozuluyordu. */
+  const suHali = sn => "0:" + String(Math.min(sn, enFazla)).padStart(2,"0");
+  const yaz = ms => {
+    const sn = Math.floor(ms/1000);
+    const s = $("#recTime span");
+    if(s) s.textContent = suHali(sn) + " / " + suHali(enFazla);
+    const c = $("#recProg i");
+    if(c) c.style.width = Math.min(100, (ms/(enFazla*1000))*100).toFixed(1) + "%";
+  };
+  yaz(0);
+
   clearInterval(recInt);
   recInt = setInterval(()=>{
     const ms = Kamera.gecenSure();
-    const sn = Math.floor(ms/1000);
-    const el = $("#recTime");
-    if(el) el.textContent = "0:" + String(sn).padStart(2,"0");
-    const pr = $("#recProg span") || $("#recProg");
-    if(pr && pr.style) pr.style.width = Math.min(100, (ms/(enFazla*1000))*100) + "%";
-    if(sn >= enFazla) clearInterval(recInt);
+    yaz(ms);
+    if(ms >= enFazla*1000) clearInterval(recInt);
   }, 100);
 }
 
@@ -15810,7 +15842,27 @@ async function kayitBitirVeAc(){
   $("#recProg").classList.remove("on");
 
   const sonuc = await Kamera.kayitBitir();
-  if(!sonuc || !sonuc.blob){ toast(t("err_generic")); return; }
+
+  /* Kayıt süre sınırına takılıp KENDİLİĞİNDEN bittiyse durum zaten
+     kapanmış oluyor ve buradan boş dönüyordu — önizleme hiç açılmıyordu.
+     Katman son kaydın yolunu sakladığı için oradan alınır. */
+  if(!sonuc || !sonuc.blob){
+    const yedek = (typeof Kamera.sonKayit === "function") ? Kamera.sonKayit() : null;
+    if(yedek && typeof yedek.coz === "function"){
+      try{
+        const blob = await yedek.coz();
+        if(blob){
+          const a2 = URL.createObjectURL(blob);
+          closeCam();
+          if(target==="dm") sendMedia(a2,"video",yedek.sure||0);
+          else openCompose(a2,"video",yedek.sure||0);
+          return;
+        }
+      }catch(e){ console.warn("[Klipsy] kayıt dosyası:", e); }
+    }
+    toast(t("err_generic"));
+    return;
+  }
 
   /* Paylaşım ekranı veri adresi bekliyor; parçayı adrese çeviriyoruz.
      Dosya bellekte tutulmaz, adres kapanınca serbest bırakılır. */

@@ -131,6 +131,12 @@
   let webParcalar = [];
   let kayitZamanlayici = null;
 
+  /* Kayıt süre/dosya sınırına takılıp kendiliğinden bittiğinde eklenti
+     dosya yolunu olayla bildirir. Uygulama sonradan istediğinde
+     kaybolmasın diye burada saklanır. */
+  let _sonKayitYolu = null;
+  let _sonKayitSure = 0;
+
   /* Aynı anda iki işlem çalışmasın diye basit bir sıra.
      Kullanıcı çevirme düğmesine hızlı iki kez basarsa ikinci istek
      birincisi bitmeden başlamaz. */
@@ -567,7 +573,9 @@
         if (!durum.kaydediyor) return;
         durum.kaydediyor = false;
         clearTimeout(kayitZamanlayici);
-        yay("kayitKendiBitti", { yol: d && d.videoFilePath, sebep: d && d.reason });
+        _sonKayitYolu = d && d.videoFilePath;
+        _sonKayitSure = Date.now() - durum.kayitBaslangic;
+        yay("kayitKendiBitti", { yol: _sonKayitYolu, sebep: d && d.reason });
       });
     } catch (e) {}
   })();
@@ -685,6 +693,19 @@
     /* Kayıt sırasında kamera çevirmek YALNIZCA uygulamada mümkün.
        Web'de MediaRecorder akış değişince kaydı durdurur. */
     kayittaCevirmeVar: function () { return yerelMi(); },
+
+    /* Kendiliğinden biten kaydın dosyasını verir. */
+    sonKayit: function () {
+      if (!_sonKayitYolu) return null;
+      const yol = _sonKayitYolu, sure = _sonKayitSure;
+      _sonKayitYolu = null;
+      const c = cap();
+      const adres = (c && c.convertFileSrc) ? c.convertFileSrc(yol) : yol;
+      return { yol: yol, sure: sure, adres: adres, blob: null, _bekliyor: true,
+               coz: function () {
+                 return fetch(adres).then(function (r) { return r.blob(); });
+               } };
+    },
 
     durum: function () { return Object.assign({}, durum); },
     gecenSure: function () {

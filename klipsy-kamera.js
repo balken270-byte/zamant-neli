@@ -249,7 +249,6 @@
       : null;
 
     document.documentElement.classList.add("camNativeOn");
-    durum.coz = { g: g, y: y, fps: null };
   }
 
   async function webBaslat(secenek) {

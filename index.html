@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.7.0</title>
+<title>Klipsy 1.7.1</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -18,6 +18,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      cam_err_generic:"Kamera açılamadı",
+      cam_err_insecure:"Kamera yalnızca güvenli bağlantıda açılır",
+      cam_err_unsupported:"Bu cihaz kamerayı desteklemiyor",
+      cam_err_busy:"Kamera başka bir uygulamada",
+      cam_err_none:"Kamera bulunamadı",
+      cam_err_perm:"Kamera izni verilmedi",
       rec_flip_off:"Kayıt sırasında kamera değiştirme kapalı",
       rec_flip_off2:"Kapatıldı — kayıt en akıcı halde",
       rec_flip_on:"Açıldı — kayıt daha az akıcı olabilir",
@@ -456,6 +462,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      cam_err_generic:"Couldn't open the camera",
+      cam_err_insecure:"Camera needs a secure connection",
+      cam_err_unsupported:"Camera not supported here",
+      cam_err_busy:"Camera is in use by another app",
+      cam_err_none:"No camera found",
+      cam_err_perm:"Camera permission denied",
       rec_flip_off:"Flipping while recording is off",
       rec_flip_off2:"Off — recording at best smoothness",
       rec_flip_on:"On — recording may be less smooth",
@@ -881,6 +893,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      cam_err_generic:"No se pudo abrir la cámara",
+      cam_err_insecure:"La cámara requiere conexión segura",
+      cam_err_unsupported:"Cámara no compatible",
+      cam_err_busy:"La cámara está en uso",
+      cam_err_none:"No se encontró cámara",
+      cam_err_perm:"Permiso de cámara denegado",
       rec_flip_off:"Cambio de cámara al grabar desactivado",
       rec_flip_off2:"Desactivado: grabación más fluida",
       rec_flip_on:"Activado: la grabación puede ser menos fluida",
@@ -1306,6 +1324,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      cam_err_generic:"تعذّر فتح الكاميرا",
+      cam_err_insecure:"تحتاج الكاميرا اتصالاً آمناً",
+      cam_err_unsupported:"الكاميرا غير مدعومة هنا",
+      cam_err_busy:"الكاميرا مستخدمة في تطبيق آخر",
+      cam_err_none:"لم يتم العثور على كاميرا",
+      cam_err_perm:"لم يُمنح إذن الكاميرا",
       rec_flip_off:"تبديل الكاميرا أثناء التسجيل مُعطّل",
       rec_flip_off2:"مُعطّل — التسجيل بأفضل سلاسة",
       rec_flip_on:"مُفعّل — قد يقل سلاسة التسجيل",
@@ -1731,6 +1755,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      cam_err_generic:"Impossible d'ouvrir la caméra",
+      cam_err_insecure:"La caméra exige une connexion sécurisée",
+      cam_err_unsupported:"Caméra non prise en charge",
+      cam_err_busy:"Caméra utilisée par une autre app",
+      cam_err_none:"Aucune caméra trouvée",
+      cam_err_perm:"Autorisation caméra refusée",
       rec_flip_off:"Changement pendant l'enregistrement désactivé",
       rec_flip_off2:"Désactivé — enregistrement le plus fluide",
       rec_flip_on:"Activé — l'enregistrement peut être moins fluide",
@@ -2156,6 +2186,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      cam_err_generic:"Kamera konnte nicht geöffnet werden",
+      cam_err_insecure:"Kamera erfordert sichere Verbindung",
+      cam_err_unsupported:"Kamera hier nicht unterstützt",
+      cam_err_busy:"Kamera wird anderweitig genutzt",
+      cam_err_none:"Keine Kamera gefunden",
+      cam_err_perm:"Kamerazugriff verweigert",
       rec_flip_off:"Wechsel während Aufnahme ist aus",
       rec_flip_off2:"Aus — Aufnahme am flüssigsten",
       rec_flip_on:"An — Aufnahme evtl. weniger flüssig",
@@ -2581,6 +2617,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      cam_err_generic:"Не удалось открыть камеру",
+      cam_err_insecure:"Камере нужно защищённое соединение",
+      cam_err_unsupported:"Камера не поддерживается",
+      cam_err_busy:"Камера занята другим приложением",
+      cam_err_none:"Камера не найдена",
+      cam_err_perm:"Нет доступа к камере",
       rec_flip_off:"Смена камеры при записи выключена",
       rec_flip_off2:"Выключено — запись максимально плавная",
       rec_flip_on:"Включено — запись может быть менее плавной",
@@ -3006,6 +3048,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      cam_err_generic:"Não foi possível abrir a câmera",
+      cam_err_insecure:"A câmera exige conexão segura",
+      cam_err_unsupported:"Câmera não suportada",
+      cam_err_busy:"Câmera em uso por outro app",
+      cam_err_none:"Câmera não encontrada",
+      cam_err_perm:"Permissão de câmera negada",
       rec_flip_off:"Troca durante a gravação desativada",
       rec_flip_off2:"Desativado — gravação mais fluida",
       rec_flip_on:"Ativado — a gravação pode ficar menos fluida",
@@ -3431,6 +3479,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      cam_err_generic:"कैमरा नहीं खुल सका",
+      cam_err_insecure:"कैमरे को सुरक्षित कनेक्शन चाहिए",
+      cam_err_unsupported:"यहाँ कैमरा समर्थित नहीं",
+      cam_err_busy:"कैमरा दूसरे ऐप में है",
+      cam_err_none:"कैमरा नहीं मिला",
+      cam_err_perm:"कैमरा अनुमति नहीं मिली",
       rec_flip_off:"रिकॉर्डिंग में कैमरा बदलना बंद है",
       rec_flip_off2:"बंद — रिकॉर्डिंग सबसे स्मूद",
       rec_flip_on:"चालू — रिकॉर्डिंग कम स्मूद हो सकती है",
@@ -3856,6 +3910,12 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      cam_err_generic:"Kamera tidak dapat dibuka",
+      cam_err_insecure:"Kamera perlu koneksi aman",
+      cam_err_unsupported:"Kamera tidak didukung",
+      cam_err_busy:"Kamera dipakai aplikasi lain",
+      cam_err_none:"Kamera tidak ditemukan",
+      cam_err_perm:"Izin kamera ditolak",
       rec_flip_off:"Ganti kamera saat merekam nonaktif",
       rec_flip_off2:"Nonaktif — rekaman paling lancar",
       rec_flip_on:"Aktif — rekaman bisa kurang lancar",
@@ -5375,21 +5435,41 @@ video{background-color:#12121a}
 #cam video.mirror{transform:scaleX(-1)}
 
 /* ═══ YEREL KAMERA ÖNİZLEMESİ ═══
-   Android önizlemesi HTML'in ARKASINA çizilir. Görünebilmesi için
-   önündeki katmanların saydam olması gerekir; aksi halde ekran
-   siyah kalır ve "kamera açılmıyor" sanılır. */
+   Android önizlemesi tarayıcının ARKASINA çizilir. Görünebilmesi için
+   tarayıcının saydam olması gerekir.
+
+   ÖNEMLİ: Sadece arka planı saydam yapmak yetmez — akış, harita gibi
+   içerikler de aynı tarayıcının içinde olduğu için kameranın önünde
+   kalır ve kamera yerine onlar görünür. Bu yüzden kamera açıkken
+   diğer her şey GİZLENİR; yalnızca kamera düğmeleri kalır. */
 .camRoot{position:absolute;inset:0;z-index:0;pointer-events:none}
-.camNativeOn #cam{background:transparent}
-.camNativeOn #cam .camStage,
-.camNativeOn #cam .camWrap{background:transparent}
-.camNativeOn #camVideo{display:none}          /* yerelde video etiketi gereksiz */
-.camNativeOn body,
-.camNativeOn #phone{background:transparent}
-/* Arayüz önizlemenin ÜSTÜNDE kalmalı */
-.camNativeOn #cam .camTop,
-.camNativeOn #cam .camBottom,
-.camNativeOn #cam .modes,
-.camNativeOn #cam .shutterWrap{z-index:5;position:relative}
+
+/* tarayıcıyı saydamlaştır */
+html.camNativeOn,
+html.camNativeOn body,
+html.camNativeOn #phone{background:transparent !important}
+
+/* kamera dışındaki her şeyi gizle */
+html.camNativeOn #feed,
+html.camNativeOn #list,
+html.camNativeOn .tabbar,
+html.camNativeOn #timeSheet,
+html.camNativeOn #chats,
+html.camNativeOn #profile,
+html.camNativeOn #notif,
+html.camNativeOn #settings{visibility:hidden !important}
+
+/* kamera panelinin kendi zeminleri saydam */
+html.camNativeOn #cam,
+html.camNativeOn #cam .camStage,
+html.camNativeOn #cam .camWrap,
+html.camNativeOn #cam .camBody{background:transparent !important}
+
+/* yerelde video etiketi gereksiz */
+html.camNativeOn #camVideo{display:none !important}
+
+/* arayüz önizlemenin ÜSTÜNDE kalmalı */
+html.camNativeOn #cam > *:not(.camRoot){position:relative;z-index:5}
 .camtop{position:relative;z-index:2;padding:calc(var(--sat) + 12px) 14px 0;display:flex;align-items:center;justify-content:space-between}
 .camtop .title{font-size:14px;font-weight:600;letter-spacing:-.018em;
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:7px 14px;border-radius:99px;
@@ -7038,7 +7118,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.1</span></div>
     </div>
   </section>
 </div>
@@ -12564,7 +12644,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.1";
   box.appendChild(ver);
 }
 
@@ -14560,7 +14640,7 @@ async function start(kayitSurerken){
        uygulamada  → Android'in kendi kamerası, donanım kaydı
        webde       → arka kamera, doğrudan kayıt
      Katman yoksa eski tarayıcı yoluna düşülür (bozulma olmasın). */
-  if(window.Kamera){
+  if(window.Kamera && !window.__kameraKatmaniKapali){
     try{
       const v=$("#camVideo");
       v.classList.toggle("mirror", facing==="user" && !Kamera.yerelMi());
@@ -14583,8 +14663,28 @@ async function start(kayitSurerken){
     }catch(e){
       const camPanel=$("#cam");
       if(camPanel) camPanel.classList.remove("waiting");
+      document.documentElement.classList.remove("camNativeOn");
+
+      /* Hata SEBEBİNİ göster — "işlem başarısız" demek sorunu gizliyor. */
+      const tur = (e && e.tur) ? e.tur : "bilinmeyen";
+      console.warn("[Klipsy] kamera hatası:", tur, e);
+
+      const mesajlar = {
+        izin_yok:        t("cam_err_perm"),
+        kamera_yok:      t("cam_err_none"),
+        mesgul:          t("cam_err_busy"),
+        desteksiz:       t("cam_err_unsupported"),
+        guvensiz_baglam: t("cam_err_insecure"),
+      };
+      toast(mesajlar[tur] || (t("cam_err_generic") + " (" + tur + ")"));
+
+      /* Yerel yol açılmadıysa ESKİ YOLA düş — kullanıcı çekimsiz kalmasın. */
+      if(Kamera.yerelMi()){
+        console.warn("[Klipsy] tarayıcı yoluna dönülüyor");
+        window.__kameraKatmaniKapali = true;
+        return start(kayitSurerken);
+      }
       $("#camFail").classList.add("on");
-      console.warn("[Klipsy] kamera:", e && e.tur, e);
       return;
     }
   }

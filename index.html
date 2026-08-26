@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.0.2</title>
+<title>Klipsy 2.0.6</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5115,6 +5115,78 @@ svg{display:block}
 .exSheetHead{padding:4px 18px 10px}
 .exSheetHead b{font-size:16px;font-weight:700;letter-spacing:-.025em;display:block}
 .exSheetHead span{font-size:12.5px;color:var(--t3);margin-top:1px;display:block}
+/* ═══ ZAMAN LİSTESİ ═══
+   Tasarım kuralları:
+     • Tüm kapaklar AYNI oranda (3:4) ve aynı boyutta. Farklı oranlar
+       listeyi düzensiz gösteriyordu.
+     • aspect-ratio ile oran görsel inmeden önce de korunur, satırlar
+       yükleme sırasında zıplamaz.
+     • Satır yüksekliği dokunma için en az 44 piksel.
+     • Boşluklar 8'in katları.
+     • Ayraç çizgisi yok; ayrım boşlukla sağlanır. */
+
+.exItem{display:flex;align-items:center;gap:12px;
+  padding:8px;border-radius:16px;cursor:pointer;
+  min-height:72px;transition:background .15s}
+.exItem:active{background:var(--surf1)}
+
+/* KAPAK — her yerde aynı oran */
+.exItem .exThumb,
+.exSubItem .exThumb{
+  /* Yükseklik hem oranla hem açıkça verilir: oran özelliği
+     desteklenmezse kutu sıfır yükseklikte kalıp kayboluyordu. */
+  flex:none;width:52px;height:69px;aspect-ratio:3/4;
+  border-radius:12px;overflow:hidden;position:relative;
+  background:var(--surf2) center/cover no-repeat;
+  box-shadow:0 0 0 1px var(--edge-soft) inset}
+
+/* görsel yoksa: simge, aynı kutu içinde */
+.exThumb.exNoImg{display:grid;place-items:center;font-size:20px;
+  background:var(--surf1);color:var(--t2)}
+
+/* video işareti */
+.exThumb.hasVid::after{content:"";position:absolute;left:50%;top:50%;
+  margin:-7px 0 0 -4px;
+  border-left:12px solid rgba(255,255,255,.95);
+  border-top:7px solid transparent;border-bottom:7px solid transparent;
+  filter:drop-shadow(0 1px 4px rgba(0,0,0,.7))}
+
+/* an sayısı rozeti */
+.exThumb .exCount{position:absolute;left:4px;top:4px;
+  min-width:19px;height:19px;padding:0 5px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  font-size:10.5px;font-weight:800;line-height:1;
+  box-shadow:0 2px 6px rgba(0,0,0,.35)}
+
+/* metin bloğu */
+.exItem .exMeta{flex:1;min-width:0}
+.exItem .exWho{font-size:15px;font-weight:650;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exItem .exMood{font-size:14px;flex:none}
+.exItem .exWhere{font-size:13px;color:var(--t2);margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exItem .exWhen{font-size:12px;color:var(--t3);margin-top:2px}
+.exItem .exGo{color:var(--t3);flex:none;width:24px;
+  display:grid;place-items:center}
+.exItem.cok .exGo svg{transition:transform .22s var(--ease)}
+.exItem.cok.acik .exGo svg{transform:rotate(90deg)}
+
+/* ── açılan alt liste ── */
+.exSub{display:none;margin:0 0 8px 8px;padding:2px 0 4px 56px}
+.exSub.acik{display:block;animation:exAc .22s ease}
+@keyframes exAc{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+.exSubItem{display:flex;align-items:center;gap:12px;
+  padding:6px 8px;border-radius:12px;cursor:pointer;
+  min-height:56px;transition:background .14s}
+.exSubItem:active{background:var(--surf1)}
+.exSubItem .exThumb{width:40px;height:53px}
+.exSubItem .exMeta{flex:1;min-width:0}
+.exSubItem .exWhen{font-size:13px;color:var(--t2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 .exList{overflow-y:auto;padding:0 10px 8px;scrollbar-width:none}
 .exList::-webkit-scrollbar{display:none}
 .exItem{display:flex;align-items:center;gap:12px;padding:11px 8px;border-radius:14px;cursor:pointer;
@@ -5141,6 +5213,29 @@ svg{display:block}
 
 /* panelde video işareti */
 .plItem .plThumb{position:relative;overflow:hidden}
+/* ═══ KİŞİ GRUPLARI ═══ */
+.plItem.cok .plGo svg{transition:transform .22s var(--ease)}
+.plItem.cok.acik .plGo svg{transform:rotate(90deg)}
+
+.plThumb .plCount{position:absolute;left:4px;top:4px;
+  min-width:18px;height:18px;padding:0 5px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  font-size:10.5px;font-weight:800;line-height:1;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)}
+
+.plSub{display:none;padding:2px 0 8px 14px;margin:0 0 4px 26px;
+  border-left:2px solid var(--edge-soft)}
+.plSub.acik{display:block;animation:plAc .2s ease}
+@keyframes plAc{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+.plSubItem{display:flex;align-items:center;gap:10px;width:100%;
+  padding:7px 8px;border:0;border-radius:12px;background:none;
+  text-align:left;color:var(--t1);transition:background .14s}
+.plSubItem:active{background:var(--surf1)}
+.plSubItem .plThumb.sm{width:38px;height:38px;border-radius:9px;flex:none}
+.plSubItem .plMeta span{font-size:12.5px;color:var(--t3)}
+
 .plThumb .plPlay{position:absolute;right:4px;bottom:4px;width:14px;height:14px;
   border-radius:99px;background:rgba(0,0,0,.6);
   box-shadow:0 1px 3px rgba(0,0,0,.5)}
@@ -6540,16 +6635,19 @@ html.native button,html.native .tab{touch-action:manipulation}
 /* kapağı olmayan videoda ilk kare */
 .mcard .im .imv{width:100%;height:100%;object-fit:cover;display:block;
   pointer-events:none;background:var(--surf3)}
-/* VİDEO İŞARETİ — SADE ÜÇGEN
-   Daire ve çerçeve fazlalıktı; uygulamanın geri kalanında oynatma
-   işareti sade bir üçgen olarak kullanılıyor. Burada da öyle olmalı.
-   Görselin üstünde okunması için yalnızca gölge verilir. */
+/* VİDEO İŞARETİ — GÖRSELİN ORTASINDA
+   Köşede küçük bir işaret gözden kaçıyordu. Ortada duran daire
+   hem videoyu anında belli ediyor hem de dokunulacak yeri gösteriyor.
+   Konum, kartın alt yazı şeridi hariç görsel alanının ortasıdır. */
 .mcard.video::after{content:"";position:absolute;left:50%;top:calc(50% - 14px);
-  margin:-13px 0 0 -9px;
-  border-left:26px solid rgba(255,255,255,.95);
-  border-top:15px solid transparent;
-  border-bottom:15px solid transparent;
-  filter:drop-shadow(0 2px 10px rgba(0,0,0,.7))}
+  width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:99px;
+  background:rgba(0,0,0,.42);border:1.5px solid rgba(255,255,255,.85);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 4px 14px -4px rgba(0,0,0,.6)}
+.mcard.video::before{content:"";position:absolute;left:50%;top:calc(50% - 14px);z-index:1;
+  margin:-9px 0 0 -5px;
+  border-left:15px solid #fff;border-top:9px solid transparent;
+  border-bottom:9px solid transparent}
 .mcard .grad{position:absolute;left:0;right:0;top:0;height:64%;
   background:linear-gradient(rgba(0,0,0,.55),transparent)}
 /* Kart yazıları görselin ÜZERİNDE duruyor: her iki temada da beyaz
@@ -7364,7 +7462,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.2</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.6</span></div>
     </div>
   </section>
 </div>
@@ -9650,6 +9748,26 @@ function close(id){
   _popHistory(id);
   if(id==="comments") closeComments();
   if(id==="songSheet" && typeof stopSheetPreview==="function") stopSheetPreview();
+
+  /* SES KAPANIŞI — MERKEZİ
+     Tek an sayfasında şarkı ve video çalıyor. Sayfa hangi yolla
+     kapanırsa kapansın (geri tuşu, dışarı dokunma, düğme) ses
+     arkada çalmaya devam ediyordu. */
+  if(id==="anPage"){
+    try{ if(typeof apSarkiDurdur==="function") apSarkiDurdur(); }catch(e){}
+    try{
+      const v = document.querySelector("#apMedia video");
+      if(v){ v.pause(); v.currentTime = 0; }
+    }catch(e){}
+  }
+
+  if(id==="arcView"){
+    try{ if(typeof arcStopSong==="function") arcStopSong(); }catch(e){}
+    try{
+      const v = document.querySelector("#arcView video");
+      if(v) v.pause();
+    }catch(e){}
+  }
   // başka engelleyici panel kalmadıysa akış sesini geri getir
   if(AUDIO_BLOCKERS.includes(id) && !anyBlockerOpen() && typeof resumeFeedMedia==="function"){
     setTimeout(()=>{ if(!anyBlockerOpen()) resumeFeedMedia(); },80);
@@ -9929,38 +10047,88 @@ function refreshExplore(){
           : (z >= 9 ? t("no_moments_area") : t("no_moments_range")))+
       '</div>';
   }else{
-    list.slice(0,60).forEach(it=>{
-      const row=document.createElement("div");row.className="exItem";
-      const th=document.createElement("span");th.className="exThumb";
-      /* Video dosyası arka plan resmi olarak kullanılamaz — tarayıcı onu
-         çizemediği için kutu bembeyaz kalıyordu (üstelik tüm video boşuna
-         iniyordu). Videolarda kapak resmi, o da yoksa duygu simgesi. */
-      if(it.kind === "video"){
-        if(it.poster){
-          th.style.backgroundImage = 'url("'+it.poster+'")';
-          th.classList.add("hasVid");
-        }else{
-          th.classList.add("exNoImg");
-          th.textContent = it.mood ? it.mood.em : "🎬";
-        }
-      }else if(it.src){
-        th.style.backgroundImage = 'url("'+it.src+'")';
-      }else{
-        th.classList.add("exNoImg");
-        th.textContent = it.mood ? it.mood.em : "📍";
-      }
-      const meta=document.createElement("div");meta.className="exMeta";
-      const mo=it.mood;
-      meta.innerHTML='<div class="exWho"><span class="exMood">'+(mo?mo.em:"")+'</span>'+esc(adiniGoster(it.who))+'</div>'+
-        '<div class="exWhere">'+(it.where||t("no_location"))+'</div>'+
-        '<div class="exWhen">'+rel(it.ts)+'</div>';
-      const go=document.createElement("span");go.className="exGo";
-      go.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
-      row.append(th,meta,go);
-      /* Akışa atlamak yerine Zaman ekranının içinde göster. */
-      row.addEventListener("click",()=>{ zamanAnGoster(it); });
-      box.appendChild(row);
+    /* ═══ KİŞİYE GÖRE GRUPLAMA ═══
+       Aynı kişinin bölgede birden fazla anı varsa adı tekrar tekrar
+       alt alta yazılıyordu. Paylaşım sayısı arttıkça liste
+       kullanılamaz hale gelir.
+       Artık her kişi TEK satır; birden fazla anı varsa satıra
+       dokununca altında açılır. */
+    const kisiler = new Map();
+    list.slice(0,120).forEach(it=>{
+      const k = it.who || "?";
+      if(!kisiler.has(k)) kisiler.set(k, []);
+      kisiler.get(k).push(it);
     });
+
+    const kapak = (it, el)=>{
+      if(it.kind === "video"){
+        if(it.poster){ el.style.backgroundImage='url("'+it.poster+'")'; el.classList.add("hasVid"); }
+        else { el.classList.add("exNoImg"); el.textContent = it.mood ? it.mood.em : "🎬"; }
+      }else if(it.src){
+        el.style.backgroundImage='url("'+it.src+'")';
+      }else{
+        el.classList.add("exNoImg"); el.textContent = it.mood ? it.mood.em : "📍";
+      }
+    };
+
+    Array.from(kisiler.entries())
+      .sort((a,b)=>(b[1][0].ts||0)-(a[1][0].ts||0))
+      .slice(0,60)
+      .forEach(([kim, anlar])=>{
+        const ilk = anlar[0];
+        const cok = anlar.length > 1;
+
+        const row=document.createElement("div");
+        row.className="exItem" + (cok ? " cok" : "");
+
+        const th=document.createElement("span");th.className="exThumb";
+        kapak(ilk, th);
+        if(cok){
+          const rz=document.createElement("span"); rz.className="exCount";
+          rz.textContent=anlar.length; th.appendChild(rz);
+        }
+
+        const meta=document.createElement("div");meta.className="exMeta";
+        const mo=ilk.mood;
+        meta.innerHTML =
+          '<div class="exWho"><span class="exMood">'+(mo?mo.em:"")+'</span>'+esc(adiniGoster(kim))+'</div>'+
+          '<div class="exWhere">'+(ilk.where||t("no_location"))+'</div>'+
+          '<div class="exWhen">'+
+            (cok ? (anlar.length+" "+t("moments_count")+" · "+rel(ilk.ts)) : rel(ilk.ts))+
+          '</div>';
+
+        const go=document.createElement("span");go.className="exGo";
+        go.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+
+        row.append(th,meta,go);
+
+        if(!cok){
+          row.addEventListener("click",()=>{ zamanAnGoster(ilk); });
+          box.appendChild(row);
+          return;
+        }
+
+        const alt=document.createElement("div");alt.className="exSub";
+        anlar.forEach(a=>{
+          const s=document.createElement("div");s.className="exSubItem";
+          const t2=document.createElement("span");t2.className="exThumb";
+          kapak(a, t2);
+          const m2=document.createElement("div");m2.className="exMeta";
+          m2.innerHTML='<div class="exWhen">'+rel(a.ts)+
+            (a.where?(" · "+esc(a.where)):"")+'</div>';
+          s.append(t2,m2);
+          s.addEventListener("click",e=>{ e.stopPropagation(); zamanAnGoster(a); });
+          alt.appendChild(s);
+        });
+
+        row.addEventListener("click",()=>{
+          const acik = row.classList.toggle("acik");
+          alt.classList.toggle("acik", acik);
+        });
+
+        box.appendChild(row);
+        box.appendChild(alt);
+      });
   }
   drawMomentPins();
 }
@@ -10777,38 +10945,77 @@ async function openPlaceLayers(g){
     return;
   }
 
-  let lastGroup="";
+  /* ═══ KİŞİYE GÖRE GRUPLAMA ═══
+     Önceden her an ayrı satırdı: aynı kişi aynı yerde beş an
+     paylaşınca adı beş kez alt alta yazılıyordu. Paylaşım sayısı
+     arttıkça liste kullanılamaz hale gelir.
+     Artık her kişi TEK satır; birden fazla anı varsa satıra
+     dokununca altında açılır. */
+  const kisiler = new Map();
   near.forEach(x=>{
-    // zaman başlığı (bugün / bu hafta / bu ay / daha önce)
-    const grp = era(x.ts);
-    if(grp!==lastGroup){
-      lastGroup=grp;
-      const h=document.createElement("div");h.className="plGroup";h.textContent=grp;
-      box.appendChild(h);
-    }
-    const row=document.createElement("button");row.className="plItem";
-    // önce minik önizleme, yoksa kapak, o da yoksa duygu simgesi
-    const gorsel = x.thumb || x.poster || null;
-    /* Oynat işareti önizlemenin İÇİNDE olmalı; kardeş eleman olarak
-       eklenince satırın sağ altına kayıyordu. */
-    const th = gorsel
-      ? '<div class="plThumb" style="background-image:url('+gorsel+')">'
-          + (x.kind==="video" ? '<span class="plPlay"></span>' : '')
-        + '</div>'
-      : '<div class="plThumb plNo">'+(x.moodEmoji||"📍")+'</div>';
-    row.innerHTML = th +
-      '<div class="plMeta">'+
-        '<b>'+esc(x.label||t("no_location"))+'</b>'+
-        '<span>'+rel(x.ts)+(x.kind==="video"?" · "+t("video_up"):"")+'</span>'+
-      '</div>'+
-      '<span class="plGo"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>';
-    row.addEventListener("click",()=>{
-      /* Akışa atlamak yerine Zaman ekranının İÇİNDE göster.
-         Kullanıcı haritadaki yerini kaybetmiyor. */
-      zamanAnGoster(x);
-    });
-    box.appendChild(row);
+    const anahtar = x.who || "?";
+    if(!kisiler.has(anahtar)) kisiler.set(anahtar, []);
+    kisiler.get(anahtar).push(x);
   });
+
+  Array.from(kisiler.entries())
+    .sort((a,b) => (b[1][0].ts||0) - (a[1][0].ts||0))
+    .forEach(([kim, anlar])=>{
+      const ilk = anlar[0];
+      const cok = anlar.length > 1;
+
+      const satir = document.createElement("button");
+      satir.className = "plItem" + (cok ? " cok" : "");
+
+      const gorsel = ilk.thumb || ilk.poster || null;
+      const th = gorsel
+        ? '<div class="plThumb" style="background-image:url('+gorsel+')">'
+            + (ilk.kind==="video" ? '<span class="plPlay"></span>' : '')
+            + (cok ? '<span class="plCount">'+anlar.length+'</span>' : '')
+          + '</div>'
+        : '<div class="plThumb plNo">'+(ilk.moodEmoji||"📍")+'</div>';
+
+      const altYazi = cok
+        ? (anlar.length + " " + t("moments_count") + " · " + rel(ilk.ts))
+        : (rel(ilk.ts) + (ilk.kind==="video" ? " · ▶" : ""));
+
+      satir.innerHTML = th +
+        '<div class="plMeta">'+
+          '<b>'+esc(adiniGoster(kim))+'</b>'+
+          '<span>'+altYazi+'</span>'+
+        '</div>'+
+        '<span class="plGo"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>';
+
+      if(!cok){
+        satir.addEventListener("click", ()=>zamanAnGoster(ilk));
+        box.appendChild(satir);
+        return;
+      }
+
+      const alt = document.createElement("div");
+      alt.className = "plSub";
+      anlar.forEach(a=>{
+        const s = document.createElement("button");
+        s.className = "plSubItem";
+        const g2 = a.thumb || a.poster || null;
+        s.innerHTML =
+          (g2 ? '<div class="plThumb sm" style="background-image:url('+g2+')">'
+                  + (a.kind==="video" ? '<span class="plPlay"></span>' : '')
+                + '</div>'
+              : '<div class="plThumb sm plNo">'+(a.moodEmoji||"📍")+'</div>') +
+          '<div class="plMeta"><span>'+rel(a.ts)+(a.kind==="video" ? " · ▶" : "")+'</span></div>';
+        s.addEventListener("click", e=>{ e.stopPropagation(); zamanAnGoster(a); });
+        alt.appendChild(s);
+      });
+
+      satir.addEventListener("click", ()=>{
+        const acik = satir.classList.toggle("acik");
+        alt.classList.toggle("acik", acik);
+      });
+
+      box.appendChild(satir);
+      box.appendChild(alt);
+    });
 }
 
 /* Zaman ekranındaki bir anı, profildeki görüntüleyiciyle aç.
@@ -13324,7 +13531,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.2";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.6";
   box.appendChild(ver);
 }
 

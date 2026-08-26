@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.7.7</title>
+<title>Klipsy 1.7.8</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5513,7 +5513,12 @@ html.camNativeOn #cam .camBody{background:transparent !important}
 html.camNativeOn #camVideo{display:none !important}
 
 /* arayüz önizlemenin ÜSTÜNDE kalmalı */
-html.camNativeOn #cam > *:not(.camRoot){position:relative;z-index:5}
+/* DİKKAT: Buraya "position:relative" YAZILMAZ.
+   Sayaç ve ilerleme çubuğu "position:absolute" ile konumlanıyor.
+   Göreli konuma çevrilince blok haline gelip ekran boyunca uzuyor,
+   tasarım bozuluyordu. Yalnızca katman sırası verilir. */
+html.camNativeOn #cam > *:not(.camRoot){z-index:5}
+html.camNativeOn #cam > .camRoot{z-index:0}
 .camtop{position:relative;z-index:2;padding:calc(var(--sat) + 12px) 14px 0;display:flex;align-items:center;justify-content:space-between}
 .camtop .title{font-size:14px;font-weight:600;letter-spacing:-.018em;
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:7px 14px;border-radius:99px;
@@ -7162,7 +7167,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.7</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.8</span></div>
     </div>
   </section>
 </div>
@@ -12688,7 +12693,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.7";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.8";
   box.appendChild(ver);
 }
 

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.7.8</title>
+<title>Klipsy 1.9.5</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -18,6 +18,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      moment_gone:"Bu an artık yok",
       cam_fallback:"Tarayıcı kamerasına geçildi",
       cam_err_generic:"Kamera açılamadı",
       cam_err_insecure:"Kamera yalnızca güvenli bağlantıda açılır",
@@ -463,6 +464,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      moment_gone:"This moment is gone",
       cam_fallback:"Switched to browser camera",
       cam_err_generic:"Couldn't open the camera",
       cam_err_insecure:"Camera needs a secure connection",
@@ -895,6 +897,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      moment_gone:"Este momento ya no existe",
       cam_fallback:"Cambiado a cámara del navegador",
       cam_err_generic:"No se pudo abrir la cámara",
       cam_err_insecure:"La cámara requiere conexión segura",
@@ -1327,6 +1330,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      moment_gone:"هذه اللحظة لم تعد موجودة",
       cam_fallback:"تم التحويل إلى كاميرا المتصفح",
       cam_err_generic:"تعذّر فتح الكاميرا",
       cam_err_insecure:"تحتاج الكاميرا اتصالاً آمناً",
@@ -1759,6 +1763,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      moment_gone:"Cet instant n'existe plus",
       cam_fallback:"Passage à la caméra du navigateur",
       cam_err_generic:"Impossible d'ouvrir la caméra",
       cam_err_insecure:"La caméra exige une connexion sécurisée",
@@ -2191,6 +2196,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      moment_gone:"Dieser Moment ist weg",
       cam_fallback:"Auf Browser-Kamera gewechselt",
       cam_err_generic:"Kamera konnte nicht geöffnet werden",
       cam_err_insecure:"Kamera erfordert sichere Verbindung",
@@ -2623,6 +2629,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      moment_gone:"Этого момента больше нет",
       cam_fallback:"Переключено на камеру браузера",
       cam_err_generic:"Не удалось открыть камеру",
       cam_err_insecure:"Камере нужно защищённое соединение",
@@ -3055,6 +3062,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      moment_gone:"Este momento não existe mais",
       cam_fallback:"Mudou para a câmera do navegador",
       cam_err_generic:"Não foi possível abrir a câmera",
       cam_err_insecure:"A câmera exige conexão segura",
@@ -3487,6 +3495,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      moment_gone:"यह पल अब नहीं है",
       cam_fallback:"ब्राउज़र कैमरे पर स्विच किया",
       cam_err_generic:"कैमरा नहीं खुल सका",
       cam_err_insecure:"कैमरे को सुरक्षित कनेक्शन चाहिए",
@@ -3919,6 +3928,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      moment_gone:"Momen ini sudah tidak ada",
       cam_fallback:"Beralih ke kamera peramban",
       cam_err_generic:"Kamera tidak dapat dibuka",
       cam_err_insecure:"Kamera perlu koneksi aman",
@@ -5279,6 +5289,160 @@ svg{display:block}
 
 /* eylem satırı en altta — gövdenin kendi alt dolgusu yeterli */
 #profile .profbody.otherProf .profActs{margin-top:auto;padding:22px 0 0;border:0}
+
+/* ═══ TEK AN SAYFASI ═══
+   Tam ekran, kendi başına çalışır. Akışın yüklü olmasına bağlı değil. */
+.anPage{z-index:var(--z-notif);background:#000;color:#fff;
+  display:none;flex-direction:column;overflow:hidden}
+.anPage.open{display:flex}
+
+/* Medya: görüntünün tamamı görünür (kırpılmaz), arkadaki boşluk
+   aynı görüntünün bulanık haliyle dolar — yanlarda siyah bant kalmaz. */
+.apMedia{position:absolute;inset:0;z-index:0;display:grid;place-items:center;
+  background:#000;overflow:hidden}
+.apMedia .zemin{position:absolute;inset:-10%;width:120%;height:120%;
+  object-fit:cover;filter:blur(28px) brightness(.5);z-index:0}
+.apMedia img.esas,.apMedia video{position:relative;z-index:1;
+  max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
+.apMedia .yukleniyor{width:34px;height:34px;border-radius:99px;
+  border:3px solid rgba(255,255,255,.2);border-top-color:#fff;animation:apSpin .8s linear infinite}
+@keyframes apSpin{to{transform:rotate(360deg)}}
+
+/* üst şerit */
+.apTop{position:absolute;left:0;right:0;top:0;z-index:4;display:flex;align-items:center;gap:10px;
+  padding:calc(var(--sat) + 12px) 14px 20px;
+  background:linear-gradient(to bottom,
+    rgba(0,0,0,.66) 0%, rgba(0,0,0,.32) 55%, transparent 100%)}
+.apBack,.apMore{flex:none;width:38px;height:38px;border-radius:99px;border:0;
+  display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.32);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.apBack:active,.apMore:active{transform:scale(.9)}
+.apBack svg,.apMore svg{width:19px;height:19px}
+.apWho{flex:1;min-width:0;display:flex;align-items:center;gap:10px;
+  background:none;border:0;padding:0;color:#fff;text-align:left}
+.apWho .av{width:34px;height:34px;border-radius:99px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat}
+.apWho .tx{min-width:0}
+.apWho b{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.018em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.apWho i{display:block;font-style:normal;font-size:11.5px;color:rgba(255,255,255,.72);
+  margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* sağ eylem şeridi */
+.apRail{position:absolute;right:12px;bottom:calc(var(--sab) + 66px);z-index:4;
+  display:flex;flex-direction:column;gap:20px;align-items:center}
+.apAct{background:none;border:0;padding:0;color:#fff;display:flex;
+  flex-direction:column;align-items:center;gap:5px;transition:transform .12s}
+.apAct:active{transform:scale(.86)}
+.apAct .ic{width:31px;height:31px;display:grid;place-items:center}
+.apAct .ic svg{width:29px;height:29px;filter:drop-shadow(0 1px 6px rgba(0,0,0,.8))}
+.apAct em{font-style:normal;font-size:12px;font-weight:700;
+  text-shadow:0 1px 6px rgba(0,0,0,.85);font-variant-numeric:tabular-nums}
+.apAct.on{color:var(--accent)}
+.apAct.on .ic svg{fill:currentColor}
+.apAct.saved{color:#FFC857}
+.apAct.saved .ic svg{fill:currentColor}
+
+/* alt bilgi */
+/* Alt karartma TAM GENİŞLİK olmalı.
+   Sağda 74 piksel boş bırakılınca orada arka plan, solda düz siyah
+   kalıyor ve ekran ortadan kesilmiş gibi görünüyordu.
+   Metin sağdaki şeride girmesin diye sağ iç boşluk kullanılır. */
+.apFoot{position:absolute;left:0;right:0;bottom:0;z-index:4;
+  padding:60px 16px calc(var(--sab) + 18px);
+  padding-right:62px;
+  background:linear-gradient(to top,
+    rgba(0,0,0,.82) 0%,
+    rgba(0,0,0,.55) 38%,
+    rgba(0,0,0,.18) 68%,
+    transparent 100%)}
+.apChips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+.apChips span{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;
+  border-radius:99px;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);font-size:12px;font-weight:600}
+.apNote{font-size:14px;line-height:1.5;letter-spacing:-.01em;
+  text-shadow:0 1px 8px rgba(0,0,0,.75);max-height:5.2em;overflow:hidden}
+
+/* ŞARKI — PLAK
+   Sağdaki eylem şeridinin devamı gibi durur: aynı genişlik, aynı hizada.
+   Yalnızca plak; yazı yok. */
+.apSong{position:absolute;right:12px;bottom:calc(var(--sab) + 22px);z-index:6;
+  width:31px;height:31px;padding:0;border:0;background:none;
+  display:grid;place-items:center;transition:transform .14s}
+.apSong:active{transform:scale(.9)}
+
+/* plak gövdesi — yivler iç gölgelerle çizilir */
+.apSong .plak{display:block;position:relative;width:31px;height:31px;border-radius:99px;
+  background:#14141a;
+  background-image:linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,0) 55%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.18),
+    inset 0 0 0 4px rgba(255,255,255,.06),
+    inset 0 0 0 5px rgba(255,255,255,.10),
+    0 3px 10px -3px rgba(0,0,0,.85)}
+.apSong.calisiyor .plak{animation:apDon 4.5s linear infinite}
+@keyframes apDon{to{transform:rotate(360deg)}}
+
+/* ortadaki kapak */
+.apSong .kapak{position:absolute;left:50%;top:50%;width:16px;height:16px;
+  margin:-8px 0 0 -8px;border-radius:99px;
+  background:#222 center/cover no-repeat;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+.apSong .kapak::after{content:"";position:absolute;left:50%;top:50%;
+  width:3.5px;height:3.5px;margin:-1.75px 0 0 -1.75px;border-radius:99px;
+  background:rgba(0,0,0,.8);box-shadow:0 0 0 1px rgba(255,255,255,.2)}
+
+/* duraklamışken oynat işareti */
+.apSong .oynat{position:absolute;left:50%;top:50%;width:14px;height:14px;
+  margin:-7px 0 0 -7px;border-radius:99px;display:grid;place-items:center;
+  background:rgba(0,0,0,.6);opacity:1;transition:opacity .2s}
+.apSong.calisiyor .oynat{opacity:0}
+.apSong .oynat::after{content:"";border-left:5px solid #fff;
+  border-top:3.5px solid transparent;border-bottom:3.5px solid transparent;
+  margin-left:1.5px}
+
+/* yorumlar — bu sayfanın içinde */
+.apComments{position:absolute;inset:0;z-index:8;display:none}
+.apComments.open{display:block}
+.apCScrim{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.apCBox{position:absolute;left:10px;right:10px;bottom:max(10px,var(--sab));
+  height:var(--sheetH);display:flex;flex-direction:column;overflow:hidden;
+  background:var(--panelbg);color:var(--t1);
+  border:1px solid var(--edge);border-radius:26px;
+  transform:translateY(calc(100% + 24px));transition:transform .3s var(--ease)}
+.apComments.open .apCBox{transform:translateY(0)}
+.apCGrip{width:36px;height:4px;border-radius:99px;background:var(--edge);margin:10px auto 2px;flex:none}
+.apCHead{display:flex;align-items:center;padding:8px 16px 10px;flex:none}
+.apCHead b{flex:1;font-size:15.5px;font-weight:700;letter-spacing:-.024em}
+.apCClose{width:32px;height:32px;border-radius:99px;border:0;display:grid;place-items:center;
+  background:var(--surf1);color:var(--t2)}
+.apCClose svg{width:16px;height:16px}
+.apCList{flex:1;min-height:0;overflow-y:auto;padding:0 14px 10px;scrollbar-width:none}
+.apCList::-webkit-scrollbar{display:none}
+.apCBar{flex:none;display:flex;align-items:center;gap:9px;padding:10px 14px calc(var(--sab) + 12px);
+  border-top:1px solid var(--edge-soft)}
+.apCBar .av{width:32px;height:32px;border-radius:99px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat}
+.apCBar input{flex:1;min-width:0;height:40px;border-radius:99px;padding:0 14px;
+  background:var(--input-bg);border:1px solid var(--edge);color:var(--t1);
+  font:inherit;font-size:14px}
+.apCBar input:focus{outline:none;border-color:rgba(255,59,107,.5)}
+.apCSend{flex:none;width:40px;height:40px;border-radius:99px;border:0;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
+.apCSend svg{width:18px;height:18px}
+.apCSend:active{transform:scale(.92)}
+
+/* yorum satırı */
+.apCRow{display:flex;gap:10px;padding:11px 2px}
+.apCRow .av{width:32px;height:32px;border-radius:99px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat}
+.apCRow .bd{flex:1;min-width:0}
+.apCRow .nm{font-size:13px;font-weight:700;letter-spacing:-.016em}
+.apCRow .nm span{font-weight:500;color:var(--t3);margin-left:6px;font-size:11.5px}
+.apCRow .tx{font-size:14px;line-height:1.45;margin-top:2px;color:var(--t1);
+  overflow-wrap:anywhere}
+.apCEmpty{text-align:center;color:var(--t3);font-size:13.5px;padding:34px 20px;line-height:1.6}
 
 /* ═══ PROFİL KARTI (fotoğrafın altına biner) ═══ */
 .hero.heroBig{border-radius:0 0 4px 4px}
@@ -7167,7 +7331,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.8</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.9.5</span></div>
     </div>
   </section>
 </div>
@@ -7525,6 +7689,59 @@ html.native button,html.native .tab{touch-action:manipulation}
     </div>
   </section>
 
+
+  <!-- ═══ TEK AN SAYFASI ═══
+       Bildirimden ya da haritadan gelen an KENDİ sayfasında açılır.
+       Akışa dokunmaz, arka planda hiçbir yönlendirme yapmaz. -->
+  <section class="panel anPage" id="anPage" aria-hidden="true">
+    <div class="apMedia" id="apMedia"></div>
+
+    <div class="apTop">
+      <button class="apBack" id="apBack" aria-label="Geri">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>
+      </button>
+      <button class="apWho" id="apWho">
+        <span class="av" id="apAv"></span>
+        <span class="tx"><b id="apName"></b><i id="apMeta"></i></span>
+      </button>
+      <button class="apMore" id="apMore" aria-label="Seçenekler">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="18.5" r="1.9"/></svg>
+      </button>
+    </div>
+
+    <div class="apRail">
+      <button class="apAct" id="apLike"><span class="ic"></span><em id="apLikeN">0</em></button>
+      <button class="apAct" id="apComment"><span class="ic"></span><em id="apCommN">0</em></button>
+      <button class="apAct" id="apSave"><span class="ic"></span></button>
+      <button class="apAct" id="apShare"><span class="ic"></span></button>
+    </div>
+
+    <div class="apFoot">
+      <div class="apChips" id="apChips"></div>
+      <p class="apNote" id="apNote"></p>
+    </div>
+
+    <!-- yorumlar bu sayfanın İÇİNDE açılır -->
+    <div class="apComments" id="apComments" aria-hidden="true">
+      <div class="apCScrim" id="apCScrim"></div>
+      <div class="apCBox">
+        <div class="apCGrip"></div>
+        <div class="apCHead"><b id="apCTitle"></b>
+          <button class="apCClose" id="apCClose" aria-label="Kapat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <div class="apCList" id="apCList"></div>
+        <div class="apCBar">
+          <span class="av" id="apCAv"></span>
+          <input id="apCInput" type="text" maxlength="300">
+          <button class="apCSend" id="apCSend" aria-label="Gönder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="panel" id="profile" aria-hidden="true">
     <div class="head">
@@ -8220,12 +8437,26 @@ async function loadNotifs(){
     }, {fallback:[], timeout:6000});
     const error = null;
     if(error){ console.warn('notif:',error.message); return; }
-    notifs=(data||[]).map(r=>({
+    const hepsi = (data||[]).map(r=>({
       id:r.id, type:r.kind, who:r.actor_username, avatar:r.actor_avatar,
       postId:r.moment_id, postMedia:r.moment_media,
-      text:r.comment_body||null,
+      text:r.comment_body||r.preview||null,
       ts:new Date(r.created_at).getTime(), seen:r.is_seen
     }));
+
+    /* MESAJLAR BİLDİRİM MERKEZİNE DÜŞMEZ.
+       Mesajın yeri Mesajlar sekmesidir; merkezde göstermek listeyi
+       gereksiz kalabalıklaştırıyor. Kayıt yine de oluşuyor çünkü
+       telefon bildirimi onun üzerinden gidiyor — sadece burada
+       gösterilmiyor ve okunmadı sayısına katılmıyor. */
+    notifs = hepsi.filter(n => n.type !== "message");
+
+    // merkezde görünmeyenleri okundu say: rozet şişmesin
+    const mesajlar = hepsi.filter(n => n.type === "message" && !n.seen);
+    if(mesajlar.length){
+      markNotifSeen(mesajlar.map(n=>n.id));
+    }
+
     paintDot();
     if($("#notif").classList.contains("open")) renderNotifs();
   }catch(e){ console.warn(e); }
@@ -8414,20 +8645,11 @@ function notifRow(n){
     /* Yorum türlerinde ana git ve YORUMLARI AÇ — kullanıcı hangi
        yoruma geldiğini görsün. Önceden sadece akışa gidiyordu. */
     if(n.postId){
+      /* Bildirimden gelen an KENDİ SAYFASINDA açılır.
+         Akışa gidip aramak, paylaşım sayısı büyüdükçe sürdürülemez. */
       close("notif");
       const yorumTuru = (n.type==="comment" || n.type==="reply" || n.type==="comment_like");
-      const akistaVar = !!list.querySelector('[data-id="'+n.postId+'"]');
-
-      if(akistaVar){
-        setTab($("#tabFeed"));
-        goToPost(n.postId, yorumTuru ? (anId)=>{
-          const it = (items||[]).find(x=>x && x.id===anId);
-          if(it && typeof openComments==="function") openComments(it);
-        } : null);
-      }else{
-        // akışta yoksa doğrudan görüntüleyicide aç
-        goToPost(n.postId);
-      }
+      anSayfasiAc(n.postId, { yorumlar: yorumTuru });
       return;
     }
 
@@ -9229,8 +9451,13 @@ function clearReply(){replyTarget=null;$("#replyBar").classList.remove("on");}
 $("#replyCancel").addEventListener("click",clearReply);
 
 function openComments(id){
+  /* Nesne de gelebilir, kimlik de — ikisi de kabul edilir. */
+  if(id && typeof id === "object"){ window.__tekAn = id; id = id.id; }
   commId=id;
-  goToPost(id);
+
+  /* An akışta yoksa oraya kaydırmaya çalışma; tek an sayfası zaten
+     açık durumda ve akışa atlamak istenmiyor. */
+  if(list.querySelector('[data-id="'+id+'"]')) goToPost(id);
   clearReply();
   paintAv($("#commAv"),ME);
   renderComments();
@@ -9244,7 +9471,15 @@ function openComments(id){
   loadComments(id);
 }
 async function loadComments(id){
-  const it=byId(id); if(!it) return;
+  /* An akışta olmayabilir (bildirimden açılan tek an sayfası).
+     Böyle durumda o an geçici listeye eklenir, yoksa yorumlar
+     hiç yüklenmiyordu. */
+  let it = byId(id);
+  if(!it && window.__tekAn && window.__tekAn.id === id){
+    it = window.__tekAn;
+    if(Array.isArray(items) && !items.some(m=>m && m.id===id)) items.push(it);
+  }
+  if(!it) return;
   if(!isReal(id) || !window.__sb) return;
   try{
     const {data,error}=await window.__sb.rpc('get_comments',{target:id});
@@ -9314,7 +9549,7 @@ ci.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendCom
 /* ---------- katmanlar ---------- */
 // akış dışına çıkaran paneller (bunlar açıkken akış sesi susar)
 const AUDIO_BLOCKERS=["comments","timeSheet","notif","cam","compose","profile","chats","chat",
-  "settings","editProfile","songSheet","coverSheet","postMenu","reportSheet","msgMenu","shareSheet","followSheet","miniProfile","arcView","placeLayers","feedPlace","chatMenu","imgViewer","blockedPanel"];
+  "anPage","settings","editProfile","songSheet","coverSheet","postMenu","reportSheet","msgMenu","shareSheet","followSheet","miniProfile","arcView","placeLayers","feedPlace","chatMenu","imgViewer","blockedPanel"];
 function anyBlockerOpen(){
   return AUDIO_BLOCKERS.some(id=>{
     const el=document.getElementById(id);
@@ -10546,57 +10781,369 @@ async function openPlaceLayers(g){
 /* Zaman ekranındaki bir anı, profildeki görüntüleyiciyle aç.
    Harita verisi ile profil verisi farklı alan adları kullanıyor;
    burada eşleştirilir. */
-function zamanAnGoster(x){
-  if(!x) return;
-  const sb = window.__sb;
-  const S  = sb ? sb.storage.from('moments') : null;
-  const url = p => { try{ return (S && p) ? S.getPublicUrl(p).data.publicUrl : null; }catch(e){ return null; } };
+/* ═══ TEK AN SAYFASI ═══
+   Bildirimden ya da haritadan gelen an KENDİ sayfasında açılır.
+   Akışa hiç dokunmaz, arka planda yönlendirme yapmaz.
 
+   NEDEN AYRI SAYFA
+     Akış yalnızca son 20 anı tutuyor. Eski bir anı görmek için akışa
+     gidip aramak, paylaşım sayısı büyüdükçe sürdürülemez.
+     Burada YALNIZCA istenen an çekilir: tek satır, tek sorgu. */
+
+let _apAn = null;                 // sayfada açık olan an
+let _apYorumlar = [];
+
+async function anSayfasiAc(id, secenek){
+  secenek = secenek || {};
+  if(!id) return;
+
+  const sb = window.__sb, me = window.__me;
+
+  // sayfayı hemen aç, içerik gelene kadar yükleniyor göster
+  _apAn = null;
+  $("#apMedia").innerHTML = '<span class="yukleniyor"></span>';
+  $("#apName").textContent = "";
+  $("#apMeta").textContent = "";
+  $("#apNote").textContent = "";
+  $("#apChips").innerHTML = "";
+  open("anPage");
+
+  // 1) bellekte var mı — varsa sorgu yok
   let it = null;
   try{
-    it = (items||[]).find(m=>m.id===x.id)
-      || (Array.isArray(_myMoments) ? _myMoments.find(m=>m.id===x.id) : null)
-      || (Array.isArray(_savedCache) ? _savedCache.find(m=>m.id===x.id) : null);
+    it = (items||[]).find(m=>m && m.id===id)
+      || (Array.isArray(_myMoments) ? _myMoments.find(m=>m.id===id) : null)
+      || (Array.isArray(_savedCache) ? _savedCache.find(m=>m.id===id) : null);
   }catch(e){}
 
-  if(!it){
-    /* An yüklü listelerde yoksa sayaçları SIFIR yazmak yanlış —
-       beğeni ve görüntülenme 0 görünüyordu. Gerçek değerleri
-       sunucudan çekiyoruz. */
-    it = {
-      id:x.id, who:x.who||"", mine:(x.who===ME),
-      ts:x.ts||Date.now(),
-      kind:x.kind||"photo",
-      src: url(x.mediaPath) || x.poster || x.thumb || "",
-      poster: x.poster||null,
-      mood: x.mood||null,
-      note:"", where: x.where||x.label||null,
-      likes:0, views:0, cc:0, comments:[], liked:false, saved:false, song:null
-    };
+  // 2) yoksa sunucudan TEK an
+  if(!it && sb){
+    try{
+      const { data:m, error } = await sb.from('moments')
+        .select('id, author_id, media_path, media_kind, poster_path, thumb_path, mood, note, ' +
+                'place_label, like_count, comment_count, view_count, created_at, duration_ms, ' +
+                'song_title, song_artist, song_art, song_preview, is_removed')
+        .eq('id', id).single();
 
-    if(sb && x.id){
-      sb.from('moments')
-        .select('like_count, comment_count, view_count, note, duration_ms, song_title, song_artist, song_art, song_preview')
-        .eq('id', x.id).single()
-        .then(({data:d})=>{
-          if(!d) return;
-          it.likes = d.like_count||0;
-          it.cc    = d.comment_count||0;
-          it.views = d.view_count||0;
-          it.note  = d.note||"";
-          if(d.song_title) it.song = {title:d.song_title, artist:d.song_artist,
-                                      art:d.song_art, preview:d.song_preview};
-          // görüntüleyici açıksa sayıları tazele
-          if(typeof openArchiveView==="function" &&
-             document.getElementById("arcView") &&
-             document.getElementById("arcView").classList.contains("open")){
-            openArchiveView(it);
-          }
-        })
-        .catch(()=>{});
-    }
+      if(error || !m || m.is_removed){ anSayfasiBos(); return; }
+
+      let kadi = "", ekip = null;
+      try{
+        const { data:pr } = await sb.from('profiles')
+          .select('username, display_name, avatar_url').eq('id', m.author_id).single();
+        if(pr){
+          kadi = pr.username || "";
+          if(pr.display_name) setDisplayName(pr.username, pr.display_name);
+          if(pr.avatar_url)   setRealAvatar(pr.username, pr.avatar_url);
+        }
+      }catch(e){}
+
+      let begendim = false, kaydettim = false;
+      if(me){
+        try{
+          const [b,k] = await Promise.all([
+            sb.from('likes').select('moment_id').eq('moment_id',id).eq('user_id',me.id).maybeSingle(),
+            sb.from('saves').select('moment_id').eq('moment_id',id).eq('user_id',me.id).maybeSingle()
+          ]);
+          begendim=!!(b&&b.data); kaydettim=!!(k&&k.data);
+        }catch(e){}
+      }
+
+      const S = sb.storage.from('moments');
+      const adr = y => { try{ return y ? S.getPublicUrl(y).data.publicUrl : null; }catch(e){ return null; } };
+
+      it = {
+        id:m.id, who:kadi, mine:!!(me && m.author_id===me.id),
+        ts:new Date(m.created_at).getTime(),
+        kind:m.media_kind||"photo",
+        src:adr(m.media_path), poster:adr(m.poster_path)||adr(m.thumb_path),
+        thumb:adr(m.thumb_path),
+        /* MOODS içinde alan adı "k" — "id" değil. Yanlış alanla
+           arayınca duygu bulunamıyor ve etiket "mood_undefined" çıkıyordu. */
+        mood:m.mood ? (MOODS||[]).find(x=>x.k===m.mood)||null : null,
+        note:m.note||"", where:m.place_label||null,
+        likes:m.like_count||0, cc:m.comment_count||0, views:m.view_count||0,
+        dur:m.duration_ms||0, liked:begendim, saved:kaydettim, comments:[],
+        song:m.song_title ? {title:m.song_title,artist:m.song_artist,
+                             art:m.song_art,preview:m.song_preview} : null
+      };
+    }catch(e){ console.warn("[Klipsy] an sayfası:", e); anSayfasiBos(); return; }
   }
-  if(typeof openArchiveView==="function") openArchiveView(it);
+
+  if(!it || (!it.src && !it.poster)){ anSayfasiBos(); return; }
+
+  _apAn = it;
+  anSayfasiCiz();
+  if(secenek.yorumlar) setTimeout(()=>apYorumlariAc(), 350);
+
+  // görüntülenme
+  try{
+    if(sb && isReal(it.id)) sb.rpc('mark_view',{target:it.id}).catch(()=>{});
+  }catch(e){}
+}
+
+function anSayfasiBos(){
+  $("#apMedia").innerHTML =
+    '<div class="apCEmpty">' + t("moment_gone") + '</div>';
+}
+
+function anSayfasiCiz(){
+  const it = _apAn; if(!it) return;
+
+  // medya
+  const kap = $("#apMedia"); kap.innerHTML = "";
+
+  // arkada bulanık zemin
+  const zeminKaynak = it.poster || it.thumb || it.src;
+  if(zeminKaynak){
+    const z = document.createElement("img");
+    z.className = "zemin"; z.src = zeminKaynak; z.alt = "";
+    kap.appendChild(z);
+  }
+
+  if(it.kind === "video" && it.src){
+    const v = document.createElement("video");
+    v.src = it.src; if(it.poster) v.poster = it.poster;
+    v.playsInline = true; v.controls = false; v.loop = true; v.autoplay = true;
+    v.muted = false;
+    v.addEventListener("click", ()=>{ v.paused ? v.play() : v.pause(); });
+    kap.appendChild(v);
+    v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); });
+  }else{
+    const im = document.createElement("img");
+    im.className = "esas";
+    im.src = it.src || it.poster; im.alt = "";
+    kap.appendChild(im);
+  }
+
+  // kim, ne zaman
+  paintAv($("#apAv"), it.who);
+  $("#apName").textContent = adiniGoster(it.who);
+
+  /* Üst satır: zaman ve KONUM — akıştaki düzenin aynısı.
+     Görüntülenme sayısı sağdaki şeritte zaten var, burada tekrarlanmaz. */
+  const parcalar = [rel(it.ts)];
+  if(it.where) parcalar.push(it.where);
+  $("#apMeta").textContent = parcalar.join(" · ");
+
+  // etiketler
+  const ch = $("#apChips"); ch.innerHTML = "";
+  if(it.mood){
+    /* Duygu adı MOODS içinde hazır geliyor (alan: t). */
+    const ad = it.mood.t || t("mood_" + (it.mood.k||""), "");
+    const s = document.createElement("span");
+    s.textContent = (it.mood.em || "") + " " + ad;
+    ch.appendChild(s);
+  }
+  /* Konum artık üst satırda; burada tekrar gösterilmez.
+     Şarkı da sağ alttaki kendi düğmesinde. */
+
+  $("#apNote").textContent = it.note || "";
+
+  // eylemler
+  apEylemleriCiz();
+}
+
+function apEylemleriCiz(){
+  const it=_apAn; if(!it) return;
+  $("#apLike").classList.toggle("on", !!it.liked);
+  $("#apLike .ic").innerHTML = I.heart;
+  $("#apLikeN").textContent = nf(it.likes||0);
+  $("#apComment .ic").innerHTML = I.chat;
+  $("#apCommN").textContent = nf(it.cc||0);
+  $("#apSave").classList.toggle("saved", !!it.saved);
+  $("#apSave .ic").innerHTML = I.save;
+  $("#apShare .ic").innerHTML = I.send;
+
+  apSarkiKur();
+}
+
+/* ═══ ŞARKI ═══
+   Akışta şarkı önizlemesi çalıyor; bu sayfada da çalmalı.
+   Sağ alt köşede kendi düğmesi var: dokununca çalar/durur. */
+let _apSes = null;
+
+function apSarkiDurdur(){
+  if(_apSes){ try{ _apSes.pause(); }catch(e){} _apSes = null; }
+  const d = document.getElementById("apSong");
+  if(d) d.classList.remove("calisiyor");
+}
+
+function apSarkiKur(){
+  const it = _apAn;
+  apSarkiDurdur();
+
+  let d = document.getElementById("apSong");
+  const sarki = it && it.song && it.song.preview ? it.song : null;
+
+  if(!sarki){ if(d) d.remove(); return; }
+
+  if(!d){
+    d = document.createElement("button");
+    d.id = "apSong";
+    d.className = "apSong";
+    /* Yalnızca plak. Şarkı adı ve sanatçı kaldırıldı — sağ şeridi
+       kalabalıklaştırıyordu. */
+    d.innerHTML = '<span class="plak"><span class="kapak"></span></span>' +
+                  '<span class="oynat"></span>';
+    const sayfa = document.getElementById("anPage");
+    if(sayfa) sayfa.appendChild(d);
+
+    d.addEventListener("click", ()=>{
+      if(_apSes && !_apSes.paused){ apSarkiDurdur(); return; }
+      apSarkiCal();
+    });
+  }
+
+  d.querySelector(".kapak").style.backgroundImage =
+    sarki.art ? ('url("' + sarki.art + '")') : "none";
+  d.setAttribute("aria-label", (sarki.title||"") + " " + (sarki.artist||""));
+
+  // video değilse şarkı kendiliğinden başlasın
+  if(it.kind !== "video") apSarkiCal();
+}
+
+function apSarkiCal(){
+  const it = _apAn;
+  if(!it || !it.song || !it.song.preview) return;
+  try{
+    _apSes = new Audio(it.song.preview);
+    _apSes.loop = true;
+    _apSes.volume = 0.85;
+    _apSes.play().then(()=>{
+      const d = document.getElementById("apSong");
+      if(d) d.classList.add("calisiyor");
+    }).catch(()=>{
+      /* Tarayıcı kendiliğinden çalmaya izin vermiyorsa kullanıcı
+         düğmeye dokununca çalar. */
+      _apSes = null;
+    });
+  }catch(e){ _apSes = null; }
+}
+
+/* ── Yorumlar: bu sayfanın İÇİNDE ── */
+async function apYorumlariAc(){
+  const it=_apAn; if(!it) return;
+  $("#apCTitle").textContent = t("comments") + (it.cc ? (" · " + nf(it.cc)) : "");
+  paintAv($("#apCAv"), ME);
+  $("#apCInput").placeholder = t("comment_ph");
+  $("#apCList").innerHTML = '<div class="apCEmpty">' + t("loading") + '</div>';
+  $("#apComments").classList.add("open");
+
+  const sb=window.__sb;
+  if(!sb || !isReal(it.id)){ apYorumlariCiz([]); return; }
+  try{
+    const { data, error } = await sb.rpc('get_comments', { target: it.id });
+    if(error) throw error;
+    (data||[]).forEach(r=>{
+      if(r.avatar_url)   setRealAvatar(r.username, r.avatar_url);
+      if(r.display_name) setDisplayName(r.username, r.display_name);
+    });
+    _apYorumlar = data || [];
+    apYorumlariCiz(_apYorumlar);
+    it.cc = _apYorumlar.length;
+    $("#apCTitle").textContent = t("comments") + (it.cc ? (" · " + nf(it.cc)) : "");
+    apEylemleriCiz();
+  }catch(e){
+    console.warn("[Klipsy] yorumlar:", e);
+    apYorumlariCiz([]);
+  }
+}
+
+function apYorumlariCiz(liste){
+  const kutu=$("#apCList"); kutu.innerHTML="";
+  if(!liste || !liste.length){
+    kutu.innerHTML = '<div class="apCEmpty">' + t("no_comments") + '</div>';
+    return;
+  }
+  liste.forEach(r=>{
+    const row=document.createElement("div"); row.className="apCRow";
+    const av=document.createElement("span"); av.className="av"; paintAv(av, r.username);
+    av.addEventListener("click", ()=>{ close("anPage"); openProfile(r.username); });
+    const bd=document.createElement("div"); bd.className="bd";
+    const nm=document.createElement("div"); nm.className="nm";
+    nm.innerHTML = esc(adiniGoster(r.username)) + '<span>' + rel(new Date(r.created_at).getTime()) + '</span>';
+    const tx=document.createElement("div"); tx.className="tx"; tx.textContent=r.body||"";
+    bd.append(nm,tx); row.append(av,bd); kutu.appendChild(row);
+  });
+}
+
+async function apYorumGonder(){
+  const it=_apAn; if(!it) return;
+  const inp=$("#apCInput");
+  const metin=(inp.value||"").trim();
+  if(!metin) return;
+
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me){ toast(t("err_generic")); return; }
+
+  inp.value="";
+  try{
+    const { error } = await sb.from('comments')
+      .insert({ moment_id: it.id, author_id: me.id, body: metin });
+    if(error) throw error;
+    await apYorumlariAc();
+    $("#apCList").scrollTop = $("#apCList").scrollHeight;
+  }catch(e){
+    inp.value = metin;
+    toast(t("err_generic"));
+  }
+}
+
+/* ── Sayfa düğmeleri ── */
+(function apBagla(){
+  const g = id => document.getElementById(id);
+  if(!g("anPage")) return;
+
+  g("apBack").addEventListener("click", ()=>{ apSarkiDurdur(); close("anPage"); });
+  g("apWho").addEventListener("click", ()=>{
+    if(_apAn && _apAn.who){ close("anPage"); openProfile(_apAn.who); }
+  });
+  g("apMore").addEventListener("click", ()=>{
+    if(_apAn) openPostMenu(_apAn);
+  });
+
+  g("apLike").addEventListener("click", async ()=>{
+    const it=_apAn; if(!it) return;
+    const sb=window.__sb, me=window.__me;
+    const vardi = !!it.liked;
+    it.liked = !vardi;
+    it.likes = Math.max(0,(it.likes||0)+(it.liked?1:-1));
+    apEylemleriCiz();
+    if(!sb||!me||!isReal(it.id)) return;
+    try{
+      if(vardi) await sb.from('likes').delete().eq('moment_id',it.id).eq('user_id',me.id);
+      else      await sb.from('likes').upsert({moment_id:it.id,user_id:me.id},{onConflict:'moment_id,user_id'});
+    }catch(e){
+      it.liked=vardi; it.likes=Math.max(0,(it.likes||0)+(vardi?1:-1)); apEylemleriCiz();
+    }
+  });
+
+  g("apSave").addEventListener("click", async ()=>{
+    const it=_apAn; if(!it) return;
+    const sb=window.__sb, me=window.__me;
+    const vardi=!!it.saved;
+    it.saved=!vardi; apEylemleriCiz();
+    toast(it.saved ? t("t_saved") : t("t_unsaved"));
+    if(!sb||!me||!isReal(it.id)) return;
+    try{
+      if(vardi) await sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',me.id);
+      else      await sb.from('saves').upsert({moment_id:it.id,user_id:me.id},{onConflict:'moment_id,user_id'});
+    }catch(e){ it.saved=vardi; apEylemleriCiz(); }
+  });
+
+  g("apShare").addEventListener("click", ()=>{ if(_apAn) openShare(_apAn); });
+  g("apComment").addEventListener("click", apYorumlariAc);
+
+  g("apCClose").addEventListener("click", ()=>g("apComments").classList.remove("open"));
+  g("apCScrim").addEventListener("click", ()=>g("apComments").classList.remove("open"));
+  g("apCSend").addEventListener("click", apYorumGonder);
+  g("apCInput").addEventListener("keydown", e=>{ if(e.key==="Enter") apYorumGonder(); });
+})();
+
+/* Haritadan gelen anlar da aynı sayfayı kullanır. */
+function zamanAnGoster(x){
+  if(x && x.id) anSayfasiAc(x.id);
 }
 
 function closePlaceLayers(){
@@ -12693,7 +13240,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.8";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.9.5";
   box.appendChild(ver);
 }
 

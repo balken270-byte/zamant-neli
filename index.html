@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.7.6</title>
+<title>Klipsy 1.7.7</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5463,13 +5463,30 @@ html.camNativeOn body,
 html.camNativeOn #phone,
 html.camNativeOn #app,
 html.camNativeOn #cam,
-html.camNativeOn #cam > div,
-html.camNativeOn #cam > section,
 html.camNativeOn .camRoot,
 html.camNativeOn #camRoot{
   background:transparent !important;
   background-color:transparent !important;
   background-image:none !important;
+}
+
+/* DİKKAT — ARAYÜZ ÖĞELERİNİN ZEMİNİ KORUNUR
+   Önceden "#cam > div" hepsini birden saydamlaştırıyordu. Bu yüzden
+   süre sayacının pembe zemini, ilerleme çubuğu ve geçiş örtüsü
+   görünmez oluyordu; sayaç da ekran boyunca uzamış gibi duruyordu.
+   Saydamlık yalnızca ZEMİN katmanlarına uygulanır. */
+html.camNativeOn #cam > .camStage,
+html.camNativeOn #cam > .camWrap,
+html.camNativeOn #cam > .camBody,
+html.camNativeOn #cam > .stage{
+  background:transparent !important;
+  background-color:transparent !important;
+}
+
+/* geçiş örtüsü siyah kalmalı */
+html.camNativeOn #camFlipMask{
+  background:#000 !important;
+  background-color:#000 !important;
 }
 
 /* KAMERA DIŞINDAKİ HER ŞEYİ GİZLE
@@ -7145,7 +7162,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.6</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.7.7</span></div>
     </div>
   </section>
 </div>
@@ -12671,7 +12688,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.7.7";
   box.appendChild(ver);
 }
 
@@ -15821,17 +15838,55 @@ async function kayitBaslatUI(){
     const sn = Math.floor(ms/1000);
     const s = $("#recTime span");
     if(s) s.textContent = suHali(sn) + " / " + suHali(enFazla);
+    /* Genişlik değiştirmek her karede yeniden yerleşim tetikliyordu.
+       Ölçekleme sadece çizim katmanında olur, takılma yapmaz. */
     const c = $("#recProg i");
-    if(c) c.style.width = Math.min(100, (ms/(enFazla*1000))*100).toFixed(1) + "%";
+    if(c){
+      c.style.width = "100%";
+      c.style.transformOrigin = "left center";
+      c.style.transform = "scaleX(" + Math.min(1, ms/(enFazla*1000)).toFixed(3) + ")";
+    }
   };
   yaz(0);
 
+  /* Sayaç saniyede iki kez güncellenir. Daha sık güncellemek görüntüde
+     minik takılmalara yol açıyordu; süre gösterimi için gereksiz. */
   clearInterval(recInt);
   recInt = setInterval(()=>{
     const ms = Kamera.gecenSure();
     yaz(ms);
     if(ms >= enFazla*1000) clearInterval(recInt);
-  }, 100);
+  }, 500);
+}
+
+/* Kameradan önizlemeye geçiş efekti: görüntü hızla kısılır,
+   ardından ekran açılır. Yaklaşık çeyrek saniye sürer. */
+function kameraKapanmaEfekti(){
+  return new Promise(coz=>{
+    try{
+      const kap = $("#cam");
+      if(!kap){ coz(); return; }
+
+      let ef = document.getElementById("camShotFx");
+      if(!ef){
+        ef = document.createElement("div");
+        ef.id = "camShotFx";
+        ef.style.cssText =
+          "position:absolute;inset:0;z-index:9;pointer-events:none;"+
+          "background:#000;opacity:0;transition:opacity .16s ease-out";
+        kap.appendChild(ef);
+      }
+
+      requestAnimationFrame(()=>{
+        ef.style.opacity = "1";
+        setTimeout(()=>{
+          ef.style.transition = "opacity .28s ease-in";
+          ef.style.opacity = "0";
+          coz();
+        }, 170);
+      });
+    }catch(e){ coz(); }
+  });
 }
 
 async function kayitBitirVeAc(){
@@ -15867,8 +15922,12 @@ async function kayitBitirVeAc(){
   /* Paylaşım ekranı veri adresi bekliyor; parçayı adrese çeviriyoruz.
      Dosya bellekte tutulmaz, adres kapanınca serbest bırakılır. */
   const adres = URL.createObjectURL(sonuc.blob);
-  closeCam();
 
+  /* Kayıttan önizlemeye geçişte kısa bir kapanma animasyonu.
+     Ani geçiş sert duruyordu; deklanşör hissi verir. */
+  await kameraKapanmaEfekti();
+
+  closeCam();
   if(target==="dm"){ sendMedia(adres,"video",sonuc.sure); }
   else{ openCompose(adres,"video",sonuc.sure); }
 }
@@ -15902,6 +15961,7 @@ sh.addEventListener("pointerup", async ()=>{
 
     const foto = await Kamera.fotoCek({ kalite: 88 });
     if(!foto) return;
+    await kameraKapanmaEfekti();
     if(target==="profile"){ closeCam(); blockGhostTap(); avatarKirp(foto); }
     else if(target==="dm"){ closeCam(); sendMedia(foto); }
     else { closeCam(); openCompose(foto,"photo"); }

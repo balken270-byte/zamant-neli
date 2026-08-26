@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 1.9.5</title>
+<title>Klipsy 2.0.2</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5292,7 +5292,13 @@ svg{display:block}
 
 /* ═══ TEK AN SAYFASI ═══
    Tam ekran, kendi başına çalışır. Akışın yüklü olmasına bağlı değil. */
-.anPage{z-index:var(--z-notif);background:#000;color:#fff;
+/* KATMAN — ÖNEMLİ
+   Sohbet panelleri 54 katmanında. Bu sayfa 50'de kalınca sohbetin
+   ALTINDA açılıyor ve tıklamalar sohbete gidiyordu; düğmelerin
+   çalışmamasının sebebi de buydu.
+   Sayfa her panelin üstünde, ama yorum ve kamera katmanlarının
+   altında durur. */
+.anPage{z-index:58;background:#000;color:#fff;
   display:none;flex-direction:column;overflow:hidden}
 .anPage.open{display:flex}
 
@@ -5330,7 +5336,7 @@ svg{display:block}
   margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* sağ eylem şeridi */
-.apRail{position:absolute;right:12px;bottom:calc(var(--sab) + 66px);z-index:4;
+.apRail{position:absolute;right:12px;bottom:calc(var(--sab) + 66px);z-index:7;
   display:flex;flex-direction:column;gap:20px;align-items:center}
 .apAct{background:none;border:0;padding:0;color:#fff;display:flex;
   flex-direction:column;align-items:center;gap:5px;transition:transform .12s}
@@ -5349,7 +5355,11 @@ svg{display:block}
    Sağda 74 piksel boş bırakılınca orada arka plan, solda düz siyah
    kalıyor ve ekran ortadan kesilmiş gibi görünüyordu.
    Metin sağdaki şeride girmesin diye sağ iç boşluk kullanılır. */
-.apFoot{position:absolute;left:0;right:0;bottom:0;z-index:4;
+/* Alt karartma tam genişlikte olduğu için sağdaki eylem şeridinin
+   ALT düğmesini örtüyordu; paylaş düğmesine dokunuşlar buraya
+   gidiyordu. Karartma dokunuşları geçirir, içindeki yazılar almaya
+   devam eder. */
+.apFoot{pointer-events:none;position:absolute;left:0;right:0;bottom:0;z-index:4;
   padding:60px 16px calc(var(--sab) + 18px);
   padding-right:62px;
   background:linear-gradient(to top,
@@ -5357,6 +5367,7 @@ svg{display:block}
     rgba(0,0,0,.55) 38%,
     rgba(0,0,0,.18) 68%,
     transparent 100%)}
+.apFoot > *{pointer-events:auto}
 .apChips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
 .apChips span{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;
   border-radius:99px;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
@@ -5403,7 +5414,7 @@ svg{display:block}
   margin-left:1.5px}
 
 /* yorumlar — bu sayfanın içinde */
-.apComments{position:absolute;inset:0;z-index:8;display:none}
+.apComments{position:absolute;inset:0;z-index:12;display:none}
 .apComments.open{display:block}
 .apCScrim{position:absolute;inset:0;background:rgba(0,0,0,.5)}
 .apCBox{position:absolute;left:10px;right:10px;bottom:max(10px,var(--sab));
@@ -6516,13 +6527,35 @@ html.native button,html.native .tab{touch-action:manipulation}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
 .msg .tm{font-size:10.5px;color:var(--t3);padding:0 6px}
 
+/* Mesajdaki an kartı — TEMA UYUMLU.
+   Renkler sabit koyu yazılmıştı; açık temada mesaj balonlarıyla
+   uyuşmuyor, yamalı duruyordu. Artık tema değişkenlerini kullanır. */
 .mcard{width:180px;border-radius:18px;overflow:hidden;position:relative;
-  background:#14141A;border:1px solid rgba(255,255,255,.12);transition:transform .14s}
+  background:var(--surf2);border:1px solid var(--edge-soft);
+  box-shadow:0 4px 14px -8px rgba(0,0,0,.35);transition:transform .14s}
 .mcard:active{transform:scale(.97)}
-.mcard .im{width:100%;aspect-ratio:3/4;background:#0E0E13 center/cover no-repeat;display:block}
+.mcard .im{width:100%;aspect-ratio:3/4;background:var(--surf3) center/cover no-repeat;display:block}
+/* kapağı olmayan an: duygu simgesi göster */
+.mcard .im.noKapak{display:grid;place-items:center;font-size:34px}
+/* kapağı olmayan videoda ilk kare */
+.mcard .im .imv{width:100%;height:100%;object-fit:cover;display:block;
+  pointer-events:none;background:var(--surf3)}
+/* VİDEO İŞARETİ — SADE ÜÇGEN
+   Daire ve çerçeve fazlalıktı; uygulamanın geri kalanında oynatma
+   işareti sade bir üçgen olarak kullanılıyor. Burada da öyle olmalı.
+   Görselin üstünde okunması için yalnızca gölge verilir. */
+.mcard.video::after{content:"";position:absolute;left:50%;top:calc(50% - 14px);
+  margin:-13px 0 0 -9px;
+  border-left:26px solid rgba(255,255,255,.95);
+  border-top:15px solid transparent;
+  border-bottom:15px solid transparent;
+  filter:drop-shadow(0 2px 10px rgba(0,0,0,.7))}
 .mcard .grad{position:absolute;left:0;right:0;top:0;height:64%;
   background:linear-gradient(rgba(0,0,0,.55),transparent)}
-.mcard .who2{position:absolute;top:9px;left:10px;right:10px;font-size:12px;font-weight:600;
+/* Kart yazıları görselin ÜZERİNDE duruyor: her iki temada da beyaz
+   olmalı. Tema rengini almaları açık temada siyah yapıyor ve
+   okunmuyordu. */
+.mcard .who2{color:#fff;position:absolute;top:9px;left:10px;right:10px;font-size:12px;font-weight:600;
   letter-spacing:-.012em;text-shadow:0 1px 6px rgba(0,0,0,.9);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mcard .em2{position:absolute;top:8px;right:9px;font-size:14px;
@@ -7331,7 +7364,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 1.9.5</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.2</span></div>
     </div>
   </section>
 </div>
@@ -10806,6 +10839,17 @@ async function anSayfasiAc(id, secenek){
   $("#apMeta").textContent = "";
   $("#apNote").textContent = "";
   $("#apChips").innerHTML = "";
+
+  /* Üstte açık kalan paneller kapatılır.
+     Sohbet açıkken bu sayfa açılınca ikisi üst üste biniyor,
+     geri tuşu da yanlış yere götürüyordu. */
+  try{
+    ["comments","postMenu","shareSheet","chatMenu","miniProfile"].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el && el.classList.contains("open")) close(id);
+    });
+  }catch(e){}
+
   open("anPage");
 
   // 1) bellekte var mı — varsa sorgu yok
@@ -11096,12 +11140,18 @@ async function apYorumGonder(){
   if(!g("anPage")) return;
 
   g("apBack").addEventListener("click", ()=>{ apSarkiDurdur(); close("anPage"); });
+
+  /* Geri tuşu ya da başka bir yol ile kapanırsa da ses dursun. */
+  const sayfa = g("anPage");
+  if(sayfa && window.MutationObserver){
+    new MutationObserver(()=>{
+      if(!sayfa.classList.contains("open")) apSarkiDurdur();
+    }).observe(sayfa, { attributes:true, attributeFilter:["class"] });
+  }
   g("apWho").addEventListener("click", ()=>{
     if(_apAn && _apAn.who){ close("anPage"); openProfile(_apAn.who); }
   });
-  g("apMore").addEventListener("click", ()=>{
-    if(_apAn) openPostMenu(_apAn);
-  });
+  g("apMore").addEventListener("click", ()=>{ if(_apAn) openPostMenu(_apAn); });
 
   g("apLike").addEventListener("click", async ()=>{
     const it=_apAn; if(!it) return;
@@ -11123,16 +11173,50 @@ async function apYorumGonder(){
     const it=_apAn; if(!it) return;
     const sb=window.__sb, me=window.__me;
     const vardi=!!it.saved;
+
     it.saved=!vardi; apEylemleriCiz();
-    toast(it.saved ? t("t_saved") : t("t_unsaved"));
+    toast(it.saved ? t("t_saved") : t("ok_unsaved2"));
+
     if(!sb||!me||!isReal(it.id)) return;
     try{
-      if(vardi) await sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',me.id);
-      else      await sb.from('saves').upsert({moment_id:it.id,user_id:me.id},{onConflict:'moment_id,user_id'});
-    }catch(e){ it.saved=vardi; apEylemleriCiz(); }
+      if(vardi){
+        const { error } = await sb.from('saves')
+          .delete().eq('moment_id',it.id).eq('user_id',me.id);
+        if(error) throw error;
+      }else{
+        /* Akışta olduğu gibi insert kullanılır. */
+        const { error } = await sb.from('saves')
+          .insert({ moment_id: it.id, user_id: me.id });
+        if(error && error.code !== '23505') throw error;   // zaten kayıtlıysa sorun değil
+      }
+      // akıştaki kareyi de eşitle
+      const fi = (items||[]).find(x=>x && x.id===it.id);
+      if(fi){
+        fi.saved = it.saved;
+        const node = list.querySelector('[data-id="'+it.id+'"]');
+        if(node && node._sync) node._sync();
+      }
+    }catch(e){
+      console.warn("[Klipsy] kaydet:", e);
+      it.saved=vardi; apEylemleriCiz();
+      toast(t("err_generic"));
+    }
   });
 
-  g("apShare").addEventListener("click", ()=>{ if(_apAn) openShare(_apAn); });
+  /* openShare an KİMLİĞİ bekliyor — nesne verilince sessizce
+     hiçbir şey yapmıyordu. */
+  g("apShare").addEventListener("click", async ()=>{
+    if(!_apAn) return;
+    /* Bildirimden gelindiğinde Mesajlar hiç açılmamış olabilir ve
+       sohbet listesi boş kalır; panel "önce sohbet et" diyerek
+       çalışmıyor gibi görünüyordu. Önce liste yüklenir. */
+    try{
+      if(!Array.isArray(chats) || !chats.length){
+        if(typeof loadConversations === "function") await loadConversations();
+      }
+    }catch(e){}
+    openShare(_apAn.id);
+  });
   g("apComment").addEventListener("click", apYorumlariAc);
 
   g("apCClose").addEventListener("click", ()=>g("apComments").classList.remove("open"));
@@ -13240,7 +13324,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 1.9.5";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.2";
   box.appendChild(ver);
 }
 
@@ -14858,6 +14942,53 @@ async function loadMessages(who){
     if(chatWho===who){ renderChat(); const b=$("#msgList"); if(b) b.scrollTop=b.scrollHeight; }
   }catch(e){ console.warn(e); }
 }
+/* Mesajda paylaşılan anların küçük önbelleği.
+   Akışta bulunmayan anlar için tek sorgu, sonuç saklanır. */
+const _mesajAnCache = {};
+const _mesajAnIsteniyor = {};
+
+function mesajAniGetir(id, bitince){
+  if(!id || _mesajAnCache[id] || _mesajAnIsteniyor[id]) return;
+  const sb = window.__sb;
+  if(!sb) return;
+  _mesajAnIsteniyor[id] = true;
+
+  sb.from('moments')
+    .select('id, author_id, media_path, media_kind, poster_path, thumb_path, mood, place_label, created_at, is_removed')
+    .eq('id', id).single()
+    .then(({data:m})=>{
+      delete _mesajAnIsteniyor[id];
+      if(!m || m.is_removed) return;
+
+      const S = sb.storage.from('moments');
+      const adr = y => { try{ return y ? S.getPublicUrl(y).data.publicUrl : null; }catch(e){ return null; } };
+
+      const kayit = {
+        id:m.id, kind:m.media_kind||"photo",
+        src:adr(m.media_path),
+        poster:adr(m.poster_path)||adr(m.thumb_path),
+        thumb:adr(m.thumb_path),
+        mood:m.mood ? (MOODS||[]).find(x=>x.k===m.mood)||null : null,
+        where:m.place_label||null,
+        ts:new Date(m.created_at).getTime(),
+        who:""
+      };
+
+      // yazar adını da al
+      sb.from('profiles').select('username, display_name').eq('id', m.author_id).single()
+        .then(({data:p})=>{
+          if(p){
+            kayit.who = p.username || "";
+            if(p.display_name) setDisplayName(p.username, p.display_name);
+          }
+          _mesajAnCache[id] = kayit;
+          if(bitince) bitince(kayit);
+        })
+        .catch(()=>{ _mesajAnCache[id] = kayit; if(bitince) bitince(kayit); });
+    })
+    .catch(()=>{ delete _mesajAnIsteniyor[id]; });
+}
+
 function dayLabel(ts){
   const d=new Date(ts),n=new Date();
   const same=(a,b)=>a.toDateString()===b.toDateString();
@@ -14893,18 +15024,61 @@ function renderChat(){
     }
     const w=document.createElement("div");w.className="msg "+(m.me?"me":"you");
     if(m.moment){
-      const it=byId(m.moment);
+      /* An akışta olmayabilir — o zaman byId boş döner ve kart
+         "bu an artık yok" gösterir. Önbellekte yoksa sunucudan
+         çekilip kart tazelenir. */
+      let it = byId(m.moment) || _mesajAnCache[m.moment] || null;
+      if(!it) mesajAniGetir(m.moment, card => {
+        // veri gelince bu kartı yeniden çiz
+        try{ if(chatWho) renderChat(); }catch(e){}
+      });
       const card=document.createElement("div");card.className="mcard";
       if(it){
         card.innerHTML='<span class="im"></span><span class="grad"></span>'+
           '<span class="who2"></span>'+(it.mood?'<span class="em2">'+it.mood.em+'</span>':'')+
           '<span class="ft"></span>';
-        card.querySelector(".im").style.backgroundImage='url("'+it.src+'")';
-        card.querySelector(".who2").textContent=it.who;
-        card.querySelector(".ft").textContent=it.where+" · "+rel(it.ts);
+        /* KAPAK
+           Videoda "src" video dosyasıdır, görsel değil — arka plan
+           olarak verilince boş gri kutu çıkıyordu.
+           Sıra: hazır kapak → küçük görsel → yoksa videonun İLK KARESİ.
+           Son durumda video etiketi kullanılır; tarayıcı yalnızca
+           üstbilgiyi indirip ilk kareyi çizer, tüm videoyu indirmez. */
+        const im = card.querySelector(".im");
+        const hazirKapak = it.poster || it.thumb || null;
+
+        if(it.kind === "video"){
+          card.classList.add("video");
+          if(hazirKapak){
+            im.style.backgroundImage = 'url("' + hazirKapak + '")';
+          }else if(it.src){
+            const v = document.createElement("video");
+            v.className = "imv";
+            v.src = it.src + "#t=0.1";      // ilk kareye konumlan
+            v.preload = "metadata";
+            v.muted = true; v.playsInline = true;
+            im.appendChild(v);
+          }else{
+            im.classList.add("noKapak");
+            im.textContent = it.mood ? it.mood.em : "🎬";
+          }
+        }else{
+          const g = it.src || hazirKapak;
+          if(g) im.style.backgroundImage = 'url("' + g + '")';
+          else{
+            im.classList.add("noKapak");
+            im.textContent = it.mood ? it.mood.em : "📍";
+          }
+        }
+        card.querySelector(".who2").textContent = adiniGoster(it.who);
+        /* Konum yoksa yer tutucu metin YAZILMAZ — "Konum yok" gibi
+           bir ifade karta gereksiz gürültü katıyordu. */
+        const yer = (it.where && !/^konum/i.test(it.where)) ? it.where : "";
+        card.querySelector(".ft").textContent = (yer ? (yer + " · ") : "") + rel(it.ts);
+        /* An KENDİ sayfasında açılır. Akışa atlamak hem yanlış yere
+           götürüyordu hem de an akışta yoksa hiçbir şey olmuyordu. */
         card.addEventListener("click",()=>{
-          close("chat");close("chats");setTab($("#tabFeed"));
-          setTimeout(()=>goToPost(it.id),140);
+          if(typeof anSayfasiAc === "function") anSayfasiAc(it.id);
+          else { close("chat"); setTab($("#tabFeed")); setTimeout(()=>goToPost(it.id),140); }
         });
       }else{
         card.innerHTML='<span class="ft">'+t("moment_gone")+'</span>';
@@ -15176,8 +15350,15 @@ function openReport(momentId){
 function openShare(id){
   shareId=id;
   const box=$("#shList");box.innerHTML="";
-  // yalnızca sohbet ettiğin (mesajlaşabildiğin) kişiler
-  const names=chats.map(c=>c.who).filter(n=>n!==ME);
+
+  /* Kime gönderilebilir: sohbet ettiklerin VE takip ettiklerin.
+     Önceden yalnızca sohbet listesi kullanılıyordu; hiç mesajlaşmamış
+     kullanıcı için liste boş çıkıyor ve özellik çalışmıyor görünüyordu. */
+  const kume = new Set();
+  try{ (chats||[]).forEach(c=>{ if(c.who && c.who!==ME) kume.add(c.who); }); }catch(e){}
+  try{ (following ? Array.from(following) : []).forEach(n=>{ if(n && n!==ME) kume.add(n); }); }catch(e){}
+
+  const names = Array.from(kume);
   if(!names.length){
     box.innerHTML='<div class="chatEmpty">'+t("need_mutual_chat")+'</div>';
     open("shareSheet");return;
@@ -15185,7 +15366,8 @@ function openShare(id){
   names.forEach(n=>{
     const b=document.createElement("button");b.className="shrow";
     const av=document.createElement("span");av.className="av";paintAv(av,n);
-    const nm=document.createElement("span");nm.className="nm";nm.textContent=n;
+    const nm=document.createElement("span");nm.className="nm";
+    nm.textContent = adiniGoster(n);
     const go=document.createElement("span");go.className="go2";go.textContent=t("act_send2");
     b.append(av,nm,go);
     b.addEventListener("click",async ()=>{

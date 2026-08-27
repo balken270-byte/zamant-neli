@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.1.0</title>
+<title>Klipsy 2.2.0</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5404,6 +5404,10 @@ svg{display:block}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .inNotif .tx i{display:block;font-style:normal;font-size:12.5px;color:var(--t2);
   margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* anın kapağı — şeridin sağında */
+.inNotif .onizleme{width:38px;height:38px;border-radius:10px;flex:none;
+  background:var(--surf1) center/cover no-repeat;
+  box-shadow:0 0 0 1px var(--edge-soft) inset}
 
 /* ═══ TEK AN SAYFASI ═══
    Tam ekran, kendi başına çalışır. Akışın yüklü olmasına bağlı değil. */
@@ -7482,7 +7486,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.1.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.2.0</span></div>
     </div>
   </section>
 </div>
@@ -13577,7 +13581,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.1.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.2.0";
   box.appendChild(ver);
 }
 
@@ -17140,19 +17144,61 @@ function bildirimSeridi(bilgi){
   s.querySelector(".tx b").textContent = baslik;
   s.querySelector(".tx i").textContent = govde;
 
-  // gönderenin görseli varsa göster
+  /* Gönderenin fotoğrafı. Bildirim verisinde hazır adres geliyorsa
+     doğrudan kullanılır; yoksa uygulamadaki avatar çizimine düşülür. */
   const av = s.querySelector(".av");
   av.style.backgroundImage = "";
   try{
-    const kim = veri.actor || veri.who;
-    if(kim && typeof paintAv === "function") paintAv(av, kim);
+    if(veri.avatar){
+      av.style.backgroundImage = 'url("' + veri.avatar + '")';
+    }else{
+      const kim = veri.actor || veri.who;
+      if(kim && typeof paintAv === "function") paintAv(av, kim);
+    }
   }catch(e){}
+
+  /* Anın kapağı varsa şeridin sağında küçük önizleme. */
+  let on = s.querySelector(".onizleme");
+  if(veri.image){
+    if(!on){
+      on = document.createElement("span");
+      on.className = "onizleme";
+      s.appendChild(on);
+    }
+    on.style.backgroundImage = 'url("' + veri.image + '")';
+  }else if(on){ on.remove(); }
 
   s.classList.add("show");
   try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
 
   clearTimeout(_seritZaman);
   _seritZaman = setTimeout(()=>s.classList.remove("show"), 4200);
+}
+
+/* ═══ OTURUMU YEREL KODA AKTAR ═══
+   Bildirimden doğrudan yanıt verirken uygulama açılmıyor; mesajı
+   yerel Android kodu gönderiyor. Sunucuya yazabilmesi için oturum
+   anahtarına ihtiyacı var, o da burada cihaz belleğine yazılıyor.
+   Anahtar süreli olduğu için her açılışta ve tazelenmede güncellenir. */
+async function oturumuYerelKodaAktar(){
+  try{
+    const cap = window.Capacitor;
+    if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+    const P = cap.Plugins || {};
+    const D = P.Preferences;              // @capacitor/preferences
+    const sb = window.__sb;
+    if(!D || !sb) return;
+
+    const { data } = await sb.auth.getSession();
+    const jeton = data && data.session ? data.session.access_token : null;
+    if(!jeton) return;
+
+    /* Adres ve genel anahtar modül bloğunda tanımlı; oradan
+       window üzerinden paylaşılıyor. */
+    await D.set({ key: "klipsy_oturum", value: jeton });
+    if(window.__sbUrl) await D.set({ key: "klipsy_sb_url", value: window.__sbUrl });
+    if(window.__sbKey) await D.set({ key: "klipsy_sb_key", value: window.__sbKey });
+  }catch(e){ console.warn("[Klipsy] oturum aktarımı:", e); }
 }
 
 async function anahtarKaydet(anahtar){
@@ -17598,6 +17644,10 @@ try{
 const SUPABASE_URL = 'https://jovynigyzcrabvjvxyxv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_fXx5-1exau3TfXtmhzXcKQ_YGGsBQ_I';
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+/* Yerel Android kodunun da bu bilgilere ihtiyacı var
+   (bildirimden doğrudan yanıt için). */
+window.__sbUrl = SUPABASE_URL;
+window.__sbKey = SUPABASE_KEY;
 window.__sb = sb;  // uygulama da kullanabilsin
 window.__gateReady = true;  // Supabase yüklendi işareti
 const $ = s => document.querySelector(s);
@@ -18107,11 +18157,15 @@ async function enterApp(){
   /* Telefon bildirimleri. Uygulama tam yerleşsin diye kısa bir
      gecikmeyle sorulur; açılışta üst üste izin penceresi çıkmasın. */
   setTimeout(()=>{ try{ bildirimKur(); }catch(e){} }, 1800);
+  setTimeout(()=>{ try{ oturumuYerelKodaAktar(); }catch(e){} }, 2200);
 
   /* Uygulama arka plandan dönünce anahtarı yeniden doğrula.
      Anahtar zamanla geçersizleşebiliyor. */
   document.addEventListener("visibilitychange", ()=>{
-    if(!document.hidden) setTimeout(()=>{ try{ bildirimKendiniOnar(); }catch(e){} }, 1200);
+    if(!document.hidden) setTimeout(()=>{
+      try{ bildirimKendiniOnar(); }catch(e){}
+      try{ oturumuYerelKodaAktar(); }catch(e){}   // oturum tazelenmiş olabilir
+    }, 1200);
   });
 }
 window.__logout = async () => {

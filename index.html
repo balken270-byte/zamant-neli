@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.2.1</title>
+<title>Klipsy 2.2.2</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7486,7 +7486,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.2.1</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.2.2</span></div>
     </div>
   </section>
 </div>
@@ -13581,7 +13581,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.2.1";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.2.2";
   box.appendChild(ver);
 }
 
@@ -17465,7 +17465,42 @@ async function bildirimTest(){
     const aktarimOk = await oturumuYerelKodaAktar();
     yaz("yanıt için oturum", aktarimOk, window.__aktarimDurum || "");
 
-    // 9) test bildirimi
+    /* 9) YEREL TARAFIN GÖRDÜĞÜ
+       Bildirim servisi yerel kodda çalışıyor; oradaki kayıtları
+       göremediğimiz için sorunun yeri uzun süre bulunamadı.
+       Artık servisin bıraktığı izler burada görünüyor. */
+    try{
+      const Iz = (cap.Plugins || {}).KlipsyIz;
+      if(Iz){
+        const d = await Iz.ayarDurumu();
+        const bulundu = d.url_duz || d.url_onekli;
+        yaz("yerel tarafta adres", bulundu,
+            "düz:" + (d.url_duz ? "var" : "yok") +
+            "  önekli:" + (d.url_onekli ? "var" : "yok") +
+            "\n    oturum düz:" + (d.oturum_duz ? "var" : "yok") +
+            "  önekli:" + (d.oturum_onekli ? "var" : "yok"));
+
+        if(!bulundu && d.anahtarlar){
+          satirlar.push("    bellekteki anahtarlar:\n    " +
+                        String(d.anahtarlar).trim().split("\n").join("\n    "));
+          goster();
+        }
+
+        const iz = await Iz.izleriOku();
+        if(iz && iz.iz){
+          satirlar.push("\n── SERVİS İZLERİ ──\n" + iz.iz);
+        }else{
+          satirlar.push("\n── SERVİS İZLERİ ──\n(boş — servis hiç çalışmadı)");
+        }
+        goster();
+      }else{
+        yaz("iz eklentisi", false, "KlipsyIz kayıtlı değil");
+      }
+    }catch(e){
+      yaz("iz okuma", false, String(e && e.message || e).slice(0,80));
+    }
+
+    // 10) test bildirimi
     const { error: gonderimHatasi } = await sb.rpc("send_test_notification");
     yaz("test bildirimi", !gonderimHatasi,
         gonderimHatasi ? gonderimHatasi.message : "birkaç saniyede gelmeli");

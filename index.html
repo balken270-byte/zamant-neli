@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.0.6</title>
+<title>Klipsy 2.0.7</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7462,7 +7462,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.6</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.7</span></div>
     </div>
   </section>
 </div>
@@ -13531,7 +13531,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.7";
   box.appendChild(ver);
 }
 
@@ -17051,6 +17051,62 @@ nextAt=Date.now()+HOLD;
    Uygulama kapalıyken de bildirim gelmesi için cihaz anahtarı alınır
    ve sunucuya kaydedilir. Bildirimi Firebase iletir.
    Tarayıcıda çalışmaz, sessizce atlanır. */
+/* Cihaz anahtarını sunucuya yazar ve YAZILDIĞINI DOĞRULAR.
+   Önceden hata sessizce yutuluyordu; anahtar kaydedilmeyince
+   bildirimler tamamen kesiliyor ama hiçbir belirti görünmüyordu. */
+async function anahtarKaydet(anahtar){
+  const sb = window.__sb, me = window.__me;
+  if(!sb || !me || !anahtar) return false;
+
+  try{
+    const { error } = await sb.from("device_tokens").upsert({
+      token: anahtar,
+      user_id: me.id,
+      platform: "android",
+      updated_at: new Date().toISOString()
+    }, { onConflict: "token" });
+
+    if(error){ console.warn("[Klipsy] cihaz anahtarı yazılamadı:", error.message, error); return false; }
+
+    // gerçekten yazıldı mı
+    const { data } = await sb.from("device_tokens")
+      .select("token").eq("token", anahtar).maybeSingle();
+    if(!data){ console.warn("[Klipsy] cihaz anahtarı doğrulanamadı"); return false; }
+
+    console.log("[Klipsy] cihaz anahtarı kayıtlı");
+    return true;
+  }catch(e){
+    console.warn("[Klipsy] cihaz anahtarı:", e);
+    return false;
+  }
+}
+
+/* Her açılışta anahtarın sunucuda DURDUĞUNU kontrol eder.
+   Uygulama yeniden kurulunca eski anahtar geçersizleşiyor ve sunucu
+   tarafında siliniyor; yeni anahtar yazılmazsa bildirimler sessizce
+   kesiliyordu. Burada eksikse yeniden kaydedilir. */
+async function bildirimKendiniOnar(){
+  try{
+    const cap = window.Capacitor;
+    if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+    const sb = window.__sb, me = window.__me;
+    if(!sb || !me) return;
+
+    const { data } = await sb.from("device_tokens")
+      .select("token").eq("user_id", me.id).limit(1);
+
+    if(data && data.length) return;             // anahtar yerinde
+
+    // eksik: elimizde varsa yaz, yoksa yeniden kaydol
+    if(window.__sonAnahtar){
+      const ok = await anahtarKaydet(window.__sonAnahtar);
+      if(ok) return;
+    }
+    const PN = (cap.Plugins||{}).PushNotifications;
+    if(PN) await PN.register();
+  }catch(e){}
+}
+
 async function bildirimKur(){
   const cap = window.Capacitor;
   if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
@@ -17076,16 +17132,9 @@ async function bildirimKur(){
       bildirimKur._dinleyiciKuruldu = true;
 
       PN.addListener("registration", async (t)=>{
-        try{
-          const sb = window.__sb, me = window.__me;
-          if(!sb || !me || !t || !t.value) return;
-          await sb.from("device_tokens").upsert({
-            token: t.value,
-            user_id: me.id,
-            platform: "android",
-            updated_at: new Date().toISOString()
-          }, { onConflict: "token" });
-        }catch(e){ console.warn("cihaz anahtarı:", e); }
+        if(!t || !t.value) return;
+        window.__sonAnahtar = t.value;
+        await anahtarKaydet(t.value);
       });
 
       PN.addListener("registrationError", e=>console.warn("bildirim kaydı:", e));
@@ -17132,6 +17181,10 @@ async function bildirimKur(){
     }catch(e){}
 
     await PN.register();
+
+    /* Kayıt sonrası kontrol: anahtar sunucuya yazıldı mı.
+       Yazılmadıysa bir kez daha denenir. */
+    setTimeout(()=>{ bildirimKendiniOnar(); }, 4000);
   }catch(e){ console.warn("bildirim kurulumu:", e); }
 }
 
@@ -17923,6 +17976,12 @@ async function enterApp(){
   /* Telefon bildirimleri. Uygulama tam yerleşsin diye kısa bir
      gecikmeyle sorulur; açılışta üst üste izin penceresi çıkmasın. */
   setTimeout(()=>{ try{ bildirimKur(); }catch(e){} }, 1800);
+
+  /* Uygulama arka plandan dönünce anahtarı yeniden doğrula.
+     Anahtar zamanla geçersizleşebiliyor. */
+  document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden) setTimeout(()=>{ try{ bildirimKendiniOnar(); }catch(e){} }, 1200);
+  });
 }
 window.__logout = async () => {
   // anında geri bildirim ver — kullanıcı donmuş sanmasın

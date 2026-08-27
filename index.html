@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.2.0</title>
+<title>Klipsy 2.2.1</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7486,7 +7486,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.2.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.2.1</span></div>
     </div>
   </section>
 </div>
@@ -13581,7 +13581,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.2.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.2.1";
   box.appendChild(ver);
 }
 
@@ -17181,24 +17181,53 @@ function bildirimSeridi(bilgi){
    anahtarına ihtiyacı var, o da burada cihaz belleğine yazılıyor.
    Anahtar süreli olduğu için her açılışta ve tazelenmede güncellenir. */
 async function oturumuYerelKodaAktar(){
+  window.__aktarimDurum = "başlamadı";
   try{
     const cap = window.Capacitor;
-    if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
+    if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()){
+      window.__aktarimDurum = "tarayıcı — gerekmiyor"; return false;
+    }
+
     const P = cap.Plugins || {};
-    const D = P.Preferences;              // @capacitor/preferences
+    const D = P.Preferences;
+    if(!D){
+      window.__aktarimDurum = "Preferences eklentisi yok (npx cap sync)";
+      console.warn("[Klipsy]", window.__aktarimDurum);
+      return false;
+    }
+
     const sb = window.__sb;
-    if(!D || !sb) return;
+    if(!sb){ window.__aktarimDurum = "sunucu bağlantısı yok"; return false; }
 
     const { data } = await sb.auth.getSession();
     const jeton = data && data.session ? data.session.access_token : null;
-    if(!jeton) return;
+    if(!jeton){ window.__aktarimDurum = "oturum anahtarı alınamadı"; return false; }
 
-    /* Adres ve genel anahtar modül bloğunda tanımlı; oradan
-       window üzerinden paylaşılıyor. */
+    if(!window.__sbUrl || !window.__sbKey){
+      window.__aktarimDurum = "adres/anahtar tanımlı değil";
+      return false;
+    }
+
     await D.set({ key: "klipsy_oturum", value: jeton });
-    if(window.__sbUrl) await D.set({ key: "klipsy_sb_url", value: window.__sbUrl });
-    if(window.__sbKey) await D.set({ key: "klipsy_sb_key", value: window.__sbKey });
-  }catch(e){ console.warn("[Klipsy] oturum aktarımı:", e); }
+    await D.set({ key: "klipsy_sb_url", value: window.__sbUrl });
+    await D.set({ key: "klipsy_sb_key", value: window.__sbKey });
+
+    /* YAZILDIĞINI DOĞRULA — sessiz başarısızlık bu özelliği
+       tamamen çalışmaz hale getiriyordu. */
+    const k1 = await D.get({ key: "klipsy_sb_url" });
+    const k2 = await D.get({ key: "klipsy_oturum" });
+    if(!k1 || !k1.value || !k2 || !k2.value){
+      window.__aktarimDurum = "yazıldı ama okunamadı";
+      return false;
+    }
+
+    window.__aktarimDurum = "tamam";
+    return true;
+  }catch(e){
+    window.__aktarimDurum = "hata: " + String(e && e.message || e).slice(0,60);
+    console.warn("[Klipsy] oturum aktarımı:", e);
+    return false;
+  }
 }
 
 async function anahtarKaydet(anahtar){
@@ -17432,7 +17461,11 @@ async function bildirimTest(){
     yaz("kayıt doğrulandı", !!kontrol, kontrol ? "" : "yazıldı ama okunamıyor (izin?)");
     if(!kontrol) return;
 
-    // 8) test bildirimi
+    // 8) bildirimden yanıt için oturum aktarımı
+    const aktarimOk = await oturumuYerelKodaAktar();
+    yaz("yanıt için oturum", aktarimOk, window.__aktarimDurum || "");
+
+    // 9) test bildirimi
     const { error: gonderimHatasi } = await sb.rpc("send_test_notification");
     yaz("test bildirimi", !gonderimHatasi,
         gonderimHatasi ? gonderimHatasi.message : "birkaç saniyede gelmeli");

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.0.8</title>
+<title>Klipsy 2.1.0</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5385,6 +5385,26 @@ svg{display:block}
 /* eylem satırı en altta — gövdenin kendi alt dolgusu yeterli */
 #profile .profbody.otherProf .profActs{margin-top:auto;padding:22px 0 0;border:0}
 
+/* ═══ UYGULAMA İÇİ BİLDİRİM ŞERİDİ ═══ */
+.inNotif{position:fixed;left:10px;right:10px;top:calc(var(--sat) + 8px);
+  z-index:2147483000;display:flex;align-items:center;gap:11px;
+  padding:11px 14px;border-radius:18px;border:1px solid var(--edge);
+  background:var(--panelbg);color:var(--t1);text-align:left;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.55);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  transform:translateY(calc(-100% - 20px));opacity:0;
+  transition:transform .32s var(--ease), opacity .24s;
+  pointer-events:none}
+.inNotif.show{transform:translateY(0);opacity:1;pointer-events:auto}
+.inNotif:active{transform:translateY(0) scale(.98)}
+.inNotif .av{width:36px;height:36px;border-radius:99px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat}
+.inNotif .tx{flex:1;min-width:0}
+.inNotif .tx b{display:block;font-size:13.5px;font-weight:700;letter-spacing:-.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inNotif .tx i{display:block;font-style:normal;font-size:12.5px;color:var(--t2);
+  margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* ═══ TEK AN SAYFASI ═══
    Tam ekran, kendi başına çalışır. Akışın yüklü olmasına bağlı değil. */
 /* KATMAN — ÖNEMLİ
@@ -7462,7 +7482,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.8</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.1.0</span></div>
     </div>
   </section>
 </div>
@@ -10135,10 +10155,17 @@ function refreshExplore(){
 
 // ---- Harita (Leaflet + OpenStreetMap/CARTO, ücretsiz) ----
 function mapTileUrl(){
+  /* CARTO harita anahtarı.
+     Anahtarsız kullanımda karolarda "API key required" filigranı
+     çıkıyordu. Ücretsiz kademe ayda 5 milyon karo isteği kapsıyor;
+     karşılığında CARTO ve OpenStreetMap künyesinin görünür kalması
+     gerekiyor (aşağıda attribution olarak duruyor). */
+  const CARTO_KEY = "cb1_28hd_1_788b3390d722c8719e8b1511";
+
   const isLight = document.documentElement.getAttribute('data-theme')==='light';
   return isLight
-    ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=" + CARTO_KEY
+    : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=" + CARTO_KEY;
 }
 let _mapTileLayer=null;
 /* ============================================================
@@ -10147,8 +10174,21 @@ let _mapTileLayer=null;
    tekrar gidildiğinde ağa çıkılmadan anında gösterilir.
    (Tüm dünyayı indirmek mümkün değil — terabaytlar tutar.)
    ============================================================ */
-const TILE_CACHE = 'klipsy-tiles-v1';
+/* Sürüm artırıldı: önbellekte anahtarsız (filigranlı) karolar
+   kalmıştı, adres değişse de eskiler gösterilmeye devam ediyordu. */
+const TILE_CACHE = 'klipsy-tiles-v2';
 window.__tileStats = {hit:0, miss:0, saved:0, err:0};
+
+/* Eski sürüm önbelleklerini temizle — yer kaplamasınlar. */
+try{
+  if(window.caches && caches.keys){
+    caches.keys().then(adlar=>{
+      adlar.forEach(ad=>{
+        if(/^klipsy-tiles-/.test(ad) && ad !== TILE_CACHE) caches.delete(ad);
+      });
+    }).catch(()=>{});
+  }
+}catch(e){}
 function paintTileStats(){
   if(location.search.indexOf('tiles=1') < 0) return;
   let el = document.getElementById('tileStats');
@@ -13446,18 +13486,24 @@ function renderSettings(){
   // GİZLİLİK & BİLDİRİM
   const g2=document.createElement("div");g2.className="setGroup";
   g2.innerHTML='<div class="setLabel">Gizlilik ve bildirim</div>';
+  /* Bildirim satırı ZİL ikonunu kullanır.
+     Kamera satırı eklenirken zil ikonu yanlışlıkla oraya gitmiş,
+     bildirim satırı ikonsuz kalmıştı: başlık ikon yerine geçiyor ve
+     alt yazıda "true" görünüyordu. */
   g2.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+    t("notifs_setting"), t("s_notif_sub"), prefNotif,
+    (on)=>{ prefNotif=on; savePref('notif_enabled',on); toast(on?t("s_notif_on"):t("s_notif_off")); }));
+
+  // kamera satırı kendi ikonunu kullanır (kamera çevirme)
+  g2.appendChild(toggleRow(
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 17-7.1L21 7"/><path d="M21 3v4h-4"/><path d="M22 12a10 10 0 0 1-17 7.1L3 17"/><path d="M3 21v-4h4"/></svg>',
     t("rec_flip_title"), t("rec_flip_sub"), prefFlipWhileRec,
     (on)=>{
       prefFlipWhileRec = on;
       try{ localStorage.setItem('klipsy_flip_rec', on ? '1' : '0'); }catch(e){}
       toast(on ? t("rec_flip_on") : t("rec_flip_off2"));
     }));
-
-  g2.appendChild(toggleRow(
-    t("notifs_setting"), t("s_notif_sub"), prefNotif,
-    (on)=>{ prefNotif=on; savePref('notif_enabled',on); toast(on?t("s_notif_on"):t("s_notif_off")); }));
 
   /* TEST BİLDİRİMİ — kurulumun çalışıp çalışmadığını görmek için.
      Cihaz anahtarı alınmış mı, sunucuya kaydedilmiş mi kontrol eder
@@ -13531,7 +13577,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.8";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.1.0";
   box.appendChild(ver);
 }
 
@@ -17054,6 +17100,61 @@ nextAt=Date.now()+HOLD;
 /* Cihaz anahtarını sunucuya yazar ve YAZILDIĞINI DOĞRULAR.
    Önceden hata sessizce yutuluyordu; anahtar kaydedilmeyince
    bildirimler tamamen kesiliyor ama hiçbir belirti görünmüyordu. */
+/* ═══ UYGULAMA İÇİ BİLDİRİM ŞERİDİ ═══
+   Uygulama açıkken gelen bildirimi üstte kısa süre gösterir.
+   Dokununca ilgili yere götürür. */
+let _seritZaman = null;
+
+function bildirimSeridi(bilgi){
+  const baslik = (bilgi && (bilgi.title || (bilgi.data && bilgi.data.title))) || "Klipsy";
+  const govde  = (bilgi && (bilgi.body  || (bilgi.data && bilgi.data.body)))  || "";
+  const veri   = (bilgi && bilgi.data) || {};
+
+  let s = document.getElementById("inAppNotif");
+  if(!s){
+    s = document.createElement("button");
+    s.id = "inAppNotif";
+    s.className = "inNotif";
+    s.innerHTML = '<span class="av"></span>'+
+                  '<span class="tx"><b></b><i></i></span>';
+    document.body.appendChild(s);
+
+    s.addEventListener("click", ()=>{
+      s.classList.remove("show");
+      const d = s._veri || {};
+      try{
+        if(d.kind === "message"){
+          setTab($("#tabMsg"));
+          if(d.who && typeof openChat === "function") openChat(d.who);
+          else if(typeof openChats === "function") openChats();
+        }else if(d.moment_id && typeof anSayfasiAc === "function"){
+          anSayfasiAc(d.moment_id, { yorumlar: d.kind === "comment" || d.kind === "reply" });
+        }else if(typeof renderNotifs === "function"){
+          renderNotifs(); open("notif");
+        }
+      }catch(e){}
+    });
+  }
+
+  s._veri = veri;
+  s.querySelector(".tx b").textContent = baslik;
+  s.querySelector(".tx i").textContent = govde;
+
+  // gönderenin görseli varsa göster
+  const av = s.querySelector(".av");
+  av.style.backgroundImage = "";
+  try{
+    const kim = veri.actor || veri.who;
+    if(kim && typeof paintAv === "function") paintAv(av, kim);
+  }catch(e){}
+
+  s.classList.add("show");
+  try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
+
+  clearTimeout(_seritZaman);
+  _seritZaman = setTimeout(()=>s.classList.remove("show"), 4200);
+}
+
 async function anahtarKaydet(anahtar){
   const sb = window.__sb, me = window.__me;
   if(!sb || !me || !anahtar) return false;
@@ -17139,8 +17240,12 @@ async function bildirimKur(){
 
       PN.addListener("registrationError", e=>console.warn("bildirim kaydı:", e));
 
-      PN.addListener("pushNotificationReceived", ()=>{
+      PN.addListener("pushNotificationReceived", (b)=>{
         try{ if(typeof loadNotifs === "function") loadNotifs(); }catch(e){}
+        /* Uygulama AÇIKKEN Android sistem bildirimi göstermez, bildirimi
+           doğrudan uygulamaya verir. Kullanıcı fark etmiyordu; üstte
+           kısa bir şeritle gösteriyoruz. */
+        try{ bildirimSeridi(b); }catch(e){}
       });
 
       PN.addListener("pushNotificationActionPerformed", (olay)=>{

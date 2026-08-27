@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.2.4</title>
+<title>Klipsy 2.2.5</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7550,7 +7550,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.2.4</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.2.5</span></div>
     </div>
   </section>
 </div>
@@ -13645,7 +13645,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.2.4";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.2.5";
   box.appendChild(ver);
 }
 
@@ -17351,6 +17351,23 @@ async function bildirimKendiniOnar(){
    İzin hiç istenmiyordu ve sebebini göremiyorduk. */
 window.__bildirimAdim = "hiç çalışmadı";
 
+/* DIŞA AÇMA — ŞART
+   Bu fonksiyonlar ana kod bloğunda tanımlı; uygulamayı başlatan
+   enterApp ise ayrı bir modül bloğunda. Modül buradaki adlara
+   doğrudan erişemiyor, çağrı sessizce boşa gidiyordu:
+   tanılamada "hiç çalışmadı" yazmasının sebebi buydu. */
+window.bildirimKurBaslat = function(){
+  try{ return bildirimKur(); }catch(e){
+    window.__bildirimAdim = "çağrı hatası: " + String(e && e.message || e).slice(0,50);
+  }
+};
+window.oturumAktarBaslat = function(){
+  try{ return oturumuYerelKodaAktar(); }catch(e){}
+};
+window.bildirimOnarBaslat = function(){
+  try{ return bildirimKendiniOnar(); }catch(e){}
+};
+
 /* İzin verilmediyse kullanıcıya açıkça söyle ve ayarlara yönlendir. */
 function bildirimIzniUyar(){
   try{
@@ -18372,15 +18389,17 @@ async function enterApp(){
 
   /* Telefon bildirimleri. Uygulama tam yerleşsin diye kısa bir
      gecikmeyle sorulur; açılışta üst üste izin penceresi çıkmasın. */
-  setTimeout(()=>{ try{ bildirimKur(); }catch(e){} }, 1800);
-  setTimeout(()=>{ try{ oturumuYerelKodaAktar(); }catch(e){} }, 2200);
+  /* Pencere üzerinden çağrılır — modül bloğu ana bloktaki adlara
+     doğrudan erişemiyor. */
+  setTimeout(()=>{ if(window.bildirimKurBaslat) window.bildirimKurBaslat(); }, 1800);
+  setTimeout(()=>{ if(window.oturumAktarBaslat) window.oturumAktarBaslat(); }, 2400);
 
   /* Uygulama arka plandan dönünce anahtarı yeniden doğrula.
      Anahtar zamanla geçersizleşebiliyor. */
   document.addEventListener("visibilitychange", ()=>{
     if(!document.hidden) setTimeout(()=>{
-      try{ bildirimKendiniOnar(); }catch(e){}
-      try{ oturumuYerelKodaAktar(); }catch(e){}   // oturum tazelenmiş olabilir
+      if(window.bildirimOnarBaslat) window.bildirimOnarBaslat();
+      if(window.oturumAktarBaslat)  window.oturumAktarBaslat();   // oturum tazelenmiş olabilir
     }, 1200);
   });
 }

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.0.7</title>
+<title>Klipsy 2.0.8</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7462,7 +7462,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.7</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.0.8</span></div>
     </div>
   </section>
 </div>
@@ -13531,7 +13531,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.7";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.0.8";
   box.appendChild(ver);
 }
 
@@ -17190,79 +17190,105 @@ async function bildirimKur(){
 
 /* Bildirim kurulumunu sınar ve sonucu adım adım bildirir.
    Nerede takıldığı belli olsun diye her aşama ayrı kontrol edilir. */
+/* Bildirim kurulumunu adım adım sınar ve sonucu EKRANDA gösterir.
+   Kısa bildirim mesajları yeterli olmuyordu: hata metni kaybolduğu
+   için sorunun nerede olduğu anlaşılamıyordu. */
 async function bildirimTest(){
-  const cap = window.Capacitor;
-  const P = (cap && cap.Plugins) || {};
-  const PN = P.PushNotifications;
+  const satirlar = [];
+  const yaz = (ad, sonuc, ek) => {
+    satirlar.push((sonuc ? "✓ " : "✗ ") + ad + (ek ? ("\n    " + ek) : ""));
+    goster();
+  };
 
-  if(!PN){ toast(t("nt_no_plugin")); return; }
+  let kutu = document.getElementById("btRapor");
+  if(!kutu){
+    kutu = document.createElement("div");
+    kutu.id = "btRapor";
+    kutu.style.cssText =
+      "position:fixed;left:10px;right:10px;top:60px;z-index:2147483600;"+
+      "padding:14px 16px;border-radius:16px;background:rgba(0,0,0,.93);"+
+      "color:#DFF5E6;font:600 12px/1.55 ui-monospace,SFMono-Regular,monospace;"+
+      "white-space:pre-wrap;word-break:break-word;max-height:72vh;overflow:auto;"+
+      "border:1px solid rgba(255,255,255,.18)";
+    kutu.addEventListener("click", ()=>kutu.remove());
+    document.body.appendChild(kutu);
+  }
+  const goster = ()=>{
+    kutu.textContent = "BİLDİRİM TANILAMA\n" + "─".repeat(24) + "\n" +
+                       satirlar.join("\n") + "\n\n(dokunarak kapat)";
+  };
+  goster();
 
   try{
-    // 1) izin
-    let izin = await PN.checkPermissions();
-    if(izin.receive !== "granted"){
-      izin = await PN.requestPermissions();
-      if(izin.receive !== "granted"){ toast(t("nt_no_perm")); return; }
-    }
+    // 1) ortam
+    const cap = window.Capacitor;
+    const yerel = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+    yaz("uygulama ortamı", yerel, yerel ? "" : "tarayıcıda bildirim yok");
+    if(!yerel) return;
 
-    // 2) cihaz anahtarı sunucuda var mı
+    // 2) eklenti
+    const PN = (cap.Plugins || {}).PushNotifications;
+    yaz("bildirim eklentisi", !!PN, PN ? "" : "npm i @capacitor/push-notifications");
+    if(!PN) return;
+
+    // 3) oturum
     const sb = window.__sb, me = window.__me;
-    if(!sb || !me){ toast(t("err_generic")); return; }
+    yaz("oturum", !!(sb && me), me ? ("kullanıcı: " + String(me.id).slice(0,8) + "…") : "oturum yok");
+    if(!sb || !me) return;
 
-    const { data: cihazlar, error } = await sb
-      .from("device_tokens").select("token").eq("user_id", me.id);
+    // 4) izin
+    let izin = await PN.checkPermissions();
+    if(izin.receive !== "granted") izin = await PN.requestPermissions();
+    yaz("bildirim izni", izin.receive === "granted", "durum: " + izin.receive);
+    if(izin.receive !== "granted") return;
 
-    if(error){ toast(t("nt_db_fail")); return; }
-
-    if(!cihazlar || cihazlar.length === 0){
-      /* Anahtar yok. Kendi dinleyicimizi kurup yeniden kaydolalım —
-         böylece anahtarın gelip gelmediğini kesin görürüz ve gelirse
-         hemen kaydederiz. Hata varsa sebebi de gösterilir. */
-      toast(t("nt_registering"));
-
-      let geldi = false;
-      const dinleyici = await PN.addListener("registration", async (tk)=>{
-        geldi = true;
-        try{
-          await sb.from("device_tokens").upsert({
-            token: tk.value, user_id: me.id, platform: "android",
-            updated_at: new Date().toISOString()
-          }, { onConflict: "token" });
-          toast(t("nt_ready"));
-        }catch(e){ toast(t("nt_db_fail")); }
-        try{ dinleyici.remove(); }catch(e){}
+    // 5) anahtar al
+    let anahtar = window.__sonAnahtar || null;
+    if(!anahtar){
+      anahtar = await new Promise(coz=>{
+        let bitti = false;
+        const d1 = PN.addListener("registration", t=>{
+          if(bitti) return; bitti = true;
+          coz(t && t.value ? t.value : null);
+        });
+        const d2 = PN.addListener("registrationError", e=>{
+          if(bitti) return; bitti = true;
+          satirlar.push("    Firebase hatası: " + JSON.stringify(e).slice(0,140));
+          coz(null);
+        });
+        PN.register();
+        setTimeout(()=>{ if(!bitti){ bitti = true; coz(null); } }, 8000);
       });
-
-      const hataDinleyici = await PN.addListener("registrationError", (e)=>{
-        geldi = true;
-        const m = (e && (e.error || e.message)) ? String(e.error || e.message) : "";
-        toast(t("nt_fcm_fail") + (m ? (": " + m.slice(0,60)) : ""));
-        try{ hataDinleyici.remove(); }catch(e2){}
-      });
-
-      await PN.register();
-
-      setTimeout(()=>{
-        if(!geldi) toast(t("nt_no_token"));
-        try{ dinleyici.remove(); hataDinleyici.remove(); }catch(e){}
-      }, 6000);
-      return;
     }
+    yaz("cihaz anahtarı", !!anahtar,
+        anahtar ? ("son 10: …" + anahtar.slice(-10)) : "Firebase anahtar vermedi");
+    if(!anahtar) return;
+    window.__sonAnahtar = anahtar;
 
-    /* 3) kendine test bildirimi gönder.
-       Tabloya doğrudan yazılmaz — bildirimler sunucu tarafında
-       oluşturulur. Güvenli fonksiyon üzerinden gidilir. */
-    toast(t("nt_sending"));
-    const { error: hata } = await sb.rpc("send_test_notification");
+    // 6) sunucuya yaz
+    const { error: yazmaHatasi } = await sb.from("device_tokens").upsert({
+      token: anahtar, user_id: me.id, platform: "android",
+      updated_at: new Date().toISOString()
+    }, { onConflict: "token" });
 
-    if(hata){
-      toast(t("nt_send_fail") + ": " + String(hata.message||"").slice(0,50));
-      return;
-    }
-    setTimeout(()=>toast(t("nt_sent")), 1200);
+    yaz("sunucuya yazma", !yazmaHatasi,
+        yazmaHatasi ? (yazmaHatasi.message + (yazmaHatasi.code ? (" [" + yazmaHatasi.code + "]") : "")) : "");
+    if(yazmaHatasi) return;
+
+    // 7) doğrula
+    const { data: kontrol } = await sb.from("device_tokens")
+      .select("token").eq("token", anahtar).maybeSingle();
+    yaz("kayıt doğrulandı", !!kontrol, kontrol ? "" : "yazıldı ama okunamıyor (izin?)");
+    if(!kontrol) return;
+
+    // 8) test bildirimi
+    const { error: gonderimHatasi } = await sb.rpc("send_test_notification");
+    yaz("test bildirimi", !gonderimHatasi,
+        gonderimHatasi ? gonderimHatasi.message : "birkaç saniyede gelmeli");
 
   }catch(e){
-    toast(t("nt_send_fail"));
+    satirlar.push("✗ beklenmeyen hata\n    " + String(e && e.message || e).slice(0,180));
+    goster();
   }
 }
 

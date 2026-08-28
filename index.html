@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.8.3</title>
+<title>Klipsy 2.8.4</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7950,7 +7950,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.8.3</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.8.4</span></div>
     </div>
   </section>
 </div>
@@ -14516,7 +14516,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.8.3";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.8.4";
   box.appendChild(ver);
 }
 
@@ -17491,7 +17491,28 @@ async function post(src,kind,mood,where,note,extra){
 
   try{
     // 1) medyayı depoya yükle
-    const blob = (kind==="video" && extra && extra.blob) ? extra.blob : dataURLtoBlob(src);
+    /* MEDYAYI HAZIRLA — video için blob ŞART.
+       Blob gelmediğinde adres veriye çevrilmeye çalışılıyordu; "blob:"
+       adresi veri adresi olmadığı için sonuç birkaç baytlık çöp
+       oluyor ve video hiçbir yerde oynamıyordu. Artık blob yoksa
+       adresten okunur, o da olmazsa yayın durur. */
+    let blob = (extra && extra.blob) ? extra.blob : null;
+
+    if(!blob){
+      if(/^blob:/.test(src)){
+        blob = await (await fetch(src)).blob();
+      }else if(/^data:/.test(src)){
+        blob = dataURLtoBlob(src);
+      }
+    }
+
+    if(!blob || blob.size < 1024){
+      console.warn("[Klipsy] medya hazırlanamadı:", blob ? blob.size : "yok");
+      toast(t("rec_failed"));
+      items = items.filter(x=>x.id !== tmpId);
+      render();
+      return;
+    }
     // Gerçek tür ve uzantı (mp4 mi webm mi) kaydın kendisinden alınır
     const mt = mediaTipi(blob, kind);
     const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
@@ -18284,7 +18305,7 @@ async function kayitBitirVeAc(){
           const a2 = URL.createObjectURL(blob);
           closeCam();
           if(target==="dm") sendMedia(a2,"video",yedek.sure||0);
-          else openCompose(a2,"video",yedek.sure||0);
+          else openCompose(a2, "video", blob, yedek.sure||0);
           return;
         }
       }catch(e){ console.warn("[Klipsy] kayıt dosyası:", e); }
@@ -18303,7 +18324,13 @@ async function kayitBitirVeAc(){
 
   closeCam();
   if(target==="dm"){ sendMedia(adres,"video",sonuc.sure); }
-  else{ openCompose(adres,"video",sonuc.sure); }
+  else{
+    /* DİKKAT — sıra: (adres, tür, BLOB, süre)
+       Üçüncü değer blob olmalı. Buraya süre konunca blob hiç
+       ulaşmıyor ve yayınlarken adres veriye çevrilmeye çalışılıyor;
+       sonuçta birkaç baytlık bozuk dosya yükleniyordu. */
+    openCompose(adres, "video", sonuc.blob, sonuc.sure);
+  }
 }
 
 function stopRec(){

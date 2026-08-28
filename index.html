@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.6.0</title>
+<title>Klipsy 2.7.2</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5728,14 +5728,16 @@ svg{display:block}
 
 /* ── üst şerit ── */
 .apTop{flex:none;display:flex;align-items:center;gap:10px;
-  padding:calc(var(--sat) + 12px) 14px 12px;transition:opacity .28s}
+  padding:calc(var(--sat) + 12px) 14px 12px 18px;transition:opacity .28s}
 .anPage.sade .apTop{opacity:0;pointer-events:none}
 
-.apWho{flex:1 1 0;min-width:0;overflow:hidden;display:flex;align-items:center;gap:10px;
+/* Kırpma YAZIYA uygulanır, kapsayıcıya değil.
+   Kapsayıcıda olunca duygu halkası dışarı taştığı için kesiliyordu. */
+.apWho{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:11px;
   background:none;border:0;padding:0;color:var(--t1);text-align:left}
+.apWho .tx{min-width:0;overflow:hidden}
 .apWho .av{width:38px;height:38px;border-radius:99px;flex:none;
   background:var(--avatar-bg) center/cover no-repeat}
-.apWho .tx{min-width:0}
 .apWho b{display:block;font-size:15px;font-weight:700;letter-spacing:-.024em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .apWho i{display:block;font-style:normal;font-size:12px;color:var(--t3);
@@ -5756,6 +5758,24 @@ svg{display:block}
 .apMore svg{width:18px;height:18px}
 
 /* ── görsel kartı: arşivdeki ölçüler ── */
+/* ── DUYGU HALKASI ──
+   Avatarın çevresinde, anın duygusunun rengiyle. Etiket yerine
+   bunu kullanıyoruz: daha az yer, daha güçlü bağ. */
+.duyguHalka{position:relative}
+/* Halka ile avatar arasında zemin renginde ince bir boşluk bırakılır.
+   Boşluk olmadan halka avatarın kenarına yapışıyor ve özellikle
+   açık temada soluk görünüyordu. */
+.duyguHalka::after{content:"";position:absolute;
+  top:-4px;right:-4px;bottom:-4px;left:-4px;inset:-4px;
+  z-index:1;
+  border-radius:99px;border:2px solid var(--duygu, transparent);
+  box-shadow:inset 0 0 0 1.5px var(--panelbg, transparent),
+             0 0 9px -3px var(--duygu, transparent);
+  pointer-events:none}
+/* Canlı halkası olan avatarda duygu halkası bir tık dışta durur,
+   ikisi üst üste binmez. */
+.pav.live.duyguHalka::after{top:-7px;right:-7px;bottom:-7px;left:-7px;inset:-7px}
+
 /* ── an açılamadı durumu ── */
 .apBos{display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:12px;padding:28px;text-align:center;color:var(--t1)}
@@ -6233,6 +6253,18 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .flip{width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:99px;
   background:rgba(255,255,255,.13);border:1px solid var(--edge-soft);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+/* ── yakınlık göstergesi ── */
+.camZoom{position:absolute;left:50%;top:calc(var(--sat) + 108px);
+  transform:translateX(-50%) scale(.9);z-index:6;
+  height:30px;padding:0 14px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;
+  font:800 13px/1 inherit;color:#fff;font-variant-numeric:tabular-nums;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.16);
+  opacity:0;transition:opacity .2s,transform .2s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none}
+.camZoom.gorunur{opacity:1;transform:translateX(-50%) scale(1)}
+
 .rectime{position:absolute;top:calc(var(--sat) + 66px);left:50%;transform:translateX(-50%);z-index:3;
   display:none;align-items:center;gap:7px;height:28px;padding:0 13px;border-radius:99px;
   background:rgba(255,59,107,.93);border:1px solid rgba(255,255,255,.24);
@@ -7880,7 +7912,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.6.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.7.2</span></div>
     </div>
   </section>
 </div>
@@ -9413,6 +9445,14 @@ function build(it){
   const av=document.createElement("div");av.className="pav"+(fresh?" live":"");
   if(fresh){av.innerHTML="<span></span>";paintAv(av.firstChild,it.who);}
   else paintAv(av,it.who);
+
+  /* DUYGU HALKASI — anın duygusu avatarın çevresinde renk olarak.
+     Alt köşedeki etiketin yerini aldı. */
+  if(it.mood && it.mood.c){
+    av.style.setProperty("--duygu", it.mood.c);
+    av.classList.add("duyguHalka");
+    av.setAttribute("title", it.mood.t || "");
+  }
   const ident=document.createElement("div");ident.className="pident";
   const line=document.createElement("div");line.className="pline";
   const nm=document.createElement("div");nm.className="pname";
@@ -9445,12 +9485,9 @@ function build(it){
   /* --- ne hissettirdi + not + eylemler --- */
   const bot=document.createElement("div");bot.className="pbottom";
 
-  if(it.mood){
-    const mt=document.createElement("div");mt.className="moodtag";
-    mt.style.setProperty("--mc",it.mood.c);
-    mt.innerHTML='<span class="em">'+it.mood.em+'</span>'+it.mood.t;
-    bot.appendChild(mt);
-  }
+  /* Duygu etiketi kaldırıldı — artık avatarın halkasında.
+     Etiket alt köşede yer kaplıyordu; halka hem daha az yer alıyor
+     hem de anın kimliğiyle bütünleşiyor. */
   if(it.note){
     const nt=document.createElement("div");nt.className="pnote";nt.textContent=it.note;
     bot.appendChild(nt);
@@ -11734,12 +11771,21 @@ function anSayfasiCiz(){
 
   // etiketler
   const ch = $("#apChips"); ch.innerHTML = "";
-  if(it.mood){
-    /* Duygu adı MOODS içinde hazır geliyor (alan: t). */
-    const ad = it.mood.t || t("mood_" + (it.mood.k||""), "");
-    const s = document.createElement("span");
-    s.textContent = (it.mood.em || "") + " " + ad;
-    ch.appendChild(s);
+
+  /* DUYGU ARTIK ETİKET DEĞİL, AVATARIN HALKASI.
+     Alt köşede duran etiket yer kaplıyordu. Duyguyu avatarın
+     çevresindeki renkli halkaya taşıdık: hem daha az yer kaplıyor
+     hem de anın kimliğiyle bütünleşiyor. */
+  const av = $("#apAv");
+  if(av){
+    if(it.mood && it.mood.c){
+      av.style.setProperty("--duygu", it.mood.c);
+      av.classList.add("duyguHalka");
+      av.setAttribute("title", it.mood.t || "");
+    }else{
+      av.classList.remove("duyguHalka");
+      av.style.removeProperty("--duygu");
+    }
   }
   /* Konum artık üst satırda; burada tekrar gösterilmez.
      Şarkı da sağ alttaki kendi düğmesinde. */
@@ -14392,7 +14438,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.6.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.7.2";
   box.appendChild(ver);
 }
 
@@ -16888,6 +16934,7 @@ function stopCam(kayitKoru){
   if(typeof tuvalDurdur === "function") tuvalDurdur();
 }
 function closeCam(){
+  try{ if(window.__kameraYakinligiSifirla) window.__kameraYakinligiSifirla(); }catch(e){}
   stopCam();
   $("#cam").classList.remove("open");$("#cam").setAttribute("aria-hidden","true");
   _popHistory("cam");
@@ -16950,6 +16997,162 @@ $("#flip").addEventListener("click", async ()=>{
   start();
 });
 $("#camClose").addEventListener("click",closeCam);
+
+/* ═══ KAMERA HAREKETLERİ ═══
+   Kaydırarak kapatma ve iki parmakla yakınlaştırma.
+   Yalnızca kapatma düğmesi olması yetmiyordu; kaydırmak alışılmış
+   bir hareket ve kullanıcı onu deniyor. */
+(function kameraHareketleri(){
+  const kap = document.getElementById("cam");
+  if(!kap || kap._hareketBagli) return;
+  kap._hareketBagli = true;
+
+  /* ── 1) Aşağı kaydırarak kapatma ── */
+  let basY = 0, basX = 0, suruk = false, mesafe = 0, karar = null;
+
+  const baslangic = e=>{
+    /* Düğmeler, kaydırıcılar ve kırpma ekranı hariç. */
+    if(e.target.closest("button, input, .camBtns, .avCrop, .modeSel")) return;
+    if(_parmakSayisi > 1) return;            // iki parmak yakınlaştırma
+    basY = e.clientY; basX = e.clientX;
+    suruk = true; mesafe = 0; karar = null;
+  };
+
+  const hareket = e=>{
+    if(!suruk || _parmakSayisi > 1) return;
+    const dy = e.clientY - basY, dx = e.clientX - basX;
+
+    if(karar === null && (Math.abs(dy) > 10 || Math.abs(dx) > 10)){
+      karar = (dy > 0 && Math.abs(dy) > Math.abs(dx)) ? "kapat" : "yok";
+    }
+    if(karar !== "kapat") return;
+
+    mesafe = dy;
+    /* Lastik etkisi: uzadıkça direnç artar. */
+    const yumusak = Math.pow(mesafe, 0.82);
+    kap.style.transition = "none";
+    kap.style.transform = "translateY(" + yumusak + "px) scale(" +
+                          (1 - Math.min(yumusak/2800, 0.05)) + ")";
+    kap.style.borderRadius = Math.min(yumusak/6, 26) + "px";
+  };
+
+  const bitir = ()=>{
+    if(!suruk) return;
+    suruk = false;
+    if(karar !== "kapat"){ karar = null; return; }
+
+    kap.style.transition = "transform .32s cubic-bezier(.22,1,.36,1), border-radius .32s";
+    if(mesafe > 150){
+      try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
+      kap.style.transform = "translateY(100%)";
+      setTimeout(()=>{
+        kap.style.transition = "";
+        kap.style.transform = "";
+        kap.style.borderRadius = "";
+        closeCam();
+      }, 280);
+    }else{
+      kap.style.transform = "";
+      kap.style.borderRadius = "";
+      setTimeout(()=>{ kap.style.transition = ""; }, 340);
+    }
+    karar = null; mesafe = 0;
+  };
+
+  /* ── 2) İki parmakla yakınlaştırma ── */
+  let _parmakSayisi = 0;
+  let ilkMesafe = 0, ilkYakinlik = 1, suYakinlik = 1;
+
+  const ikiParmakMesafe = t=>{
+    const dx = t[0].clientX - t[1].clientX;
+    const dy = t[0].clientY - t[1].clientY;
+    return Math.hypot(dx, dy);
+  };
+
+  kap.addEventListener("touchstart", e=>{
+    _parmakSayisi = e.touches.length;
+    if(e.touches.length === 2){
+      suruk = false;                       // kapatma sürüklemesini iptal et
+      ilkMesafe = ikiParmakMesafe(e.touches);
+      ilkYakinlik = suYakinlik;
+      kap.style.transform = "";
+      kap.style.borderRadius = "";
+    }
+  }, { passive:true });
+
+  kap.addEventListener("touchmove", e=>{
+    if(e.touches.length !== 2 || !ilkMesafe) return;
+    const oran = ikiParmakMesafe(e.touches) / ilkMesafe;
+    let yeni = ilkYakinlik * oran;
+    yeni = Math.max(1, Math.min(yeni, 6));      // 1x — 6x arası
+    if(Math.abs(yeni - suYakinlik) < 0.02) return;
+    suYakinlik = yeni;
+    yakinlikUygula(yeni);
+  }, { passive:true });
+
+  kap.addEventListener("touchend", e=>{
+    _parmakSayisi = e.touches.length;
+    if(e.touches.length < 2) ilkMesafe = 0;
+  }, { passive:true });
+
+  /* Yakınlığı hem yerel kameraya hem tarayıcı kamerasına uygular. */
+  let yakinlikZaman = null;
+  function yakinlikUygula(deger){
+    yakinlikGoster(deger);
+
+    /* Çağrılar sınırlandırılır: her küçük harekette istek göndermek
+       kamerayı yavaşlatıyor. */
+    clearTimeout(yakinlikZaman);
+    yakinlikZaman = setTimeout(()=>{
+      try{
+        if(window.Kamera && typeof Kamera.yakinlastir === "function"){
+          Kamera.yakinlastir(deger);
+          return;
+        }
+      }catch(e){}
+
+      /* Yedek: tarayıcı kamerası */
+      try{
+        const v = document.getElementById("camVideo");
+        const iz = v && v.srcObject ? v.srcObject.getVideoTracks()[0] : null;
+        if(iz && iz.getCapabilities){
+          const y = iz.getCapabilities().zoom;
+          if(y){
+            const d = Math.max(y.min, Math.min(deger, y.max));
+            iz.applyConstraints({ advanced:[{ zoom:d }] }).catch(()=>{});
+          }
+        }
+      }catch(e){}
+    }, 40);
+  }
+
+  /* Ekranda yakınlık göstergesi — kısa süre görünür. */
+  let gostergeZaman = null;
+  function yakinlikGoster(deger){
+    let g = document.getElementById("camZoom");
+    if(!g){
+      g = document.createElement("div");
+      g.id = "camZoom";
+      g.className = "camZoom";
+      kap.appendChild(g);
+    }
+    g.textContent = deger.toFixed(1) + "×";
+    g.classList.add("gorunur");
+    clearTimeout(gostergeZaman);
+    gostergeZaman = setTimeout(()=>g.classList.remove("gorunur"), 1200);
+  }
+
+  /* Kamera kapanınca yakınlık sıfırlanır. */
+  window.__kameraYakinligiSifirla = ()=>{
+    suYakinlik = 1; ilkMesafe = 0;
+    try{ if(window.Kamera && Kamera.yakinlastir) Kamera.yakinlastir(1); }catch(e){}
+  };
+
+  kap.addEventListener("pointerdown", baslangic);
+  kap.addEventListener("pointermove", hareket);
+  kap.addEventListener("pointerup", bitir);
+  kap.addEventListener("pointercancel", bitir);
+})();
 $("#openCam").addEventListener("click",()=>openCam("post"));
 function grab(){
   const v=$("#camVideo"); if(!v.videoWidth) return null;

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.8.4</title>
+<title>Klipsy 2.8.5</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -7950,7 +7950,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.8.4</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.8.5</span></div>
     </div>
   </section>
 </div>
@@ -14516,7 +14516,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.8.4";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.8.5";
   box.appendChild(ver);
 }
 
@@ -17596,12 +17596,42 @@ async function post(src,kind,mood,where,note,extra){
     // Yükleme başarısız (internet yok, sunucu hatası vs.)
     // An KAYBOLMAZ: taslak olarak cihaza kaydedilir, bağlantı gelince gönderilir.
     local._failed=true;
+
+    /* HATANIN SEBEBİ GÖRÜNÜR OLMALI.
+       Önceden yalnızca "taslak kaydedildi" yazıyordu; paylaşım
+       neden sunucuya gitmedi anlaşılmıyor, kullanıcı içeriğin
+       kaybolduğunu sanıyordu. */
+    const sebep = String((e && (e.message || e.error_description || e.hint)) || e || "")
+                    .slice(0, 120);
+    console.warn("[Klipsy] paylaşım başarısız:", e);
+
     const saved = await saveDraft({
       kind, blob, note, mood: mood?mood.k:null,
       where, extra, song, ts: Date.now()
     });
     render(); activeIdx=-1; syncActive();
-    toast(saved ? t("draft_saved") : (t("err_upload")+" "+(e.message||"")));
+
+    toast(saved
+      ? (t("draft_saved") + (sebep ? (" — " + sebep) : ""))
+      : (t("err_upload") + " " + sebep));
+
+    /* Ekranda kalıcı kutu: kısa bildirim kaçırılabiliyor. */
+    try{
+      let k = document.getElementById("paylasimHata");
+      if(!k){
+        k = document.createElement("div");
+        k.id = "paylasimHata";
+        k.style.cssText =
+          "position:fixed;left:10px;right:10px;bottom:96px;z-index:2147483500;"+
+          "padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.9);"+
+          "color:#FF9DB8;font:600 12px/1.5 ui-monospace,monospace;"+
+          "white-space:pre-wrap;word-break:break-word;max-height:36vh;overflow:auto";
+        k.addEventListener("click", ()=>k.remove());
+        document.body.appendChild(k);
+      }
+      k.textContent = "PAYLAŞIM BAŞARISIZ\n" + (sebep || "(sebep yok)") +
+                      "\n\n(dokunarak kapat)";
+    }catch(x){}
   }
 }
 

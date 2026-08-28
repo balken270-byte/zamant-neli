@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.7.2</title>
+<title>Klipsy 2.8.0</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -6253,6 +6253,19 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .flip{width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:99px;
   background:rgba(255,255,255,.13);border:1px solid var(--edge-soft);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+/* ── yakınlaştırma kısayolları ── */
+.camZoomBar{position:absolute;left:50%;bottom:calc(var(--sab) + 150px);
+  transform:translateX(-50%);z-index:6;
+  display:flex;gap:5px;padding:5px;border-radius:99px;
+  background:rgba(0,0,0,.42);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.13)}
+.camZoomBtn{min-width:38px;height:32px;padding:0 10px;border:0;border-radius:99px;
+  background:none;color:rgba(255,255,255,.72);
+  font:700 12px/1 inherit;font-variant-numeric:tabular-nums;
+  transition:background .18s,color .18s,transform .14s}
+.camZoomBtn:active{transform:scale(.92)}
+.camZoomBtn.etkin{background:rgba(255,255,255,.92);color:#111}
+
 /* ── yakınlık göstergesi ── */
 .camZoom{position:absolute;left:50%;top:calc(var(--sat) + 108px);
   transform:translateX(-50%) scale(.9);z-index:6;
@@ -7912,7 +7925,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.7.2</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.8.0</span></div>
     </div>
   </section>
 </div>
@@ -14438,7 +14451,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.7.2";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.8.0";
   box.appendChild(ver);
 }
 
@@ -16683,6 +16696,10 @@ async function start(kayitSurerken){
 
       if(camPanel) camPanel.classList.remove("waiting");
       document.documentElement.classList.toggle("camNativeOn", Kamera.yerelMi());
+
+      /* Cihazın yakınlık aralığını oku ve kısayolları çiz.
+         Geniş açı merceği varsa 0.6× düğmesi de görünür. */
+      setTimeout(()=>{ if(window.__kameraAraligiOku) window.__kameraAraligiOku(); }, 350);
       return;
     }catch(e){
       const camPanel=$("#cam");
@@ -17059,9 +17076,24 @@ $("#camClose").addEventListener("click",closeCam);
     karar = null; mesafe = 0;
   };
 
-  /* ── 2) İki parmakla yakınlaştırma ── */
+  /* ── 2) İki parmakla yakınlaştırma ──
+     Sınırlar cihazdan alınır: geniş açı merceği olan telefonlarda
+     alt sınır 0.6 olabiliyor. Elle 1 yazmak o merceği kullanılamaz
+     hale getiriyordu. */
   let _parmakSayisi = 0;
   let ilkMesafe = 0, ilkYakinlik = 1, suYakinlik = 1;
+  let _enAz = 1, _enCok = 6;
+
+  async function araligiOku(){
+    try{
+      if(window.Kamera && Kamera.yakinlikAraligi){
+        const a = await Kamera.yakinlikAraligi();
+        if(a){ _enAz = a.min; _enCok = a.max; }
+      }
+    }catch(e){}
+    kisayollariCiz();
+  }
+  window.__kameraAraligiOku = araligiOku;
 
   const ikiParmakMesafe = t=>{
     const dx = t[0].clientX - t[1].clientX;
@@ -17084,7 +17116,7 @@ $("#camClose").addEventListener("click",closeCam);
     if(e.touches.length !== 2 || !ilkMesafe) return;
     const oran = ikiParmakMesafe(e.touches) / ilkMesafe;
     let yeni = ilkYakinlik * oran;
-    yeni = Math.max(1, Math.min(yeni, 6));      // 1x — 6x arası
+    yeni = Math.max(_enAz, Math.min(yeni, _enCok));   // cihazın sınırları
     if(Math.abs(yeni - suYakinlik) < 0.02) return;
     suYakinlik = yeni;
     yakinlikUygula(yeni);
@@ -17092,21 +17124,26 @@ $("#camClose").addEventListener("click",closeCam);
 
   kap.addEventListener("touchend", e=>{
     _parmakSayisi = e.touches.length;
-    if(e.touches.length < 2) ilkMesafe = 0;
+    if(e.touches.length < 2){
+      ilkMesafe = 0;
+      /* Odaklama yalnızca burada: her harekette yapmak görüntüyü
+         takıyordu. */
+      if(suYakinlik !== 1) yakinlikUygula(suYakinlik, true);
+    }
   }, { passive:true });
 
   /* Yakınlığı hem yerel kameraya hem tarayıcı kamerasına uygular. */
-  let yakinlikZaman = null;
-  function yakinlikUygula(deger){
+  function yakinlikUygula(deger, odakla){
     yakinlikGoster(deger);
+    kisayollariIsaretle(deger);
 
-    /* Çağrılar sınırlandırılır: her küçük harekette istek göndermek
-       kamerayı yavaşlatıyor. */
-    clearTimeout(yakinlikZaman);
-    yakinlikZaman = setTimeout(()=>{
+    /* Gecikme KULLANILMIYOR: kamera katmanı zaten aynı anda tek istek
+       gönderiyor, aradaki değerleri atıyor. Burada ayrıca beklemek
+       hareketi geciktiriyordu. */
+    {
       try{
         if(window.Kamera && typeof Kamera.yakinlastir === "function"){
-          Kamera.yakinlastir(deger);
+          Kamera.yakinlastir(deger, odakla);
           return;
         }
       }catch(e){}
@@ -17123,7 +17160,7 @@ $("#camClose").addEventListener("click",closeCam);
           }
         }
       }catch(e){}
-    }, 40);
+    }
   }
 
   /* Ekranda yakınlık göstergesi — kısa süre görünür. */
@@ -17142,10 +17179,65 @@ $("#camClose").addEventListener("click",closeCam);
     gostergeZaman = setTimeout(()=>g.classList.remove("gorunur"), 1200);
   }
 
+  /* ── Kısayol düğmeleri: 0.6× · 1× · 2× ──
+     Parmakla yakınlaştırmak her zaman kolay değil; tek dokunuşla
+     geniş açıya geçmek daha hızlı. 0.6 yalnızca cihaz destekliyorsa
+     görünür. */
+  function kisayollariCiz(){
+    let s = document.getElementById("camZoomBar");
+
+    // yakınlaştırma desteklenmiyorsa hiç gösterme
+    if(_enCok <= 1.05){ if(s) s.remove(); return; }
+
+    if(!s){
+      s = document.createElement("div");
+      s.id = "camZoomBar";
+      s.className = "camZoomBar";
+      kap.appendChild(s);
+    }
+
+    const kademeler = [];
+    if(_enAz < 0.95) kademeler.push({ d:_enAz, ad:(Math.round(_enAz*10)/10) + "×" });
+    kademeler.push({ d:1, ad:"1×" });
+    if(_enCok >= 2)  kademeler.push({ d:2, ad:"2×" });
+    if(_enCok >= 5)  kademeler.push({ d:5, ad:"5×" });
+
+    s.innerHTML = "";
+    kademeler.forEach(k=>{
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "camZoomBtn";
+      b.dataset.deger = k.d;
+      b.textContent = k.ad;
+      b.addEventListener("click", ev=>{
+        ev.stopPropagation();
+        suYakinlik = k.d;
+        yakinlikUygula(k.d, true);
+        try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+      });
+      s.appendChild(b);
+    });
+    kisayollariIsaretle(suYakinlik);
+  }
+
+  /* Hangi kademe etkin, onu belirginleştir. */
+  function kisayollariIsaretle(deger){
+    const s = document.getElementById("camZoomBar");
+    if(!s) return;
+    let enYakin = null, enKucukFark = Infinity;
+    s.querySelectorAll(".camZoomBtn").forEach(b=>{
+      const fark = Math.abs(Number(b.dataset.deger) - deger);
+      if(fark < enKucukFark){ enKucukFark = fark; enYakin = b; }
+      b.classList.remove("etkin");
+    });
+    if(enYakin && enKucukFark < 0.25) enYakin.classList.add("etkin");
+  }
+
   /* Kamera kapanınca yakınlık sıfırlanır. */
   window.__kameraYakinligiSifirla = ()=>{
     suYakinlik = 1; ilkMesafe = 0;
-    try{ if(window.Kamera && Kamera.yakinlastir) Kamera.yakinlastir(1); }catch(e){}
+    kisayollariIsaretle(1);
+    try{ if(window.Kamera && Kamera.yakinlastir) Kamera.yakinlastir(1, true); }catch(e){}
   };
 
   kap.addEventListener("pointerdown", baslangic);

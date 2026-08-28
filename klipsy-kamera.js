@@ -327,6 +327,7 @@
     if (yerelMi()) {
       try { await CP().stop(); } catch (e) {}
       document.documentElement.classList.remove("camNativeOn");
+      _aralik = null;   // kamera değişince aralık yeniden sorulur
     }
 
     durum.kaydediyor = false;
@@ -605,24 +606,86 @@
     return durum.flas;
   }
 
-  async function yakinlastir(deger) {
-    const d = Math.max(1, Number(deger) || 1);
+  /* ═══ YAKINLAŞTIRMA ═══
+     SORUN 1 — Akıcı değildi.
+       Her parmak hareketinde kameraya bir istek gidiyordu ve istekler
+       kuyruğa giriyordu. Üstüne her seferinde otomatik odaklama
+       çalışıyordu; odaklama yavaş bir işlem, görüntü takılıyordu.
+       Çözüm: aynı anda tek istek, aradakiler atılır (yalnızca en son
+       değer önemli). Odaklama parmak kalkınca bir kez yapılır.
+
+     SORUN 2 — 0.6 kat yapılamıyordu.
+       Alt sınır elle 1 olarak sabitlenmişti. Geniş açı merceği olan
+       cihazlarda alt sınır 0.5-0.6 olabiliyor; artık cihazın
+       bildirdiği değer kullanılıyor. */
+
+  let _yakinlikIstekte = false;      // şu an bir istek yolda mı
+  let _bekleyenYakinlik = null;      // en son istenen değer
+  let _aralik = null;                // { min, max } — cihazdan
+
+  /* Cihazın desteklediği yakınlık aralığı. Bir kez sorulur, saklanır. */
+  async function yakinlikAraligi() {
+    if (_aralik) return _aralik;
+
     if (durum.yerel) {
-      /* Belgede parametre adı "level" — "zoom" değil.
-         Yanlış adla çağrı sessizce işe yaramıyordu. */
-      try { await CP().setZoom({ level: d, autoFocus: true }); durum.yakinlik = d; }
-      catch (e) {}
-      return durum.yakinlik;
+      try {
+        const z = await CP().getZoom();
+        if (z && typeof z.min === "number" && typeof z.max === "number") {
+          _aralik = { min: z.min, max: Math.min(z.max, 8) };
+          return _aralik;
+        }
+      } catch (e) {}
+    } else {
+      try {
+        const iz = webAkis && webAkis.getVideoTracks()[0];
+        const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
+        if (y && y.zoom) {
+          _aralik = { min: y.zoom.min, max: Math.min(y.zoom.max, 8) };
+          return _aralik;
+        }
+      } catch (e) {}
     }
+
+    _aralik = { min: 1, max: 1 };    // yakınlaştırma desteklenmiyor
+    return _aralik;
+  }
+
+  async function yakinlastir(deger, odakla) {
+    const a = await yakinlikAraligi();
+    const d = Math.min(Math.max(Number(deger) || 1, a.min), a.max);
+
+    /* Bir istek yoldayken yenisi gönderilmez; yalnızca en son değer
+       saklanır. Kuyruk oluşmadığı için hareket akıcı kalıyor. */
+    _bekleyenYakinlik = { d: d, odak: !!odakla };
+    if (_yakinlikIstekte) return durum.yakinlik;
+
+    _yakinlikIstekte = true;
     try {
-      const iz = webAkis && webAkis.getVideoTracks()[0];
-      const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
-      if (y && y.zoom) {
-        const s = Math.min(Math.max(d, y.zoom.min), y.zoom.max);
-        await iz.applyConstraints({ advanced: [{ zoom: s }] });
-        durum.yakinlik = s;
+      while (_bekleyenYakinlik) {
+        const su = _bekleyenYakinlik;
+        _bekleyenYakinlik = null;
+
+        if (durum.yerel) {
+          /* autoFocus yalnızca parmak kalkınca — her harekette
+             odaklamak görüntüyü takıyordu. */
+          try {
+            await CP().setZoom({ level: su.d, autoFocus: su.odak });
+            durum.yakinlik = su.d;
+          } catch (e) {}
+        } else {
+          try {
+            const iz = webAkis && webAkis.getVideoTracks()[0];
+            if (iz && iz.applyConstraints) {
+              await iz.applyConstraints({ advanced: [{ zoom: su.d }] });
+              durum.yakinlik = su.d;
+            }
+          } catch (e) {}
+        }
       }
-    } catch (e) {}
+    } finally {
+      _yakinlikIstekte = false;
+    }
+
     return durum.yakinlik;
   }
 
@@ -684,6 +747,7 @@
 
     flas: flas,
     yakinlastir: yakinlastir,
+    yakinlikAraligi: yakinlikAraligi,
     enGenisAci: enGenisAci,
 
     olay: olay,

@@ -267,10 +267,18 @@
        görüntüsünü kırpmasına yol açar; görüntü yakınlaşmış gibi olur.
        Bu yüzden orana karışılmaz, yalnızca genişlik istenir. */
     const sesVar = secenek.ses !== false;
+    /* KARE HIZI HER DENEMEDE İSTENİR.
+       Yalnızca ilk denemede belirtiliyordu; o başarısız olunca
+       tarayıcı kendi seçtiği düşük hızı kullanıyor ve kayıt
+       takılıyormuş gibi görünüyordu. */
+    const kare = { ideal: 30, min: 24 };
     const denemeler = [
       { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
-                 frameRate: { ideal: 30, min: 24 }, resizeMode: "none" }, audio: sesVar },
-      { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } }, audio: sesVar },
+                 frameRate: kare, resizeMode: "none" }, audio: sesVar },
+      { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
+                 frameRate: kare }, audio: sesVar },
+      { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
+      { video: { frameRate: kare }, audio: sesVar },
       { video: true, audio: sesVar },
     ];
 
@@ -282,6 +290,16 @@
     if (!webAkis) throw sonHata || KameraHatasi(HATA.BILINMEYEN);
 
     const iz = webAkis.getVideoTracks()[0];
+
+    /* Açılan akışın kare hızı düşükse yükseltmeyi dene.
+       Bazı tarayıcılar ilk isteği yok sayıp 10-15 kare veriyor. */
+    try {
+      const s0 = (iz && iz.getSettings) ? iz.getSettings() : {};
+      if (iz && iz.applyConstraints && s0.frameRate && s0.frameRate < 24) {
+        await iz.applyConstraints({ frameRate: { ideal: 30, min: 24 } });
+      }
+    } catch (e) {}
+
     const a = (iz && iz.getSettings) ? iz.getSettings() : {};
     durum.coz = { g: a.width || null, y: a.height || null, fps: Math.round(a.frameRate || 0) };
 

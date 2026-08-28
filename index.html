@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</style>
-<title>Klipsy 2.5.0</title>
+<title>Klipsy 2.6.0</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -18,6 +18,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      load_failed:"An yüklenemedi",
+      retry:"Tekrar dene",
       following2:"Takiptesin",
       show_less:"daha az",
       show_more:"devamı",
@@ -486,6 +488,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     en:{
       _name:"English",
+      load_failed:"Couldn't load this moment",
+      retry:"Try again",
       following2:"Following",
       show_less:"less",
       show_more:"more",
@@ -941,6 +945,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     es:{
       _name:"Español",
+      load_failed:"No se pudo cargar",
+      retry:"Reintentar",
       following2:"Siguiendo",
       show_less:"menos",
       show_more:"más",
@@ -1396,6 +1402,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      load_failed:"تعذّر تحميل اللحظة",
+      retry:"حاول مجدداً",
       following2:"تتابعه",
       show_less:"أقل",
       show_more:"المزيد",
@@ -1851,6 +1859,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     fr:{
       _name:"Français",
+      load_failed:"Impossible de charger",
+      retry:"Réessayer",
       following2:"Abonné",
       show_less:"moins",
       show_more:"plus",
@@ -2306,6 +2316,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     de:{
       _name:"Deutsch",
+      load_failed:"Konnte nicht geladen werden",
+      retry:"Erneut versuchen",
       following2:"Folgst du",
       show_less:"weniger",
       show_more:"mehr",
@@ -2761,6 +2773,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     ru:{
       _name:"Русский",
+      load_failed:"Не удалось загрузить",
+      retry:"Повторить",
       following2:"Вы подписаны",
       show_less:"свернуть",
       show_more:"ещё",
@@ -3216,6 +3230,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     pt:{
       _name:"Português",
+      load_failed:"Não foi possível carregar",
+      retry:"Tentar de novo",
       following2:"Seguindo",
       show_less:"menos",
       show_more:"mais",
@@ -3671,6 +3687,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     hi:{
       _name:"हिन्दी",
+      load_failed:"लोड नहीं हो सका",
+      retry:"पुनः प्रयास करें",
       following2:"फ़ॉलो कर रहे",
       show_less:"कम",
       show_more:"और",
@@ -4126,6 +4144,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      load_failed:"Gagal memuat",
+      retry:"Coba lagi",
       following2:"Mengikuti",
       show_less:"lebih sedikit",
       show_more:"selengkapnya",
@@ -5701,7 +5721,9 @@ svg{display:block}
    kartta, eylemler ve yazılar altta. Yazılar görselin üstüne
    binmiyor — gölgeye gerek kalmıyor, okunaklılık artıyor. */
 .anPage{z-index:58;background:var(--bg);color:var(--t1);
-  display:none;flex-direction:column;overflow:hidden}
+  display:none;flex-direction:column;overflow:hidden;
+  /* Tarayıcının kendi kaydırma davranışı devreye girmesin. */
+  touch-action:none;overscroll-behavior:contain}
 .anPage.open{display:flex}
 
 /* ── üst şerit ── */
@@ -5734,10 +5756,24 @@ svg{display:block}
 .apMore svg{width:18px;height:18px}
 
 /* ── görsel kartı: arşivdeki ölçüler ── */
+/* ── an açılamadı durumu ── */
+.apBos{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:28px;text-align:center;color:var(--t1)}
+.apBos .sim{width:52px;height:52px;border-radius:99px;display:flex;
+  align-items:center;justify-content:center;background:var(--surf1);color:var(--t3)}
+.apBos .sim svg{width:24px;height:24px}
+.apBos b{font-size:15px;font-weight:700;letter-spacing:-.026em;max-width:220px;line-height:1.4}
+.apYeniden{height:40px;padding:0 20px;border-radius:99px;border:0;margin-top:2px;
+  color:#fff;font:700 13.5px/1 inherit;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
+.apYeniden:active{transform:scale(.96)}
+
 .apKartAlan{flex:1;min-height:0;display:flex;align-items:center;
   justify-content:center;padding:0 14px}
-.apKart{position:relative;width:100%;max-width:340px;
-  aspect-ratio:9/16;max-height:100%;
+/* Kart, ayrılan alanı doldurur. Oran özelliğine bağlı kalınırsa
+   desteklemeyen tarayıcılarda kart sıfır yükseklikte kalıyor ve
+   hiçbir şey görünmüyordu. Görsel içeride oranını koruyor. */
+.apKart{position:relative;width:100%;max-width:360px;height:100%;
   border-radius:22px;overflow:hidden;background:#141419;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 14px 40px -16px rgba(0,0,0,.6)}
@@ -5753,22 +5789,33 @@ svg{display:block}
 @keyframes apSpin{to{transform:rotate(360deg)}}
 
 /* ── eylem satırı ── */
-.apRail{flex:none;display:flex;align-items:center;gap:22px;
-  padding:14px 18px 8px;transition:opacity .28s}
+/* EYLEM ŞERİDİ — kartın İÇİNDE, sağda dikey.
+   Görselin üstünde durduğu için okunabilirlik gerekiyor: ikonlar
+   beyaz ve gölgeli. Başparmağın doğal yayında, alt sağ köşede. */
+.apRail{position:absolute;right:10px;bottom:12px;z-index:5;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  padding:0;transition:opacity .28s}
 .anPage.sade .apRail{opacity:0;pointer-events:none}
 .anPage.sade .apSong{opacity:0;pointer-events:none}
-.apBosluk{flex:1}
+.apBosluk{display:none}
 
-.apAct{background:none;border:0;padding:0;color:var(--t1);
-  display:flex;align-items:center;gap:7px}
-.apAct .ic{display:flex;align-items:center;justify-content:center;
+/* İkon ve sayı aynı hizada dursun: ikon kutusu sabit ölçüde,
+   sayı ortalanmış. Farklı ikonlar aynı görsel ağırlıkta görünür. */
+.apAct{background:none;border:0;padding:0;color:#fff;
+  display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1}
+.apAct .ic{flex:none;width:27px;height:27px;
+  display:flex;align-items:center;justify-content:center;
   transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
-.apAct .ic svg{width:26px;height:26px}
+.apAct .ic svg{width:100%;height:100%;display:block;
+  filter:drop-shadow(0 1px 6px rgba(0,0,0,.85))}
 .apAct:active .ic{transform:scale(.84)}
-.apAct em{font-style:normal;font-size:13.5px;font-weight:700;
-  font-variant-numeric:tabular-nums;color:var(--t2)}
+/* Satır yüksekliği ikon kutusuyla aynı: hizalama desteklenmeyen
+   motorlarda bile sayı ikonla aynı seviyede kalır. */
+.apAct em{font-style:normal;font-size:11.5px;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;color:#fff;
+  text-shadow:0 1px 6px rgba(0,0,0,.9)}
 .apAct.on{color:var(--accent)}
-.apAct.on em{color:var(--accent)}
+.apAct.on em{color:#fff}
 .apAct.on .ic svg{fill:currentColor}
 .apAct.on .ic{animation:apZipla .42s cubic-bezier(.34,1.56,.64,1)}
 @keyframes apZipla{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
@@ -5776,7 +5823,7 @@ svg{display:block}
 .apAct.saved .ic svg{fill:currentColor}
 
 /* ── alt bilgi ── */
-.apFoot{flex:none;padding:0 18px calc(var(--sab) + 16px);transition:opacity .28s}
+.apFoot{flex:none;padding:14px 18px calc(var(--sab) + 16px);transition:opacity .28s}
 .anPage.sade .apFoot{opacity:0;pointer-events:none}
 .apChips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
 .apChips span{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 12px;
@@ -5804,7 +5851,7 @@ svg{display:block}
 .ai-alt{height:10px;width:86px}
 .ai-kartAlan{flex:1;min-height:0;display:flex;align-items:center;
   justify-content:center;padding:0 14px}
-.ai-kart{width:100%;max-width:340px;aspect-ratio:9/16;max-height:100%;border-radius:22px}
+.ai-kart{width:100%;max-width:360px;height:100%;border-radius:22px}
 .ai-eylem{flex:none;display:flex;gap:22px;padding:16px 18px 10px}
 .ai-eylem span{width:44px;height:15px}
 .ai-yazi{flex:none;padding:0 18px calc(var(--sab) + 16px)}
@@ -5844,13 +5891,13 @@ svg{display:block}
    Sağdaki eylem şeridinin devamı gibi durur: aynı genişlik, aynı hizada.
    Yalnızca plak; yazı yok. */
 .apSong{position:relative;flex:none;
-  width:38px;height:38px;padding:0;border:0;background:none;
+  width:34px;height:34px;padding:0;border:0;background:none;
   display:flex;align-items:center;justify-content:center;
   transition:transform .14s}
 .apSong:active{transform:scale(.9)}
 
 /* plak gövdesi — yivler iç gölgelerle çizilir */
-.apSong .plak{display:block;position:relative;width:38px;height:38px;border-radius:99px;
+.apSong .plak{display:block;position:relative;width:34px;height:34px;border-radius:99px;
   background:#14141a;
   background-image:linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,0) 55%);
   box-shadow:
@@ -7833,7 +7880,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.5.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.6.0</span></div>
     </div>
   </section>
 </div>
@@ -8221,16 +8268,17 @@ html.native button,html.native .tab{touch-action:manipulation}
       <div class="apKart" id="apKart">
         <div class="apMedia" id="apMedia"></div>
         <div class="apKalpler" id="apKalpler"></div>
-      </div>
-    </div>
 
-    <!-- EYLEMLER -->
-    <div class="apRail">
-      <button class="apAct" id="apLike"><span class="ic"></span><em id="apLikeN">0</em></button>
-      <button class="apAct" id="apComment"><span class="ic"></span><em id="apCommN">0</em></button>
-      <button class="apAct" id="apSave"><span class="ic"></span></button>
-      <button class="apAct" id="apShare"><span class="ic"></span></button>
-      <span class="apBosluk"></span>
+        <!-- EYLEMLER: kartın içinde, sağda dikey -->
+        <div class="apRail">
+          <button class="apAct" id="apLike"><span class="ic"></span><em id="apLikeN">0</em></button>
+          <button class="apAct" id="apComment"><span class="ic"></span><em id="apCommN">0</em></button>
+          <button class="apAct" id="apSave"><span class="ic"></span></button>
+          <button class="apAct" id="apShare"><span class="ic"></span></button>
+          <span class="apBosluk"></span>
+        </div>
+
+      </div>
     </div>
 
     <!-- ALT: etiketler ve not -->
@@ -11495,6 +11543,18 @@ let _apYorumlar = [];
 async function anSayfasiAc(id, secenek){
   secenek = secenek || {};
   if(!id) return;
+  _apSonId = id; _apSonSecenek = secenek;
+
+  /* ZAMAN AŞIMI KORUMASI
+     Sunucu hiç cevap vermezse iskelet sonsuza kadar dönüyordu.
+     On saniye sonra kullanıcıya durumu söyleriz. */
+  clearTimeout(_apZamanAsimi);
+  _apZamanAsimi = setTimeout(()=>{
+    const s = document.getElementById("anPage");
+    if(s && s.classList.contains("open") && !s.classList.contains("hazir")){
+      anSayfasiBos(t("load_failed"));
+    }
+  }, 10000);
 
   const sb = window.__sb, me = window.__me;
 
@@ -11529,6 +11589,8 @@ async function anSayfasiAc(id, secenek){
   }catch(e){}
 
   // 2) yoksa sunucudan TEK an
+  if(!it && !sb){ anSayfasiBos(t("load_failed")); return; }
+
   if(!it && sb){
     try{
       const { data:m, error } = await sb.from('moments')
@@ -11537,7 +11599,8 @@ async function anSayfasiAc(id, secenek){
                 'song_title, song_artist, song_art, song_preview, is_removed')
         .eq('id', id).single();
 
-      if(error || !m || m.is_removed){ anSayfasiBos(); return; }
+      if(error){ anSayfasiBos(t("load_failed")); return; }
+      if(!m || m.is_removed){ anSayfasiBos(); return; }
 
       let kadi = "", ekip = null;
       try{
@@ -11579,7 +11642,11 @@ async function anSayfasiAc(id, secenek){
         song:m.song_title ? {title:m.song_title,artist:m.song_artist,
                              art:m.song_art,preview:m.song_preview} : null
       };
-    }catch(e){ console.warn("[Klipsy] an sayfası:", e); anSayfasiBos(); return; }
+    }catch(e){
+      console.warn("[Klipsy] an sayfası:", e);
+      anSayfasiBos(t("load_failed"));
+      return;
+    }
   }
 
   if(!it || (!it.src && !it.poster)){ anSayfasiBos(); return; }
@@ -11588,6 +11655,7 @@ async function anSayfasiAc(id, secenek){
   anSayfasiCiz();
 
   /* İçerik hazır — iskelet yumuşakça kaybolur. */
+  clearTimeout(_apZamanAsimi);
   const s2 = document.getElementById("anPage");
   if(s2){
     requestAnimationFrame(()=>s2.classList.add("hazir"));
@@ -11601,10 +11669,29 @@ async function anSayfasiAc(id, secenek){
   }catch(e){}
 }
 
-function anSayfasiBos(){
+/* An açılamadı: iskeleti KALDIR ve sebebi göster.
+   Önceden iskelet duruyordu ve kullanıcı sonsuza kadar
+   yükleniyor sanıyordu. */
+function anSayfasiBos(mesaj){
+  clearTimeout(_apZamanAsimi);
+  const s = document.getElementById("anPage");
+  if(s) s.classList.add("hazir");
+
   $("#apMedia").innerHTML =
-    '<div class="apCEmpty">' + t("moment_gone") + '</div>';
+    '<div class="apBos">'+
+      '<div class="sim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg></div>'+
+      '<b>' + esc(mesaj || t("moment_gone")) + '</b>'+
+      '<button class="apYeniden" id="apYeniden">' + t("retry") + '</button>'+
+    '</div>';
+
+  const yb = document.getElementById("apYeniden");
+  if(yb) yb.addEventListener("click", ()=>{
+    if(_apSonId) anSayfasiAc(_apSonId, _apSonSecenek);
+  });
 }
+
+/* Tekrar deneyebilmek için son isteği hatırla. */
+let _apSonId = null, _apSonSecenek = null, _apZamanAsimi = null;
 
 function anSayfasiCiz(){
   const it = _apAn; if(!it) return;
@@ -11684,23 +11771,54 @@ function anSayfasiCiz(){
   apEylemleriCiz();
 }
 
+/* ═══ AN SAYFASI İKON TAKIMI ═══
+   Akıştaki ikonlar farklı boyut ve çizgi kalınlığında çizilmiş;
+   yan yana konunca hizasız ve dengesiz görünüyorlardı.
+   Bu takımın hepsi aynı ölçüde: 24 birim kutu, 1.8 çizgi kalınlığı,
+   yuvarlatılmış uçlar. Görsel ağırlıkları da birbirine denk. */
+const AP_IKON = {
+  kalp:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '+
+    'stroke-linecap="round" stroke-linejoin="round">'+
+    '<path d="M12 20.3s-7.4-4.6-7.4-9.5a4.4 4.4 0 0 1 7.4-3.2 4.4 4.4 0 0 1 7.4 3.2c0 4.9-7.4 9.5-7.4 9.5z"/></svg>',
+
+  yorum:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '+
+    'stroke-linecap="round" stroke-linejoin="round">'+
+    '<path d="M20.2 11.4a7.8 7.8 0 0 1-8.4 7.8 9 9 0 0 1-2.6-.4L4.6 20.3l1.4-3.9a7.7 7.7 0 0 1-1.4-5 7.8 7.8 0 0 1 7.6-7.7 7.8 7.8 0 0 1 8 7.7z"/></svg>',
+
+  kaydet:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '+
+    'stroke-linecap="round" stroke-linejoin="round">'+
+    '<path d="M6.4 4.2h11.2v15.9l-5.6-4.1-5.6 4.1z"/></svg>',
+
+  paylas:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '+
+    'stroke-linecap="round" stroke-linejoin="round">'+
+    '<path d="M20.4 3.6 10.9 13.1"/><path d="M20.4 3.6 14.3 20.4l-3.4-7.3-7.3-3.4z"/></svg>',
+};
+
 function apEylemleriCiz(){
-  const it=_apAn; if(!it) return;
+  const it = _apAn; if(!it) return;
+
   $("#apLike").classList.toggle("on", !!it.liked);
-  $("#apLike .ic").innerHTML = I.heart;
-  $("#apLikeN").textContent = nf(it.likes||0);
-  $("#apComment .ic").innerHTML = I.chat;
-  $("#apCommN").textContent = nf(it.cc||0);
+  $("#apLike .ic").innerHTML  = AP_IKON.kalp;
+  $("#apLikeN").textContent   = nf(it.likes || 0);
+
+  $("#apComment .ic").innerHTML = AP_IKON.yorum;
+  $("#apCommN").textContent     = nf(it.cc || 0);
+
   $("#apSave").classList.toggle("saved", !!it.saved);
-  $("#apSave .ic").innerHTML = I.save;
-  $("#apShare .ic").innerHTML = I.send;
+  $("#apSave .ic").innerHTML  = AP_IKON.kaydet;
+
+  $("#apShare .ic").innerHTML = AP_IKON.paylas;
 
   apSarkiKur();
 }
 
 /* ═══ ŞARKI ═══
    Akışta şarkı önizlemesi çalıyor; bu sayfada da çalmalı.
-   Sağ alt köşede kendi düğmesi var: dokununca çalar/durur. */
+   Plak eylem satırının sağ ucunda: dokununca çalar/durur. */
 let _apSes = null;
 
 function apSarkiDurdur(){
@@ -11714,7 +11832,7 @@ function apSarkiKur(){
   apSarkiDurdur();
 
   let d = document.getElementById("apSong");
-  const sarki = it && it.song && it.song.preview ? it.song : null;
+  const sarki = (it && it.song && it.song.preview) ? it.song : null;
 
   if(!sarki){ if(d) d.remove(); return; }
 
@@ -11722,29 +11840,25 @@ function apSarkiKur(){
     d = document.createElement("button");
     d.id = "apSong";
     d.className = "apSong";
-    /* Yalnızca plak. Şarkı adı ve sanatçı kaldırıldı — sağ şeridi
-       kalabalıklaştırıyordu. */
     d.innerHTML = '<span class="plak"><span class="kapak"></span></span>' +
                   '<span class="oynat"></span>';
+
     /* Plak eylem satırının sağ ucuna yerleşir. */
     const serit = document.querySelector("#anPage .apRail");
     if(serit) serit.appendChild(d);
-    else{
-      const sayfa = document.getElementById("anPage");
-      if(sayfa) sayfa.appendChild(d);
-    }
 
     d.addEventListener("click", ()=>{
+      apTitret(8);
       if(_apSes && !_apSes.paused){ apSarkiDurdur(); return; }
       apSarkiCal();
     });
   }
 
-  d.querySelector(".kapak").style.backgroundImage =
-    sarki.art ? ('url("' + sarki.art + '")') : "none";
-  d.setAttribute("aria-label", (sarki.title||"") + " " + (sarki.artist||""));
+  const kp = d.querySelector(".kapak");
+  if(kp) kp.style.backgroundImage = sarki.art ? ('url("' + sarki.art + '")') : "none";
+  d.setAttribute("aria-label", (sarki.title || "") + " " + (sarki.artist || ""));
 
-  // video değilse şarkı kendiliğinden başlasın
+  // videoda kendiliğinden başlamaz — video kendi sesini çalıyor
   if(it.kind !== "video") apSarkiCal();
 }
 
@@ -11760,7 +11874,7 @@ function apSarkiCal(){
       if(d) d.classList.add("calisiyor");
     }).catch(()=>{
       /* Tarayıcı kendiliğinden çalmaya izin vermiyorsa kullanıcı
-         düğmeye dokununca çalar. */
+         plağa dokununca çalar. */
       _apSes = null;
     });
   }catch(e){ _apSes = null; }
@@ -11895,15 +12009,22 @@ async function apBegeniAyarla(deger){
      uzun basma   → arayüzü gizle
      aşağı çekme  → sayfayı kapat */
 function apHareketleriBagla(){
-  const medya = document.getElementById("apKart");
-  const sayfa = document.getElementById("anPage");
-  if(!medya || !sayfa || medya._hareketBagli) return;
+  /* Kaydırma KARTTA değil, SAYFANIN TAMAMINDA dinlenir.
+     Kart küçük ve ortada olduğu için parmak çoğu zaman dışına
+     düşüyordu ve sayfa kapanmıyordu. */
+  const medya = document.getElementById("anPage");
+  const sayfa = medya;
+  if(!medya || medya._hareketBagli) return;
   medya._hareketBagli = true;
 
   let sonDokunus = 0, basmaZaman = null;
   let basY = 0, basX = 0, suruk = false, mesafe = 0, karar = null;
 
   medya.addEventListener("pointerdown", e=>{
+    /* Düğme, bağlantı ya da yorum panelinde başlayan dokunuşlar
+       kaydırma sayılmaz. */
+    if(e.target.closest("button, a, input, .apComments")) return;
+
     basY = e.clientY; basX = e.clientX;
     suruk = true; mesafe = 0; karar = null;
 
@@ -14271,7 +14392,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.5.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.6.0";
   box.appendChild(ver);
 }
 
@@ -18022,7 +18143,8 @@ async function oturumuYerelKodaAktar(){
     if(!sb){ window.__aktarimDurum = "sunucu bağlantısı yok"; return false; }
 
     const { data } = await sb.auth.getSession();
-    const jeton = data && data.session ? data.session.access_token : null;
+    const oturum = data && data.session ? data.session : null;
+    const jeton = oturum ? oturum.access_token : null;
     if(!jeton){ window.__aktarimDurum = "oturum anahtarı alınamadı"; return false; }
 
     if(!window.__sbUrl || !window.__sbKey){
@@ -18033,6 +18155,14 @@ async function oturumuYerelKodaAktar(){
     await D.set({ key: "klipsy_oturum", value: jeton });
     await D.set({ key: "klipsy_sb_url", value: window.__sbUrl });
     await D.set({ key: "klipsy_sb_key", value: window.__sbKey });
+
+    /* TAZELEME ANAHTARI
+       Erişim anahtarı yaklaşık bir saatte geçersizleşiyor. Kullanıcı
+       bildirime saatler sonra yanıt verince "oturum süresi doldu"
+       hatası alınıyordu. Bu anahtarla yerel kod kendi tazeleyebiliyor. */
+    if(oturum.refresh_token){
+      await D.set({ key: "klipsy_tazeleme", value: oturum.refresh_token });
+    }
 
     /* YAZILDIĞINI DOĞRULA — sessiz başarısızlık bu özelliği
        tamamen çalışmaz hale getiriyordu. */

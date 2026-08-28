@@ -372,6 +372,28 @@
   /* ══════════════════════════════════════════════════════════════════
      FOTOĞRAF
      ══════════════════════════════════════════════════════════════════ */
+  /* Bir görseli yatay çevirir (ayna). */
+  function aynala(veriAdresi) {
+    return new Promise(function (coz) {
+      try {
+        const im = new Image();
+        im.onload = function () {
+          try {
+            const c = document.createElement("canvas");
+            c.width = im.width; c.height = im.height;
+            const x = c.getContext("2d");
+            x.translate(c.width, 0);
+            x.scale(-1, 1);
+            x.drawImage(im, 0, 0);
+            coz(c.toDataURL("image/jpeg", 0.92));
+          } catch (e) { coz(veriAdresi); }
+        };
+        im.onerror = function () { coz(veriAdresi); };
+        im.src = veriAdresi;
+      } catch (e) { coz(veriAdresi); }
+    });
+  }
+
   function fotoCek(secenek) {
     secenek = secenek || {};
     const kalite = secenek.kalite || 88;
@@ -384,7 +406,18 @@
           const r = await CP().capture({ quality: kalite });
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
-          const veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
+          let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
+
+          /* ÖN KAMERADA AYNALAMA
+             Önizleme ayna gibi gösteriliyor (kullanıcı kendini
+             alışık olduğu yönde görüyor). Çekilen kare ise
+             aynalanmıyordu; paylaşınca yazılar ters çıkıyor ve
+             yüz "başkasının gördüğü" yönde oluyordu. Önizlemeyle
+             aynı olması için kare de çevrilir. */
+          if (durum.yon === "on") {
+            veri = await aynala(veri);
+          }
+
           yay("foto", { boyut: veri.length });
           return veri;
         }
@@ -398,6 +431,12 @@
         c.height = v.videoHeight;
         const x = c.getContext("2d");
         x.imageSmoothingQuality = "high";
+
+        /* Ön kamerada önizleme aynalı; kare de aynalanmalı. */
+        if (durum.yon === "on") {
+          x.translate(c.width, 0);
+          x.scale(-1, 1);
+        }
         x.drawImage(v, 0, 0);
         const veri = c.toDataURL("image/jpeg", kalite / 100);
         yay("foto", { boyut: veri.length });
@@ -435,6 +474,12 @@
              yalnızca yedek olarak çalışır. */
           try{
             await CP().startRecordVideo({
+              /* storeToFile ŞART.
+                 Verilmediğinde eklenti videoyu dosyaya yazmıyor;
+                 sonuçta gelen değer dosya yolu değil ve okuma boş
+                 dönüyor. Sunucuya birkaç baytlık bozuk dosya
+                 yükleniyordu. Belgedeki örnek de bunu kullanıyor. */
+              storeToFile: true,
               disableAudio: false,
               maxDuration: enFazlaSn,
               videoQuality: "high",
@@ -461,11 +506,34 @@
           }
 
           webParcalar = [];
-          const ayar = { videoBitsPerSecond: secenek.bitHizi || 3400000 };
+
+          /* VERİ HIZI ÇÖZÜNÜRLÜĞE GÖRE.
+             Sabit 3.4 Mbit kullanılıyordu. 1080p için bu düşük;
+             görüntü bloklu ve bulanık çıkıyordu. Piksel sayısına
+             göre hesaplanınca kalite belirgin şekilde düzeliyor. */
+          const iz = webAkis.getVideoTracks()[0];
+          const a  = (iz && iz.getSettings) ? iz.getSettings() : {};
+          const g  = a.width  || 1280;
+          const y  = a.height || 720;
+          const kare = a.frameRate || 30;
+
+          /* Piksel başına yaklaşık 0.12 bit — akıcı hareket için yeterli,
+             dosya boyutu makul kalıyor. */
+          let hiz = Math.round(g * y * kare * 0.12);
+          hiz = Math.max(2500000, Math.min(hiz, 12000000));   // 2.5 – 12 Mbit
+
+          const ayar = {
+            videoBitsPerSecond: secenek.bitHizi || hiz,
+            audioBitsPerSecond: 128000,
+          };
           if (tur) ayar.mimeType = tur;
 
           try { webKayit = new MediaRecorder(webAkis, ayar); }
-          catch (e) { webKayit = new MediaRecorder(webAkis); }
+          catch (e) {
+            /* Bazı tarayıcılar ses hızını kabul etmiyor. */
+            try { webKayit = new MediaRecorder(webAkis, { mimeType: tur }); }
+            catch (e2) { webKayit = new MediaRecorder(webAkis); }
+          }
 
           webKayit.ondataavailable = function (e) {
             if (e.data && e.data.size) webParcalar.push(e.data);
@@ -473,7 +541,9 @@
           webKayit.onerror = function (e) {
             yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
           };
-          webKayit.start(250);
+          /* Parça aralığı büyütüldü: her çeyrek saniyede parça üretmek
+             işlemciyi meşgul ediyor ve kayıt takılıyordu. */
+          webKayit.start(1000);
         }
 
         durum.kaydediyor = true;
@@ -516,23 +586,60 @@
         const yol = r && (r.videoFilePath || r.value || r.path);
         if (!yol) throw KameraHatasi(HATA.KAYIT_HATASI);
 
+        /* Bazı sürümler dosya yolu yerine videonun kendisini metin
+           olarak döndürüyor. O zaman okumaya çalışmak anlamsız —
+           doğrudan veriye çevrilir. */
+        if (/^data:/.test(yol) || (yol.length > 5000 && !/[\/\\]/.test(yol))) {
+          const veriAdresi = /^data:/.test(yol) ? yol : ("data:video/mp4;base64," + yol);
+          try {
+            const b = await (await fetch(veriAdresi)).blob();
+            if (b && b.size > 1024) {
+              yay("kayitBitti", { sure: sure, boyut: b.size });
+              return { blob: b, yol: null, sure: sure, tur: b.type || "video/mp4" };
+            }
+          } catch (e) {}
+          throw KameraHatasi(HATA.KAYIT_HATASI);
+        }
+
         /* Dosya yolunu tarayıcının okuyabileceği adrese çevirip
-           yükleme için veri parçasına dönüştür. */
+           yükleme için veri parçasına dönüştür.
+
+           OKUMA BAŞARISIZ OLURSA VAZGEÇİLİR.
+           Önceden boş sonuçla devam ediliyordu: sunucuya birkaç
+           baytlık bozuk bir dosya yükleniyor, video hiçbir yerde
+           oynamıyordu. Sorun ancak depolama incelenince görülüyordu. */
         let blob = null;
-        try {
-          const c = cap();
-          const adres = (c && c.convertFileSrc) ? c.convertFileSrc(yol) : yol;
-          const cevap = await fetch(adres);
-          blob = await cevap.blob();
-        } catch (e) {
-          yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
+        let okumaHatasi = null;
+
+        /* Kayıt dosyasının diske yazılması bir an sürebiliyor;
+           ilk deneme boş dönerse kısa bir bekleyip tekrar denenir. */
+        for (let deneme = 0; deneme < 3; deneme++) {
+          try {
+            const c = cap();
+            const adres = (c && c.convertFileSrc) ? c.convertFileSrc(yol) : yol;
+            const cevap = await fetch(adres);
+            const b = await cevap.blob();
+            if (b && b.size > 1024) { blob = b; break; }   // en az 1 KB
+            okumaHatasi = "dosya boş (" + (b ? b.size : 0) + " bayt)";
+          } catch (e) {
+            okumaHatasi = String((e && e.message) || e);
+          }
+          await new Promise(function (b2) { setTimeout(b2, 300); });
+        }
+
+        if (!blob) {
+          yay("hata", {
+            hataTuru: HATA.KAYIT_HATASI,
+            ayrinti: "kayıt okunamadı: " + (okumaHatasi || "bilinmeyen"),
+          });
+          throw KameraHatasi(HATA.KAYIT_HATASI);
         }
 
         const sonuc = {
           blob: blob, yol: yol, sure: sure,
           tur: (blob && blob.type) || "video/mp4",
         };
-        yay("kayitBitti", { sure: sure, boyut: blob ? blob.size : 0 });
+        yay("kayitBitti", { sure: sure, boyut: blob.size });
         return sonuc;
       }
 

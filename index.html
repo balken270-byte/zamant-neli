@@ -7739,7 +7739,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   padding:calc(var(--sat) + 30px) 26px calc(var(--sab) + 24px);scrollbar-width:none;position:relative;z-index:2}
 .gauth::-webkit-scrollbar{display:none}
 /* ===== giriş ekranı dil seçici ===== */
-.gLangBtn{position:absolute;top:calc(var(--sat) + 14px);right:14px;z-index:6;
+.gLangBtn{position:absolute;top:calc(var(--sat) + 14px);right:14px;z-index:30;
   width:38px;height:38px;display:grid;place-items:center;border-radius:99px;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
   color:rgba(255,255,255,.88);
@@ -8038,6 +8038,28 @@ html.native button,html.native .tab{touch-action:manipulation}
   })();
   </script>
 
+  <!-- Dil seçici: hikâye + girişte ortak -->
+  <button class="gLangBtn" id="gLangBtn" aria-label="Dil" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.6 6.2h7.2M6.2 4.4v1.8"/>
+      <path d="M8.1 6.2c0 3.4-2.1 6.2-5.5 7.6"/>
+      <path d="M4.4 9.4c.9 2 2.6 3.4 4.8 4.1"/>
+      <path d="m12.6 19.6 3.9-9.2 3.9 9.2"/>
+      <path d="M13.9 16.6h5.2"/>
+    </svg>
+  </button>
+  <div class="gLangSheet" id="gLangSheet" aria-hidden="true">
+    <div class="glsScrim" id="glsScrim"></div>
+    <div class="glsBox">
+      <div class="glsGrip"></div>
+      <div class="glsHead">
+        <h3 id="glsTitle">Dil</h3>
+        <p id="glsSub">Uygulama dilini seç</p>
+      </div>
+      <div class="glsList" id="glsList"></div>
+    </div>
+  </div>
+
   <section class="gscreen gsplash" id="gSplash">
     <div class="spGlow"></div>
     <div class="spCore">
@@ -8086,27 +8108,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="gscreen on" id="gAuth">
-    <button class="gLangBtn" id="gLangBtn" aria-label="Dil">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2.6 6.2h7.2M6.2 4.4v1.8"/>
-        <path d="M8.1 6.2c0 3.4-2.1 6.2-5.5 7.6"/>
-        <path d="M4.4 9.4c.9 2 2.6 3.4 4.8 4.1"/>
-        <path d="m12.6 19.6 3.9-9.2 3.9 9.2"/>
-        <path d="M13.9 16.6h5.2"/>
-      </svg>
-    </button>
-
-    <div class="gLangSheet" id="gLangSheet" aria-hidden="true">
-      <div class="glsScrim" id="glsScrim"></div>
-      <div class="glsBox">
-        <div class="glsGrip"></div>
-        <div class="glsHead">
-          <h3 id="glsTitle">Dil</h3>
-          <p id="glsSub">Uygulama dilini seç</p>
-        </div>
-        <div class="glsList" id="glsList"></div>
-      </div>
-    </div>
     <div class="gauth">
       <div class="gbrand">
         <h1>Klipsy</h1>
@@ -19638,6 +19639,9 @@ function gshow(id){
   // Hikâye sırasında duvar daha görünür
   gate.classList.toggle('story-mode', id==='gStory');
   gate.classList.toggle('story-auth', false);
+  // Dil seçici: hikâye + girişte görünsün
+  const lb=$('#gLangBtn');
+  if(lb) lb.style.display = (id==='gStory' || id==='gAuth') ? '' : 'none';
 }
 const SEEN_KEY='zt_welcome_seen';
 const STORY_KEY='klipsy_story_seen';
@@ -19658,6 +19662,7 @@ const STORY_KEY='klipsy_story_seen';
     if(bar) bar.style.opacity = i>=n-1 ? '0' : '1';
     if(bar) bar.style.pointerEvents = i>=n-1 ? 'none' : 'auto';
   }
+  window.__storyPaint = paint;
   function finish(){
     try{ localStorage.setItem(STORY_KEY,'1'); }catch(e){}
     gate.classList.remove('story-mode','story-auth');
@@ -19683,6 +19688,12 @@ const STORY_KEY='klipsy_story_seen';
     else if(dx>48 && i>0){ i--; paint(); }
   },{passive:true});
   paint();
+  // Dil değişince İleri/Başla metnini güncelle
+  const prevLang=window.__onLangChange;
+  window.__onLangChange=function(){
+    try{ if(typeof prevLang==='function') prevLang(); }catch(e){}
+    try{ if(window.__storyPaint) window.__storyPaint(); }catch(e){}
+  };
 })();
 
 /* --- an duvarı --- */

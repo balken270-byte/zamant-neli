@@ -11137,15 +11137,20 @@ async function ensureMapLibreGL(){
       const ok = await ensureLeaflet();
       if(!ok) return false;
     }
-    _loadCss('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css', 'data-maplibre');
-    // MapLibre JS + köprü: mümkün olduğunca paralel (köprü L ve maplibregl ister)
+    // Önce yerel lib/, yoksa CDN
+    _loadCss('./lib/maplibre-gl.css', 'data-maplibre');
+    if(!document.querySelector('link[data-maplibre][href*="maplibre"]')){
+      _loadCss('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css', 'data-maplibre');
+    }
     if(!window.maplibregl){
-      const ok = await _loadScript('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js')
+      const ok = await _loadScript('./lib/maplibre-gl.js')
+        || await _loadScript('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js')
         || await _loadScript('https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js');
       if(!ok) return false;
     }
     if(!L.maplibreGL){
-      const ok = await _loadScript('https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js')
+      const ok = await _loadScript('./lib/leaflet-maplibre-gl.js')
+        || await _loadScript('https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js')
         || await _loadScript('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js');
       if(!ok) return false;
     }
@@ -11167,13 +11172,12 @@ function ensureMapStack(){
   return _mapStackReady;
 }
 
-/* Uygulama açılınca arka planda indir — Zaman sekmesi anında açılsın. */
+/* Uygulama açılınca arka planda yükle — Zaman sekmesi anında açılsın. */
 function prefetchMapLibs(){
   try{
-    // CSS'leri erken iste
-    _loadCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', 'data-leaflet');
-    _loadCss('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css', 'data-maplibre');
-    // scriptleri boş zamanda başlat
+    // Yerel dosyalar öncelikli (APK / aynı klasörde lib/ varsa anında)
+    _loadCss('./lib/leaflet.css', 'data-leaflet');
+    _loadCss('./lib/maplibre-gl.css', 'data-maplibre');
     ensureMapStack().catch(()=>{});
   }catch(e){}
 }

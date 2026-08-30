@@ -6691,7 +6691,8 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   transition:grid-template-columns .3s var(--ease)}
 .arcVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#12121a}
 /* kaydırırken sadece görünen kartları hesapla (performans) */
-.arc{content-visibility:auto;contain-intrinsic-size:auto 150px}
+.arc{content-visibility:auto;contain-intrinsic-size:auto 150px;
+  contain:layout style paint;background-color:#12121a;background-size:cover;background-position:center}
 .arcPlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
   width:36px;height:36px;border-radius:99px;background:rgba(0,0,0,.45);display:grid;place-items:center;
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none}
@@ -10594,6 +10595,94 @@ document.addEventListener("keydown",e=>{
     if(document.getElementById(id).classList.contains("open")){close(id);break;}
   }
 });
+
+/* ===== ALT PANEL — AŞAĞI KAYDIRARAK KAPAT ===== */
+function wireSheetSwipeOn(sheet, boxSel, closeFn){
+  if(!sheet || sheet._swipeCloseWired) return;
+  const box = typeof boxSel === "string" ? sheet.querySelector(boxSel) : boxSel;
+  if(!box) return;
+  sheet._swipeCloseWired = true;
+  if(!box.querySelector(".grip, .fpGrip, .plGrip, .exGrip")){
+    const g = document.createElement("div");
+    g.className = "grip";
+    box.insertBefore(g, box.firstChild);
+  }
+  let startY=0, startX=0, dragging=false, dy=0, decided=false;
+  function canStart(e){
+    if(e.target.closest("input, textarea, button, a, select, canvas, video")) return false;
+    if(e.target.closest(".grip, .fpGrip, .plGrip, h3, .chead, .fpHead, p")) return true;
+    const scrollEl = box.querySelector(".shlist, .commlist, .fpList, .cvStrip, .plList");
+    if(scrollEl && scrollEl.contains(e.target)) return scrollEl.scrollTop <= 2;
+    return true;
+  }
+  function onDown(e){
+    if(!sheet.classList.contains("open")) return;
+    if(!canStart(e)) return;
+    const pt = e.touches ? e.touches[0] : e;
+    startY = pt.clientY; startX = pt.clientX;
+    dragging = true; dy = 0; decided = false;
+    box.style.transition = "none";
+  }
+  function onMove(e){
+    if(!dragging) return;
+    const pt = e.touches ? e.touches[0] : e;
+    const ddy = pt.clientY - startY, ddx = pt.clientX - startX;
+    if(!decided){
+      if(Math.abs(ddy) < 8 && Math.abs(ddx) < 8) return;
+      if(Math.abs(ddx) > Math.abs(ddy) || ddy < 0){
+        dragging = false; box.style.transition = ""; box.style.transform = ""; return;
+      }
+      decided = true;
+    }
+    dy = Math.max(0, ddy);
+    box.style.transform = "translateY(" + dy + "px)";
+    const scrim = sheet.querySelector(".scrim, .fpScrim, .plScrim");
+    if(scrim) scrim.style.opacity = String(Math.max(0.15, 1 - dy/380));
+    if(e.cancelable) e.preventDefault();
+  }
+  function onUp(){
+    if(!dragging && !decided){ dragging = false; return; }
+    dragging = false;
+    box.style.transition = "";
+    const scrim = sheet.querySelector(".scrim, .fpScrim, .plScrim");
+    if(dy > 110){
+      box.style.transform = "translateY(110%)";
+      if(scrim) scrim.style.opacity = "0";
+      setTimeout(()=>{
+        box.style.transform = "";
+        if(scrim) scrim.style.opacity = "";
+        if(typeof closeFn === "function") closeFn();
+        else if(sheet.id) close(sheet.id);
+      }, 220);
+    }else{
+      box.style.transform = "";
+      if(scrim) scrim.style.opacity = "";
+    }
+    dy = 0; decided = false;
+  }
+  box.addEventListener("touchstart", onDown, {passive:true});
+  box.addEventListener("touchmove", onMove, {passive:false});
+  box.addEventListener("touchend", onUp);
+  box.addEventListener("touchcancel", onUp);
+  box.addEventListener("pointerdown", onDown);
+  box.addEventListener("pointermove", onMove);
+  box.addEventListener("pointerup", onUp);
+  box.addEventListener("pointercancel", onUp);
+}
+
+function wireSheetSwipeClose(){
+  ["comments","postMenu","chatMenu","coverSheet","songSheet",
+   "reportSheet","msgMenu","shareSheet","followSheet","confirm"].forEach(id=>{
+    const sheet = document.getElementById(id);
+    if(sheet) wireSheetSwipeOn(sheet, ".cbox, .shbox");
+  });
+}
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", wireSheetSwipeClose);
+}else{
+  setTimeout(wireSheetSwipeClose, 0);
+}
+
 const overlayOpen=()=>["comments","timeSheet","notif","cam","compose","profile","confirm","chats","chat","shareSheet"]
   .some(id=>document.getElementById(id).classList.contains("open"));
 
@@ -10690,7 +10779,10 @@ $("#tabTime").addEventListener("click",()=>{
      Önceden aynı alan "zaten sorgulandı" sayılıp atlanıyordu; yeni
      paylaşılan anlar haritada görünmüyordu. */
   _viewSon = "";
-  setTimeout(()=>{ initMap(); refreshExplore(); scheduleViewLoad(200); },80);
+  // Kütüphaneler önceden yüklendiyse harita anında gelir; yoksa spinner gösterir
+  initMap();
+  refreshExplore();
+  scheduleViewLoad(150);
 });
 
 // --- kaydırmalı zaman çizgisi ---
@@ -10986,100 +11078,124 @@ function refreshMapTheme(){
   if(_map) addCARTOVectorLayer();
 }
 
-/* Harita kütüphanesini SADECE gerektiğinde yükle.
-   Önce uygulamanın içindeki yerel kopya denenir (APK'da anında gelir),
-   yoksa internetten indirilir. */
+/* ===== HARİTA KÜTÜPHANELERİ =====
+   Vektör harita = MapLibre GL (WebGL). Leaflet sadece pin/kontrol iskeleti.
+   Gecikmenin nedeni: kütüphaneler Zaman sekmesi açılınca indiriliyordu.
+   Çözüm: uygulama açılınca arka planda önceden yükle; indirmeleri paralel yap. */
+
+function _loadCss(href, attr){
+  // attr: "data-leaflet" veya "data-maplibre"
+  if(document.querySelector('link['+attr+']')) return;
+  const l=document.createElement('link');
+  l.rel='stylesheet'; l.href=href; l.setAttribute(attr,'1');
+  document.head.appendChild(l);
+}
+function _loadScript(src){
+  return new Promise(resolve=>{
+    // aynı src zaten yükleniyorsa / yüklüyse bekleme
+    const mevcut = document.querySelector('script[src="'+src+'"]');
+    if(mevcut){
+      if(mevcut.dataset.loaded==='1'){ resolve(true); return; }
+      mevcut.addEventListener('load', ()=>resolve(true), {once:true});
+      mevcut.addEventListener('error', ()=>resolve(false), {once:true});
+      return;
+    }
+    const sc=document.createElement('script');
+    sc.src=src; sc.async=true;
+    sc.onload=()=>{ sc.dataset.loaded='1'; resolve(true); };
+    sc.onerror=()=>{ sc.remove(); resolve(false); };
+    document.head.appendChild(sc);
+  });
+}
+
 let _leafletReady = null;
 function ensureLeaflet(){
   if(window.L) return Promise.resolve(true);
   if(_leafletReady) return _leafletReady;
-
-  _leafletReady = new Promise((res)=>{
+  _leafletReady = (async()=>{
     const kaynaklar = [
-      { css:'./lib/leaflet.css',                                  js:'./lib/leaflet.js' },
-      { css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',    js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' },
-      { css:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', js:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js' }
+      { css:'./lib/leaflet.css', js:'./lib/leaflet.js' },
+      { css:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', js:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js' },
+      { css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' }
     ];
-
-    let i = 0;
-    const dene = ()=>{
-      if(i >= kaynaklar.length){ res(false); return; }
-      const k = kaynaklar[i++];
-
-      // stil
-      if(!document.querySelector('link[data-leaflet]')){
-        const l = document.createElement('link');
-        l.rel='stylesheet'; l.href=k.css; l.setAttribute('data-leaflet','1');
-        document.head.appendChild(l);
-      }
-      // betik
-      const s = document.createElement('script');
-      s.src = k.js;
-      s.async = true;
-      s.onload = ()=>res(true);
-      s.onerror = ()=>{
-        s.remove();
-        const l=document.querySelector('link[data-leaflet]'); if(l) l.remove();
-        dene();                       // sıradaki kaynağı dene
-      };
-      document.head.appendChild(s);
-    };
-    dene();
-  });
+    for(const k of kaynaklar){
+      _loadCss(k.css, 'data-leaflet');
+      if(await _loadScript(k.js) && window.L) return true;
+      const l=document.querySelector('link[data-leaflet]'); if(l) l.remove();
+    }
+    return false;
+  })();
   return _leafletReady;
 }
 
-
+let _maplibreReady = null;
 async function ensureMapLibreGL(){
   if(window.maplibregl && window.L && L.maplibreGL) return true;
+  if(_maplibreReady) return _maplibreReady;
+  _maplibreReady = (async()=>{
+    if(!window.L){
+      const ok = await ensureLeaflet();
+      if(!ok) return false;
+    }
+    _loadCss('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css', 'data-maplibre');
+    // MapLibre JS + köprü: mümkün olduğunca paralel (köprü L ve maplibregl ister)
+    if(!window.maplibregl){
+      const ok = await _loadScript('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js')
+        || await _loadScript('https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js');
+      if(!ok) return false;
+    }
+    if(!L.maplibreGL){
+      const ok = await _loadScript('https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js')
+        || await _loadScript('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js');
+      if(!ok) return false;
+    }
+    return !!(window.maplibregl && L.maplibreGL);
+  })();
+  return _maplibreReady;
+}
 
-  const loadScript=(src)=>new Promise(resolve=>{
-    const sc=document.createElement('script');
-    sc.src=src; sc.async=true;
-    sc.onload=()=>resolve(true);
-    sc.onerror=()=>{sc.remove(); resolve(false);};
-    document.head.appendChild(sc);
-  });
-  const css=document.createElement('link');
-  css.rel='stylesheet';
-  css.href='https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css';
-  css.setAttribute('data-maplibre','1');
-  document.head.appendChild(css);
+/* Tüm harita yığınını tek seferde hazırla (Leaflet + MapLibre + köprü). */
+let _mapStackReady = null;
+function ensureMapStack(){
+  if(_map && window.L && window.maplibregl && L.maplibreGL) return Promise.resolve(true);
+  if(_mapStackReady) return _mapStackReady;
+  _mapStackReady = (async()=>{
+    const a = await ensureLeaflet();
+    if(!a) return false;
+    return await ensureMapLibreGL();
+  })();
+  return _mapStackReady;
+}
 
-  if(!window.maplibregl){
-    if(!await loadScript('https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js')) return false;
-  }
-  if(!L.maplibreGL){
-    if(!await loadScript('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js')) return false;
-  }
-  return !!L.maplibreGL;
+/* Uygulama açılınca arka planda indir — Zaman sekmesi anında açılsın. */
+function prefetchMapLibs(){
+  try{
+    // CSS'leri erken iste
+    _loadCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', 'data-leaflet');
+    _loadCss('https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css', 'data-maplibre');
+    // scriptleri boş zamanda başlat
+    ensureMapStack().catch(()=>{});
+  }catch(e){}
 }
 
 async function initMap(){
-  // kütüphane hazır değilse önce yükle (yükleniyor göstergesiyle)
-  if(typeof L === "undefined"){
-    const kap = document.getElementById("exploreMap");
-    if(kap && !kap.querySelector(".mapLoading")){
-      const y=document.createElement("div");
-      y.className="mapLoading";
-      y.innerHTML='<span class="mlSpin"></span>';
-      kap.appendChild(y);
-    }
-    const ok = await ensureLeaflet();
-    const y = kap ? kap.querySelector(".mapLoading") : null;
-    if(y) y.remove();
-    if(!ok || typeof L === "undefined"){
-      if(kap) kap.innerHTML='<div class="mapFail">'+t("no_conn2")+'</div>';
-      return;
-    }
+  const kap = document.getElementById("exploreMap");
+  // kütüphaneler hazır değilse yükleme göstergesi (tüm süreç boyunca)
+  const needLoad = !window.L || !window.maplibregl || !L.maplibreGL;
+  if(needLoad && kap && !kap.querySelector(".mapLoading")){
+    const y=document.createElement("div");
+    y.className="mapLoading";
+    y.innerHTML='<span class="mlSpin"></span>';
+    kap.appendChild(y);
   }
-  if(_map){ setTimeout(()=>_map.invalidateSize(),100); return; }
-  const glOk=await ensureMapLibreGL();
-  if(!glOk){
-    const kap=document.getElementById("exploreMap");
-    if(kap) kap.innerHTML='<div class="mapFail">'+t("no_conn2")+'</div>';
+  const ok = await ensureMapStack();
+  const spin = kap ? kap.querySelector(".mapLoading") : null;
+  if(spin) spin.remove();
+  if(!ok || typeof L === "undefined"){
+    if(kap && !kap.querySelector(".mapFail")) kap.innerHTML='<div class="mapFail">'+t("no_conn2")+'</div>';
     return;
   }
+  if(_map){ setTimeout(()=>_map.invalidateSize(),80); return; }
   _map=L.map("exploreMap",{
     zoomControl:true, attributionControl:true,
     preferCanvas:true,
@@ -11330,6 +11446,8 @@ async function openFeedPlace(){
   $("#fpInput").value="";
   _fpCountry=null;                    // her açılışta ülkeler seviyesinden başla
   ov.classList.add("open");
+  // aşağı kaydırarak kapat
+  try{ wireSheetSwipeOn(ov, ".fpBox", closeFeedPlace); }catch(e){}
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   await paintFeedPlaceList();
 }
@@ -11536,6 +11654,7 @@ async function openPlaceLayers(g){
   $("#plCount").textContent = t("loading2");
   $("#plList").innerHTML = "";
   ov.classList.add("open");
+  try{ wireSheetSwipeOn(ov, ".plBox", closePlaceLayers); }catch(e){}
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
 
   // aynı noktadaki anları topla
@@ -13864,60 +13983,78 @@ async function openFollowList(name, kind){
 /* Sayaç kartlarına minik avatar yığını ekle.
    "13 takipçi" soyut; üç yüz görmek somut. */
 const _statAvCache = {};      // profil yeniden çizilince kaybolmasın
+const _statAvLoading = {};    // aynı profil için paralel istekleri birleştir
+
+function _preloadStatImgs(urls){
+  (urls||[]).forEach(u=>{
+    if(!u) return;
+    try{ const im=new Image(); im.decoding="async"; im.src=u; }catch(e){}
+  });
+}
 
 async function statAvatarlari(name){
   const sb = window.__sb;
-  if(!sb) return;
+  if(!sb || !name) return;
   if(_statAvCache[name]){ yigileriUygula(name); return; }
-  try{
-    const uid = await idOfUsername(name);
-    if(!uid) return;
-
-    const [fr, fg, mo] = await Promise.all([
-      sb.from('follows').select('follower_id').eq('followee_id', uid).limit(3),
-      sb.from('follows').select('followee_id').eq('follower_id', uid).limit(3),
-      sb.from('moments').select('thumb_path, poster_path, media_path, media_kind')
-        .eq('author_id', uid).eq('is_removed', false)
-        .order('created_at', {ascending:false}).limit(3)
-    ]);
-
-    const kimlikler = [
-      ...(fr.data||[]).map(x=>x.follower_id),
-      ...(fg.data||[]).map(x=>x.followee_id)
-    ];
-    let profiller = [];
-    if(kimlikler.length){
-      const r = await sb.from('profiles').select('id, username, avatar_url').in('id', kimlikler);
-      profiller = r.data || [];
-    }
-    const bul = id => profiller.find(p=>p.id===id);
-
-    const S = sb.storage.from('moments');
-    const anGorseller = (mo.data||[]).map(r=>{
-      const p = r.thumb_path || r.poster_path || (r.media_kind!=='video' ? r.media_path : null);
-      return p ? S.getPublicUrl(p).data.publicUrl : null;
-    }).filter(Boolean);
-
-    const takipciAv = (fr.data||[]).map(x=>{
-      const p = bul(x.follower_id);
-      return p ? (p.avatar_url || avatarImage(p.username)) : null;
-    }).filter(Boolean);
-
-    const takipAv = (fg.data||[]).map(x=>{
-      const p = bul(x.followee_id);
-      return p ? (p.avatar_url || avatarImage(p.username)) : null;
-    }).filter(Boolean);
-
-    _statAvCache[name] = [anGorseller, takipciAv, takipAv];
+  if(_statAvLoading[name]){
+    try{ await _statAvLoading[name]; }catch(e){}
     yigileriUygula(name);
-  }catch(e){}
+    return;
+  }
+  _statAvLoading[name] = (async()=>{
+    try{
+      const uid = await idOfUsername(name);
+      if(!uid) return;
+      const [fr, fg, mo] = await Promise.all([
+        sb.from('follows').select('follower_id').eq('followee_id', uid).limit(3),
+        sb.from('follows').select('followee_id').eq('follower_id', uid).limit(3),
+        sb.from('moments').select('thumb_path, poster_path, media_path, media_kind')
+          .eq('author_id', uid).eq('is_removed', false)
+          .order('created_at', {ascending:false}).limit(3)
+      ]);
+      const kimlikler = [
+        ...(fr.data||[]).map(x=>x.follower_id),
+        ...(fg.data||[]).map(x=>x.followee_id)
+      ];
+      let profiller = [];
+      if(kimlikler.length){
+        const r = await sb.from('profiles').select('id, username, avatar_url').in('id', kimlikler);
+        profiller = r.data || [];
+      }
+      const bul = id => profiller.find(p=>p.id===id);
+      const S = sb.storage.from('moments');
+      const anGorseller = (mo.data||[]).map(r=>{
+        const p = r.thumb_path || r.poster_path || (r.media_kind!=='video' ? r.media_path : null);
+        return p ? S.getPublicUrl(p).data.publicUrl : null;
+      }).filter(Boolean);
+      const takipciAv = (fr.data||[]).map(x=>{
+        const p = bul(x.follower_id);
+        return p ? (p.avatar_url || avatarImage(p.username)) : null;
+      }).filter(Boolean);
+      const takipAv = (fg.data||[]).map(x=>{
+        const p = bul(x.followee_id);
+        return p ? (p.avatar_url || avatarImage(p.username)) : null;
+      }).filter(Boolean);
+      _statAvCache[name] = [anGorseller, takipciAv, takipAv];
+      _preloadStatImgs([...anGorseller, ...takipciAv, ...takipAv]);
+      yigileriUygula(name);
+    }catch(e){}
+  })();
+  try{ await _statAvLoading[name]; }finally{ delete _statAvLoading[name]; }
 }
 
-/* Profil her yeniden çizildiğinde yığınlar siliniyordu; bu yüzden
-   önbellekten tekrar uygulanır. */
 function yigileriUygula(name){
+  if(!name) return;
   const v = _statAvCache[name];
   if(!v) return;
+  const kutular = document.querySelectorAll("#profBody .pcStats .stat");
+  if(!kutular || kutular.length < 3){
+    requestAnimationFrame(()=>{
+      const k2 = document.querySelectorAll("#profBody .pcStats .stat");
+      if(k2 && k2.length >= 3){ yigiKoy(0, v[0]); yigiKoy(1, v[1]); yigiKoy(2, v[2]); }
+    });
+    return;
+  }
   yigiKoy(0, v[0]); yigiKoy(1, v[1]); yigiKoy(2, v[2]);
 }
 
@@ -13926,8 +14063,6 @@ function yigiKoy(sira, adresler){
     const kutular = document.querySelectorAll("#profBody .pcStats .stat");
     const k = kutular[sira];
     if(!k) return;
-    /* Yığın HER ZAMAN oluşturulur — görsel olmasa bile yer kaplar,
-       böylece üç kartın sayı ve etiketleri aynı hizada durur. */
     let y = k.querySelector(".statAvs");
     if(!y){
       y = document.createElement("span"); y.className = "statAvs";
@@ -13936,11 +14071,12 @@ function yigiKoy(sira, adresler){
     y.innerHTML = "";
     if(!adresler || !adresler.length) return;
     adresler.slice(0,3).forEach(src=>{
-      /* Arka plan yerine GÖRSEL elemanı: çembere tam oturur,
-         kare köşe kalmaz. */
       const i = document.createElement("i");
       const im = document.createElement("img");
-      im.src = src; im.alt = ""; im.loading = "lazy"; im.decoding = "async";
+      im.alt = ""; im.decoding = "async"; im.loading = "eager";
+      try{ im.fetchPriority = "high"; }catch(e){}
+      im.src = src;
+      im.addEventListener("error", ()=>{ try{ i.remove(); }catch(e){} }, {once:true});
       i.appendChild(im);
       y.appendChild(i);
     });
@@ -14529,18 +14665,46 @@ async function resetPassword(){
   toast(t("ok_pass_reset"));
 }
 
-// arşiv videolarını sadece ekrana girince yükle (kaydırma akıcılığı)
-let _arcObserver=null;
-function makeArcVideo(src){
-  const v=document.createElement("video");
-  v.className="arcVid";
-  v.muted=true; v.playsInline=true; v.preload="metadata";
-  v.controls=false; v.disablePictureInPicture=true;
-  v.setAttribute("playsinline","");
-  v.setAttribute("disableremoteplayback","");
-  v.poster = BLANK_POSTER;                  // yerel oynat ikonunu bastır
-  v.setAttribute("data-src", src+"#t=0.1"); // ilk kareyi göster
-  return v;
+/* Arşiv ızgarası — performans
+   Eski yol: kapağı olmayan her video için <video> elemanı açılıyordu.
+   Çoğaldıkça decoder/GPU yükü artıyor, kaydırma kasıyordu.
+   Artık ızgarada ASLA video yok; kapak yoksa düz renk yer tutucu. */
+let _arcImgObserver=null;
+function makeArcPlaceholder(){
+  const d=document.createElement("div");
+  d.className="arcPh";
+  d.style.cssText="position:absolute;inset:0;background:#16161e";
+  return d;
+}
+/* Eski isim — çağıran yerler bozulmasın */
+function makeArcVideo(src){ return makeArcPlaceholder(); }
+
+/* Görselleri sadece görünür olunca yükle */
+function lazyLoadArcImages(root){
+  const nodes = (root||document).querySelectorAll(".arc[data-bg]");
+  if(!nodes.length) return;
+  const apply = el=>{
+    const u = el.getAttribute("data-bg");
+    if(!u) return;
+    el.style.backgroundImage = 'url("'+u+'")';
+    el.removeAttribute("data-bg");
+  };
+  if(!("IntersectionObserver" in window)){
+    nodes.forEach(apply);
+    return;
+  }
+  if(_arcImgObserver) _arcImgObserver.disconnect();
+  // ilk 12 hücreyi hemen yükle (üst sıra boş kalmasın)
+  const arr = [...nodes];
+  arr.slice(0,12).forEach(apply);
+  _arcImgObserver = new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(!en.isIntersecting) return;
+      apply(en.target);
+      _arcImgObserver.unobserve(en.target);
+    });
+  }, {root:null, rootMargin:"200px", threshold:0.01});
+  arr.slice(12).forEach(el=>_arcImgObserver.observe(el));
 }
 
 /* ESKİ VİDEOLARA KAPAK ÜRET
@@ -14598,42 +14762,24 @@ async function backfillPosters(list){
   }
   _posterFixBusy = false;
 
-  // ızgarayı tazele
+  // Tüm profili yeniden çizme — sadece kapağı yeni gelen hücreleri güncelle
   try{
-    if(document.getElementById("profile").classList.contains("open")) renderProfile();
+    if(!document.getElementById("profile").classList.contains("open")) return;
+    (list||[]).forEach(it=>{
+      if(!it.poster || !it.id) return;
+      const cell = document.querySelector('.arc[data-mid="'+it.id+'"]');
+      if(!cell) return;
+      cell.setAttribute("data-bg", it.poster);
+      cell.style.backgroundImage = 'url("'+it.poster+'")';
+      const ph = cell.querySelector(".arcPh");
+      if(ph) ph.remove();
+    });
   }catch(e){}
 }
 
 function lazyLoadArcVideos(){
-  if(!("IntersectionObserver" in window)) {
-    // destek yoksa hepsini yükle
-    $$(".arcVid[data-src]").forEach(v=>{ v.src=v.dataset.src; v.removeAttribute("data-src"); });
-    return;
-  }
-  if(_arcObserver) _arcObserver.disconnect();
-  // ilk sıradaki videoları hemen yükle (kapak anında görünsün)
-  const all=$$(".arcVid[data-src]");
-  all.slice(0,6).forEach(v=>{
-    v.src=v.dataset.src; v.removeAttribute("data-src");
-    v.addEventListener("loadeddata",()=>{ try{ if(v.currentTime<0.05) v.currentTime=0.1; }catch(e){} },{once:true});
-  });
-  _arcObserver=new IntersectionObserver((entries)=>{
-    entries.forEach(en=>{
-      if(en.isIntersecting){
-        const v=en.target;
-        if(v.dataset.src){
-          v.src=v.dataset.src;
-          v.removeAttribute("data-src");
-          // ilk kareyi göster (siyah kalmasın)
-          v.addEventListener("loadeddata",()=>{
-            try{ if(v.currentTime<0.05) v.currentTime=0.1; }catch(e){}
-          },{once:true});
-        }
-        _arcObserver.unobserve(v);
-      }
-    });
-  },{root:null, rootMargin:"300px", threshold:0.01});
-  $$(".arcVid[data-src]").forEach(v=>_arcObserver.observe(v));
+  // Artık ızgarada video yok — görsel tembel yüklemeye yönlendir
+  try{ lazyLoadArcImages(document.getElementById("profBody")); }catch(e){}
 }
 
 // Galeri yoğunluğu: içerik çoğaldıkça kareler küçülür (telefon galerisi mantığı)
@@ -14651,13 +14797,6 @@ function applyGalleryDensity(grid, count){
 let _profActsRow = null;   // takip/mesaj satırı — en sona eklenir
 
 function renderProfile(){
-  /* Profil her çizildiğinde sayaç görselleri siliniyordu.
-     Çizim bittikten sonra önbellekten yeniden yerleştirilir —
-     hem kendi profilinde hem başkasınınkinde. */
-  try{
-    requestAnimationFrame(()=>{ try{ yigileriUygula(profName); }catch(e){} });
-  }catch(e){}
-
   const own=profName===ME;
   /* Başkasının profilinde kendi başlık çubuğumuzu gizliyoruz;
      yeni tasarımda geri ve seçenekler düğmeleri zaten görselin üstünde. */
@@ -14891,11 +15030,13 @@ function renderProfile(){
 
     // sayaç kartları
     st.classList.add("pcStats");
-    // görseller gelmeden önce de hizalama bozulmasın: boş yığınları kur
-    setTimeout(()=>{ try{ yigiKoy(0,null); yigiKoy(1,null); yigiKoy(2,null); }catch(e){} }, 0);
     kart.appendChild(st);
-
     box.appendChild(kart);
+    try{
+      yigiKoy(0,null); yigiKoy(1,null); yigiKoy(2,null);
+      yigileriUygula(profName);
+      if(!_statAvCache[profName]) statAvatarlari(profName);
+    }catch(e){}
   }
 
 
@@ -15021,21 +15162,19 @@ function renderMine(box){
   }
   const grid=document.createElement("div");grid.className="arcGrid";
   applyGalleryDensity(grid, mine.length);   // içerik çoğaldıkça kareler küçülsün
+  const frag=document.createDocumentFragment();
   mine.forEach(it=>{
     const c=document.createElement("div");c.className="arc";
     c.setAttribute("role","button");
+    if(it.id) c.setAttribute("data-mid", it.id);
+    // ızgarada ASLA <video> yok — sadece kapak/resim (tembel yükleme)
+    const imgUrl = (it.kind==="video") ? (it.poster||null) : (it.src||null);
+    if(imgUrl) c.setAttribute("data-bg", imgUrl);
+    else if(it.kind==="video") c.appendChild(makeArcPlaceholder());
     if(it.kind==="video"){
-      // ızgarada video değil kapak resmi göster (Instagram/TikTok mantığı)
-      if(it.poster){
-        c.style.backgroundImage='url("'+it.poster+'")';
-      }else{
-        c.appendChild(makeArcVideo(it.src));
-      }
       const pl=document.createElement("div");pl.className="arcPlay";
       pl.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
       c.appendChild(pl);
-    }else{
-      c.style.backgroundImage='url("'+it.src+'")';
     }
     const g=document.createElement("div");g.className="grad";
     const tm=document.createElement("div");tm.className="tm";tm.textContent=rel(it.ts);
@@ -15049,10 +15188,11 @@ function renderMine(box){
     del.addEventListener("click",e=>{e.stopPropagation();askDelete(it);});
     c.appendChild(del);
     c.addEventListener("click",()=>openArchiveView(it));
-    grid.appendChild(c);
+    frag.appendChild(c);
   });
+  grid.appendChild(frag);
   box.appendChild(grid);
-  if(typeof lazyLoadArcVideos==="function") lazyLoadArcVideos();
+  lazyLoadArcImages(grid);
   // kapağı olmayan eski videolara arka planda kapak üret
   setTimeout(()=>{ try{ backfillPosters(mine); }catch(e){} }, 800);
 }
@@ -15221,21 +15361,18 @@ function renderSaved(box){
   }
   const grid=document.createElement("div");grid.className="arcGrid";
   applyGalleryDensity(grid, saved.length);
+  const frag=document.createDocumentFragment();
   saved.forEach(it=>{
     const c=document.createElement("div");c.className="arc";
     c.setAttribute("role","button");
+    if(it.id) c.setAttribute("data-mid", it.id);
+    const imgUrl = (it.kind==="video") ? (it.poster||null) : (it.src||null);
+    if(imgUrl) c.setAttribute("data-bg", imgUrl);
+    else if(it.kind==="video") c.appendChild(makeArcPlaceholder());
     if(it.kind==="video"){
-      // ızgarada video değil kapak resmi göster (Instagram/TikTok mantığı)
-      if(it.poster){
-        c.style.backgroundImage='url("'+it.poster+'")';
-      }else{
-        c.appendChild(makeArcVideo(it.src));
-      }
       const pl=document.createElement("div");pl.className="arcPlay";
       pl.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
       c.appendChild(pl);
-    }else if(it.src){
-      c.style.backgroundImage='url("'+it.src+'")';
     }
     const g=document.createElement("div");g.className="grad";
     const tm=document.createElement("div");tm.className="tm";tm.textContent=adiniGoster(it.who);
@@ -15248,23 +15385,25 @@ function renderSaved(box){
     un.setAttribute("aria-label",t("act_unsave"));
     un.addEventListener("click",async e=>{
       e.stopPropagation();
-      // veritabanından kaldır
       if(window.__sb && window.__me){
         await window.__sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',window.__me.id);
       }
-      // önbellekten çıkar
       if(_savedCache) _savedCache=_savedCache.filter(x=>x.id!==it.id);
-      // akıştaki kareyi de senkronla
       const feedItem=items.find(x=>x.id===it.id);
       if(feedItem){ feedItem.saved=false; const node=list.querySelector('[data-id="'+it.id+'"]'); if(node&&node._sync) node._sync(); }
-      renderProfile();toast(t("t_unsaved"));
+      // tüm profili değil, sadece kaydedilenler bölmesini tazele
+      const pane = document.querySelector("#profBody .arcPane");
+      if(pane){ pane.innerHTML=""; renderSaved(pane); }
+      else renderProfile();
+      toast(t("t_unsaved"));
     });
     c.appendChild(un);
     c.addEventListener("click",()=>openArchiveView(it));
-    grid.appendChild(c);
+    frag.appendChild(c);
   });
+  grid.appendChild(frag);
   box.appendChild(grid);
-  if(typeof lazyLoadArcVideos==="function") lazyLoadArcVideos();
+  lazyLoadArcImages(grid);
 }
 
 /* silme onayı */
@@ -19118,10 +19257,14 @@ loadFeed().finally(()=>{
     loadPrefs();
     loadNotifs();
     loadConversations();
+    // Harita kütüphanelerini arka planda indir — Zaman sekmesi açılınca beklemesin
+    try{ prefetchMapLibs(); }catch(e){}
   };
   if(typeof requestIdleCallback==='function') requestIdleCallback(rest,{timeout:1200});
   else setTimeout(rest, 250);
 });
+// Akış yavaşsa bile haritayı 3sn sonra sessizce hazırla
+setTimeout(()=>{ try{ prefetchMapLibs(); }catch(e){} }, 3000);
 
 // canlı bildirim: yeni bildirim düşünce zil güncellenir + haber verilir
 window.__onNewNotification = () => {

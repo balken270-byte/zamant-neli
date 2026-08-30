@@ -8686,7 +8686,7 @@ const ME=(window.__me&&window.__me.username)?window.__me.username:"sen";
       ptr.style.height="52px";
       ptr.classList.remove("ready"); ptr.classList.add("spinning");
       try{ _geoCache=null; }catch(e){} // harita geo önbelleğini de tazele
-      try{ await loadFeed(); }catch(e){}
+      try{ await loadFeed({force:true}); }catch(e){}
       // en üste dön
       feed.scrollTo({top:0,behavior:"auto"});
       setTimeout(()=>{
@@ -8943,50 +8943,206 @@ const commCount=it=>it.comments.length?it.comments.reduce((n,c)=>n+1+c.replies.l
 const isReal=id=>typeof id==="string" && id.length>=32 && id.includes("-");
 
 // Supabase akışını çek ve items'a doldur
-async function loadFeed(){
-  const sb=window.__sb; if(!sb) return;
+/* SINIRSIZ AKIŞ
+   Toplam üst sınır YOK. Her istekte FEED_PAGE kadar gelir;
+   aşağı kaydırdıkça bir sonraki sayfa sunucudan eklenir.
+   get_feed before_ts desteklemezse moments tablosuna düşülür. */
+const FEED_PAGE = 30;
+let _feedLoading=false;
+let _feedHasMore=true;
+let _feedLoadMoreBusy=false;
+let _feedUseDirect=false; // get_feed sayfalama yoksa doğrudan tablo
+
+function _mapFeedRow(r, me, sb){
+  if(r.avatar_url) setRealAvatar(r.username, r.avatar_url);
+  if(r.display_name) setDisplayName(r.username, r.display_name);
+  return {
+    id:r.id, ts:new Date(r.created_at).getTime(),
+    who:r.username, avatar:r.avatar_url,
+    where:r.place_label||t("no_location"),
+    mood:MOOD_BY_KEY[r.mood]||MOODS[7],
+    note:r.note||"",
+    kind:r.media_kind,
+    src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
+    poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
+    lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
+    lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
+    likes:r.like_count, views:r.view_count, cc:r.comment_count,
+    saved: !!r.saved, liked: !!r.liked,
+    display: r.display_name || null,
+    mine: me && r.author_id===me.id,
+    comments:[],
+    song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
+  };
+}
+
+function _isLocalPending(it){
+  if(!it) return false;
+  if(it._pending) return true;
+  const id = String(it.id||"");
+  return id.charAt(0)==="u" && id.length>8 && !id.includes("-");
+}
+
+/* moments tablosundan sayfa — get_feed sayfalama desteklemezse yedek.
+   created_at < beforeTs ile keyset; toplam sınır yok. */
+async function _fetchMomentsPage(beforeTs, limit){
+  const sb=window.__sb; if(!sb) return [];
   try{
-    const {data,error}=await sb.rpc('get_feed',{page_size:20})   // gereksiz veri çekmeyi azalt;
-    if(error){ console.warn('feed:',error.message); return; }
-    const me=window.__me;
-    items = (data||[]).map(r=>{
-      if(r.avatar_url) setRealAvatar(r.username, r.avatar_url);
-      if(r.display_name) setDisplayName(r.username, r.display_name);
-      return {
-      id:r.id, ts:new Date(r.created_at).getTime(),
-      who:r.username, avatar:r.avatar_url,
-      where:r.place_label||t("no_location"),
-      mood:MOOD_BY_KEY[r.mood]||MOODS[7],
-      note:r.note||"",
-      kind:r.media_kind,
-      src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
-      poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
-      // Mesafe filtresi için konum — get_feed artık bunları döndürüyor
-      lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
-      lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
-      likes:r.like_count, views:r.view_count, cc:r.comment_count,
-      // Bu üçü artık get_feed ile BİRLİKTE geliyor — ayrı istek yok,
-      // gecikmeli görünme sorunu ortadan kalktı.
-      saved: !!r.saved, liked: !!r.liked,
-      display: r.display_name || null,
-      mine: me && r.author_id===me.id,
-      comments:[],
-      song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
-    };});
-    allItems = items.slice();          // filtrelenmemiş kaynağı sakla
-    if(typeof feedPlace!=="undefined" && feedPlace){
-      const q=feedPlace.toLowerCase();
-      items = allItems.filter(it => String(it.where||"").toLowerCase().includes(q));
+    let q = sb.from('moments')
+      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview')
+      .eq('is_removed', false)
+      .order('created_at', { ascending:false })
+      .limit(limit || FEED_PAGE);
+    if(beforeTs){
+      q = q.lt('created_at', new Date(beforeTs).toISOString());
     }
-    // ÖNCE İÇERİĞİ GÖSTER — hiçbir şeyi bekleme.
-    // İsimler ve beğeni/kaydet durumu arka planda gelip üstüne biner.
+    const { data, error } = await q;
+    if(error || !data || !data.length) return [];
+
+    const authorIds = [...new Set(data.map(r=>r.author_id).filter(Boolean))];
+    let byAuthor = {};
+    if(authorIds.length){
+      const { data:profs } = await sb.from('profiles')
+        .select('id, username, display_name, avatar_url')
+        .in('id', authorIds);
+      (profs||[]).forEach(p=>{ byAuthor[p.id]=p; });
+    }
+
+    return data.map(r=>{
+      const p = byAuthor[r.author_id] || {};
+      return {
+        id:r.id, created_at:r.created_at, author_id:r.author_id,
+        username:p.username||"", avatar_url:p.avatar_url||null,
+        display_name:p.display_name||null,
+        place_label:r.place_label, mood:r.mood, note:r.note,
+        media_kind:r.media_kind, media_path:r.media_path, poster_path:r.poster_path,
+        geo_lat:r.geo_lat, geo_lng:r.geo_lng,
+        like_count:r.like_count, view_count:r.view_count, comment_count:r.comment_count,
+        song_title:r.song_title, song_artist:r.song_artist,
+        song_art:r.song_art, song_preview:r.song_preview,
+        saved:false, liked:false
+      };
+    });
+  }catch(e){
+    console.warn('moments page:', e);
+    return [];
+  }
+}
+
+/* Bir sayfa getir: önce get_feed, olmazsa moments. */
+async function _fetchFeedPage(opts){
+  opts = opts || {};
+  const sb=window.__sb; if(!sb) return [];
+  const limit = opts.limit || FEED_PAGE;
+  const beforeTs = opts.beforeTs || null;
+
+  // Doğrudan tabloya geçilmişse orada kal
+  if(_feedUseDirect){
+    return _fetchMomentsPage(beforeTs, limit);
+  }
+
+  // 1) get_feed — sayfalama parametrelerini dene
+  if(!beforeTs){
+    const { data, error } = await sb.rpc('get_feed', { page_size: limit });
+    if(!error && Array.isArray(data)) return data;
+    // RPC tamamen bozulduysa tabloya düş
+    _feedUseDirect = true;
+    return _fetchMomentsPage(null, limit);
+  }
+
+  // Eski sayfa: before_ts / before_created_at dene
+  for(const key of ['before_ts', 'before_created_at', 'cursor']){
+    try{
+      const params = { page_size: limit };
+      params[key] = new Date(beforeTs).toISOString();
+      const { data, error } = await sb.rpc('get_feed', params);
+      if(!error && Array.isArray(data)){
+        // Aynı kayıtlar tekrar geliyorsa (param yok sayılmış) → tabloya geç
+        if(data.length && opts.excludeIds){
+          const allDup = data.every(r => opts.excludeIds.has(r.id));
+          if(allDup){ _feedUseDirect = true; return _fetchMomentsPage(beforeTs, limit); }
+        }
+        return data;
+      }
+    }catch(e){}
+  }
+
+  // get_feed sayfalama yok → moments ile devam (sınırsız)
+  _feedUseDirect = true;
+  return _fetchMomentsPage(beforeTs, limit);
+}
+
+function _applyPlaceFilter(){
+  if(typeof feedPlace!=="undefined" && feedPlace){
+    const q=feedPlace.toLowerCase();
+    items = allItems.filter(it => String(it.where||"").toLowerCase().includes(q));
+  }else{
+    items = allItems.slice();
+  }
+}
+
+function _paintLikesSaves(me, listItems){
+  const sb=window.__sb;
+  if(!sb||!me||!listItems||!listItems.length) return;
+  const ids=listItems.map(x=>x.id).filter(id=>isReal(id));
+  if(!ids.length) return;
+  Promise.all([
+    sb.from('likes').select('moment_id').eq('user_id',me.id).in('moment_id',ids),
+    sb.from('saves').select('moment_id').eq('user_id',me.id).in('moment_id',ids)
+  ]).then(([lk,sv])=>{
+    const likedSet=new Set((lk.data||[]).map(x=>x.moment_id));
+    const savedSet=new Set((sv.data||[]).map(x=>x.moment_id));
+    listItems.forEach(it=>{ it.liked=likedSet.has(it.id); it.saved=savedSet.has(it.id); });
+    list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
+  }).catch(()=>{});
+}
+
+async function loadFeed(opts){
+  opts = opts || {};
+  const sb=window.__sb; if(!sb) return;
+  if(_feedLoading && !opts.force) return;
+  _feedLoading=true;
+  if(opts.force){ _feedHasMore=true; _feedUseDirect=false; }
+  try{
+    // Yerel / henüz sunucuya yazılmamış anları koru
+    const pendingKeep = (items||[]).filter(_isLocalPending);
+
+    const data = await _fetchFeedPage({ limit: FEED_PAGE });
+    const me=window.__me;
+    const serverItems = (data||[]).map(r=>_mapFeedRow(r, me, sb));
+    // Dolu sayfa geldiyse devamı vardır; az geldiyse bitti olabilir
+    _feedHasMore = serverItems.length >= FEED_PAGE;
+
+    // İstek sürerken paylaşılan anları da koru
+    const pendingNow = (items||[]).filter(_isLocalPending);
+    const pendingAll = [];
+    const pendSeen = new Set();
+    [...pendingKeep, ...pendingNow].forEach(p=>{
+      const k=String(p.id); if(pendSeen.has(k)) return; pendSeen.add(k); pendingAll.push(p);
+    });
+
+    const serverIds = new Set(serverItems.map(x=>x.id));
+    const stillPending = pendingAll.filter(p=>{
+      if(serverIds.has(p.id)) return false;
+      if(p.mine || (me && p.who===ME)){
+        const near = serverItems.some(s=> s.mine && Math.abs((s.ts||0)-(p.ts||0)) < 120000);
+        if(near) return false;
+      }
+      return true;
+    });
+
+    const merged = [...stillPending, ...serverItems];
+    const seen = new Set();
+    allItems = merged.filter(it=>{
+      const k = String(it.id);
+      if(seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+    _applyPlaceFilter();
+
     render(); activeIdx=-1; syncActive();
 
-    // İsimler ve beğeni/kaydet durumu artık akışla birlikte geliyor.
-    // (Önceden üç ayrı istek daha gidiyordu; isimler ve kalpler geç doluyordu.)
-    //
-    // GÜVENLİK AĞI: Veritabanı henüz güncellenmemişse bu alanlar gelmez.
-    // O durumda eski yönteme dönülür ki hiçbir şey kaybolmasın.
     const yeniSurum = (data && data.length)
       ? Object.prototype.hasOwnProperty.call(data[0], 'liked')
       : true;
@@ -8994,40 +9150,87 @@ async function loadFeed(){
     if(yeniSurum){
       if(typeof paintFeedNames==="function") paintFeedNames();
     }else{
-      // eski veritabanı: bilgileri ayrı ayrı çek
       console.warn('get_feed eski sürüm — yedek yol kullanılıyor');
       fetchDisplayNames().catch(()=>{});
-      if(me && items.length){
-        const ids=items.map(x=>x.id);
-        Promise.all([
-          sb.from('likes').select('moment_id').eq('user_id',me.id).in('moment_id',ids),
-          sb.from('saves').select('moment_id').eq('user_id',me.id).in('moment_id',ids)
-        ]).then(([lk,sv])=>{
-          const L=new Set((lk.data||[]).map(x=>x.moment_id));
-          const S=new Set((sv.data||[]).map(x=>x.moment_id));
-          items.forEach(it=>{ it.liked=L.has(it.id); it.saved=S.has(it.id); });
-          list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
-        }).catch(()=>{});
-      }
+      _paintLikesSaves(me, items);
     }
 
-    // kendi eski videolarımın kapağı yoksa arka planda üret
     setTimeout(()=>{ try{ backfillPosters(items.filter(x=>x.mine)); }catch(e){} }, 1500);
-
-    // beğeni / kaydetme işaretleri — geldiğinde kartlar tazelenir
-    if(me && items.length){
-      const ids=items.map(x=>x.id);
-      Promise.all([
-        sb.from('likes').select('moment_id').eq('user_id',me.id).in('moment_id',ids),
-        sb.from('saves').select('moment_id').eq('user_id',me.id).in('moment_id',ids)
-      ]).then(([lk,sv])=>{
-        const likedSet=new Set((lk.data||[]).map(x=>x.moment_id));
-        const savedSet=new Set((sv.data||[]).map(x=>x.moment_id));
-        items.forEach(it=>{ it.liked=likedSet.has(it.id); it.saved=savedSet.has(it.id); });
-        list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
-      }).catch(()=>{});
-    }
+    _paintLikesSaves(me, items);
   }catch(e){ console.warn(e); }
+  finally{ _feedLoading=false; }
+}
+
+/* Aşağı kaydırınca daha eski anlar — toplam sınır yok */
+async function loadMoreFeed(){
+  if(_feedLoadMoreBusy || _feedLoading || !_feedHasMore) return;
+  if(!allItems.length && !items.length) return;
+
+  const pool = allItems.length ? allItems : items;
+  const oldest = pool.reduce((m,it)=> Math.min(m, it.ts||Infinity), Infinity);
+  if(!isFinite(oldest)) return;
+
+  _feedLoadMoreBusy=true;
+  try{
+    const sb=window.__sb; if(!sb) return;
+    const me=window.__me;
+    const have = new Set(pool.map(x=>String(x.id)));
+
+    const data = await _fetchFeedPage({
+      beforeTs: oldest,
+      limit: FEED_PAGE,
+      excludeIds: have
+    });
+
+    const more = (data||[])
+      .map(r=>_mapFeedRow(r, me, sb))
+      .filter(it => !have.has(String(it.id)) && (it.ts||0) < oldest - 100);
+
+    if(more.length < Math.max(3, Math.floor(FEED_PAGE/4))){
+      // Az geldi: bir kez daha dene (direkt tablo), yine azsa bitti
+      if(!_feedUseDirect){
+        _feedUseDirect = true;
+        const extra = await _fetchMomentsPage(oldest, FEED_PAGE);
+        const extraMapped = (extra||[])
+          .map(r=>_mapFeedRow(r, me, sb))
+          .filter(it => !have.has(String(it.id)) && (it.ts||0) < oldest - 100);
+        if(extraMapped.length) more.push(...extraMapped);
+      }
+      if(more.length < 3) _feedHasMore = false;
+    }
+
+    if(!more.length){
+      if(_feedUseDirect) _feedHasMore = false;
+      return;
+    }
+
+    // Kaydırma konumunu koru
+    const prevIdx = Math.max(0, activeIdx);
+    const prevId = (items[prevIdx] && items[prevIdx].id) || null;
+
+    allItems = allItems.concat(more);
+    // id tekrarı temizle
+    const seen2 = new Set();
+    allItems = allItems.filter(it=>{
+      const k=String(it.id); if(seen2.has(k)) return false; seen2.add(k); return true;
+    });
+    _applyPlaceFilter();
+    render();
+
+    requestAnimationFrame(()=>{
+      try{
+        if(prevId){
+          const el = list.querySelector('.post[data-id="'+CSS.escape(String(prevId))+'"]');
+          if(el){ el.scrollIntoView({block:"start"}); }
+        }
+        syncActive();
+      }catch(e){}
+    });
+
+    if(typeof paintFeedNames==="function") paintFeedNames();
+    _paintLikesSaves(me, more);
+  }catch(e){ console.warn('loadMoreFeed:', e); }
+  finally{ _feedLoadMoreBusy=false; }
 }
 
 // akışta görünen isimleri (ad soyad) tazele
@@ -9934,6 +10137,14 @@ function syncActive(){
 feed.addEventListener("scroll",()=>{
   resumeAt=Date.now()+RESUME;
   if(!rafPending){rafPending=true;requestAnimationFrame(()=>{rafPending=false;syncActive();});}
+  // son 4 karta yaklaşınca sonraki sayfayı sunucudan çek (sınırsız)
+  try{
+    const posts=list.querySelectorAll(".post");
+    const idx=Math.round(feed.scrollTop/(feed.clientHeight||1));
+    if(posts.length && idx >= posts.length - 4){
+      if(typeof loadMoreFeed==="function") loadMoreFeed();
+    }
+  }catch(e){}
 },{passive:true});
 let rafPending=false;
 
@@ -10749,270 +10960,30 @@ function mapTileUrl(){
     ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=" + CARTO_KEY
     : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=" + CARTO_KEY;
 }
+
 let _mapTileLayer=null;
-/* ============================================================
-   HARİTA KUTUCUK ÖNBELLEĞİ
-   Gezilen bölgelerin kutucukları cihazda saklanır; aynı yere
-   tekrar gidildiğinde ağa çıkılmadan anında gösterilir.
-   (Tüm dünyayı indirmek mümkün değil — terabaytlar tutar.)
-   ============================================================ */
-/* Sürüm artırıldı: önbellekte anahtarsız (filigranlı) karolar
-   kalmıştı, adres değişse de eskiler gösterilmeye devam ediyordu. */
-const TILE_CACHE = 'klipsy-tiles-v2';
-window.__tileStats = {hit:0, miss:0, saved:0, err:0};
+let _mapGL=null;
+const CARTO_VECTOR_STYLE="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 
-/* Eski sürüm önbelleklerini temizle — yer kaplamasınlar. */
-try{
-  if(window.caches && caches.keys){
-    caches.keys().then(adlar=>{
-      adlar.forEach(ad=>{
-        if(/^klipsy-tiles-/.test(ad) && ad !== TILE_CACHE) caches.delete(ad);
-      });
-    }).catch(()=>{});
+function prefetchYonunde(){ /* MapLibre vector cache handles this. */ }
+function prefetchKomsuSeviyeler(){ /* MapLibre vector cache handles this. */ }
+
+function addCARTOVectorLayer(){
+  if(!_map || !window.L || !L.maplibreGL) return null;
+  if(_mapTileLayer){
+    try{ _map.removeLayer(_mapTileLayer); }catch(e){}
   }
-}catch(e){}
-function paintTileStats(){
-  if(location.search.indexOf('tiles=1') < 0) return;
-  let el = document.getElementById('tileStats');
-  if(!el){
-    el = document.createElement('div');
-    el.id = 'tileStats';
-    el.style.cssText = 'position:fixed;left:8px;bottom:80px;z-index:99999;'+
-      'padding:5px 9px;border-radius:8px;background:rgba(0,0,0,.75);'+
-      'color:#7CFFB2;font:600 11px/1.4 ui-monospace,monospace;pointer-events:none';
-    document.body.appendChild(el);
-  }
-  const s = window.__tileStats;
-  el.textContent = 'önbellek: '+s.hit+' | ağ: '+s.miss+' | kayıt: '+s.saved+' | hata: '+s.err;
-}
-const _tileUrls = new WeakMap();      // temizlik için
-
-async function pruneTileCache(){
-  try{
-    if(!('caches' in window)) return;
-    const c = await caches.open(TILE_CACHE);
-    const keys = await c.keys();
-    if(keys.length > 5000){        // çok seviye saklandığı için daha yüksek            // yaklaşık 60-80 MB
-      for(let i=0; i<1500; i++) await c.delete(keys[i]);
-    }
-  }catch(e){}
+  _mapTileLayer=L.maplibreGL({
+    style:CARTO_VECTOR_STYLE,
+    interactive:false,
+    attribution:'© OpenStreetMap © CARTO'
+  }).addTo(_map);
+  _mapGL=_mapTileLayer.getMaplibreMap ? _mapTileLayer.getMaplibreMap() : null;
+  return _mapTileLayer;
 }
 
-function makeCachedTileLayer(url, opts){
-  // Cache Storage yoksa normal katman
-  if(!('caches' in window)) return L.tileLayer(url, opts);
-
-  const Cached = L.TileLayer.extend({
-    createTile: function(coords, done){
-      const img = document.createElement('img');
-      img.setAttribute('role','presentation');
-      img.alt = '';
-      const tileUrl = this.getTileUrl(coords);
-
-      const normalYükle = ()=>{
-        img.crossOrigin = '';
-        img.src = tileUrl;
-        img.onload  = ()=>done(null, img);
-        img.onerror = (e)=>done(e, img);
-      };
-
-      (async ()=>{
-        try{
-          const cache = await caches.open(TILE_CACHE);
-          let res = await cache.match(tileUrl);
-
-          if(res){ window.__tileStats.hit++; }
-          else{
-            window.__tileStats.miss++;
-            res = await fetch(tileUrl, {mode:'cors'});
-            if(res && res.ok){
-              cache.put(tileUrl, res.clone())
-                .then(()=>{ window.__tileStats.saved++; })
-                .catch((e)=>{ window.__tileStats.err++; });
-            }
-          }
-          paintTileStats();
-          if(res && res.ok){
-            const blob = await res.blob();
-            const obj = URL.createObjectURL(blob);
-            _tileUrls.set(img, obj);
-            img.onload  = ()=>done(null, img);
-            img.onerror = ()=>{ normalYükle(); };
-            img.src = obj;
-            return;
-          }
-        }catch(e){}
-        normalYükle();
-      })();
-
-      return img;
-    },
-
-    // kutucuk ekrandan çıkınca belleği bırak
-    _abortLoading: function(){
-      L.TileLayer.prototype._abortLoading.call(this);
-    }
-  });
-
-  const layer = new Cached(url, opts);
-  // NOT: adres HEMEN serbest bırakılmaz. Bırakılınca kutucuk boşalıyor
-  // ve yeniden yükleniyormuş gibi görünüyordu. Gecikmeli bırakılır.
-  layer.on('tileunload', (e)=>{
-    const u = _tileUrls.get(e.tile);
-    if(u){
-      _tileUrls.delete(e.tile);
-      setTimeout(()=>{ try{ URL.revokeObjectURL(u); }catch(err){} }, 30000);
-    }
-  });
-  return layer;
-}
-
-/* ============================================================
-   YÖN TAHMİNLİ ÖN YÜKLEME
-   Kullanıcı haritayı hangi yöne kaydırıyorsa, o yöndeki kutucuklar
-   ekrana girmeden önce indirilir. Böylece kaydırma sırasında
-   boş alan görünmez.
-   ============================================================ */
-let _sonMerkez = null, _onYuklemeZaman = 0;
-
-function prefetchYonunde(map, layer){
-  if(!map || !layer || !('caches' in window)) return;
-
-  const merkez = map.getCenter();
-  const zoom = Math.round(map.getZoom());
-
-  if(!_sonMerkez){ _sonMerkez = merkez; return; }
-
-  // hareket yönü
-  const dLat = merkez.lat - _sonMerkez.lat;
-  const dLng = merkez.lng - _sonMerkez.lng;
-  _sonMerkez = merkez;
-
-  // çok küçük hareketlerde uğraşma
-  if(Math.abs(dLat) < 1e-5 && Math.abs(dLng) < 1e-5) return;
-
-  // çok sık çalışmasın
-  const şimdi = Date.now();
-  if(şimdi - _onYuklemeZaman < 400) return;
-  _onYuklemeZaman = şimdi;
-
-  try{
-    // ekranın bir sonraki halini tahmin et (hareketi ileri sar)
-    const hedef = L.latLng(merkez.lat + dLat*2.2, merkez.lng + dLng*2.2);
-    const boyut = map.getSize();
-    const nokta = map.project(hedef, zoom).subtract(boyut.divideBy(2));
-    const kutucukBoyut = 256;
-
-    const x0 = Math.floor(nokta.x / kutucukBoyut) - 1;
-    const y0 = Math.floor(nokta.y / kutucukBoyut) - 1;
-    const enX = Math.ceil(boyut.x / kutucukBoyut) + 2;
-    const enY = Math.ceil(boyut.y / kutucukBoyut) + 2;
-
-    const url = layer._url || mapTileUrl();
-    const altAlanlar = (layer.options && layer.options.subdomains) || 'abcd';
-    const enFazla = Math.pow(2, zoom);
-
-    caches.open(TILE_CACHE).then(cache=>{
-      let sayac = 0;
-      for(let x = x0; x < x0 + enX; x++){
-        for(let y = y0; y < y0 + enY; y++){
-          if(y < 0 || y >= enFazla) continue;
-          if(sayac++ > 40) return;              // aşırıya kaçma
-          const xw = ((x % enFazla) + enFazla) % enFazla;
-          const s = altAlanlar[(xw + y) % altAlanlar.length];
-          // Gerçek kutucuk adresiyle BİREBİR aynı olmalı,
-          // yoksa önbellekte bulunamaz (özellikle {r} kısmı).
-          const rBit = (layer.options && layer.options.detectRetina &&
-                        L.Browser.retina) ? '@2x' : '';
-          const u = url.replace('{s}', s).replace('{z}', zoom)
-                       .replace('{x}', xw).replace('{y}', y)
-                       .replace('{r}', rBit);
-          cache.match(u).then(varMi=>{
-            if(varMi) return;                    // zaten var
-            fetch(u, {mode:'cors'}).then(r=>{
-              if(r && r.ok) cache.put(u, r.clone()).catch(()=>{});
-            }).catch(()=>{});
-          }).catch(()=>{});
-        }
-      }
-    }).catch(()=>{});
-  }catch(e){}
-}
-
-/* ============================================================
-   KOMŞU YAKINLAŞTIRMA SEVİYELERİNİ ÖNDEN AL
-   Her yakınlaştırma seviyesi ayrı bir kutucuk takımıdır.
-   Sadece bulunulan seviye saklanırsa, bir kademe yakınlaşınca
-   her şey yeniden iniyor. Bu yüzden bir üst ve bir alt seviye de
-   önden indirilir.
-   Maliyet dengesi: üst seviye ucuz (4 kat az kutucuk),
-   alt seviye pahalı (4 kat fazla) — o yüzden alt seviyede
-   sadece ekranın ortası alınır.
-   ============================================================ */
-let _komsuZaman = 0;
-
-function prefetchKomsuSeviyeler(map, layer){
-  if(!map || !layer || !('caches' in window)) return;
-
-  const şimdi = Date.now();
-  if(şimdi - _komsuZaman < 1500) return;      // sık çalışmasın
-  _komsuZaman = şimdi;
-
-  try{
-    const zoom = Math.round(map.getZoom());
-    const merkez = map.getCenter();
-    const boyut = map.getSize();
-    const kb = 256;
-    const url = layer._url || mapTileUrl();
-    const altAlanlar = (layer.options && layer.options.subdomains) || 'abcd';
-    const rBit = (layer.options && layer.options.detectRetina && L.Browser.retina) ? '@2x' : '';
-
-    // [seviye farkı, ekranın kaç katını al]
-    const planlar = [
-      [-1, 1.0],   // bir üst (uzak) — ucuz, tam ekran
-      [ 1, 0.55]   // bir alt (yakın) — pahalı, sadece orta bölge
-    ];
-
-    caches.open(TILE_CACHE).then(cache=>{
-      planlar.forEach(([fark, oran])=>{
-        const z = zoom + fark;
-        if(z < 3 || z > 19) return;
-
-        const nokta = map.project(merkez, z);
-        const genişlik = (boyut.x * oran) / 2;
-        const yükseklik = (boyut.y * oran) / 2;
-
-        const x0 = Math.floor((nokta.x - genişlik) / kb);
-        const x1 = Math.floor((nokta.x + genişlik) / kb);
-        const y0 = Math.floor((nokta.y - yükseklik) / kb);
-        const y1 = Math.floor((nokta.y + yükseklik) / kb);
-        const enFazla = Math.pow(2, z);
-
-        let sayac = 0;
-        for(let x = x0; x <= x1; x++){
-          for(let y = y0; y <= y1; y++){
-            if(y < 0 || y >= enFazla) continue;
-            if(sayac++ > 60) return;           // seviye başına üst sınır
-            const xw = ((x % enFazla) + enFazla) % enFazla;
-            const s = altAlanlar[(xw + y) % altAlanlar.length];
-            const u = url.replace('{s}', s).replace('{z}', z)
-                         .replace('{x}', xw).replace('{y}', y)
-                         .replace('{r}', rBit);
-            cache.match(u).then(varMi=>{
-              if(varMi) return;
-              fetch(u, {mode:'cors'}).then(r=>{
-                if(r && r.ok){
-                  cache.put(u, r.clone())
-                    .then(()=>{ window.__tileStats.saved++; paintTileStats(); })
-                    .catch(()=>{});
-                }
-              }).catch(()=>{});
-            }).catch(()=>{});
-          }
-        }
-      });
-    }).catch(()=>{});
-  }catch(e){}
+function refreshMapTheme(){
+  if(_map) addCARTOVectorLayer();
 }
 
 /* Harita kütüphanesini SADECE gerektiğinde yükle.
@@ -11058,6 +11029,32 @@ function ensureLeaflet(){
   return _leafletReady;
 }
 
+
+async function ensureMapLibreGL(){
+  if(window.maplibregl && window.L && L.maplibreGL) return true;
+
+  const loadScript=(src)=>new Promise(resolve=>{
+    const sc=document.createElement('script');
+    sc.src=src; sc.async=true;
+    sc.onload=()=>resolve(true);
+    sc.onerror=()=>{sc.remove(); resolve(false);};
+    document.head.appendChild(sc);
+  });
+  const css=document.createElement('link');
+  css.rel='stylesheet';
+  css.href='https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css';
+  css.setAttribute('data-maplibre','1');
+  document.head.appendChild(css);
+
+  if(!window.maplibregl){
+    if(!await loadScript('https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js')) return false;
+  }
+  if(!L.maplibreGL){
+    if(!await loadScript('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js')) return false;
+  }
+  return !!L.maplibreGL;
+}
+
 async function initMap(){
   // kütüphane hazır değilse önce yükle (yükleniyor göstergesiyle)
   if(typeof L === "undefined"){
@@ -11077,6 +11074,12 @@ async function initMap(){
     }
   }
   if(_map){ setTimeout(()=>_map.invalidateSize(),100); return; }
+  const glOk=await ensureMapLibreGL();
+  if(!glOk){
+    const kap=document.getElementById("exploreMap");
+    if(kap) kap.innerHTML='<div class="mapFail">'+t("no_conn2")+'</div>';
+    return;
+  }
   _map=L.map("exploreMap",{
     zoomControl:true, attributionControl:true,
     preferCanvas:true,
@@ -11087,15 +11090,7 @@ async function initMap(){
     inertia:true, inertiaDeceleration:2200, inertiaMaxSpeed:1600,
     easeLinearity:0.22
   }).setView([39.0,35.0],5);
-  _mapTileLayer=makeCachedTileLayer(mapTileUrl(),{
-    attribution:'© OpenStreetMap © CARTO', maxZoom:19, subdomains:"abcd",
-    /* AKICILIK (Google Haritalar hissi)
-       keepBuffer: ekran dışında hazır tutulan kutucuk halkası
-       updateInterval: istek sıklığı — düşük olması daha akıcı
-       updateWhenZooming: yakınlaşırken de güncelle */
-    keepBuffer:8, updateWhenIdle:false, updateWhenZooming:true, updateInterval:50,
-    crossOrigin:true, className:"ktile" 
-  }).addTo(_map);
+  addCARTOVectorLayer();
   // kullanıcı haritayı elle gezdirirse otomatik odaklamayı bırak
   /* HATA DÜZELTMESİ
      Haritayı biz odakladığımızda (setView) da "zoomstart" tetikleniyordu.
@@ -11274,17 +11269,8 @@ function drawUserDot(){
   }catch(e){}
 }
 function refreshMapTheme(){
-  if(!_map||!_mapTileLayer) return;
-  _map.removeLayer(_mapTileLayer);
-  _mapTileLayer=makeCachedTileLayer(mapTileUrl(),{
-    attribution:'© OpenStreetMap © CARTO', maxZoom:19, subdomains:"abcd",
-    /* AKICILIK (Google Haritalar hissi)
-       keepBuffer: ekran dışında hazır tutulan kutucuk halkası
-       updateInterval: istek sıklığı — düşük olması daha akıcı
-       updateWhenZooming: yakınlaşırken de güncelle */
-    keepBuffer:8, updateWhenIdle:false, updateWhenZooming:true, updateInterval:50,
-    crossOrigin:true, className:"ktile" 
-  }).addTo(_map);
+  if(!_map) return;
+  addCARTOVectorLayer();
 }
 function momentIcon(g){
   /* VERİ KULLANIMI — ÖNEMLİ
@@ -17479,9 +17465,11 @@ async function post(src,kind,mood,where,note,extra){
   // yerel önizleme: hemen akışa koy (iyimser)
   const tmpId="u"+Date.now();
   const local={id:tmpId,ts:Date.now(),who:ME,
-    where:where||t("no_location"),mood:mood||null,note:note||"",kind,src,
+    where:where||t("no_location"),mood:mood||(MOOD_BY_KEY.sakin||MOODS[7]||null),note:note||"",kind,src,
     likes:0,views:0,saved:false,liked:false,mine:true,comments:[],_pending:true,song:song};
   items.unshift(local);
+  if(Array.isArray(allItems)) allItems.unshift(local);
+  else allItems = items.slice();
   render();
   requestAnimationFrame(()=>{feed.scrollTop=0;activeIdx=-1;syncActive();resumeAt=Date.now()+RESUME*2;});
   // NOT: "yükleniyor" bildirimi kaldırıldı — içerik zaten anında akışta görünüyor,
@@ -17510,6 +17498,7 @@ async function post(src,kind,mood,where,note,extra){
       console.warn("[Klipsy] medya hazırlanamadı:", blob ? blob.size : "yok");
       toast(t("rec_failed"));
       items = items.filter(x=>x.id !== tmpId);
+      allItems = (allItems||[]).filter(x=>x.id !== tmpId);
       render();
       return;
     }
@@ -17589,8 +17578,14 @@ async function post(src,kind,mood,where,note,extra){
     local.id = ins.data.id;
     local.ts = new Date(ins.data.created_at).getTime();
     local.src = pub;
+    if(posterPath){
+      try{ local.poster = sb.storage.from('moments').getPublicUrl(posterPath).data.publicUrl; }catch(e){}
+    }
     local._pending = false;
+    allItems = (allItems||[]).filter((x,i,arr)=> arr.findIndex(y=>y.id===x.id)===i);
+    items = (items||[]).filter((x,i,arr)=> arr.findIndex(y=>y.id===x.id)===i);
     render(); activeIdx=-1; syncActive();
+    requestAnimationFrame(()=>{ try{ feed.scrollTop=0; syncActive(); }catch(e){} });
     toast(kind==="video"?t("ok_video_in_feed"):t("ok_photo_in_feed"));
   }catch(e){
     // Yükleme başarısız (internet yok, sunucu hatası vs.)

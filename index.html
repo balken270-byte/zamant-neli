@@ -17102,7 +17102,8 @@ async function openChatFromProfile(who){
   if(!who) return;
   await loadConversations();
   const c=chatOf(who);
-  if(chatNeedsRequest(c)){
+  const need=chatNeedsRequest(c);
+  if(need){
     const ok=await onaySor(
       t("req_ask_title"),
       t("req_ask_body"),
@@ -17110,10 +17111,37 @@ async function openChatFromProfile(who){
       false
     );
     if(!ok) return;
+    c.requestState="pending";
+    c.requesterId=window.__me ? window.__me.id : c.requesterId;
+    c._reqLocked=true;
   }
   if($("#profile").classList.contains("open")) close("profile");
   if($("#miniProfile").classList.contains("open")) close("miniProfile");
   await openChat(who);
+  if(need){
+    const cc=chatOf(who);
+    cc.requestState="pending";
+    cc.requesterId=window.__me ? window.__me.id : cc.requesterId;
+    cc._reqLocked=true;
+    renderChatRequestBar(cc);
+    (async()=>{
+      try{
+        const sb=window.__sb, me=window.__me;
+        if(!sb||!me) return;
+        const uid=await idOfUsername(who);
+        if(!uid) return;
+        await sb.rpc("send_message",{to_user:uid,msg_kind:"text",msg_body:" "});
+        await syncConvRequest(who);
+        const c2=chatOf(who);
+        if(c2.requestState!=="accepted"){
+          c2.requestState="pending";
+          c2.requesterId=me.id;
+          c2._reqLocked=true;
+          renderChatRequestBar(c2);
+        }
+      }catch(e){}
+    })();
+  }
 }
 
 async function openChat(who){
@@ -17144,8 +17172,8 @@ async function renderChatRequestBar(c){
     if(bar) bar.remove();
     return;
   }
-  const isPending = c.requestState==='pending';
-  const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
+  const isPending = c.requestState==="pending" || !!c._reqLocked;
+  const iAmRequester = isPending && window.__me && (c.requesterId===window.__me.id || c._reqLocked);
   const msgBar=$("#msgBar");
 
   if(!isPending){
@@ -17541,9 +17569,11 @@ async function sendMsg(){
 
   // İSTEK BEKLİYORSA: karşı taraf kabul etmeden ikinci mesaj gönderilemez
   const cc0 = chatOf(who);
-  if(cc0 && cc0.requestState==='pending'){
-    const mine = window.__me && cc0.requesterId===window.__me.id;
+  if(cc0 && (cc0.requestState==="pending" || cc0._reqLocked)){
+    const mine = window.__me && (cc0.requesterId===window.__me.id || cc0._reqLocked);
     toast(mine ? t("req_wait_toast") : t("req_accept_first"));
+    cc0.requestState=cc0.requestState||"pending";
+    if(mine && window.__me) cc0.requesterId=window.__me.id;
     renderChatRequestBar(cc0);
     return;
   }

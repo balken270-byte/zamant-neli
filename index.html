@@ -105,6 +105,19 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       notif_new:"Yeni bildirim",
       close2:"Kapat",
       ok_moment_deleted:"An silindi",
+      dl_wm:"İndir",
+      dl_wait:"İndiriliyor…",
+      dl_ok:"İndirildi",
+      dl_fail:"İndirilemedi",
+      dl_off:"Bu an indirilemez",
+      cmt_on:"Yorumlar açık",
+      cmt_label:"Yorumlar",
+      dl_allow:"İndirmeye izin ver",
+      cmt_off:"Yorumlar kapalı",
+      cmt_locked:"Yorumlar kapatılmış",
+      dl_on:"İndirme açık",
+      dl_off2:"İndirme kapalı",
+      act_more:"Daha fazla",
       moments_here:"an burada",
       no_moments_area:"Bu bölgede an yok — uzaklaştır ya da haritayı gezdir",
       map_load_fail:"Haritadaki anlar yüklenemedi",
@@ -130,9 +143,15 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"Günlük liste şu an alınamadı",
       req_accept_first:"Önce isteği kabul et",
       req_wait_toast:"Kabul edilene kadar mesaj gönderemezsin",
+      req_ask_title:"Mesaj isteği",
+      req_ask_body:"Bu kişiye mesaj isteği göndermek istiyor musunuz?",
+      req_ask_yes:"İstek gönder",
       blocked_send_other:"Mesaj gönderilemedi",
       blocked_send_mine:"Engellediğin kişiye mesaj gönderemezsin",
       blocked_me_sub:"Bu sohbete artık mesaj gönderemezsin.",
+      msg_cant_title:"Mesaj gönderilemiyor",
+      msg_cant_privacy:"Kullanıcının gizlilik ayarları nedeniyle mesaj gönderilemiyor.",
+      msg_cant_request:"İstek kabul edilene kadar mesaj gönderilemiyor.",
       blocked_by_me_sub:"Mesaj gönderemez ve anlarını göremez.",
       blocked_title:"Bu kişiyi engelledin",
       no_blocked:"Engellediğin kimse yok",
@@ -203,6 +222,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"yorum yaptı:",
       n_followed:"seni takip etmeye başladı.",
       n_liked:"karene bir beğeni bıraktı.",
+      n_and_others:"ve diğerleri",
+      n_liked_g:"anını beğendi.",
+      n_commented_g:"yorum yaptı:",
+      n_comment_liked_g:"yorumunu beğendi",
+      n_replied_g:"yanıt yazdı.",
       welcome2:"Hoş geldin! 👋",
       locked_msg2:"Kabul etmeden mesajları göremezsin.",
       req_sent2:"İstek gönderildi",
@@ -588,6 +612,19 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       notif_new:"New notification",
       close2:"Close",
       ok_moment_deleted:"Moment deleted",
+      dl_wm:"Download",
+      dl_wait:"Downloading…",
+      dl_ok:"Saved",
+      dl_fail:"Download failed",
+      dl_off:"This moment can't be downloaded",
+      cmt_on:"Comments on",
+      cmt_label:"Comments",
+      dl_allow:"Allow downloads",
+      cmt_off:"Comments off",
+      cmt_locked:"Comments are turned off",
+      dl_on:"Downloads on",
+      dl_off2:"Downloads off",
+      act_more:"More",
       moments_here:"moments here",
       no_moments_area:"No moments here — zoom out or pan the map",
       map_load_fail:"Couldn't load moments on the map",
@@ -613,9 +650,15 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"Daily chart isn't available right now",
       req_accept_first:"Accept the request first",
       req_wait_toast:"You can't send until it's accepted",
+      req_ask_title:"Message request",
+      req_ask_body:"Do you want to send a message request to this person?",
+      req_ask_yes:"Send request",
       blocked_send_other:"Message couldn't be sent",
       blocked_send_mine:"You can't message someone you blocked",
       blocked_me_sub:"You can no longer send messages in this chat.",
+      msg_cant_title:"Can't send messages",
+      msg_cant_privacy:"You can't send messages due to this user's privacy settings.",
+      msg_cant_request:"You can't send messages until the request is accepted.",
       blocked_by_me_sub:"They can't message you or see your moments.",
       blocked_title:"You blocked this person",
       no_blocked:"You haven't blocked anyone",
@@ -686,6 +729,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"commented:",
       n_followed:"started following you.",
       n_liked:"liked your moment.",
+      n_and_others:"and others",
+      n_liked_g:"liked your moment.",
+      n_commented_g:"commented:",
+      n_comment_liked_g:"liked your comment",
+      n_replied_g:"replied.",
       welcome2:"Welcome! 👋",
       locked_msg2:"You can't see messages before accepting.",
       req_sent2:"Request sent",
@@ -1082,6 +1130,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"La lista diaria no está disponible",
       req_accept_first:"Acepta la solicitud primero",
       req_wait_toast:"No puedes enviar hasta que lo acepten",
+      req_ask_title:"Solicitud de mensaje",
+      req_ask_body:"¿Quieres enviar una solicitud de mensaje a esta persona?",
+      req_ask_yes:"Enviar solicitud",
       blocked_send_other:"No se pudo enviar el mensaje",
       blocked_send_mine:"No puedes escribir a quien bloqueaste",
       blocked_me_sub:"Ya no puedes enviar mensajes en este chat.",
@@ -1155,6 +1206,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"comentó:",
       n_followed:"empezó a seguirte.",
       n_liked:"le gustó tu momento.",
+      n_and_others:"y otras personas",
+      n_liked_g:"le gustó tu momento.",
+      n_commented_g:"comentó:",
+      n_comment_liked_g:"le gustó tu comentario",
+      n_replied_g:"respondió.",
       welcome2:"¡Bienvenido! 👋",
       locked_msg2:"No puedes ver los mensajes sin aceptar.",
       req_sent2:"Solicitud enviada",
@@ -1551,6 +1607,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"القائمة اليومية غير متاحة الآن",
       req_accept_first:"اقبل الطلب أولًا",
       req_wait_toast:"لا يمكنك الإرسال حتى يتم القبول",
+      req_ask_title:"طلب رسالة",
+      req_ask_body:"هل تريد إرسال طلب رسالة إلى هذا الشخص؟",
+      req_ask_yes:"إرسال الطلب",
       blocked_send_other:"تعذّر إرسال الرسالة",
       blocked_send_mine:"لا يمكنك مراسلة من حظرته",
       blocked_me_sub:"لم يعد بإمكانك إرسال رسائل في هذه المحادثة.",
@@ -1624,6 +1683,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"علّق:",
       n_followed:"بدأ بمتابعتك.",
       n_liked:"أعجب بلحظتك.",
+      n_and_others:"وآخرون",
+      n_liked_g:"أعجبوا بلحظتك.",
+      n_commented_g:"علّقوا:",
+      n_comment_liked_g:"أعجبوا بتعليقك",
+      n_replied_g:"ردّوا.",
       welcome2:"أهلًا بك! 👋",
       locked_msg2:"لا يمكنك رؤية الرسائل قبل القبول.",
       req_sent2:"أُرسل الطلب",
@@ -2020,6 +2084,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"Le classement du jour est indisponible",
       req_accept_first:"Accepte d'abord la demande",
       req_wait_toast:"Tu ne peux pas envoyer avant l'acceptation",
+      req_ask_title:"Demande de message",
+      req_ask_body:"Veux-tu envoyer une demande de message à cette personne ?",
+      req_ask_yes:"Envoyer la demande",
       blocked_send_other:"Message non envoyé",
       blocked_send_mine:"Tu ne peux pas écrire à une personne bloquée",
       blocked_me_sub:"Tu ne peux plus envoyer de messages ici.",
@@ -2093,6 +2160,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"a commenté :",
       n_followed:"a commencé à te suivre.",
       n_liked:"a aimé ton instant.",
+      n_and_others:"et d’autres",
+      n_liked_g:"ont aimé ton instant.",
+      n_commented_g:"ont commenté :",
+      n_comment_liked_g:"ont aimé ton commentaire",
+      n_replied_g:"ont répondu.",
       welcome2:"Bienvenue ! 👋",
       locked_msg2:"Tu ne peux pas voir les messages avant d'accepter.",
       req_sent2:"Demande envoyée",
@@ -2489,6 +2561,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"Tagesliste gerade nicht verfügbar",
       req_accept_first:"Nimm die Anfrage zuerst an",
       req_wait_toast:"Du kannst erst nach der Annahme senden",
+      req_ask_title:"Nachrichtenanfrage",
+      req_ask_body:"Möchtest du dieser Person eine Nachrichtenanfrage senden?",
+      req_ask_yes:"Anfrage senden",
       blocked_send_other:"Nachricht konnte nicht gesendet werden",
       blocked_send_mine:"Du kannst blockierten Personen nicht schreiben",
       blocked_me_sub:"Du kannst in diesem Chat nicht mehr schreiben.",
@@ -2562,6 +2637,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"kommentierte:",
       n_followed:"folgt dir jetzt.",
       n_liked:"gefällt dein Moment.",
+      n_and_others:"und andere",
+      n_liked_g:"gefallen dein Moment.",
+      n_commented_g:"haben kommentiert:",
+      n_comment_liked_g:"gefallen dein Kommentar",
+      n_replied_g:"haben geantwortet.",
       welcome2:"Willkommen! 👋",
       locked_msg2:"Du kannst Nachrichten erst nach dem Annehmen sehen.",
       req_sent2:"Anfrage gesendet",
@@ -2958,6 +3038,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"Дневной чарт сейчас недоступен",
       req_accept_first:"Сначала прими запрос",
       req_wait_toast:"Нельзя писать до принятия",
+      req_ask_title:"Запрос сообщения",
+      req_ask_body:"Отправить запрос на сообщение этому человеку?",
+      req_ask_yes:"Отправить запрос",
       blocked_send_other:"Не удалось отправить сообщение",
       blocked_send_mine:"Нельзя писать заблокированному",
       blocked_me_sub:"Ты больше не можешь писать в этом чате.",
@@ -3031,6 +3114,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"прокомментировал:",
       n_followed:"подписался на тебя.",
       n_liked:"оценил твой момент.",
+      n_and_others:"и другие",
+      n_liked_g:"оценили твой момент.",
+      n_commented_g:"прокомментировали:",
+      n_comment_liked_g:"оценили твой комментарий",
+      n_replied_g:"ответили.",
       welcome2:"Добро пожаловать! 👋",
       locked_msg2:"Ты не увидишь сообщения, пока не примешь.",
       req_sent2:"Запрос отправлен",
@@ -3427,6 +3515,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"A lista diária não está disponível",
       req_accept_first:"Aceite o pedido primeiro",
       req_wait_toast:"Você não pode enviar até ser aceito",
+      req_ask_title:"Pedido de mensagem",
+      req_ask_body:"Deseja enviar um pedido de mensagem para esta pessoa?",
+      req_ask_yes:"Enviar pedido",
       blocked_send_other:"Não foi possível enviar a mensagem",
       blocked_send_mine:"Você não pode escrever para quem bloqueou",
       blocked_me_sub:"Você não pode mais enviar mensagens nesta conversa.",
@@ -3500,6 +3591,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"comentou:",
       n_followed:"começou a te seguir.",
       n_liked:"curtiu seu momento.",
+      n_and_others:"e outras pessoas",
+      n_liked_g:"curtiram seu momento.",
+      n_commented_g:"comentaram:",
+      n_comment_liked_g:"curtiram seu comentário",
+      n_replied_g:"responderam.",
       welcome2:"Bem-vindo! 👋",
       locked_msg2:"Você não pode ver as mensagens antes de aceitar.",
       req_sent2:"Pedido enviado",
@@ -3896,6 +3992,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"दैनिक सूची अभी उपलब्ध नहीं",
       req_accept_first:"पहले अनुरोध स्वीकार करें",
       req_wait_toast:"स्वीकार होने तक नहीं भेज सकते",
+      req_ask_title:"संदेश अनुरोध",
+      req_ask_body:"क्या आप इस व्यक्ति को संदेश अनुरोध भेजना चाहते हैं?",
+      req_ask_yes:"अनुरोध भेजें",
       blocked_send_other:"संदेश नहीं भेजा जा सका",
       blocked_send_mine:"ब्लॉक किए गए व्यक्ति को संदेश नहीं भेज सकते",
       blocked_me_sub:"अब आप इस चैट में संदेश नहीं भेज सकते।",
@@ -3969,6 +4068,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"ने टिप्पणी की:",
       n_followed:"ने आपको फ़ॉलो किया।",
       n_liked:"ने आपका पल पसंद किया।",
+      n_and_others:"और अन्य",
+      n_liked_g:"ने आपका पल पसंद किया।",
+      n_commented_g:"ने टिप्पणी की:",
+      n_comment_liked_g:"ने आपकी टिप्पणी पसंद की",
+      n_replied_g:"ने जवाब दिया।",
       welcome2:"स्वागत है! 👋",
       locked_msg2:"स्वीकार किए बिना संदेश नहीं देख सकते।",
       req_sent2:"अनुरोध भेजा",
@@ -4365,6 +4469,9 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       chart_off:"Daftar harian sedang tidak tersedia",
       req_accept_first:"Terima permintaannya dulu",
       req_wait_toast:"Tidak bisa kirim sampai diterima",
+      req_ask_title:"Permintaan pesan",
+      req_ask_body:"Kirim permintaan pesan ke orang ini?",
+      req_ask_yes:"Kirim permintaan",
       blocked_send_other:"Pesan tidak terkirim",
       blocked_send_mine:"Kamu tidak bisa mengirim pesan ke yang kamu blokir",
       blocked_me_sub:"Kamu tidak bisa lagi mengirim pesan di obrolan ini.",
@@ -4438,6 +4545,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       n_commented:"berkomentar:",
       n_followed:"mulai mengikutimu.",
       n_liked:"menyukai momenmu.",
+      n_and_others:"dan yang lain",
+      n_liked_g:"menyukai momenmu.",
+      n_commented_g:"berkomentar:",
+      n_comment_liked_g:"menyukai komentarmu",
+      n_replied_g:"membalas.",
       welcome2:"Selamat datang! 👋",
       locked_msg2:"Kamu tidak bisa melihat pesan sebelum menerima.",
       req_sent2:"Permintaan terkirim",
@@ -5349,6 +5461,8 @@ svg{display:block}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.3);opacity:.3;pointer-events:none;
   transition:opacity .16s,transform .12s}
 .cbar .send.on{opacity:1;pointer-events:auto}
+.cbar.locked,.apCBar.locked{opacity:.55;pointer-events:none}
+.cbar.locked input,.apCBar.locked input{color:var(--t3)}
 .cbar .send:active{transform:scale(.92)}
 
 /* ============ zaman ============ */
@@ -5763,25 +5877,25 @@ svg{display:block}
   opacity:0;transition:opacity .24s}
 .onayWrap.open .onayScrim{opacity:1}
 
-.onayKart{position:absolute;left:10px;right:10px;bottom:max(10px,var(--sab));
-  padding:8px 18px calc(18px + env(safe-area-inset-bottom,0px));
-  border-radius:26px;background:var(--panelbg);color:var(--t1);
+.onayKart{position:absolute;left:16px;right:16px;bottom:max(12px,var(--sab));
+  padding:6px 16px calc(14px + env(safe-area-inset-bottom,0px));
+  border-radius:22px;background:var(--panelbg);color:var(--t1);
   border:1px solid var(--edge);
-  box-shadow:0 -12px 40px -14px rgba(0,0,0,.6);
+  box-shadow:0 -10px 32px -14px rgba(0,0,0,.55);
   transform:translateY(calc(100% + 30px));
   transition:transform .34s var(--ease)}
 .onayWrap.open .onayKart{transform:translateY(0)}
 
-.onayGrip{width:36px;height:4px;border-radius:99px;background:var(--edge);
-  margin:2px auto 14px}
-.onayBaslik{display:block;font-size:17px;font-weight:750;letter-spacing:-.03em;
-  text-align:center;margin-bottom:7px}
-.onayAciklama{font-size:13.5px;line-height:1.5;color:var(--t2);
-  text-align:center;margin-bottom:18px;padding:0 6px}
+.onayGrip{width:32px;height:3px;border-radius:99px;background:var(--edge);
+  margin:2px auto 10px}
+.onayBaslik{display:block;font-size:15.5px;font-weight:750;letter-spacing:-.03em;
+  text-align:center;margin-bottom:5px}
+.onayAciklama{font-size:13px;line-height:1.4;color:var(--t2);
+  text-align:center;margin-bottom:12px;padding:0 4px}
 
-.onayDugmeler{display:flex;gap:9px}
-.onayDugmeler button{flex:1;height:48px;border-radius:99px;border:0;
-  font:700 15px/1 inherit;letter-spacing:-.02em;transition:transform .12s}
+.onayDugmeler{display:flex;gap:8px}
+.onayDugmeler button{flex:1;height:42px;border-radius:99px;border:0;
+  font:700 14px/1 inherit;letter-spacing:-.02em;transition:transform .12s}
 .onayDugmeler button:active{transform:scale(.97)}
 .onayVazgec{background:var(--surf1);color:var(--t1)}
 .onayTamam{color:#fff;background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
@@ -6140,14 +6254,14 @@ svg{display:block}
   transition:transform .12s}
 .pcMsg:active{transform:scale(.9)}
 .pcMsg svg{width:19px;height:19px}
-.pcNotif{flex:none;width:44px;height:44px;border:0;background:transparent;color:#9a9aa6;
+.pcNotif{flex:none;width:44px;height:44px;border:0;background:transparent;color:#fff;
   display:grid;place-items:center;position:relative;padding:0;flex-shrink:0}
 .pcNotif svg{width:34px;height:34px;transform-origin:top center;display:block}
 .pcNotif svg path{
-  stroke:#fff;stroke-width:1.45;stroke-linejoin:round;stroke-linecap:round;
+  fill:#fff;stroke:#111;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;
   paint-order:stroke fill
 }
-[data-theme="light"] .pcNotif svg path{stroke:#111}
+[data-theme="dark"] .pcNotif svg path{fill:#fff;stroke:#fff}
 .pcNotif:active{transform:scale(.92)}
 .pcNotif .nIn{
   position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);
@@ -6182,15 +6296,13 @@ svg{display:block}
 /* görsel yığını: kendi satırında, sabit yükseklik (kartlar eşitlensin) */
 .profstats.pcStats .statAvs{display:block;height:26px;margin:0 0 8px;
   font-size:0;line-height:0;white-space:nowrap;text-align:center}
-/* Görseller çemberi tam doldursun: kısayol yerine ayrı özellikler yazılır
-   (kısayol, sonradan atanan görselin boyutunu sıfırlıyordu). */
 .profstats.pcStats .statAvs i{display:inline-block;vertical-align:top;position:relative;
   width:26px;height:26px;border-radius:99px;overflow:hidden;
-  background-color:var(--avatar-bg);
-  border:2px solid var(--surf1);margin-left:-9px;
-  box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  background-color:#ddd;
+  border:1.5px solid #fff;margin-left:-7px;
+  box-shadow:none;filter:none;opacity:1}
 .profstats.pcStats .statAvs i img{display:block;width:100%;height:100%;
-  object-fit:cover;border-radius:99px}
+  object-fit:cover;border-radius:99px;filter:none;opacity:1;-webkit-filter:none}
 .profstats.pcStats .statAvs i:first-child{margin-left:0}
 
 /* sayı ve etiket alt satırda */
@@ -6964,22 +7076,36 @@ html.native button,html.native .tab{touch-action:manipulation}
 .crow2 .avBadge{min-width:21px;height:21px;padding:0 5px;
   background:var(--accent);color:#fff;font-size:11px;font-weight:700}
 
-/* sohbette engel şeridi (WhatsApp tarzı) */
-.chatBlockStrip{position:absolute;left:0;right:0;bottom:0;z-index:6;
-  display:flex;align-items:center;gap:12px;
-  padding:14px 16px calc(var(--sab) + 14px);
-  background:var(--panelbg);border-top:1px solid var(--edge);
+/* sohbet durum kartı — iOS Mesajlar tarzı */
+.chatBlockStrip,#chatReqBar{
+  position:absolute;left:20px;right:20px;bottom:max(14px, var(--sab));
+  z-index:6;display:flex;flex-direction:column;align-items:center;
+  gap:5px;text-align:center;
+  padding:16px 18px 15px;
+  background:#fff;color:#111;
+  border-radius:24px;border:0;
+  box-shadow:0 14px 40px -12px rgba(0,0,0,.24), 0 2px 6px rgba(0,0,0,.05);
   animation:crIn .3s cubic-bezier(.22,1,.36,1)}
-.chatBlockStrip .cbTx{flex:1;min-width:0}
-.chatBlockStrip .cbTx b{display:block;font-size:14px;font-weight:600;color:var(--t1);
-  letter-spacing:-.018em;margin-bottom:2px}
-.chatBlockStrip .cbTx span{display:block;font-size:12.5px;color:var(--t3);line-height:1.45}
-.chatBlockStrip.muted{justify-content:center;text-align:center}
-.chatBlockStrip.muted .cbTx span{font-size:13px}
-.chatBlockStrip .cbBtn{flex:none;height:34px;padding:0 14px;border-radius:99px;
-  background:var(--surf2);border:1px solid var(--edge-soft);color:var(--t1);
-  font-size:13px;font-weight:600;font-family:inherit;transition:transform .12s}
-.chatBlockStrip .cbBtn:active{transform:scale(.95)}
+[data-theme="dark"] .chatBlockStrip,
+[data-theme="dark"] #chatReqBar{
+  background:#2C2C2E;color:#fff;
+  box-shadow:0 18px 50px -12px rgba(0,0,0,.55)}
+.chatBlockStrip .cbTx,#chatReqBar .cbTx{flex:none;width:100%}
+.chatBlockStrip .cbTx b,#chatReqBar .cbTx b{
+  display:block;font-size:15.5px;font-weight:800;color:#111;
+  letter-spacing:-.03em;margin-bottom:4px}
+.chatBlockStrip .cbTx span,#chatReqBar .cbTx span{
+  display:block;font-size:13px;color:#8E8E93;line-height:1.35;font-weight:400}
+[data-theme="dark"] .chatBlockStrip .cbTx b,
+[data-theme="dark"] #chatReqBar .cbTx b{color:#fff}
+[data-theme="dark"] .chatBlockStrip .cbTx span,
+[data-theme="dark"] #chatReqBar .cbTx span{color:#A1A1A6}
+.chatBlockStrip .cbBtn{
+  margin-top:8px;height:32px;padding:0 14px;border-radius:99px;
+  background:#F2F2F7;border:0;color:#007AFF;
+  font-size:14.5px;font-weight:650;font-family:inherit}
+[data-theme="dark"] .chatBlockStrip .cbBtn{background:#3A3A3C;color:#0A84FF}
+.chatBlockStrip .cbBtn:active{transform:scale(.96)}
 
 
 /* engellenenler listesi */
@@ -7187,23 +7313,11 @@ html.native button,html.native .tab{touch-action:manipulation}
 .reqCount{min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#FF3B6B;color:#fff;
   font-size:12px;font-weight:700;display:grid;place-items:center}
 .reqRow>svg{color:var(--t3);flex:none}
-/* ===== sohbet isteği şeridi — engel şeridiyle aynı tarz ===== */
-#chatReqBar{position:absolute;left:0;right:0;bottom:0;z-index:6;
-  display:flex;align-items:center;gap:12px;
-  padding:14px 16px calc(var(--sab) + 14px);
-  background:var(--panelbg);border-top:1px solid var(--edge);
-  animation:crIn .3s cubic-bezier(.22,1,.36,1)}
 @keyframes crIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#chatReqBar.mine{background:#fff}
+[data-theme="dark"] #chatReqBar.mine{background:#2C2C2E}
 
-/* isteği ben gönderdim: sadece bilgi, buton yok */
-#chatReqBar.mine{background:var(--surf1)}
-
-#chatReqBar .cbTx{flex:1;min-width:0}
-#chatReqBar .cbTx b{display:block;font-size:14px;font-weight:600;color:var(--t1);
-  letter-spacing:-.018em;margin-bottom:2px}
-#chatReqBar .cbTx span{display:block;font-size:12.5px;color:var(--t3);line-height:1.45}
-
-#chatReqBar .crBtns{display:flex;align-items:center;gap:8px;flex:none}
+#chatReqBar .crBtns{display:flex;align-items:center;justify-content:center;gap:8px;flex:none;margin-top:8px}
 #chatReqBar .crBtns button{height:36px;border-radius:99px;border:0;
   display:flex;align-items:center;justify-content:center;gap:6px;
   font-size:13.5px;font-weight:600;font-family:inherit;letter-spacing:-.014em;
@@ -7425,6 +7539,16 @@ html.native button,html.native .tab{touch-action:manipulation}
 .pmIcon{width:22px;height:22px;flex:none;display:grid;place-items:center;color:var(--t2)}
 .pmIcon.danger{color:#FF6B8A}
 .pmIcon svg{width:19px;height:19px}
+.shrow.toggle{cursor:pointer}
+.shrow.toggle:active{background:transparent}
+.iosSw{--w:51px;--h:31px;width:var(--w);height:var(--h);flex:none;border-radius:99px;
+  background:#E5E5EA;position:relative;transition:background .22s}
+.iosSw.on{background:#34C759}
+.iosSw i{position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:99px;
+  background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.22);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.iosSw.on i{transform:translateX(20px)}
+[data-theme="dark"] .iosSw{background:#39393D}
+[data-theme="dark"] .iosSw.on{background:#30D158}
 #cpSongRow{background:transparent;border:0;border-top:1px solid rgba(255,255,255,.1);
   border-bottom:1px solid rgba(255,255,255,.1);border-radius:0;padding:14px 4px}
 #cpSongRow.picked .ic{width:38px;height:38px;border-radius:9px;background:transparent;border:0}
@@ -9267,6 +9391,8 @@ function _mapFeedRow(r, me, sb){
     saved: !!r.saved, liked: !!r.liked,
     display: r.display_name || null,
     mine: me && r.author_id===me.id,
+    commentsOn: r.comments_on!==false,
+    downloadsOn: r.downloads_on!==false,
     comments:[],
     song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
   };
@@ -9285,7 +9411,7 @@ async function _fetchMomentsPage(beforeTs, limit){
   const sb=window.__sb; if(!sb) return [];
   try{
     let q = sb.from('moments')
-      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview')
+      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on')
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
       .limit(limit || FEED_PAGE);
@@ -9316,6 +9442,7 @@ async function _fetchMomentsPage(beforeTs, limit){
         like_count:r.like_count, view_count:r.view_count, comment_count:r.comment_count,
         song_title:r.song_title, song_artist:r.song_artist,
         song_art:r.song_art, song_preview:r.song_preview,
+        comments_on:r.comments_on, downloads_on:r.downloads_on,
         saved:false, liked:false
       };
     });
@@ -9697,15 +9824,41 @@ function renderNotifs(){
       t("no_notifs2")+'</div>';
     return;
   }
+  const liste = groupNotifs(notifs);
   const now=Date.now(),G=[[t("g_today"),86400e3],[t("g_week"),604800e3],[t("g_month"),2592000e3],[t("t_earlier"),Infinity]];
   let i=0;
   G.forEach(([label,limit])=>{
     const grp=[];
-    while(i<notifs.length&&(now-notifs[i].ts)<limit){grp.push(notifs[i]);i++;}
+    while(i<liste.length&&(now-liste[i].ts)<limit){grp.push(liste[i]);i++;}
     if(!grp.length) return;
     const h=document.createElement("div");h.className="ngroup";h.textContent=label;box.appendChild(h);
     grp.forEach(n=>box.appendChild(notifRow(n)));
   });
+}
+function groupNotifs(list){
+  const map=new Map(), order=[];
+  (list||[]).forEach(n=>{
+    let k;
+    if(n.type==="like" && n.postId) k="like:"+n.postId;
+    else if((n.type==="comment"||n.type==="reply") && n.postId) k="cmt:"+n.postId;
+    else if(n.type==="comment_like" && n.postId) k="clk:"+n.postId;
+    else k="id:"+n.id;
+    if(!map.has(k)){
+      map.set(k, Object.assign({}, n, {actors:[n.who].filter(Boolean), ids:[n.id]}));
+      order.push(k);
+    }else{
+      const g=map.get(k);
+      g.ids.push(n.id);
+      if(n.who && g.actors.indexOf(n.who)<0) g.actors.push(n.who);
+      if(!n.seen) g.seen=false;
+      if(n.ts>=g.ts){
+        g.ts=n.ts; g.who=n.who; g.avatar=n.avatar;
+        if(n.text) g.text=n.text;
+        g.type=n.type;
+      }else if(!g.text && n.text) g.text=n.text;
+    }
+  });
+  return order.map(k=>map.get(k));
 }
 /* Bir anın küçük resmini bulur.
    Önce bellekteki listelerde arar; yoksa sunucudan getirip önbelleğe alır. */
@@ -9782,9 +9935,16 @@ function notifRow(n){
 
   // --- metin ---
   const tx=document.createElement("span");tx.className="ntext";
+  const extra=(n.actors && n.actors.length>1);
   const strong=document.createElement("b");strong.textContent=n.who||"";
   const rest=document.createElement("span");
-  if(n.type==="like")             rest.textContent=" "+t("n_liked");
+  if(extra){
+    let verb=" "+t("n_commented_g");
+    if(n.type==="like") verb=" "+t("n_liked_g");
+    else if(n.type==="comment_like") verb=" "+t("n_comment_liked_g");
+    else if(n.type==="reply") verb=" "+t("n_replied_g");
+    rest.textContent=" "+t("n_and_others")+verb;
+  }else if(n.type==="like")             rest.textContent=" "+t("n_liked");
   else if(n.type==="follow")      rest.textContent=" "+t("n_followed");
   else if(n.type==="reply")       rest.textContent=" "+t("n_replied");
   else if(n.type==="comment_like")rest.textContent=" "+t("n_comment_liked");
@@ -9839,7 +9999,7 @@ function notifRow(n){
 
   b.addEventListener("click",()=>{
     n.seen=true;paintDot();renderNotifs();
-    markNotifSeen([n.id]);          // sunucuya da yaz (yenileyince geri gelmesin)
+    markNotifSeen(n.ids && n.ids.length ? n.ids : [n.id]);
 
     // takip → profile
     if(n.type==="follow"){ close("notif"); openProfile(n.who); return; }
@@ -10724,6 +10884,11 @@ function openComments(id){
   /* Nesne de gelebilir, kimlik de — ikisi de kabul edilir. */
   if(id && typeof id === "object"){ window.__tekAn = id; id = id.id; }
   commId=id;
+  try{
+    const it0=byId(id)||window.__tekAn;
+    ensureMomentFlags(it0).then(()=>{ lockCommentBars(it0); });
+    lockCommentBars(it0);
+  }catch(e){}
 
   /* An akışta yoksa oraya kaydırmaya çalışma; tek an sayfası zaten
      açık durumda ve akışa atlamak istenmiyor. */
@@ -10790,6 +10955,7 @@ ci.addEventListener("input",()=>cs.classList.toggle("on",ci.value.trim().length>
 async function sendComment(){
   const v=ci.value.trim(); if(!v) return;
   const it=byId(commId); if(!it) return;
+  if(it.commentsOn===false && !it.mine){ toast(t("cmt_locked")); return; }
   const parent=replyTarget;
   ci.value="";cs.classList.remove("on");
 
@@ -12464,9 +12630,11 @@ function apSarkiCal(){
 /* ── Yorumlar: bu sayfanın İÇİNDE ── */
 async function apYorumlariAc(){
   const it=_apAn; if(!it) return;
+  await ensureMomentFlags(it);
+  lockCommentBars(it);
   $("#apCTitle").textContent = t("comments") + (it.cc ? (" · " + nf(it.cc)) : "");
   paintAv($("#apCAv"), ME);
-  $("#apCInput").placeholder = t("comment_ph");
+  $("#apCInput").placeholder = commentLockedFor(it) ? t("cmt_locked") : t("comment_ph");
   $("#apCList").innerHTML = '<div class="apCEmpty">' + t("loading") + '</div>';
   $("#apComments").classList.add("open");
 
@@ -12510,6 +12678,7 @@ function apYorumlariCiz(liste){
 
 async function apYorumGonder(){
   const it=_apAn; if(!it) return;
+  if(commentLockedFor(it)){ toast(t("cmt_locked")); return; }
   const inp=$("#apCInput");
   const metin=(inp.value||"").trim();
   if(!metin) return;
@@ -14131,7 +14300,7 @@ async function loadMyMoments(){
   try{
     const { data, error } = await sb
       .from('moments')
-      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms')
+      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms, comments_on, downloads_on')
       .eq('author_id', me.id)
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
@@ -14151,6 +14320,8 @@ async function loadMyMoments(){
       lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
       lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
       likes:r.like_count, views:r.view_count, cc:r.comment_count,
+      commentsOn: r.comments_on!==false,
+      downloadsOn: r.downloads_on!==false,
       comments:[], liked:false, saved:false,
       song: r.song_title ? {title:r.song_title, artist:r.song_artist,
                             art:r.song_art, preview:r.song_preview} : null
@@ -14251,7 +14422,7 @@ async function openMiniProfile(name){
   const mBtn=document.createElement("button");
   mBtn.className="ghost";
   mBtn.innerHTML=t("message");
-  mBtn.addEventListener("click",()=>{ close("miniProfile"); openChats(); openChat(name); });
+  mBtn.addEventListener("click",()=>{ openChatFromProfile(name); });
   acts.append(fBtn,mBtn);
 }
 
@@ -15397,7 +15568,7 @@ function renderProfile(){
     msgBtn.className = "pcMsg";
     msgBtn.setAttribute("aria-label", t("act_send_msg"));
     msgBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.6 9.6 0 0 1-2.8-.4L4 21l1.5-4.2A8.3 8.3 0 0 1 4 11.5 8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>';
-    msgBtn.addEventListener("click", ()=>{ close("profile"); openChat(profName); });
+    msgBtn.addEventListener("click", ()=>{ openChatFromProfile(profName); });
 
     if(own){
       const n0 = (typeof unseenNotifCount==="function") ? unseenNotifCount() : (_notifUnseenMemo||0);
@@ -15570,10 +15741,11 @@ function renderMine(box){
       const em=document.createElement("div");em.className="em";em.textContent=it.mood.em;
       c.appendChild(em);
     }
-    const del=document.createElement("button");del.className="del";del.innerHTML=IC.trash;
-    del.setAttribute("aria-label","Sil");
-    del.addEventListener("click",e=>{e.stopPropagation();askDelete(it);});
-    c.appendChild(del);
+    const more=document.createElement("button");more.className="del";
+    more.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/></svg>';
+    more.setAttribute("aria-label", t("act_more"));
+    more.addEventListener("click",e=>{e.stopPropagation();openPostMenu(it,{archive:true});});
+    c.appendChild(more);
     c.addEventListener("click",()=>openArchiveView(it));
     frag.appendChild(c);
   });
@@ -16235,7 +16407,7 @@ function openProfileMenu(who){
     flag:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4.5h13l-2.4 4 2.4 4H5"/></svg>'
   };
 
-  row(I2.msg, t("act_send_msg"), false, ()=>{ close("chatMenu"); close("profile"); openChat(who); });
+  row(I2.msg, t("act_send_msg"), false, ()=>{ close("chatMenu"); openChatFromProfile(who); });
 
   const bst = _blockCache[who];
   if(bst && bst.byMe){
@@ -16638,8 +16810,8 @@ async function applyBlockUI(who){
     strip.className="chatBlockStrip";
     strip.innerHTML=
       '<div class="cbTx">'+
-        '<b>'+t("blocked_title")+'</b>'+
-        '<span>'+t("blocked_by_me_sub")+'</span>'+
+        '<b>'+t("msg_cant_title","Mesaj gönderilemiyor")+'</b>'+
+        '<span>'+t("blocked_send_mine")+'</span>'+
       '</div>'+
       '<button class="cbBtn" id="cbUnblock">'+t("act_unblock")+'</button>';
     const ub=strip.querySelector("#cbUnblock");
@@ -16647,7 +16819,7 @@ async function applyBlockUI(who){
   }else{
     // O BENİ ENGELLEDİ — sebep açıklanmaz (gizlilik)
     strip.className="chatBlockStrip muted";
-    strip.innerHTML='<div class="cbTx"><span>'+t("blocked_me_sub")+'</span></div>';
+    strip.innerHTML='<div class="cbTx"><b>'+t("msg_cant_title","Mesaj gönderilemiyor")+'</b><span>'+t("msg_cant_privacy","Kullanıcının gizlilik ayarları nedeniyle mesaj gönderilemiyor.")+'</span></div>';
   }
   return st;
 }
@@ -16667,6 +16839,51 @@ async function unblockFromChat(who){
     await applyBlockUI(who);
     loadFeed();
   }catch(e){ toast(t("err_generic")); }
+}
+
+
+async function syncConvRequest(who){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me||!who) return;
+  try{
+    const uid=await idOfUsername(who);
+    if(!uid) return;
+    const lo=me.id<uid?me.id:uid, hi=me.id<uid?uid:me.id;
+    const {data:conv}=await sb.from("conversations")
+      .select("id,request_state,requester_id")
+      .eq("user_a",lo).eq("user_b",hi).maybeSingle();
+    if(!conv) return;
+    _convId[who]=conv.id;
+    const c=chatOf(who);
+    c.convId=conv.id;
+    c.requestState=conv.request_state||"none";
+    c.requesterId=conv.requester_id||null;
+    if(typeof renderChatRequestBar==="function") renderChatRequestBar(c);
+  }catch(e){}
+}
+function chatNeedsRequest(c){
+  if(!c) return true;
+  if(c.requestState==="accepted") return false;
+  if(c.requestState==="pending") return false;
+  if(c.convId || _convId[c.who]) return false;
+  return true;
+}
+async function openChatFromProfile(who){
+  if(!who) return;
+  await loadConversations();
+  const c=chatOf(who);
+  if(chatNeedsRequest(c)){
+    const ok=await onaySor(
+      t("req_ask_title"),
+      t("req_ask_body"),
+      t("req_ask_yes"),
+      false
+    );
+    if(!ok) return;
+  }
+  if($("#profile").classList.contains("open")) close("profile");
+  if($("#miniProfile").classList.contains("open")) close("miniProfile");
+  await openChat(who);
 }
 
 async function openChat(who){
@@ -16727,8 +16944,8 @@ async function renderChatRequestBar(c){
     bar.className="chatReqBar mine";
     bar.innerHTML=
       '<div class="cbTx">'+
-        '<b>'+t("req_sent2")+'</b>'+
-        '<span>'+esc(who_or(c))+' '+t("req_waiting")+'</span>'+
+        '<b>'+t("msg_cant_title","Mesaj gönderilemiyor")+'</b>'+
+        '<span>'+t("msg_cant_request","İstek kabul edilene kadar mesaj gönderilemiyor.")+'</span>'+
       '</div>';
   }else{
     // --- BANA İSTEK GELDİ: yazma kapalı, kabul/sil ---
@@ -17139,6 +17356,7 @@ async function sendMsg(){
       sohbetleriTazeleGecikmeli();
     }
     if(chatWho===who) renderChat();
+    await syncConvRequest(who);
   }catch(e){ toast(t("err_msg")); }
 }
 ms.addEventListener("click",sendMsg);
@@ -17157,6 +17375,13 @@ $("#tabMsg").addEventListener("click",()=>{closeMainPanels();setTab($("#tabMsg")
 async function sendMedia(src, tur, sure){
   if(!chatWho) return;
   const who=chatWho;
+  const ccM=chatOf(who);
+  if(ccM && ccM.requestState==="pending"){
+    const mine=window.__me && ccM.requesterId===window.__me.id;
+    toast(mine?t("req_wait_toast"):t("req_accept_first"));
+    renderChatRequestBar(ccM);
+    return;
+  }
 
   /* VİDEO DA GÖNDERİLEBİLMELİ.
      Önceden her şey fotoğraf sayılıyordu: video ".jpg" uzantısıyla
@@ -17200,6 +17425,7 @@ async function sendMedia(src, tur, sure){
     localMsg.media=sb.storage.from('moments').getPublicUrl(path).data.publicUrl;
     if(chatWho===who) renderChat();
     if(!_convId[who]) await loadConversations();
+    await syncConvRequest(who);
   }catch(e){ toast(t("err_send_generic")); }
 }
 
@@ -17215,7 +17441,209 @@ const REPORT_REASONS=[
   ["telif",t("r_copyright")],
   ["diger",t("r_other")]
 ];
-function openPostMenu(it){
+async function ensureMomentFlags(it){
+  if(!it || !isReal(it.id) || !window.__sb) return it;
+  if(it._flagsLoaded) return it;
+  try{
+    const {data}=await window.__sb.from("moments")
+      .select("comments_on,downloads_on").eq("id",it.id).maybeSingle();
+    if(data){
+      it.commentsOn = data.comments_on!==false;
+      it.downloadsOn = data.downloads_on!==false;
+    }
+    it._flagsLoaded=true;
+  }catch(e){}
+  return it;
+}
+function commentLockedFor(it){
+  return !!(it && it.commentsOn===false && !it.mine);
+}
+function lockCommentBars(it){
+  const lock=commentLockedFor(it);
+  const bar=document.querySelector("#comments .cbar");
+  const inp=document.getElementById("commInput");
+  if(bar) bar.classList.toggle("locked", lock);
+  if(inp){
+    inp.disabled=lock;
+    inp.placeholder=lock?t("cmt_locked"):t("comment_ph");
+  }
+  const ap=document.querySelector(".apCBar");
+  const apIn=document.getElementById("apCInput");
+  if(ap) ap.classList.toggle("locked", lock);
+  if(apIn){
+    apIn.disabled=lock;
+    apIn.placeholder=lock?t("cmt_locked"):t("comment_ph");
+  }
+}
+function commentsOn(it){ return !it || it.commentsOn!==false; }
+function downloadsOn(it){ return !it || it.downloadsOn!==false; }
+
+function paintWm(ctx,w,h,who,tSec){
+  const side = (tSec==null) ? 1 : (Math.floor(tSec/4)%2); // 0 sol üst, 1 sağ üst
+  const pad=Math.max(18, Math.round(w*0.04));
+  const fs=Math.max(16, Math.round(w*0.042));
+  const brand='klipsy';
+  const handle='@'+(who||'klipsy');
+  ctx.save();
+  ctx.font='700 '+fs+'px Inter, system-ui, sans-serif';
+  const tw=ctx.measureText(brand).width;
+  const x = side ? (w-pad) : pad;
+  const y = pad + fs;
+  ctx.textAlign = side ? 'right' : 'left';
+  ctx.textBaseline='alphabetic';
+  ctx.shadowColor='rgba(255,59,107,.9)';
+  ctx.shadowBlur=Math.round(fs*0.85);
+  ctx.fillStyle='#fff';
+  ctx.fillText(brand, x, y);
+  ctx.shadowBlur=Math.round(fs*0.35);
+  ctx.shadowColor='rgba(0,0,0,.65)';
+  ctx.font='600 '+Math.round(fs*0.62)+'px Inter, system-ui, sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.86)';
+  ctx.fillText(handle, x, y+Math.round(fs*0.85));
+  ctx.restore();
+}
+
+async function downloadWatermarked(it){
+  if(!it) return;
+  if(!it.mine && !downloadsOn(it)){ toast(t("dl_off")); return; }
+  toast(t("dl_wait"));
+  try{
+    if(it.kind==="video") await _dlVideoWm(it);
+    else await _dlImageWm(it);
+    toast(t("dl_ok"));
+  }catch(e){
+    console.warn('dl',e);
+    toast(t("dl_fail"));
+  }
+}
+function _saveBlob(blob, name){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+async function _dlImageWm(it){
+  const url=it.src||it.poster;
+  if(!url) throw new Error('no src');
+  const img=await new Promise((ok,bad)=>{
+    const im=new Image(); im.crossOrigin='anonymous';
+    im.onload=()=>ok(im); im.onerror=bad; im.src=url+(url.includes('?')?'&':'?')+'wm=1';
+  });
+  const c=document.createElement('canvas');
+  c.width=img.naturalWidth||img.width; c.height=img.naturalHeight||img.height;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(img,0,0);
+  paintWm(ctx,c.width,c.height,it.who||ME,null);
+  const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.92));
+  if(!blob) throw new Error('blob');
+  _saveBlob(blob, 'klipsy-'+(it.id||Date.now()).toString().slice(0,8)+'.jpg');
+}
+async function _fetchMediaBlob(url){
+  const r=await fetch(url, {mode:"cors", cache:"no-store"});
+  if(!r.ok) throw new Error("fetch "+r.status);
+  return await r.blob();
+}
+async function _dlVideoWm(it){
+  const url=it.src; if(!url) throw new Error("no video");
+  let raw=null;
+  try{ raw=await _fetchMediaBlob(url); }catch(e){ console.warn("video fetch", e); }
+
+  // 1) filigranlı kayıt dene
+  try{
+    const srcUrl = raw ? URL.createObjectURL(raw) : url;
+    const v=document.createElement("video");
+    v.muted=true; v.playsInline=true; v.setAttribute("playsinline","");
+    v.crossOrigin="anonymous";
+    v.preload="auto";
+    v.style.cssText="position:fixed;left:-99px;top:-99px;width:4px;height:4px;opacity:0;pointer-events:none";
+    document.body.appendChild(v);
+    v.src=srcUrl;
+    await new Promise((ok,bad)=>{
+      const t=setTimeout(()=>bad(new Error("video timeout")), 20000);
+      v.onloadeddata=()=>{ clearTimeout(t); ok(); };
+      v.onerror=()=>{ clearTimeout(t); bad(new Error("video error")); };
+    });
+    const w=v.videoWidth||720, h=v.videoHeight||1280;
+    const c=document.createElement("canvas"); c.width=w; c.height=h;
+    const ctx=c.getContext("2d");
+    if(!window.MediaRecorder || !c.captureStream) throw new Error("no recorder");
+    const stream=c.captureStream(30);
+    const types=["video/webm;codecs=vp8","video/webm","video/mp4"];
+    let mime="";
+    for(const t of types){ try{ if(MediaRecorder.isTypeSupported(t)){ mime=t; break; } }catch(e){} }
+    const rec= mime ? new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000}) : new MediaRecorder(stream);
+    const chunks=[];
+    rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+    const stopped=new Promise(r=>rec.onstop=r);
+    rec.start(250);
+    try{ v.currentTime=0; }catch(e){}
+    await v.play();
+    let alive=true;
+    const draw=()=>{
+      if(!alive) return;
+      try{
+        if(v.readyState>=2){
+          ctx.drawImage(v,0,0,w,h);
+          paintWm(ctx,w,h,it.who||ME, v.currentTime||0);
+        }
+      }catch(e){}
+      requestAnimationFrame(draw);
+    };
+    draw();
+    const maxMs=Math.min(((v.duration&&isFinite(v.duration)?v.duration:12)*1000)+600, 45000);
+    await new Promise(r=>{
+      const to=setTimeout(r, maxMs);
+      v.onended=()=>{ clearTimeout(to); r(); };
+    });
+    alive=false;
+    try{ v.pause(); }catch(e){}
+    if(rec.state!=="inactive") rec.stop();
+    await stopped;
+    try{ v.remove(); }catch(e){}
+    if(raw) try{ URL.revokeObjectURL(srcUrl); }catch(e){}
+    if(chunks.length){
+      const type=rec.mimeType||"video/webm";
+      const ext=/mp4/i.test(type)?"mp4":"webm";
+      _saveBlob(new Blob(chunks,{type:type}), "klipsy-"+(it.id||Date.now()).toString().slice(0,8)+"."+ext);
+      return;
+    }
+    throw new Error("empty record");
+  }catch(e){
+    console.warn("wm record", e);
+  }
+
+  // 2) kayıt olmazsa orijinal video insin (boş kalmasın)
+  if(raw && raw.size){
+    const ext=(raw.type&&raw.type.indexOf("mp4")>=0)?"mp4":(raw.type&&raw.type.indexOf("webm")>=0)?"webm":"mp4";
+    _saveBlob(raw, "klipsy-"+(it.id||Date.now()).toString().slice(0,8)+"."+ext);
+    return;
+  }
+  // 3) son çare: doğrudan link
+  const a=document.createElement("a");
+  a.href=url; a.download="klipsy-video.mp4"; a.target="_blank";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+async function toggleMomentFlag(it, field, val){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me||!it||!isReal(it.id)){ toast(t("err_generic")); return; }
+  const col = field==="comments" ? "comments_on" : "downloads_on";
+  const {error}=await sb.from("moments").update({[col]:val}).eq("id",it.id).eq("author_id",me.id);
+  if(error){
+    console.warn(error);
+    toast(error.message && /column/i.test(error.message) ? t("err_generic") : t("err_generic"));
+    return false;
+  }
+  if(field==="comments") it.commentsOn=val;
+  else it.downloadsOn=val;
+  if(Array.isArray(_myMoments)){
+    const m=_myMoments.find(x=>x.id===it.id); if(m){ if(field==="comments") m.commentsOn=val; else m.downloadsOn=val; }
+  }
+  return true;
+}
+
+function openPostMenu(it, opt){
   try{
     const box=$("#postMenuList");box.innerHTML="";
     const mkRow=(icon,label,danger,fn)=>{
@@ -17224,8 +17652,39 @@ function openPostMenu(it){
       b.addEventListener("click",()=>{ close("postMenu"); fn(); });
       box.appendChild(b);
     };
-    mkRow(I.send,t("act_share2"),false,()=>openShare(it.id));
-    if(!it.mine){
+    const Ico={
+      dl:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7.5 11.5 4.5 4.5 4.5-4.5"/><path d="M5 19h14"/></svg>',
+      cmt:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8.2 8.2 0 0 1-8.5 8H8l-4 2 1.2-3.4A8.2 8.2 0 1 1 21 12z"/></svg>',
+      tr:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.6h15"/><path d="M9.4 6.6V4.8h5.2v1.8"/><path d="M6.6 6.6 7.5 20h9l.9-13.4"/></svg>'
+    };
+    const mkSw=(icon,label,on,fn)=>{
+      const b=document.createElement("button");b.className="shrow toggle";
+      b.innerHTML='<span class="pmIcon">'+icon+'</span><span class="nm">'+label+'</span>'+
+        '<span class="iosSw'+(on?' on':'')+'"><i></i></span>';
+      const sw=b.querySelector('.iosSw');
+      b.addEventListener("click", async ev=>{
+        ev.preventDefault();
+        const next=!sw.classList.contains('on');
+        const ok=await fn(next);
+        if(ok===false) return;
+        sw.classList.toggle('on', next);
+      });
+      box.appendChild(b);
+    };
+    if(it.mine){
+      mkRow(Ico.dl, t("dl_wm"), false, ()=>downloadWatermarked(it));
+      mkSw(Ico.cmt, t("cmt_label","Yorumlar"), commentsOn(it), async(val)=>{
+        const ok=await toggleMomentFlag(it,"comments", val);
+        if(ok) lockCommentBars(it);
+        return ok;
+      });
+      mkSw(Ico.dl, t("dl_allow","İndirmeye izin ver"), downloadsOn(it), async(val)=>{
+        return await toggleMomentFlag(it,"downloads", val);
+      });
+      mkRow(Ico.tr, t("delete_moment_q").replace("?",""), true, ()=>askDelete(it));
+    }else{
+      if(downloadsOn(it)) mkRow(Ico.dl, t("dl_wm"), false, ()=>downloadWatermarked(it));
+      mkRow(I.send,t("act_share2"),false,()=>openShare(it.id));
       mkRow('<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
         t("act_report2"),true,()=>openReport(it.id));
     }

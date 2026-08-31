@@ -7384,13 +7384,16 @@ html.native button,html.native .tab{touch-action:manipulation}
   letter-spacing:-.01em;text-shadow:0 1px 6px rgba(0,0,0,.95);opacity:0;transition:opacity .2s;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .arc:active .tm{opacity:1}
-/* video işareti: sağ üstte küçük üçgen */
-.arc .arcPlay{position:absolute;top:5px;right:5px;left:auto;transform:none;
-  width:18px;height:18px;border-radius:0;background:none;backdrop-filter:none;
-  filter:drop-shadow(0 1px 3px rgba(0,0,0,.9))}
-.arc .arcPlay svg{width:14px;height:14px}
-/* silme/kaydetme düğmesi — çembersiz, sağ altta sade ikon */
-.arc .del{position:absolute;bottom:4px;right:4px;top:auto;
+/* video: sol alt play + izlenme */
+.arc .arcPlay{position:absolute;left:6px;bottom:6px;top:auto;right:auto;transform:none;
+  width:auto;height:20px;border-radius:0;background:none;backdrop-filter:none;
+  display:flex;align-items:center;gap:4px;
+  filter:drop-shadow(0 1px 4px rgba(0,0,0,.95))}
+.arc .arcPlay svg{width:16px;height:16px;flex:none}
+.arc .arcPlay em{font-style:normal;font-size:12px;font-weight:700;color:#fff;
+  letter-spacing:-.02em;line-height:1;text-shadow:0 1px 5px rgba(0,0,0,.95)}
+/* 3 nokta / kaydet — sağ üst */
+.arc .del{position:absolute;top:4px;right:4px;bottom:auto;
   width:24px;height:24px;border-radius:0;
   display:grid;place-items:center;color:#fff;opacity:.95;
   background:none;border:0;box-shadow:none;
@@ -8170,6 +8173,9 @@ html.native button,html.native .tab{touch-action:manipulation}
   color:rgba(255,255,255,.9);font-family:inherit;text-align:left;
   transition:background .16s}
 .gLangSheet .glsList button:active{background:rgba(255,255,255,.06)}
+.gLangSheet .glsList .lflag{width:28px;height:28px;flex:none;border-radius:8px;
+  display:grid;place-items:center;font-size:18px;line-height:1;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
 .gLangSheet .glsList .lmark{width:30px;height:30px;flex:none;border-radius:99px;
   display:grid;place-items:center;font-size:11px;font-weight:800;letter-spacing:.04em;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
@@ -8184,6 +8190,25 @@ html.native button,html.native .tab{touch-action:manipulation}
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);border-color:transparent;color:#fff;
   box-shadow:0 4px 14px -4px rgba(255,59,107,.7)}
 .gLangSheet .glsList button.on .lcheck{opacity:1}
+
+[data-theme="light"] .gLangSheet .glsScrim{background:rgba(0,0,0,.28)}
+[data-theme="light"] .gLangSheet .glsBox{
+  background:#fff;
+  border-top:1px solid rgba(0,0,0,.06);
+  box-shadow:0 -18px 50px -18px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.9)}
+[data-theme="light"] .gLangSheet .glsGrip{background:rgba(0,0,0,.18)}
+[data-theme="light"] .gLangSheet .glsHead h3{color:#111}
+[data-theme="light"] .gLangSheet .glsHead p{color:#6b6b76}
+[data-theme="light"] .gLangSheet .glsList button{color:#1a1a22}
+[data-theme="light"] .gLangSheet .glsList button:active{background:rgba(0,0,0,.04)}
+[data-theme="light"] .gLangSheet .glsList .lmark{
+  background:#f3f3f6;border-color:rgba(0,0,0,.08);color:#555}
+[data-theme="light"] .gLangSheet .glsList button.on{background:rgba(255,59,107,.08)}
+[data-theme="light"] .gLangSheet .glsList button.on .lname{color:#111}
+[data-theme="light"] .gLangSheet .glsList .lflag{
+  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  font-size:18px;line-height:1;background:#f3f3f6;border:1px solid rgba(0,0,0,.06)}
+
 .gbrand{display:flex;flex-direction:column;align-items:center;gap:11px;margin-bottom:30px}
 @keyframes logoIn{from{opacity:0;transform:scale(.82) translateY(8px)}to{opacity:1;transform:none}}
 .gbrand .glogo{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;
@@ -8405,19 +8430,69 @@ html.native button,html.native .tab{touch-action:manipulation}
         window.I18N.list.forEach(function(l){
           var b=document.createElement('button');
           b.className=(l.code===window.I18N.lang)?'on':'';
-          b.innerHTML='<span class="lmark">'+l.code.toUpperCase()+'</span>'+
+          var flags={tr:'🇹🇷',en:'🇬🇧',es:'🇪🇸',ar:'🇸🇦',fr:'🇫🇷',de:'🇩🇪',ru:'🇷🇺',pt:'🇵🇹',hi:'🇮🇳',id:'🇮🇩'};
+          b.innerHTML='<span class="lflag">'+(flags[l.code]||'🌐')+'</span>'+
                       '<span class="lname">'+l.name+'</span>'+CHECK;
           b.addEventListener('click',function(){
             window.I18N.set(l.code);
             paint();
             close();
+            if(typeof renderSettings==="function" && document.getElementById("settings") && document.getElementById("settings").classList.contains("open")){
+              try{ renderSettings(); }catch(e){}
+            }
           });
           list.appendChild(b);
         });
       }
 
-      function open(){ sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
+      function wireLangSwipe(){
+        if(sheet._langSwipe) return;
+        sheet._langSwipe=true;
+        var box=sheet.querySelector('.glsBox');
+        if(!box) return;
+        var y0=0,x0=0,dy=0,on=false,ok=false;
+        function down(e){
+          if(!sheet.classList.contains('open')) return;
+          var t=e.touches?e.touches[0]:e;
+          var listEl=sheet.querySelector('.glsList');
+          if(listEl && listEl.contains(e.target) && listEl.scrollTop>4) return;
+          y0=t.clientY; x0=t.clientX; dy=0; on=true; ok=false;
+          box.style.transition='none';
+        }
+        function move(e){
+          if(!on) return;
+          var t=e.touches?e.touches[0]:e;
+          var ddy=t.clientY-y0, ddx=t.clientX-x0;
+          if(!ok){
+            if(Math.abs(ddy)<10 && Math.abs(ddx)<10) return;
+            if(Math.abs(ddx)>Math.abs(ddy) || ddy<0){ on=false; box.style.transition=''; box.style.transform=''; return; }
+            ok=true;
+          }
+          dy=Math.max(0,ddy);
+          box.style.transform='translateY('+dy+'px)';
+          if(e.cancelable) e.preventDefault();
+        }
+        function up(){
+          if(!on) return;
+          on=false;
+          box.style.transition='transform .22s ease';
+          if(dy>90){
+            box.style.transform='translateY(110%)';
+            setTimeout(function(){ box.style.transform=''; box.style.transition=''; close(); },220);
+          }else{
+            box.style.transform='';
+            setTimeout(function(){ box.style.transition=''; },220);
+          }
+          dy=0; ok=false;
+        }
+        box.addEventListener('touchstart',down,{passive:true});
+        box.addEventListener('touchmove',move,{passive:false});
+        box.addEventListener('touchend',up);
+        box.addEventListener('touchcancel',up);
+      }
+      function open(){ paint(); if(sheet.parentElement!==document.body) document.body.appendChild(sheet); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); wireLangSwipe(); }
       function close(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
+      window.openLangSheet=open;
 
       paint();
       btn.addEventListener('click', open);
@@ -11329,10 +11404,10 @@ function wireSheetSwipeOn(sheet, boxSel, closeFn){
   }
   let startY=0, startX=0, dragging=false, dy=0, decided=false;
   function canStart(e){
-    if(e.target.closest("input, textarea, button, a, select, canvas, video")) return false;
-    if(e.target.closest(".grip, .fpGrip, .plGrip, h3, .chead, .fpHead, p")) return true;
-    const scrollEl = box.querySelector(".shlist, .commlist, .fpList, .cvStrip, .plList");
+    if(e.target.closest(".grip, .fpGrip, .plGrip, .glsGrip, .glsHead, h3, .chead, .fpHead, p")) return true;
+    const scrollEl = box.querySelector(".shlist, .commlist, .fpList, .cvStrip, .plList, .glsList");
     if(scrollEl && scrollEl.contains(e.target)) return scrollEl.scrollTop <= 2;
+    if(e.target.closest("input, textarea, button, a, select, canvas, video")) return false;
     return true;
   }
   function onDown(e){
@@ -11356,7 +11431,7 @@ function wireSheetSwipeOn(sheet, boxSel, closeFn){
     }
     dy = Math.max(0, ddy);
     box.style.transform = "translateY(" + dy + "px)";
-    const scrim = sheet.querySelector(".scrim, .fpScrim, .plScrim");
+    const scrim = sheet.querySelector(".scrim, .fpScrim, .plScrim, .glsScrim");
     if(scrim) scrim.style.opacity = String(Math.max(0.15, 1 - dy/380));
     if(e.cancelable) e.preventDefault();
   }
@@ -11364,7 +11439,7 @@ function wireSheetSwipeOn(sheet, boxSel, closeFn){
     if(!dragging && !decided){ dragging = false; return; }
     dragging = false;
     box.style.transition = "";
-    const scrim = sheet.querySelector(".scrim, .fpScrim, .plScrim");
+    const scrim = sheet.querySelector(".scrim, .fpScrim, .plScrim, .glsScrim");
     if(dy > 110){
       box.style.transform = "translateY(110%)";
       if(scrim) scrim.style.opacity = "0";
@@ -15188,18 +15263,13 @@ function setTheme(t){
 // dil seçme satırı
 function langRow(){
   const wrap=document.createElement("div");wrap.className="setRow langRow";
+  const cur=(window.I18N&&window.I18N.list.find(l=>l.code===window.I18N.lang));
   wrap.innerHTML='<span class="setIc"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M3 12h18"/><path d="M12 2.8c2.5 2.6 3.9 5.9 3.9 9.2s-1.4 6.6-3.9 9.2c-2.5-2.6-3.9-5.9-3.9-9.2s1.4-6.6 3.9-9.2z"/></svg></span>'+
-    '<span class="setTxt"><b>'+t("language")+'</b><span>'+(window.I18N?window.I18N.list.find(l=>l.code===window.I18N.lang).name:"")+'</span></span>';
-  const sel=document.createElement("select");sel.className="langSelect";
-  (window.I18N?window.I18N.list:[]).forEach(l=>{
-    const o=document.createElement("option");o.value=l.code;o.textContent=l.name;
-    if(window.I18N && l.code===window.I18N.lang) o.selected=true;
-    sel.appendChild(o);
+    '<span class="setTxt"><b>'+t("language")+'</b><span>'+(cur?cur.name:"")+'</span></span>'+
+    '<span class="setGo" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></span>';
+  wrap.addEventListener("click",()=>{
+    if(typeof window.openLangSheet==="function") window.openLangSheet();
   });
-  sel.addEventListener("change",e=>{
-    if(window.I18N){ window.I18N.set(e.target.value); renderSettings(); }
-  });
-  wrap.appendChild(sel);
   return wrap;
 }
 
@@ -15959,11 +16029,6 @@ function renderMine(box){
     const imgUrl = (it.kind==="video") ? (it.poster||null) : (it.src||null);
     if(imgUrl) c.setAttribute("data-bg", imgUrl);
     else if(it.kind==="video") c.appendChild(makeArcPlaceholder());
-    if(it.kind==="video"){
-      const pl=document.createElement("div");pl.className="arcPlay";
-      pl.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
-      c.appendChild(pl);
-    }
     const g=document.createElement("div");g.className="grad";
     const tm=document.createElement("div");tm.className="tm";tm.textContent=rel(it.ts);
     c.append(g,tm);
@@ -16158,11 +16223,6 @@ function renderSaved(box){
     const imgUrl = (it.kind==="video") ? (it.poster||null) : (it.src||null);
     if(imgUrl) c.setAttribute("data-bg", imgUrl);
     else if(it.kind==="video") c.appendChild(makeArcPlaceholder());
-    if(it.kind==="video"){
-      const pl=document.createElement("div");pl.className="arcPlay";
-      pl.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
-      c.appendChild(pl);
-    }
     const g=document.createElement("div");g.className="grad";
     const tm=document.createElement("div");tm.className="tm";tm.textContent=adiniGoster(it.who);
     c.append(g,tm);
@@ -17555,6 +17615,12 @@ function pushMsg(who,msg,silent){
 }
 const mi=$("#msgInput"),ms=$("#msgSend");
 mi.addEventListener("input",()=>ms.classList.toggle("on",mi.value.trim().length>0));
+function dmReqErr(msg){
+  const m=String(msg||"");
+  if(/Istek bekleniyor|kabul edilene kadar|request pending/i.test(m)) return t("req_wait_toast");
+  if(/Once kabul|accept request|istegini kabul/i.test(m)) return t("req_accept_first");
+  return null;
+}
 async function sendMsg(){
   const v=mi.value.trim(); if(!v||!chatWho) return;
   const who=chatWho;
@@ -17594,7 +17660,9 @@ async function sendMsg(){
     });
     if(error){
       localMsg._failed=true;
-      if(/karşılıklı|mutual/i.test(error.message))
+      const rq=dmReqErr(error.message);
+      if(rq) toast(rq);
+      else if(/karşılıklı|mutual/i.test(error.message))
         toast(t("dm_mutual"));
       else toast(t("err_msg_send")+" "+error.message);
       if(chatWho===who) renderChat();
@@ -17636,8 +17704,8 @@ async function sendMedia(src, tur, sure){
   if(!chatWho) return;
   const who=chatWho;
   const ccM=chatOf(who);
-  if(ccM && ccM.requestState==="pending"){
-    const mine=window.__me && ccM.requesterId===window.__me.id;
+  if(ccM && (ccM.requestState==="pending" || ccM._reqLocked)){
+    const mine=window.__me && (ccM.requesterId===window.__me.id || ccM._reqLocked);
     toast(mine?t("req_wait_toast"):t("req_accept_first"));
     renderChatRequestBar(ccM);
     return;

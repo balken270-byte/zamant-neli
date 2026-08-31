@@ -10232,8 +10232,9 @@ function build(it){
   let mediaEl;
   if(it.kind==="video"){
     mediaEl=document.createElement("video");
-    mediaEl.src=it.src;mediaEl.loop=true;mediaEl.muted=true;mediaEl.playsInline=true;
-    mediaEl.setAttribute("playsinline","");mediaEl.preload="metadata";
+    mediaEl.dataset.src=it.src;
+    mediaEl.loop=true;mediaEl.muted=true;mediaEl.playsInline=true;
+    mediaEl.setAttribute("playsinline","");mediaEl.preload="none";
     // Yerel oynat ikonunu bastır: kapak varsa onu, yoksa koyu yer tutucuyu koy.
     mediaEl.poster = it.poster || BLANK_POSTER;
     mediaEl.controls=false; mediaEl.disablePictureInPicture=true;
@@ -10684,6 +10685,16 @@ function currentIndex(){
 let curEra="";
 let soundOn=true;
 const seenIds=new Set();
+function bindFeedVideo(v, on){
+  if(!v) return;
+  const url=v.dataset.src;
+  if(on){
+    if(url && v.getAttribute('src')!==url){ v.src=url; v.preload='metadata'; }
+  }else{
+    try{ v.pause(); }catch(e){}
+    if(v.getAttribute('src')){ try{ v.removeAttribute('src'); v.load(); }catch(e){} }
+  }
+}
 function syncActive(){
   const idx=currentIndex();
   const posts=list.querySelectorAll(".post");
@@ -10693,11 +10704,15 @@ function syncActive(){
     if(blocked){ posts.forEach((p,i)=>{ p.classList.toggle("active",i===idx); if(i!==idx) p.classList.remove("bare","paused","vctrl"); }); }
     else posts.forEach((p,i)=>{
       if(p._video){
-        if(i===idx){
-          // şarkı eklenmişse videonun kendi sesi kısılır, şarkı çalar
-          p._video.muted = p._songAudio ? true : !soundOn;
-          p._video.play().catch(()=>{p._video.muted=true;p._video.play().catch(()=>{});});
-        }else{try{p._video.pause()}catch(e){}p._video.muted=true;}
+        if(i===idx || i===idx+1){
+          bindFeedVideo(p._video, true);
+          if(i===idx){
+            p._video.muted = p._songAudio ? true : !soundOn;
+            p._video.play().catch(()=>{p._video.muted=true;p._video.play().catch(()=>{});});
+          }else { try{p._video.pause()}catch(e){} p._video.muted=true; }
+        }else{
+          bindFeedVideo(p._video, false);
+        }
       }
       if(p._songAudio){
         if(i===idx){
@@ -10723,6 +10738,7 @@ function syncActive(){
      Burada etkin anın videosu duruyorsa başlatılır. */
   if(!blocked && posts[idx]){
     const p = posts[idx];
+    if(p._video) bindFeedVideo(p._video, true);
     if(p._video && p._video.paused && !p.classList.contains("paused")){
       p._video.muted = p._songAudio ? true : !soundOn;
       p._video.play().catch(()=>{

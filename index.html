@@ -5618,15 +5618,13 @@ svg{display:block}
 .mapFail{position:absolute;inset:0;display:grid;place-items:center;
   background:#12121a;color:var(--t3);font-size:13.5px;text-align:center;padding:24px}
 
-/* Kutucuklar sert belirmesin, yumuşakça binsin (kopukluk hissini azaltır) */
-.leaflet-tile{ will-change:auto }
-.ktile{ transition:opacity .18s ease-out }
-/* Eski kutucuklar yenisi gelene kadar ekranda kalsın */
-.leaflet-tile-container img{ backface-visibility:hidden }
-/* Kaydırma sırasında görüntüyü zorlamayan ayarlar */
-.leaflet-container{background:#12121a!important;font-family:inherit;
+/* Vektör harita: kare fade yok, zemin stil renginde (delik görünmesin) */
+.leaflet-tile,.ktile{transition:none!important;opacity:1!important}
+.leaflet-container{background:#1b1b1b!important;font-family:inherit;
   -webkit-tap-highlight-color:transparent}
+[data-theme="light"] .leaflet-container{background:#f7f3eb!important}
 .leaflet-pane{ will-change:transform }
+.maplibregl-canvas{display:block}
 .leaflet-control-attribution{font-size:9px!important;background:rgba(0,0,0,.4)!important;color:#888!important}
 .leaflet-control-attribution a{color:#aaa!important}
 .leaflet-control-zoom{margin-top:calc(var(--sat) + 175px)!important;margin-left:12px!important;border:0!important}
@@ -7224,7 +7222,8 @@ html.native button,html.native .tab{touch-action:manipulation}
 .crow2 .pv{font-size:13px;color:var(--t3);margin-top:3px;letter-spacing:-.01em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2.unread .nm{font-weight:700}
-.crow2.unread .pv{color:rgba(255,255,255,.9)}
+.crow2.unread .pv{color:var(--t1);font-weight:500}
+[data-theme="light"] .crow2.unread .pv{color:#222}
 .crow2 .badge2{min-width:20px;height:20px;padding:0 5px;border-radius:99px;
   background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
 
@@ -8952,6 +8951,15 @@ function monthNames(){
   }
 }
 let AY=monthNames();
+function chatDate(ms){
+  if(!ms) return "";
+  const d=new Date(ms), n=new Date();
+  const same = d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate();
+  if(same) return clockOf(ms);
+  const dd=String(d.getDate()).padStart(2,"0");
+  const mm=String(d.getMonth()+1).padStart(2,"0");
+  return dd+"."+mm+"."+d.getFullYear();
+}
 function rel(ms){
   const s=Math.max(0,Math.round((Date.now()-ms)/1000));
   if(s<8) return t("just_now2");
@@ -11311,10 +11319,26 @@ function mapTileUrl(){
 
 let _mapTileLayer=null;
 let _mapGL=null;
-const CARTO_VECTOR_STYLE="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+function cartoVectorStyle(){
+  const light = document.documentElement.getAttribute('data-theme')==='light';
+  return light
+    ? "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+    : "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+}
 
 function prefetchYonunde(){ /* MapLibre vector cache handles this. */ }
 function prefetchKomsuSeviyeler(){ /* MapLibre vector cache handles this. */ }
+
+function tuneMapGL(gl){
+  if(!gl) return;
+  try{ gl._fadeDuration = 0; }catch(e){}
+  try{
+    if(gl.style && typeof gl.setMinZoom==='function'){
+      /* komşu karoları daha geniş tut */
+    }
+  }catch(e){}
+  try{ gl.resize(); }catch(e){}
+}
 
 function addCARTOVectorLayer(){
   if(!_map || !window.L || !L.maplibreGL) return null;
@@ -11322,11 +11346,18 @@ function addCARTOVectorLayer(){
     try{ _map.removeLayer(_mapTileLayer); }catch(e){}
   }
   _mapTileLayer=L.maplibreGL({
-    style:CARTO_VECTOR_STYLE,
+    style: cartoVectorStyle(),
     interactive:false,
-    attribution:'© OpenStreetMap © CARTO'
+    attribution:'© OpenStreetMap © CARTO',
+    fadeDuration:0,
+    maxTileCacheSize:1200,
+    antialias:true,
+    refreshExpiredTiles:false,
+    trackResize:true,
+    renderWorldCopies:true
   }).addTo(_map);
   _mapGL=_mapTileLayer.getMaplibreMap ? _mapTileLayer.getMaplibreMap() : null;
+  tuneMapGL(_mapGL);
   return _mapTileLayer;
 }
 
@@ -11460,8 +11491,8 @@ async function initMap(){
     zoomControl:true, attributionControl:true,
     preferCanvas:true,
     zoomAnimation:true, markerZoomAnimation:false,
-    fadeAnimation:true,              // kutucuklar yumuşak binsin
-    zoomSnap:0.5,                    // kademeli yakınlaşma (daha akıcı his)
+    fadeAnimation:false,
+    zoomSnap:0.5,
     wheelDebounceTime:24,
     inertia:true, inertiaDeceleration:2200, inertiaMaxSpeed:1600,
     easeLinearity:0.22
@@ -15773,7 +15804,12 @@ function paintDmDot(){
 function preview(c){
   const m=lastOf(c);
   if(!m) return t("no_messages2");
-  const body=m.moment||m.kind==="moment"?t("ok_moment_sent"):((m.media||m.kind==="media")?t("photo"):(m.text||""));
+  let body="";
+  if(m.moment || m.kind==="moment") body=t("ok_moment_sent");
+  else if(m.media || m.kind==="media" || m.kind==="image" || m.kind==="photo") body=t("photo");
+  else if(m.kind==="video") body=t("video")||"Video";
+  else body=(m.text||m.body||"").toString().replace(/\s+/g," ").trim();
+  if(!body) body=t("no_messages2");
   return (m.me?"Sen: ":"")+body;
 }
 
@@ -15878,7 +15914,7 @@ function buildChatRow(c, isRequestRow){
     nm.appendChild(s);
   }
   const tm=document.createElement("span");tm.className="tm";
-  const l=lastOf(c);tm.textContent=l?rel(l.ts):"";
+  const l=lastOf(c);tm.textContent=l?chatDate(l.ts):"";
   top.append(nm,tm);
   const pv=document.createElement("div");pv.className="pv";
   const isPending = c.requestState==='pending';

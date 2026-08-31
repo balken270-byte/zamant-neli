@@ -402,6 +402,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       r_other:"Diğer",
       song2:"Şarkı",
       song_add2:"Şarkı ekle",
+      song_cinema:"Bu ana bir şarkı bağla",
       song_label:"Şarkı:",
       cover_video_only:"Kapak sadece videolarda seçilir",
       saved_desc:"Kaydettiğin anlar. Akıştan çıksa bile burada kalır, yalnızca sana görünür.",
@@ -446,7 +447,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#F2F2F5}</styl
       loc_searching:"Aranıyor", loc_none:"Konum yok",
       cover_pick:"Kapak seç", cover_q:"Videonun hangi karesi kapak olsun?",
       cover_use:"Bu kareyi kullan",
-      song_add:"Şarkı ekle", song_search:"Şarkı ya da sanatçı ara…",
+      song_add:"Şarkı ekle", song_cinema:"Bu ana bir şarkı bağla", song_search:"Şarkı ya da sanatçı ara…",
       song_empty:"Bir şarkı ya da sanatçı ara…", song_none:"Sonuç bulunamadı.",
       // akış
       today:"BUGÜN", photo:"FOTOĞRAF", comments:"Yorumlar",
@@ -7573,8 +7574,64 @@ html.native button,html.native .tab{touch-action:manipulation}
 .songSearchWrap input::placeholder{color:var(--t3)}
 /* panelin başlığı biraz daha nefes alsın */
 #songSheet h3{margin-bottom:2px}
-#songSheet .shbox{max-height:82vh}
-#songSheet .shlist{padding:0 6px 8px}
+#songSheet .shlist{padding:0 6px 8px;flex:1;min-height:0}
+
+/* ===== KLIPSY SİNEMA şarkı paneli ===== */
+#songSheet .shbox{
+  position:absolute;left:10px;right:10px;top:auto;
+  bottom:max(10px, var(--sab));
+  max-height:70vh;height:auto;
+  background:linear-gradient(180deg,#2a1020 0%,#120814 42%,#0c0a10 100%);
+  color:#fff;border:1px solid rgba(255,59,107,.22);
+  box-shadow:0 28px 70px -20px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.songStageBg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  background-position:center;background-size:cover;opacity:0;
+  transform:scale(1.12);filter:blur(18px) saturate(1.15);
+  transition:opacity .45s ease, background-image .45s ease}
+.songStageBg.on{opacity:1}
+.songStageBg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(20,8,14,.55) 0%,rgba(12,8,14,.78) 45%,rgba(8,6,10,.92) 100%)}
+#songSheet .grip,#songSheet .songCinemaHead,#songSheet .songSearchWrap,
+#songSheet .shlist,#songSheet .songNow{position:relative;z-index:1}
+#songSheet .grip{background:rgba(255,255,255,.28)}
+.songCinemaHead{padding:2px 20px 6px;flex:none}
+.songCinemaBrand{display:block;font-size:10.5px;font-weight:700;letter-spacing:.22em;
+  color:rgba(255,255,255,.48);margin-bottom:6px}
+#songSheet h3.songCinemaTitle,
+#songSheet .songCinemaHead h3{
+  text-align:left;font-size:24px;font-weight:800;letter-spacing:-.042em;
+  line-height:1.12;padding:0 0 10px;color:#fff;margin:0}
+#songSheet .songSearchWrap{
+  background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.18);
+  border-radius:0;height:44px;margin:2px 20px 14px;padding:0 2px;
+  color:rgba(255,255,255,.55)}
+#songSheet .songSearchWrap:focus-within{
+  border-color:#FF3B6B;background:transparent}
+#songSheet .songSearchWrap input{color:#fff;font-size:16px;font-weight:500;letter-spacing:-.02em}
+#songSheet .songSearchWrap input::placeholder{color:rgba(255,255,255,.38);font-weight:400}
+#songSheet .ssClear{background:transparent;color:rgba(255,255,255,.55)}
+#songSheet .songTopHead{color:rgba(255,255,255,.45)}
+#songSheet .songRow{background:linear-gradient(90deg,rgba(255,59,107,.10),transparent);
+  margin:0 6px 4px;border-radius:14px}
+#songSheet .songRow:active{background:linear-gradient(90deg,rgba(255,59,107,.2),rgba(123,91,255,.08))}
+#songSheet .songRank{color:#FF3B6B}
+#songSheet .songTx b{color:#fff}
+#songSheet .songTx span{color:rgba(255,255,255,.55)}
+#songSheet .songGo{color:rgba(255,255,255,.45)}
+#songSheet .songRow .tt,
+#songSheet .songRow b,
+#songSheet .songTitle{color:#fff}
+#songSheet .songEmpty{color:rgba(255,255,255,.5)}
+#songSheet .songEmpty b{color:#fff}
+#songSheet .songNow{
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  border:0;color:#fff}
+#songSheet .songNow .snTx b,#songSheet .songNow .snTx span{color:#fff}
+#songSheet .songNow .snBarWrap{background:rgba(255,255,255,.28)}
+#songSheet .songNow .snBar{background:#fff}
+#songSheet .songNow .snPlay{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.25)}
+#songSheet .songNow .snAdd{background:#fff;color:#1a0810;box-shadow:none}
 /* ===== ŞARKI PANELİ ===== */
 .songTopHead{display:flex;align-items:center;gap:8px;padding:4px 16px 8px;
   font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
@@ -8460,8 +8517,12 @@ html.native button,html.native .tab{touch-action:manipulation}
   <section class="sheet" id="songSheet" aria-hidden="true">
     <div class="scrim" data-close="songSheet"></div>
     <div class="shbox" id="songBox">
+      <div class="songStageBg" id="songStageBg" aria-hidden="true"></div>
       <div class="grip"></div>
-      <h3 data-i18n="song_add">Şarkı ekle</h3>
+      <div class="songCinemaHead">
+        <span class="songCinemaBrand">KLIPSY · AN</span>
+        <h3 data-i18n="song_cinema">Bu ana bir şarkı bağla</h3>
+      </div>
       <div class="songSearchWrap">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <input id="songSearchInput" type="text" placeholder="Şarkı ya da sanatçı ara…" data-i18n-ph="song_search" autocomplete="off">
@@ -13611,6 +13672,7 @@ function openSongSheet(){
   const nowBox=document.getElementById("songNow");
   if(nowBox){ nowBox.hidden=true; }
   _nowSong=null;
+  paintSongStage(null);
   const clr=document.getElementById("songClear");
   if(clr) clr.hidden=true;
   open("songSheet");
@@ -13648,6 +13710,19 @@ function paintSnPlayIcon(playing){
     : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
 }
 
+function paintSongStage(song){
+  const bg=document.getElementById("songStageBg");
+  if(!bg) return;
+  let url=song && song.art ? String(song.art) : "";
+  if(url) url=url.replace("100x100bb","600x600bb").replace("200x200bb","600x600bb");
+  if(url){
+    bg.style.backgroundImage='url("'+url.replace(/"/g,'')+'")';
+    bg.classList.add("on");
+  }else{
+    bg.style.backgroundImage="";
+    bg.classList.remove("on");
+  }
+}
 function snShow(song){
   const box=document.getElementById("songNow");
   if(!box) return;
@@ -13657,6 +13732,7 @@ function snShow(song){
   document.getElementById("snTitle").textContent = song.title||"";
   document.getElementById("snArtist").textContent = song.artist||"";
   document.getElementById("snAdd").textContent = t("act_use");
+  paintSongStage(song);
 }
 
 // Şarkının önizleme adresi yoksa iTunes'tan bul (liste bazen adres vermiyor)

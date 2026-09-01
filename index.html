@@ -212,6 +212,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"An",
       following2:"Takip",
       biography:"Biyografi",
+      search_people:"Ara",
+      search_ph:"İsim veya @kullanıcı",
+      search_results:"Eşleşen",
+      search_empty:"Anın sahibini ara.",
+      search_none:"Kimse bulunamadı",
       archive_empty_hint:"Kamera düğmesine dokun, çektiğin ilk kare burada birikmeye başlasın.",
       saved2:"Kaydedilenler",
       private2:"Gizli",
@@ -722,6 +727,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"Moments",
       following2:"Following",
       biography:"Bio",
+      search_people:"Search",
+      search_ph:"Name or @username",
+      search_results:"Matches",
+      search_empty:"Search the owner of a moment.",
+      search_none:"No one found",
       archive_empty_hint:"Tap the camera button — your first shot will start collecting here.",
       saved2:"Saved",
       private2:"Private",
@@ -1216,6 +1226,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"Momentos",
       following2:"Siguiendo",
       biography:"Biografía",
+      search_people:"Buscar",
+      search_ph:"Nombre o @usuario",
+      search_results:"Coincidencias",
+      search_empty:"Busca al dueño del instante.",
+      search_none:"Nadie encontrado",
       archive_empty_hint:"Toca el botón de cámara; tu primera toma empezará a acumularse aquí.",
       saved2:"Guardados",
       private2:"Privado",
@@ -1710,6 +1725,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"لحظات",
       following2:"يتابع",
       biography:"نبذة",
+      search_people:"بحث",
+      search_ph:"الاسم أو @المستخدم",
+      search_results:"نتائج",
+      search_empty:"ابحث عن صاحب اللحظة.",
+      search_none:"لا أحد",
       archive_empty_hint:"اضغط زر الكاميرا، وستبدأ لقطتك الأولى بالتجمع هنا.",
       saved2:"المحفوظات",
       private2:"خاص",
@@ -2204,6 +2224,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"Instants",
       following2:"Abonnements",
       biography:"Bio",
+      search_people:"Recherche",
+      search_ph:"Nom ou @identifiant",
+      search_results:"Correspondances",
+      search_empty:"Cherche l'auteur de l'instant.",
+      search_none:"Personne",
       archive_empty_hint:"Touche le bouton caméra — ta première prise commencera à s'accumuler ici.",
       saved2:"Enregistrés",
       private2:"Privé",
@@ -2698,6 +2723,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"Momente",
       following2:"Folgt",
       biography:"Bio",
+      search_people:"Suche",
+      search_ph:"Name oder @nutzer",
+      search_results:"Treffer",
+      search_empty:"Finde den Autor des Moments.",
+      search_none:"Niemand",
       archive_empty_hint:"Tippe auf die Kamera — deine erste Aufnahme sammelt sich hier.",
       saved2:"Gespeichert",
       private2:"Privat",
@@ -3192,6 +3222,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"Моменты",
       following2:"Подписки",
       biography:"О себе",
+      search_people:"Поиск",
+      search_ph:"Имя или @имя",
+      search_results:"Совпадения",
+      search_empty:"Найди автора момента.",
+      search_none:"Никого нет",
       archive_empty_hint:"Нажми кнопку камеры — твой первый кадр начнёт собираться здесь.",
       saved2:"Сохранённые",
       private2:"Личное",
@@ -3686,6 +3721,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"Momentos",
       following2:"Seguindo",
       biography:"Bio",
+      search_people:"Pesquisar",
+      search_ph:"Nome ou @utilizador",
+      search_results:"Resultados",
+      search_empty:"Procura o dono do instante.",
+      search_none:"Ninguém",
       archive_empty_hint:"Toque no botão da câmera — sua primeira foto começará a se acumular aqui.",
       saved2:"Salvos",
       private2:"Privado",
@@ -4180,6 +4220,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"पल",
       following2:"फ़ॉलोइंग",
       biography:"परिचय",
+      search_people:"खोज",
+      search_ph:"नाम या @यूज़र",
+      search_results:"मेल",
+      search_empty:"पल के मालिक को खोजो.",
+      search_none:"कोई नहीं",
       archive_empty_hint:"कैमरा बटन दबाएँ — आपका पहला शॉट यहाँ जमा होने लगेगा।",
       saved2:"सहेजे गए",
       private2:"निजी",
@@ -4674,6 +4719,11 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
       moment_count:"Momen",
       following2:"Mengikuti",
       biography:"Bio",
+      search_people:"Cari",
+      search_ph:"Nama atau @pengguna",
+      search_results:"Cocok",
+      search_empty:"Cari pemilik momen.",
+      search_none:"Tidak ada",
       archive_empty_hint:"Ketuk tombol kamera — bidikan pertamamu mulai terkumpul di sini.",
       saved2:"Tersimpan",
       private2:"Pribadi",
@@ -5466,7 +5516,27 @@ svg{display:block}
 /* ============ paneller ============ */
 .panel,.sheet{position:absolute;inset:0;display:none;flex-direction:column}
 /* alt navigasyon çubuğu bu üç ekranda da görünsün diye altta yer bırakıyoruz */
-#profile,#chats,#timeSheet{bottom:var(--tab)}
+#profile,#chats,#timeSheet,#userSearch{bottom:var(--tab)}
+#userSearch{z-index:var(--z-notif);background:var(--panelbg);color:var(--t1);bottom:var(--tab)}
+#userSearch .usHead{display:flex;align-items:center;gap:0.625rem;padding:calc(var(--sat) + 0.7rem) 0.75rem 0.6rem;flex:none}
+#userSearch .usPill{flex:1;height:2.75rem;border-radius:1rem;background:rgba(255,255,255,.08);border:1px solid var(--edge);
+  display:flex;align-items:center;gap:0.5rem;padding:0 0.85rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+[data-theme="light"] #userSearch .usPill{background:rgba(0,0,0,.04)}
+#userSearch .usPill input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--t1);font:650 0.95rem/1.2 inherit}
+#userSearch .usHint{padding:0.4rem 1rem 0.2rem;font-size:0.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+#userSearch .usList{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 calc(var(--sab) + 1rem)}
+#userSearch .usRow{display:flex;align-items:center;gap:0.75rem;width:100%;padding:0.65rem 1rem;text-align:left;background:none;border:0;color:inherit}
+#userSearch .usRow:active{background:var(--surf2)}
+#userSearch .usAv{width:3rem;height:3rem;border-radius:99px;flex:none;background:var(--avatar-bg) center/cover no-repeat}
+#userSearch .usNm{font-size:0.95rem;font-weight:650;letter-spacing:-.02em}
+#userSearch .usUn{font-size:0.75rem;color:var(--t3)}
+#userSearch .usNm em,#userSearch .usUn em{font-style:normal;color:#FF3B6B;font-weight:750}
+#userSearch .usEmpty{padding:4.5rem 1.75rem;text-align:center;font-size:1.15rem;font-weight:650;letter-spacing:-.03em;color:var(--t2)}
+#userSearch .usFollow{margin-left:auto;flex:none;height:2rem;padding:0 0.85rem;border-radius:99px;border:0;
+  background:rgba(255,255,255,.1);color:var(--t1);font:650 0.75rem inherit}
+[data-theme="light"] #userSearch .usFollow{background:rgba(0,0,0,.06)}
+#userSearch .usFollow.on{background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff}
+
 .panel.open,.sheet.open{display:flex}
 /* perde: arkadaki içerik hafifçe görünsün (yüzen kart tasarımı) */
 .scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;animation:fadeIn .2s ease forwards}
@@ -8627,6 +8697,9 @@ html.native button,html.native .tab{touch-action:manipulation}
 
   <header class="topbar" id="topbar">
     <div class="spacer"></div>
+    <button class="pill icon" id="userSearchBtn" aria-label="Ara" data-i18n-aria="search_people">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.2"/><path d="m20 20-3.4-3.4"/></svg>
+    </button>
     <button class="pill icon" id="feedPlaceBtn" aria-label="Konum filtresi" data-i18n-aria="place_filter">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10.5c0 5.5-8 11.5-8 11.5s-8-6-8-11.5a8 8 0 0 1 16 0z"/><circle cx="12" cy="10.5" r="2.8"/></svg>
     </button>
@@ -9081,6 +9154,20 @@ html.native button,html.native .tab{touch-action:manipulation}
       <div class="spacer"></div>
     </div>
     <div class="profbody" id="profBody"></div>
+  </section>
+
+  <section class="panel" id="userSearch" aria-hidden="true">
+    <div class="usHead">
+      <button class="iconbtn" id="usBack" aria-label="Geri">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 19 8 12l7-7"/></svg>
+      </button>
+      <div class="usPill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="11" cy="11" r="6.2"/><path d="m20 20-3.4-3.4"/></svg>
+        <input id="usInput" type="search" autocomplete="off" spellcheck="false" data-i18n-placeholder="search_ph" placeholder="İsim veya @kullanıcı">
+      </div>
+    </div>
+    <div class="usHint" id="usHint" data-i18n="search_empty">Anın sahibini ara.</div>
+    <div class="usList" id="usList"></div>
   </section>
 
   <section class="panel" id="settings" aria-hidden="true">
@@ -11508,7 +11595,7 @@ function _applyTabbar(){
   const bar=document.getElementById("tabbar");
   if(!bar) return;
   // bu paneller açıkken arka plan açık renkli olur
-  const lightPanels=["profile","chats","chat","settings","editProfile","notif","timeSheet","blockedPanel"];
+  const lightPanels=["profile","chats","chat","settings","editProfile","notif","timeSheet","blockedPanel","userSearch"];
   const panelOpen = lightPanels.some(id=>{
     const e=document.getElementById(id);
     return e && e.classList.contains("open");
@@ -11521,7 +11608,7 @@ function _applyTabbar(){
 }
 // sekmeler arası geçişte açık kalan ana panelleri kapat (tabbar artık her ekranda görünür olduğu için gerekli)
 function closeMainPanels(){
-  ["profile","chats","timeSheet","notif"].forEach(id=>{
+  ["profile","chats","timeSheet","notif","userSearch"].forEach(id=>{
     const el=document.getElementById(id);
     if(el && el.classList.contains("open")) close(id);
   });
@@ -11542,6 +11629,117 @@ try{
 /* Akış sekmesi:
    - Başka bir sekmeden dönüldüyse KALDIĞIN YERDE devam eder.
    - Zaten akıştayken tekrar dokunulursa en başa gider (alışılmış davranış). */
+
+/* ===== KULLANICI ARAMA (vurgu) ===== */
+function _usEsc(t){return String(t||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function _usHi(text,q){
+  const raw=String(text||'');
+  if(!q) return _usEsc(raw);
+  const src=_usEsc(raw);
+  const needle=_usEsc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  if(!needle) return src;
+  return src.replace(new RegExp('('+needle+')','ig'),'<em>$1</em>');
+}
+let _usT=null;
+function openUserSearch(){
+  open('userSearch');
+  const inp=document.getElementById('usInput');
+  const hint=document.getElementById('usHint');
+  const list=document.getElementById('usList');
+  if(hint) hint.textContent=(window.t?t('search_results'):'Eşleşen');
+  if(list && !inp.value.trim()){
+    hint.textContent='';
+    list.innerHTML='<div class="usEmpty">'+(window.t?t('search_empty'):'')+'</div>';
+  }
+  setTimeout(()=>{ try{ inp && inp.focus(); }catch(e){} },80);
+}
+
+async function runUserSearch(q){
+  const list=document.getElementById('usList');
+  const hint=document.getElementById('usHint');
+  if(!list) return;
+  q=(q||'').trim().replace(/^@/,'');
+  if(q.length<2){
+    if(hint) hint.textContent='';
+    list.innerHTML='<div class="usEmpty">'+(window.t?t('search_empty'):'')+'</div>';
+    return;
+  }
+  if(hint) hint.textContent=(window.t?t('search_results'):'Eşleşen');
+  const sb=window.__sb;
+  if(!sb){ list.innerHTML='<div class="usEmpty">'+(window.t?t('search_none'):'')+'</div>'; return; }
+  const safe=q.replace(/[,()]/g,' ').slice(0,32);
+  try{
+    const {data,error}=await sb.from('profiles')
+      .select('id,username,display_name,avatar_url,gender')
+      .or('username.ilike.%'+safe+'%,display_name.ilike.%'+safe+'%')
+      .limit(24);
+    if(error) throw error;
+    const meName=window.ME|| (window.__me && window.__me.username);
+    const meId=window.__me && window.__me.id;
+    const rows=(data||[]).filter(r=>r.username && r.username!==meName);
+    if(!rows.length){
+      list.innerHTML='<div class="usEmpty">'+(window.t?t('search_none'):'')+'</div>';
+      return;
+    }
+    let following=new Set();
+    if(meId){
+      const ids=rows.map(r=>r.id).filter(Boolean);
+      if(ids.length){
+        const {data:fl}=await sb.from('follows').select('followee_id').eq('follower_id',meId).in('followee_id',ids);
+        (fl||[]).forEach(x=>following.add(x.followee_id));
+      }
+    }
+    list.innerHTML='';
+    rows.forEach(r=>{
+      const b=document.createElement('button');
+      b.className='usRow';
+      const av=document.createElement('div'); av.className='usAv';
+      if(r.avatar_url){
+        try{ if(typeof setRealAvatar==='function') setRealAvatar(r.username,r.avatar_url); }catch(e){}
+        av.style.backgroundImage='url("'+r.avatar_url+'")';
+      }else{
+        const src=(typeof avatarImage==='function')?avatarImage(r.username,r.gender):'';
+        if(src) av.style.backgroundImage='url("'+src+'")';
+      }
+      const tx=document.createElement('div'); tx.style.minWidth='0'; tx.style.flex='1';
+      const nm=document.createElement('div'); nm.className='usNm';
+      nm.innerHTML=_usHi(r.display_name||r.username, safe);
+      const un=document.createElement('div'); un.className='usUn';
+      un.innerHTML='@'+_usHi(r.username, safe);
+      tx.append(nm,un);
+      const fb=document.createElement('button');
+      fb.className='usFollow'+(following.has(r.id)?' on':'');
+      fb.textContent=following.has(r.id)?(window.t?t('following'):'Takip ediliyor'):(window.t?t('follow'):'Takip et');
+      fb.addEventListener('click',async ev=>{
+        ev.stopPropagation();
+        if(!meId || !r.id) return;
+        const on=fb.classList.contains('on');
+        fb.disabled=true;
+        try{
+          if(on) await sb.from('follows').delete().eq('follower_id',meId).eq('followee_id',r.id);
+          else await sb.from('follows').insert({follower_id:meId,followee_id:r.id});
+          fb.classList.toggle('on',!on);
+          fb.textContent=!on?(window.t?t('following'):'Takip ediliyor'):(window.t?t('follow'):'Takip et');
+        }catch(err){ console.warn(err); }
+        fb.disabled=false;
+      });
+      b.append(av,tx,fb);
+      b.addEventListener('click',()=>{ close('userSearch'); openProfile(r.username); });
+      list.appendChild(b);
+    });
+  }catch(e){
+    console.warn('userSearch',e);
+    list.innerHTML='<div class="usEmpty">'+(window.t?t('search_none'):'')+'</div>';
+  }
+}
+document.getElementById('userSearchBtn')?.addEventListener('click', openUserSearch);
+document.getElementById('usBack')?.addEventListener('click',()=>close('userSearch'));
+document.getElementById('usInput')?.addEventListener('input',e=>{
+  clearTimeout(_usT);
+  const v=e.target.value;
+  _usT=setTimeout(()=>runUserSearch(v),220);
+});
+
 $("#tabFeed").addEventListener("click",()=>{
   const zatenAkista = !document.querySelector(".panel.open")
                       && $("#tabFeed").classList.contains("on");

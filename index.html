@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 2.8.6</title>
+<title>Klipsy 2.9.1</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -540,6 +540,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     en:{
       _name:"English",
+      song_cinema:"Add a song to this moment",
       rec_failed:"Recording failed, try again",
       load_failed:"Couldn't load this moment",
       retry:"Try again",
@@ -1048,6 +1049,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     es:{
       _name:"Español",
+      song_cinema:"Añade una canción a este momento",
       rec_failed:"No se pudo grabar, reinténtalo",
       load_failed:"No se pudo cargar",
       retry:"Reintentar",
@@ -1554,6 +1556,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      song_cinema:"أضف أغنية إلى هذه اللحظة",
       rec_failed:"فشل التسجيل، حاول مجدداً",
       load_failed:"تعذّر تحميل اللحظة",
       retry:"حاول مجدداً",
@@ -2060,6 +2063,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     fr:{
       _name:"Français",
+      song_cinema:"Ajoute une chanson à cet instant",
       rec_failed:"Échec de l'enregistrement, réessaie",
       load_failed:"Impossible de charger",
       retry:"Réessayer",
@@ -2566,6 +2570,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     de:{
       _name:"Deutsch",
+      song_cinema:"Füge diesem Moment ein Lied hinzu",
       rec_failed:"Aufnahme fehlgeschlagen, versuch es erneut",
       load_failed:"Konnte nicht geladen werden",
       retry:"Erneut versuchen",
@@ -3072,6 +3077,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ru:{
       _name:"Русский",
+      song_cinema:"Добавьте песню к этому моменту",
       rec_failed:"Не удалось записать, попробуйте снова",
       load_failed:"Не удалось загрузить",
       retry:"Повторить",
@@ -3578,6 +3584,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     pt:{
       _name:"Português",
+      song_cinema:"Adicione uma música a este momento",
       rec_failed:"Falha na gravação, tente de novo",
       load_failed:"Não foi possível carregar",
       retry:"Tentar de novo",
@@ -4084,6 +4091,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     hi:{
       _name:"हिन्दी",
+      song_cinema:"इस पल में एक गाना जोड़ें",
       rec_failed:"रिकॉर्डिंग विफल, फिर कोशिश करें",
       load_failed:"लोड नहीं हो सका",
       retry:"पुनः प्रयास करें",
@@ -4590,6 +4598,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      song_cinema:"Tambahkan lagu ke momen ini",
       rec_failed:"Perekaman gagal, coba lagi",
       load_failed:"Gagal memuat",
       retry:"Coba lagi",
@@ -6187,7 +6196,7 @@ svg{display:block}
 .onayWrap.open .onayScrim{opacity:1}
 
 .onayKart{position:absolute;left:1rem;right:1rem;bottom:max(0.75rem,var(--sab));
-  padding:0.375rem 1rem calc(0.875rem + env(safe-area-inset-bottom,0px));
+  padding:0.375rem 1rem calc(0.875rem + env(safe-area-inset-bottom,0));
   border-radius:1.375rem;background:var(--panelbg);color:var(--t1);
   border:1px solid var(--edge);
   box-shadow:0 -0.625rem 2rem -0.875rem rgba(0,0,0,.55);
@@ -8781,7 +8790,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.8.6</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.9.1</span></div>
     </div>
   </section>
 </div>
@@ -12417,7 +12426,9 @@ async function initMap(){
   })();
 
   bindLocBtn();
-  setTimeout(()=>{ try{ pruneTileCache(); }catch(e){} }, 4000);
+  /* pruneTileCache kaldırıldı — kutucuk önbelleği artık kullanılmıyor.
+     Fonksiyon silinmiş ama çağrısı kalmıştı; hata yakalayıcı içinde
+     olduğu için sessizce başarısız oluyordu. */
 
   // konum gelene kadar en fazla 2sn bekle, sonra odaklan ve pinleri çiz
   (async()=>{
@@ -15920,7 +15931,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.8.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.9.1";
   box.appendChild(ver);
 }
 
@@ -17616,6 +17627,16 @@ async function openChatFromProfile(who){
 }
 
 async function openChat(who){
+  /* Sohbet açıldı: o kişinin bildirimini kapat.
+     Android belgesi bunu öneriyor — kullanıcı mesajı okuduysa
+     bildirim durmamalı. */
+  try{
+    const Iz = (window.Capacitor && window.Capacitor.Plugins) ? window.Capacitor.Plugins.KlipsyIz : null;
+    if(Iz && Iz.sohbetBildiriminiKapat){
+      Iz.sohbetBildiriminiKapat({ conv: (_convId && _convId[who]) || "", who: who || "" });
+    }
+  }catch(e){}
+
   chatWho=who;
   // sohbeti açmadan önce istek durumunu güncel çekelim (bayat veri kalmasın)
   await loadConversations();
@@ -19342,6 +19363,16 @@ async function post(src,kind,mood,where,note,extra){
     local._pending = false;
     allItems = (allItems||[]).filter((x,i,arr)=> arr.findIndex(y=>y.id===x.id)===i);
     items = (items||[]).filter((x,i,arr)=> arr.findIndex(y=>y.id===x.id)===i);
+    /* PAYLAŞIMDAN SONRA AKIŞA DÖN.
+       Kamera profilden ya da başka bir sekmeden açılmış olabiliyor;
+       paylaşım bitince o ekran görünüyordu. Kullanıcı akışa
+       bakmadığı için paylaşımın kaybolduğunu sanıyordu. */
+    try{
+      if(typeof closeMainPanels === "function") closeMainPanels();
+      const ft = document.getElementById("tabFeed");
+      if(ft && typeof setTab === "function") setTab(ft);
+    }catch(e){}
+
     render(); activeIdx=-1; syncActive();
     requestAnimationFrame(()=>{ try{ feed.scrollTop=0; syncActive(); }catch(e){} });
     toast(kind==="video"?t("ok_video_in_feed"):t("ok_photo_in_feed"));

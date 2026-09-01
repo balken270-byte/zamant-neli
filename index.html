@@ -5195,14 +5195,14 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
 
-body{background:var(--bg,#000);font-family:var(--font);color:var(--t1);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+body{background:#000;font-family:var(--font);color:var(--t1);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
 button,input{font-family:inherit}
 button{cursor:pointer;border:0;background:none;color:inherit}
 svg{display:block}
 :focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
 
-#phone{position:relative;width:100%;height:100%;max-width:430px;margin:0 auto;background:var(--bg,#000);overflow:hidden;isolation:isolate;visibility:hidden}
+#phone{position:relative;width:100%;height:100%;max-width:430px;margin:0 auto;background:#000;overflow:hidden;isolation:isolate;visibility:hidden}
 @media (min-width:520px) and (min-height:720px){
   body{background:#050507;display:grid;place-items:center}
   #phone{height:min(920px,94vh);border-radius:32px;border:1px solid rgba(255,255,255,.10);box-shadow:0 40px 100px -40px #000}
@@ -15218,10 +15218,12 @@ function resolveTheme(t){
 }
 // üstteki sistem şeridinin rengini o an açık olan ekrana göre ayarla
 // (Instagram mantığı: akış siyah, profil/mesajlar beyaz temada beyaz)
-function _chromeColor(){
+function syncStatusBar(){
+  const tc=document.getElementById('__themeColor');
+  if(!tc) return;
   const isLight = document.documentElement.getAttribute('data-theme')==='light';
   const darkScreens=["cam","compose"];
-  const onDark = darkScreens.some(id=>{
+  const onDarkScreen = darkScreens.some(id=>{
     const el=document.getElementById(id);
     return el && el.classList.contains("open");
   });
@@ -15232,39 +15234,11 @@ function _chromeColor(){
   });
   const gateEl=document.getElementById('gate');
   const onGate = gateEl && !gateEl.classList.contains('off');
-  if(onGate || onDark) return '#08080C';
-  if(onPanel) return isLight ? '#FFFFFF' : '#0A0A0E';
-  return '#08080C';
-}
-function _setThemeColorMeta(color){
-  document.querySelectorAll('meta[name="theme-color"]').forEach(el=>el.remove());
-  const m=document.createElement('meta');
-  m.setAttribute('name','theme-color');
-  m.id='__themeColor';
-  m.setAttribute('content', color);
-  document.head.appendChild(m);
-}
-function _setCapStatusBar(color){
-  const dark = (color==='#08080C' || color==='#0A0A0E');
-  try{
-    const Cap=window.Capacitor;
-    if(!Cap) return;
-    const P=(Cap.Plugins||{});
-    let SB=P.StatusBar;
-    if(!SB && Cap.registerPlugin){
-      try{ SB=Cap.registerPlugin('StatusBar'); }catch(e){}
-    }
-    if(!SB) return;
-    const style = dark ? 'DARK' : 'LIGHT';
-    if(typeof SB.setBackgroundColor==='function') Promise.resolve(SB.setBackgroundColor({color:color})).catch(()=>{});
-    if(typeof SB.setStyle==='function') Promise.resolve(SB.setStyle({style:style})).catch(()=>{});
-    if(typeof SB.setOverlaysWebView==='function') Promise.resolve(SB.setOverlaysWebView({overlay:true})).catch(()=>{});
-  }catch(e){}
-}
-function syncStatusBar(){
-  const color=_chromeColor();
-  _setThemeColorMeta(color);
-  _setCapStatusBar(color);
+  let color;
+  if(onGate || onDarkScreen) color='#08080C';
+  else if(onPanel) color = isLight ? '#FFFFFF' : '#0A0A0E';
+  else color='#08080C';
+  tc.setAttribute('content', color);
 }
 
 window.syncStatusBar = syncStatusBar;  // modül kapsamından da erişilebilsin

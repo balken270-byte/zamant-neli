@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 2.9.5</title>
+<title>Klipsy 3.0.0</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -6260,12 +6260,21 @@ svg{display:block}
   transition:transform .26s cubic-bezier(.22,1,.36,1);
   touch-action:pan-y;background:var(--panelbg);z-index:1}
 #flList{overflow-x:hidden}
-.shrow.kaydirilir.acik{transform:translateX(-5.75rem)}
+.shrow.kaydirilir.acik{transform:translateX(-5.5rem)}
 
 /* üç nokta — satırın sağında */
 /* Üç nokta — satırın sağında, dokunma alanı geniş ama görüntüsü
    hafif. Yatay değil DİKEY üç nokta: satır düzeniyle karışmıyor. */
-.flUcNokta{position:static;flex:none;margin-left:auto;
+/* Ad uzunsa kısalır, etiket ve üç nokta daralmaz. */
+#followSheet .shrow .nm{flex:1 1 0;min-width:0;overflow:hidden}
+#followSheet .shrow .nm b,
+#followSheet .shrow .nm i{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Sıra: ad soyad → etiket → üç nokta.
+   Ad esner, etiket ve üç nokta sağa yaslanır. */
+#followSheet .flTag{flex:none;max-width:8rem;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;margin-left:auto}
+
+.flUcNokta{position:static;flex:none;margin-left:0.25rem;
   width:2.25rem;height:2.25rem;border-radius:99px;border:0;
   display:flex;align-items:center;justify-content:center;
   background:none;color:var(--t3);
@@ -6275,16 +6284,19 @@ svg{display:block}
 .shrow.acik .flUcNokta{opacity:0;pointer-events:none}
 
 /* kırmızı çıkarma alanı — satırın altında bekler */
-/* Kırmızı alan KAPALIYKEN GÖRÜNMEZ.
-   Kenardan sızan ince kırmızı çizgi tasarımı bozuyordu. */
-.flCikar{position:absolute;right:-5.75rem;top:0;bottom:0;width:5.75rem;
-  border:0;border-radius:0;
+/* KIRMIZI ALAN — parmakla birlikte belirir.
+   Kapalıyken tamamen görünmez; satır kaydıkça yavaşça çıkar.
+   Köşeleri yumuşak: tam kare, listenin geri kalanıyla uyuşmuyordu. */
+.flCikar{position:absolute;right:-5.5rem;top:0.25rem;bottom:0.25rem;width:5.25rem;
+  border:0;border-radius:1rem;
   background:linear-gradient(135deg,#FF3B4B,#C41E3A);color:#fff;
   font:700 0.8125rem/1 inherit;letter-spacing:-.01em;
   display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;
-  transition:opacity .18s,filter .16s}
-.shrow.acik .flCikar{opacity:1;pointer-events:auto}
+  box-shadow:0 0.25rem 0.75rem -0.25rem rgba(196,30,58,.5);
+  opacity:0;transform:scale(.86);pointer-events:none;
+  transition:opacity .2s,transform .24s cubic-bezier(.34,1.56,.64,1),filter .16s}
+.shrow.acik .flCikar{opacity:1;transform:scale(1);pointer-events:auto}
+.flCikar:active{filter:brightness(.88)}
 .flCikar:active{filter:brightness(.88)}
 
 /* ═══ ONAY PANELİ ═══
@@ -8894,7 +8906,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.9.5</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.0.0</span></div>
     </div>
   </section>
 </div>
@@ -10236,6 +10248,41 @@ function paintFeedNames(){
    get_feed artık display_name döndürdüğü için isimler anında hazır olur. */
 /* Görünen ad: ad-soyad varsa o, yoksa kullanıcı adı.
    Listelerde her yerde bu kullanılır. */
+/* ═══ AD SOYAD DÜZELTME ═══
+   Kullanıcılar adı büyük harfle ("YUSUF KORKMAZ"), küçük harfle
+   ("yusuf korkmaz") ya da rakamla ("Yusuf123") yazabiliyor. Bu,
+   listeler ve bildirimlerde dağınık görünüyordu.
+
+   Kurallar:
+     • Rakam ve simge atılır — ad soyadta yeri yok
+     • Her kelimenin yalnızca ilk harfi büyük
+     • Fazla boşluklar tek boşluğa iner
+     • En fazla iki kelime tutulur (uzun künyeler kısalır)
+     • Türkçe harfler doğru büyütülür: i → İ, ı → I */
+function adDuzelt(ham){
+  if(!ham) return "";
+
+  /* YALNIZCA HARF VE BOŞLUK.
+     Rakam ve her türlü simge atılır — kesme işareti ve tire dahil. */
+  let s = String(ham)
+    .replace(/[^\p{L}\s]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if(!s) return "";
+
+  const buyut = h =>
+    h === "i" ? "İ" :
+    h === "ı" ? "I" :
+    h.toLocaleUpperCase("tr-TR");
+
+  const kucult = h => h.toLocaleLowerCase("tr-TR");
+
+  const kelime = k => k ? (buyut(k[0]) + kucult(k.slice(1))) : "";
+
+  return s.split(" ").slice(0, 2).map(kelime).join(" ").slice(0, 40);
+}
+
 function adiniGoster(username){
   if(!username) return "";
   const u = USERS[username];
@@ -15261,7 +15308,7 @@ function satirlariKapat(kap){
 /* Sola sürükleme — üç nokta ile aynı sonucu verir. */
 function kaydirmaBagla(satir, kap){
   let basX = 0, basY = 0, suruk = false, karar = null, mesafe = 0;
-  const GENISLIK = 92;   // kırmızı alanın genişliği
+  const GENISLIK = 88;   // kırmızı alanın genişliği
 
   satir.addEventListener("pointerdown", e=>{
     if(e.target.closest(".flCikar, .flUcNokta")) return;
@@ -15285,6 +15332,16 @@ function kaydirmaBagla(satir, kap){
     mesafe = x;
     satir.style.transition = "none";
     satir.style.transform = "translateX(" + x + "px)";
+
+    /* Kırmızı alan parmakla birlikte belirir — açılıp kapanmıyor,
+       kaydırdıkça yavaşça çıkıyor. */
+    const kirmiziEl = satir.querySelector(".flCikar");
+    if(kirmiziEl){
+      const oran = Math.min(1, Math.abs(x) / GENISLIK);
+      kirmiziEl.style.transition = "none";
+      kirmiziEl.style.opacity = String(oran);
+      kirmiziEl.style.transform = "scale(" + (0.86 + oran * 0.14) + ")";
+    }
   });
 
   const bitir = ()=>{
@@ -15294,6 +15351,14 @@ function kaydirmaBagla(satir, kap){
 
     satir.style.transition = "";
     satir.style.transform = "";
+
+    const kirmiziEl = satir.querySelector(".flCikar");
+    if(kirmiziEl){
+      kirmiziEl.style.transition = "";
+      kirmiziEl.style.opacity = "";
+      kirmiziEl.style.transform = "";
+    }
+
     const acik = mesafe < -GENISLIK / 2;
     satir.classList.toggle("acik", acik);
     if(acik) apTitretKisa();
@@ -15478,16 +15543,20 @@ async function openFollowList(name, kind){
           if(!acik){ b.classList.add("acik"); apTitretKisa(); }
         });
 
-        b.appendChild(uc);
+        /* SIRA: ad soyad → etiket → üç nokta
+           Üç nokta burada eklenirse etiketin SOLUNDA kalıyor.
+           Etiket aşağıda ekleniyor; üç nokta en sona bırakılıyor. */
+        b._ucNokta = uc;
         b.appendChild(kirmizi);
         kaydirmaBagla(b, box);
       }
 
-      /* KENDİ LİSTEMDE TAKİP ETİKETİ YOK.
-         Üç nokta ile etiket yan yana duruyor, üst üste biniyordu.
-         Ayrıca etiket eski paneli açıyordu — artık kaydırmalı
-         çıkarma var, ikisine birden gerek yok. */
-      if(p.username !== ME && name !== ME){
+      /* TAKİP ETİKETİ HER LİSTEDE.
+         Kendi listemde de kimin beni takip ettiğini, kiminle
+         arkadaş olduğumu görmek istiyorum — bu bilgi listenin
+         kendisi kadar değerli. Üç nokta ile çakışmaması için
+         etiket sola, üç nokta sağa yerleşiyor. */
+      if(p.username !== ME){
         const st=followState(p.username);
         const fb=document.createElement("button");
         fb.className="flTag"+(st==='friends'?' friends':'');
@@ -15495,6 +15564,10 @@ async function openFollowList(name, kind){
         fb.addEventListener("click", async (ev)=>{
           ev.stopPropagation();
           if(st==='friends' || following.has(p.username)){
+            /* Kendi listemde eski panel açılmaz — çıkarma işi
+               kaydırmalı alana ait. Etiket yalnızca durumu
+               gösterir. */
+            if(name === ME){ satirlariKapat(box); b.classList.add("acik"); apTitretKisa(); return; }
             openUnfriend(p, fb, b);
             return;
           }
@@ -15510,6 +15583,9 @@ async function openFollowList(name, kind){
         });
         b.appendChild(fb);
       }
+
+      /* Üç nokta EN SON: etiketin sağında kalsın. */
+      if(b._ucNokta) b.appendChild(b._ucNokta);
 
       /* ESKİ ÜÇ NOKTA KALDIRILDI.
          Kaydırmalı çıkarma geldiğinde bu düğme yerinde kalmıştı:
@@ -16185,7 +16261,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.9.5";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.0.0";
   box.appendChild(ver);
 }
 
@@ -21823,7 +21899,7 @@ function showOnboarding(user, prof){
     else{ hint.textContent=t("v_available"); hint.className='obHint ok'; }
   });
   save.onclick=async ()=>{
-    const nm=(nameI.value||'').trim();
+    const nm = adDuzelt(nameI.value);
     const un=(userI.value||'').trim().toLowerCase();
     if(un.length<3||un.length>20){ hint.textContent=t("v_username_len"); hint.className='obHint err'; return; }
     if(!/^[a-z0-9_]+$/.test(un)){ hint.textContent=t("v_chars"); hint.className='obHint err'; return; }

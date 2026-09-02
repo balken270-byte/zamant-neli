@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 2.9.1</title>
+<title>Klipsy 2.9.5</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -18,6 +18,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      unfollowed_ok:"Takipten çıkıldı",
+      unfollow_q:"Bu kişiyi takip etmeyi bırakacaksın.",
+      unfollow_short:"Bırak",
+      options:"Seçenekler",
+      removed_ok:"Çıkarıldı",
+      remove_follower_q:"Bu kişi seni takip etmeyi bırakacak. Haberi olmaz.",
+      remove:"Çıkar",
       rec_failed:"Kayıt alınamadı, tekrar dene",
       load_failed:"An yüklenemedi",
       retry:"Tekrar dene",
@@ -540,6 +547,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     en:{
       _name:"English",
+      unfollowed_ok:"Unfollowed",
+      unfollow_q:"You'll stop following this person.",
+      unfollow_short:"Unfollow",
+      options:"Options",
+      removed_ok:"Removed",
+      remove_follower_q:"They'll stop following you. They won't be notified.",
+      remove:"Remove",
       song_cinema:"Add a song to this moment",
       rec_failed:"Recording failed, try again",
       load_failed:"Couldn't load this moment",
@@ -1049,6 +1063,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     es:{
       _name:"Español",
+      unfollowed_ok:"Dejaste de seguir",
+      unfollow_q:"Dejarás de seguir a esta persona.",
+      unfollow_short:"Dejar",
+      options:"Opciones",
+      removed_ok:"Eliminado",
+      remove_follower_q:"Dejará de seguirte. No recibirá aviso.",
+      remove:"Quitar",
       song_cinema:"Añade una canción a este momento",
       rec_failed:"No se pudo grabar, reinténtalo",
       load_failed:"No se pudo cargar",
@@ -1556,6 +1577,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      unfollowed_ok:"تم إلغاء المتابعة",
+      unfollow_q:"ستتوقف عن متابعة هذا الشخص.",
+      unfollow_short:"إلغاء",
+      options:"خيارات",
+      removed_ok:"تمت الإزالة",
+      remove_follower_q:"سيتوقف عن متابعتك. لن يتم إشعاره.",
+      remove:"إزالة",
       song_cinema:"أضف أغنية إلى هذه اللحظة",
       rec_failed:"فشل التسجيل، حاول مجدداً",
       load_failed:"تعذّر تحميل اللحظة",
@@ -2063,6 +2091,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     fr:{
       _name:"Français",
+      unfollowed_ok:"Désabonné",
+      unfollow_q:"Tu ne suivras plus cette personne.",
+      unfollow_short:"Ne plus suivre",
+      options:"Options",
+      removed_ok:"Retiré",
+      remove_follower_q:"Cette personne ne te suivra plus. Elle ne sera pas prévenue.",
+      remove:"Retirer",
       song_cinema:"Ajoute une chanson à cet instant",
       rec_failed:"Échec de l'enregistrement, réessaie",
       load_failed:"Impossible de charger",
@@ -2570,6 +2605,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     de:{
       _name:"Deutsch",
+      unfollowed_ok:"Nicht mehr gefolgt",
+      unfollow_q:"Du folgst dieser Person nicht mehr.",
+      unfollow_short:"Entfolgen",
+      options:"Optionen",
+      removed_ok:"Entfernt",
+      remove_follower_q:"Diese Person folgt dir nicht mehr. Sie wird nicht benachrichtigt.",
+      remove:"Entfernen",
       song_cinema:"Füge diesem Moment ein Lied hinzu",
       rec_failed:"Aufnahme fehlgeschlagen, versuch es erneut",
       load_failed:"Konnte nicht geladen werden",
@@ -3077,6 +3119,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ru:{
       _name:"Русский",
+      unfollowed_ok:"Вы отписались",
+      unfollow_q:"Вы отпишетесь от этого человека.",
+      unfollow_short:"Отписаться",
+      options:"Опции",
+      removed_ok:"Убран",
+      remove_follower_q:"Он перестанет на вас подписываться. Уведомления не будет.",
+      remove:"Убрать",
       song_cinema:"Добавьте песню к этому моменту",
       rec_failed:"Не удалось записать, попробуйте снова",
       load_failed:"Не удалось загрузить",
@@ -3584,6 +3633,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     pt:{
       _name:"Português",
+      unfollowed_ok:"Deixou de seguir",
+      unfollow_q:"Você deixará de seguir esta pessoa.",
+      unfollow_short:"Deixar",
+      options:"Opções",
+      removed_ok:"Removido",
+      remove_follower_q:"Essa pessoa deixará de te seguir. Não será avisada.",
+      remove:"Remover",
       song_cinema:"Adicione uma música a este momento",
       rec_failed:"Falha na gravação, tente de novo",
       load_failed:"Não foi possível carregar",
@@ -4091,6 +4147,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     hi:{
       _name:"हिन्दी",
+      unfollowed_ok:"अनफ़ॉलो किया",
+      unfollow_q:"आप इस व्यक्ति को फ़ॉलो करना बंद कर देंगे।",
+      unfollow_short:"अनफ़ॉलो",
+      options:"विकल्प",
+      removed_ok:"हटा दिया",
+      remove_follower_q:"यह व्यक्ति आपको फ़ॉलो करना बंद कर देगा। सूचना नहीं जाएगी।",
+      remove:"हटाएँ",
       song_cinema:"इस पल में एक गाना जोड़ें",
       rec_failed:"रिकॉर्डिंग विफल, फिर कोशिश करें",
       load_failed:"लोड नहीं हो सका",
@@ -4598,6 +4661,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      unfollowed_ok:"Berhenti mengikuti",
+      unfollow_q:"Kamu akan berhenti mengikuti orang ini.",
+      unfollow_short:"Berhenti",
+      options:"Opsi",
+      removed_ok:"Dihapus",
+      remove_follower_q:"Orang ini akan berhenti mengikutimu. Dia tidak diberi tahu.",
+      remove:"Hapus",
       song_cinema:"Tambahkan lagu ke momen ini",
       rec_failed:"Perekaman gagal, coba lagi",
       load_failed:"Gagal memuat",
@@ -5606,9 +5676,6 @@ svg{display:block}
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
   font:700 0.7rem inherit;letter-spacing:-.02em;white-space:nowrap;text-align:center;
   box-shadow:0 0.35rem 0.9rem -0.45rem rgba(255,59,107,.7)}
-#followSheet .flMore{flex:none;width:1.75rem;height:2rem;margin-left:0.2rem;border:0;background:none;color:var(--t3);
-  display:grid;place-items:center;padding:0;position:relative;z-index:2}
-#followSheet .flMore svg{width:0.95rem;height:0.95rem}
 #followSheet .shrow .nm{min-width:0;flex:1}
 #followSheet .shrow .nm b,#followSheet .shrow .nm{font-size:0.9rem}
 
@@ -6182,6 +6249,43 @@ svg{display:block}
 
 /* eylem satırı en altta — gövdenin kendi alt dolgusu yeterli */
 #profile .profbody.otherProf .profActs{margin-top:auto;padding:1.375rem 0 0;border:0}
+
+/* ═══ TAKİPÇİ ÇIKARMA — KAYAN SATIR ═══
+   Satır sola kayınca altından kırmızı alan çıkar. Panel açmaktan
+   daha hızlı: kullanıcı listeden ayrılmadan işini bitiriyor. */
+/* Kırpma SATIRDA değil, LİSTEDE olmalı.
+   Satır kendi içeriğini kırpınca dışarıda bekleyen kırmızı alan da
+   kesiliyor ve kaydırınca hiçbir şey görünmüyordu. */
+.shrow.kaydirilir{position:relative;overflow:visible;
+  transition:transform .26s cubic-bezier(.22,1,.36,1);
+  touch-action:pan-y;background:var(--panelbg);z-index:1}
+#flList{overflow-x:hidden}
+.shrow.kaydirilir.acik{transform:translateX(-5.75rem)}
+
+/* üç nokta — satırın sağında */
+/* Üç nokta — satırın sağında, dokunma alanı geniş ama görüntüsü
+   hafif. Yatay değil DİKEY üç nokta: satır düzeniyle karışmıyor. */
+.flUcNokta{position:static;flex:none;margin-left:auto;
+  width:2.25rem;height:2.25rem;border-radius:99px;border:0;
+  display:flex;align-items:center;justify-content:center;
+  background:none;color:var(--t3);
+  transition:transform .16s,color .18s,background .18s}
+.flUcNokta svg{width:1.0625rem;height:1.0625rem;display:block}
+.flUcNokta:active{transform:scale(.86);background:var(--surf1);color:var(--t2)}
+.shrow.acik .flUcNokta{opacity:0;pointer-events:none}
+
+/* kırmızı çıkarma alanı — satırın altında bekler */
+/* Kırmızı alan KAPALIYKEN GÖRÜNMEZ.
+   Kenardan sızan ince kırmızı çizgi tasarımı bozuyordu. */
+.flCikar{position:absolute;right:-5.75rem;top:0;bottom:0;width:5.75rem;
+  border:0;border-radius:0;
+  background:linear-gradient(135deg,#FF3B4B,#C41E3A);color:#fff;
+  font:700 0.8125rem/1 inherit;letter-spacing:-.01em;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .18s,filter .16s}
+.shrow.acik .flCikar{opacity:1;pointer-events:auto}
+.flCikar:active{filter:brightness(.88)}
 
 /* ═══ ONAY PANELİ ═══
    Tarayıcının kendi onay penceresi yerine uygulamanın kendi paneli.
@@ -8790,7 +8894,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.9.1</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 2.9.5</span></div>
     </div>
   </section>
 </div>
@@ -11569,6 +11673,10 @@ function close(id){
      Tek an sayfasında şarkı ve video çalıyor. Sayfa hangi yolla
      kapanırsa kapansın (geri tuşu, dışarı dokunma, düğme) ses
      arkada çalmaya devam ediyordu. */
+  if(id==="followSheet"){
+    try{ satirlariKapat(document.getElementById("flList")); }catch(e){}
+  }
+
   if(id==="anPage"){
     try{ if(typeof apSarkiDurdur==="function") apSarkiDurdur(); }catch(e){}
     try{
@@ -15100,40 +15208,8 @@ async function openMiniProfile(name){
 
 
 
-function openFollowRowMenu(p, kind, rowEl){
-  const title=document.getElementById('relTitle');
-  const sub=document.getElementById('relSub');
-  const yes=document.getElementById('relYes');
-  const no=document.getElementById('relNo');
-  const leave = kind==="following";
-  if(title) title.textContent = leave ? (t("unfriend_q")||"Takipten çıkılsın mı?") : (t("act_remove")||"Çıkar");
-  if(sub) sub.textContent = (p.display_name||p.username);
-  if(yes) yes.textContent = leave ? t("unfriend_yes") : t("act_remove");
-  if(no) no.textContent = t("unfriend_no");
-  open('relSheet');
-  if(no) no.onclick=()=>close('relSheet');
-  if(yes) yes.onclick=async ()=>{
-    const sb=window.__sb, me=window.__me;
-    if(!sb||!me) return;
-    const puid=p.id||await idOfUsername(p.username);
-    if(!puid){ toast(t("err_user_nf")); return; }
-    try{
-      if(leave){
-        const {error}=await sb.from('follows').delete().eq('follower_id',me.id).eq('followee_id',puid);
-        if(error) throw error;
-        following.delete(p.username);
-      }else{
-        const {error}=await sb.rpc('remove_follower',{follower:puid});
-        if(error) throw error;
-        followsMe.delete(p.username);
-      }
-      close('relSheet');
-      if(rowEl){ rowEl.style.transition="opacity .2s"; rowEl.style.opacity="0"; setTimeout(()=>rowEl.remove(),200); }
-      await loadProfileData(ME);
-      if($("#profile") && $("#profile").classList.contains("open") && profName===ME) renderProfile();
-    }catch(e){ toast(t("err_generic")); }
-  };
-}
+/* openFollowRowMenu kaldırıldı — satır menüsünün yerini kaydırmalı
+   çıkarma aldı, artık hiçbir yerden çağrılmıyordu. */
 
 function openUnfriend(p, tagEl, rowEl){
   const title=document.getElementById('relTitle');
@@ -15162,6 +15238,145 @@ function openUnfriend(p, tagEl, rowEl){
     }catch(e){ toast(t('err_generic')); }
   };
   if(typeof wireSheetSwipeOn==='function') wireSheetSwipeOn(document.getElementById('relSheet'), '.relBox', ()=>close('relSheet'));
+}
+
+/* ═══ TAKİPÇİ ÇIKARMA ═══
+   Satır sola kayınca altından kırmızı alan çıkar. Üç noktaya basmak
+   ve satırı sola sürüklemek aynı şeyi yapar. */
+
+function apTitretKisa(){
+  try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+}
+
+function satirKapat(satir){
+  satir.classList.remove("acik");
+  satir.style.transform = "";
+}
+
+function satirlariKapat(kap){
+  if(!kap) return;
+  kap.querySelectorAll(".shrow.acik").forEach(x=>satirKapat(x));
+}
+
+/* Sola sürükleme — üç nokta ile aynı sonucu verir. */
+function kaydirmaBagla(satir, kap){
+  let basX = 0, basY = 0, suruk = false, karar = null, mesafe = 0;
+  const GENISLIK = 92;   // kırmızı alanın genişliği
+
+  satir.addEventListener("pointerdown", e=>{
+    if(e.target.closest(".flCikar, .flUcNokta")) return;
+    basX = e.clientX; basY = e.clientY;
+    suruk = true; karar = null; mesafe = 0;
+  });
+
+  satir.addEventListener("pointermove", e=>{
+    if(!suruk) return;
+    const dx = e.clientX - basX, dy = e.clientY - basY;
+
+    if(karar === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)){
+      karar = (Math.abs(dx) > Math.abs(dy)) ? "yatay" : "dikey";
+      if(karar === "yatay") satirlariKapat(kap);
+    }
+    if(karar !== "yatay") return;
+
+    const acikti = satir.classList.contains("acik");
+    let x = acikti ? (-GENISLIK + dx) : dx;
+    x = Math.max(-GENISLIK, Math.min(0, x));
+    mesafe = x;
+    satir.style.transition = "none";
+    satir.style.transform = "translateX(" + x + "px)";
+  });
+
+  const bitir = ()=>{
+    if(!suruk) return;
+    suruk = false;
+    if(karar !== "yatay") return;
+
+    satir.style.transition = "";
+    satir.style.transform = "";
+    const acik = mesafe < -GENISLIK / 2;
+    satir.classList.toggle("acik", acik);
+    if(acik) apTitretKisa();
+    karar = null;
+  };
+  satir.addEventListener("pointerup", bitir);
+  satir.addEventListener("pointercancel", bitir);
+}
+
+/* Takipten çık: ben o kişiyi takip etmeyi bırakırım. */
+async function takiptenCik(kisi, satir){
+  const sb = window.__sb, me = window.__me;
+  if(!sb || !me) return;
+
+  if(!await onaySor(
+      adiniGoster(kisi.username),
+      t("unfollow_q"),
+      t("unfollow_short"), true)) {
+    satirKapat(satir);
+    return;
+  }
+
+  satir.style.transition = "opacity .22s, transform .28s";
+  satir.style.opacity = "0";
+  satir.style.transform = "translateX(-100%)";
+
+  try{
+    const { error } = await sb.from('follows')
+      .delete().eq('follower_id', me.id).eq('followee_id', kisi.id);
+    if(error) throw error;
+
+    try{ following.delete(kisi.username); }catch(e){}
+    setTimeout(()=>{ satir.remove(); }, 280);
+    toast(t("unfollowed_ok"));
+
+    try{ if(typeof loadProfileData === "function") await loadProfileData(ME); }catch(e){}
+    try{ if(typeof drawStats === "function") drawStats(); }catch(e){}
+  }catch(e){
+    console.warn("[Klipsy] takipten çıkma:", e);
+    satir.style.opacity = "";
+    satir.style.transform = "";
+    satirKapat(satir);
+    toast(t("err_generic"));
+  }
+}
+
+/* Takipçiyi çıkar: o kişinin beni takip etmesini sona erdirir. */
+async function takipciCikar(kisi, satir){
+  const sb = window.__sb, me = window.__me;
+  if(!sb || !me) return;
+
+  if(!await onaySor(
+      adiniGoster(kisi.username),
+      t("remove_follower_q"),
+      t("remove"), true)) {
+    satirKapat(satir);
+    return;
+  }
+
+  /* Önce ekrandan kaldır — bekleme hissi olmasın. */
+  satir.style.transition = "opacity .22s, transform .28s, height .28s, margin .28s";
+  satir.style.opacity = "0";
+  satir.style.transform = "translateX(-100%)";
+
+  try{
+    const { error } = await sb.from('follows')
+      .delete().eq('follower_id', kisi.id).eq('followee_id', me.id);
+    if(error) throw error;
+
+    try{ followsMe.delete(kisi.username); }catch(e){}
+    setTimeout(()=>{ satir.remove(); }, 280);
+    toast(t("removed_ok"));
+
+    // sayıyı tazele
+    try{ if(typeof loadProfileData === "function") await loadProfileData(ME); }catch(e){}
+    try{ if(typeof drawStats === "function") drawStats(); }catch(e){}
+  }catch(e){
+    console.warn("[Klipsy] takipçi çıkarma:", e);
+    satir.style.opacity = "";
+    satir.style.transform = "";
+    satirKapat(satir);
+    toast(t("err_generic"));
+  }
 }
 
 async function openFollowList(name, kind){
@@ -15225,9 +15440,54 @@ async function openFollowList(name, kind){
         nm.textContent = p.username;
       }
       b.append(av,nm);
-      b.addEventListener("click",()=>{ close("followSheet"); openProfile(p.username); });
+      b.addEventListener("click",()=>{
+        /* Kaydırma açıkken dokunuş profile götürmez, önce kapanır. */
+        if(b.classList.contains("acik")){ satirKapat(b); return; }
+        close("followSheet"); openProfile(p.username);
+      });
 
-      if(p.username !== ME){
+      /* ── ÇIKARMA: satırı sola kaydır ──
+         Panel açmak yerine satır sola kayıyor ve altından kırmızı
+         alan çıkıyor. Üç noktaya basınca da, satırı sola sürükleyince
+         de aynı şey oluyor. */
+      /* Kendi listelerimde çıkarma olur:
+           takipçiler → o kişi beni takip etmeyi bırakır
+           takip ettiklerim → ben onu takip etmeyi bırakırım */
+      if(name === ME && p.username !== ME){
+        b.classList.add("kaydirilir");
+
+        const takipListesi = (kind !== "followers");
+
+        const kirmizi = document.createElement("button");
+        kirmizi.className = "flCikar";
+        kirmizi.textContent = takipListesi ? t("unfollow_short") : t("remove");
+        kirmizi.addEventListener("click", async (ev)=>{
+          ev.stopPropagation();
+          if(takipListesi) await takiptenCik(p, b);
+          else             await takipciCikar(p, b);
+        });
+
+        const uc = document.createElement("button");
+        uc.className = "flUcNokta";
+        uc.setAttribute("aria-label", t("options"));
+        uc.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="18.5" r="1.9"/></svg>';
+        uc.addEventListener("click", ev=>{
+          ev.stopPropagation();
+          const acik = b.classList.contains("acik");
+          satirlariKapat(box);
+          if(!acik){ b.classList.add("acik"); apTitretKisa(); }
+        });
+
+        b.appendChild(uc);
+        b.appendChild(kirmizi);
+        kaydirmaBagla(b, box);
+      }
+
+      /* KENDİ LİSTEMDE TAKİP ETİKETİ YOK.
+         Üç nokta ile etiket yan yana duruyor, üst üste biniyordu.
+         Ayrıca etiket eski paneli açıyordu — artık kaydırmalı
+         çıkarma var, ikisine birden gerek yok. */
+      if(p.username !== ME && name !== ME){
         const st=followState(p.username);
         const fb=document.createElement("button");
         fb.className="flTag"+(st==='friends'?' friends':'');
@@ -15251,17 +15511,11 @@ async function openFollowList(name, kind){
         b.appendChild(fb);
       }
 
-      if(own && p.username!==ME){
-        const more=document.createElement("button");
-        more.className="flMore";
-        more.setAttribute("aria-label", t("options")||"...");
-        more.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg>';
-        more.addEventListener("click", ev=>{
-          ev.stopPropagation();
-          openFollowRowMenu(p, kind, b);
-        });
-        b.appendChild(more);
-      }
+      /* ESKİ ÜÇ NOKTA KALDIRILDI.
+         Kaydırmalı çıkarma geldiğinde bu düğme yerinde kalmıştı:
+         satırda iki üç nokta yan yana duruyordu ve bu eski paneli
+         açıyordu. Aynı işi kaydırma yapıyor. */
+
       box.appendChild(b);
     });
   }catch(e){ box.innerHTML='<div class="chatEmpty">'+t("err_occurred")+'</div>'; console.warn(e); }
@@ -15931,7 +16185,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.9.1";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 2.9.5";
   box.appendChild(ver);
 }
 

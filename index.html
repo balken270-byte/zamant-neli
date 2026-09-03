@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.1.6</title>
+<title>Klipsy 3.1.9</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -18,6 +18,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      tag_follower:"Takipçin",
+      tag_following:"Takipte",
+      tag_follow:"Takip et",
+      tag_friends:"Arkadaşlar",
       feed_switched_community:"Topluluk gönderileri",
       feed_switched_friends:"Arkadaş gönderileri",
       feed_mode_unsupported:"Arkadaşlar akışı sunucuda hazır değil",
@@ -554,6 +558,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     en:{
       _name:"English",
+      tag_follower:"Follower",
+      tag_following:"Following",
+      tag_follow:"Follow",
+      tag_friends:"Friends",
       feed_switched_community:"Community posts",
       feed_switched_friends:"Friends' posts",
       feed_mode_unsupported:"Friends feed isn't ready on the server",
@@ -1077,6 +1085,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     es:{
       _name:"Español",
+      tag_follower:"Seguidor",
+      tag_following:"Siguiendo",
+      tag_follow:"Seguir",
+      tag_friends:"Amigos",
       feed_switched_community:"Publicaciones de la comunidad",
       feed_switched_friends:"Publicaciones de amigos",
       feed_mode_unsupported:"El feed de amigos no está listo",
@@ -1598,6 +1610,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      tag_follower:"متابعك",
+      tag_following:"تتابعه",
+      tag_follow:"متابعة",
+      tag_friends:"أصدقاء",
       feed_switched_community:"منشورات المجتمع",
       feed_switched_friends:"منشورات الأصدقاء",
       feed_mode_unsupported:"تغذية الأصدقاء غير جاهزة",
@@ -2119,6 +2135,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     fr:{
       _name:"Français",
+      tag_follower:"Abonné",
+      tag_following:"Abonné",
+      tag_follow:"Suivre",
+      tag_friends:"Amis",
       feed_switched_community:"Publications de la communauté",
       feed_switched_friends:"Publications des amis",
       feed_mode_unsupported:"Le fil Amis n'est pas prêt",
@@ -2640,6 +2660,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     de:{
       _name:"Deutsch",
+      tag_follower:"Folgt dir",
+      tag_following:"Folgst",
+      tag_follow:"Folgen",
+      tag_friends:"Freunde",
       feed_switched_community:"Beiträge der Community",
       feed_switched_friends:"Beiträge von Freunden",
       feed_mode_unsupported:"Freunde-Feed ist nicht bereit",
@@ -3161,6 +3185,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ru:{
       _name:"Русский",
+      tag_follower:"Подписчик",
+      tag_following:"Вы читаете",
+      tag_follow:"Читать",
+      tag_friends:"Друзья",
       feed_switched_community:"Публикации сообщества",
       feed_switched_friends:"Публикации друзей",
       feed_mode_unsupported:"Лента друзей не готова",
@@ -3682,6 +3710,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     pt:{
       _name:"Português",
+      tag_follower:"Seguidor",
+      tag_following:"Seguindo",
+      tag_follow:"Seguir",
+      tag_friends:"Amigos",
       feed_switched_community:"Publicações da comunidade",
       feed_switched_friends:"Publicações de amigos",
       feed_mode_unsupported:"O feed de amigos não está pronto",
@@ -4203,6 +4235,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     hi:{
       _name:"हिन्दी",
+      tag_follower:"फ़ॉलोअर",
+      tag_following:"फ़ॉलो",
+      tag_follow:"फ़ॉलो",
+      tag_friends:"मित्र",
       feed_switched_community:"समुदाय की पोस्ट",
       feed_switched_friends:"मित्रों की पोस्ट",
       feed_mode_unsupported:"मित्र फ़ीड तैयार नहीं है",
@@ -4724,6 +4760,10 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      tag_follower:"Pengikut",
+      tag_following:"Diikuti",
+      tag_follow:"Ikuti",
+      tag_friends:"Teman",
       feed_switched_community:"Postingan komunitas",
       feed_switched_friends:"Postingan teman",
       feed_mode_unsupported:"Beranda teman belum siap",
@@ -5742,7 +5782,11 @@ svg{display:block}
 .relYes{width:100%;height:2.75rem;border:0;border-radius:0.9rem;color:#fff;font:700 0.9rem inherit;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);margin-bottom:0.5rem}
 .relNo{width:100%;height:2.5rem;border:0;border-radius:0.9rem;background:var(--surf2);color:var(--t1);font:650 0.875rem inherit}
-#followSheet .flTag{margin-left:auto;flex:none;width:8.25rem;height:2rem;padding:0 0.6rem;border:0;border-radius:0.7rem;
+/* ETİKET DARALDI — ad soyad tam görünsün.
+   8.25rem çok yer kaplıyor, uzun adlar kısalıyordu.
+   "Arkadaşlar" korundu: karşılıklı takibi anlatan tek kelime bu.
+   Diğerleri kısaltıldı — "Takipte", "Takipçin". */
+#followSheet .flTag{margin-left:auto;flex:none;width:6.25rem;height:2rem;padding:0 0.5rem;border:0;border-radius:0.7rem;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
   font:700 0.7rem inherit;letter-spacing:-.02em;white-space:nowrap;text-align:center;
@@ -5761,8 +5805,8 @@ svg{display:block}
 /* ARAMA SATIRI, TAKİP LİSTESİYLE AYNI ÖLÇÜDE.
    Avatar 2.625rem, iç boşluk 0.625rem, köşe yarıçapı 1rem —
    hepsi .shrow ile aynı. İki liste yan yana konsa fark edilmez. */
-#userSearch .usRow{display:flex;align-items:center;gap:0.75rem;width:100%;
-  padding:0.625rem 0.625rem;margin:0 0.375rem;
+#userSearch .usRow{display:flex;align-items:center;gap:0.6875rem;width:100%;
+  padding:0.625rem 0.375rem 0.625rem 0.625rem;margin:0 0.375rem;
   width:calc(100% - 0.75rem);
   border-radius:1rem;text-align:left;background:none;border:0;color:inherit;
   cursor:pointer;-webkit-user-select:none;user-select:none;
@@ -5787,7 +5831,7 @@ svg{display:block}
    verilince uzun metin taşıyor ve etiketler farklı boyda kalıyordu.
    Sabit genişlikte hepsi aynı; sığmayan metin kısaltılır. */
 #userSearch .usFollow,.flwBtn{
-  margin-left:auto;flex:none;width:8.25rem;height:2rem;padding:0 0.6rem;
+  margin-left:auto;flex:none;width:6.25rem;height:2rem;padding:0 0.5rem;
   display:flex;align-items:center;justify-content:center;
   border-radius:0.7rem;border:0;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
@@ -6402,8 +6446,10 @@ svg{display:block}
    Ad esner, etiket ve üç nokta sağa yaslanır. */
 #followSheet .flTag{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.flUcNokta{position:static;flex:none;margin-left:0.25rem;
-  width:2.25rem;height:2.25rem;border-radius:99px;border:0;
+/* Üç nokta iyice sağa yanaştırıldı: sağında boşluk kalıyordu.
+   Etiketle arası da daraltıldı — kazanılan yer ada gidiyor. */
+.flUcNokta{position:static;flex:none;margin-left:0.125rem;margin-right:-0.375rem;
+  width:2rem;height:2rem;border-radius:99px;border:0;
   display:flex;align-items:center;justify-content:center;
   background:none;color:var(--t3);
   transition:transform .16s,color .18s,background .18s}
@@ -8113,7 +8159,8 @@ html.native button,html.native .tab{touch-action:manipulation}
 .shbox p{font-size:0.7812rem;color:var(--t3);padding:0 1rem 0.625rem}
 .shlist{overflow-y:auto;padding:0 0.5rem 0.375rem;scrollbar-width:none}
 .shlist::-webkit-scrollbar{display:none}
-.shrow{display:flex;align-items:center;gap:0.75rem;width:100%;text-align:left;padding:0.625rem 0.625rem;
+.shrow{display:flex;align-items:center;gap:0.6875rem;width:100%;text-align:left;
+  padding:0.625rem 0.375rem 0.625rem 0.625rem;
   border-radius:1rem;transition:background .15s}
 .shrow:active{background:var(--surf1)}
 .shrow .av{width:2.625rem;height:2.625rem;border-radius:6.1875rem;flex:none;background:var(--avatar-bg) center/cover no-repeat;
@@ -9083,7 +9130,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.1.6</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.1.9</span></div>
     </div>
   </section>
 </div>
@@ -15359,6 +15406,15 @@ $("#cpShare").addEventListener("click",()=>{
 const following=new Set();
 const followsMe=new Set();
 const USERS={};
+/* Takip durumunun etikette görünecek KISA karşılığı.
+   Listelerde yer dar; uzun metinler adı kısaltıyordu. */
+function etiketAnahtari(durum){
+  if(durum === 'friends')     return 'tag_friends';
+  if(durum === 'following')   return 'tag_following';
+  if(durum === 'follows_you') return 'tag_follower';
+  return 'tag_follow';
+}
+
 function followState(name){
   const a=following.has(name), b=followsMe.has(name);
   if(a&&b) return 'friends';
@@ -15371,9 +15427,9 @@ function paintFollowBtn(btn, name){
   const st=followState(name);
   btn.classList.toggle('on', st==='following' || st==='friends');
   btn.classList.toggle('friends', st==='friends');
-  /* Kısa karşılık kullanılır: "Seni takip ediyor" sabit genişlikli
-     etikete sığmıyor ve kırpılıyordu. "Takipçi" hem kısa hem net. */
-  btn.textContent = (window.t ? t(st==='follows_you' ? 'follower_short' : st) : st);
+  /* Etikete özel KISA karşılıklar: normal metinler ("Arkadaşlar",
+     "Takip ediliyor") dar etikete sığmıyor ve kırpılıyordu. */
+  btn.textContent = (window.t ? t(etiketAnahtari(st)) : st);
 }
 async function markWhoFollowsMe(names){
   const sb=window.__sb, me=window.__me;
@@ -15639,7 +15695,7 @@ function openUnfriend(p, tagEl, rowEl){
       if(tagEl){
         const st=followState(p.username);
         tagEl.className='flTag';
-        tagEl.textContent=st==='follows_you'?t('follower_short'):t(st);
+        tagEl.textContent = t(etiketAnahtari(st));
       }
     }catch(e){ toast(t('err_generic')); }
   };
@@ -15919,7 +15975,7 @@ async function openFollowList(name, kind){
         const st=followState(p.username);
         const fb=document.createElement("button");
         fb.className="flTag"+(st==='friends'?' friends':'');
-        fb.textContent = st==='follows_you' ? t('follower_short') : t(st);
+        fb.textContent = t(etiketAnahtari(st));
         fb.addEventListener("click", async (ev)=>{
           ev.stopPropagation();
           if(st==='friends' || following.has(p.username)){
@@ -16640,7 +16696,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.1.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.1.9";
   box.appendChild(ver);
 }
 

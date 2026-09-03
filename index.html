@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.0.0</title>
+<title>Klipsy 3.1.6</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -18,6 +18,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
   const DICT = {
     tr:{
       _name:"Türkçe",
+      feed_switched_community:"Topluluk gönderileri",
+      feed_switched_friends:"Arkadaş gönderileri",
+      feed_mode_unsupported:"Arkadaşlar akışı sunucuda hazır değil",
+      feed_community:"Topluluk",
+      feed_friends:"Arkadaşlar",
+      f_last:"Soyad",
+      f_first:"Ad",
       unfollowed_ok:"Takipten çıkıldı",
       unfollow_q:"Bu kişiyi takip etmeyi bırakacaksın.",
       unfollow_short:"Bırak",
@@ -547,6 +554,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     en:{
       _name:"English",
+      feed_switched_community:"Community posts",
+      feed_switched_friends:"Friends' posts",
+      feed_mode_unsupported:"Friends feed isn't ready on the server",
+      feed_community:"Community",
+      feed_friends:"Friends",
+      f_last:"Last name",
+      f_first:"First name",
       unfollowed_ok:"Unfollowed",
       unfollow_q:"You'll stop following this person.",
       unfollow_short:"Unfollow",
@@ -1063,6 +1077,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     es:{
       _name:"Español",
+      feed_switched_community:"Publicaciones de la comunidad",
+      feed_switched_friends:"Publicaciones de amigos",
+      feed_mode_unsupported:"El feed de amigos no está listo",
+      feed_community:"Comunidad",
+      feed_friends:"Amigos",
+      f_last:"Apellido",
+      f_first:"Nombre",
       unfollowed_ok:"Dejaste de seguir",
       unfollow_q:"Dejarás de seguir a esta persona.",
       unfollow_short:"Dejar",
@@ -1577,6 +1598,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ar:{
       _name:"العربية", _rtl:true,
+      feed_switched_community:"منشورات المجتمع",
+      feed_switched_friends:"منشورات الأصدقاء",
+      feed_mode_unsupported:"تغذية الأصدقاء غير جاهزة",
+      feed_community:"المجتمع",
+      feed_friends:"الأصدقاء",
+      f_last:"اسم العائلة",
+      f_first:"الاسم",
       unfollowed_ok:"تم إلغاء المتابعة",
       unfollow_q:"ستتوقف عن متابعة هذا الشخص.",
       unfollow_short:"إلغاء",
@@ -2091,6 +2119,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     fr:{
       _name:"Français",
+      feed_switched_community:"Publications de la communauté",
+      feed_switched_friends:"Publications des amis",
+      feed_mode_unsupported:"Le fil Amis n'est pas prêt",
+      feed_community:"Communauté",
+      feed_friends:"Amis",
+      f_last:"Nom",
+      f_first:"Prénom",
       unfollowed_ok:"Désabonné",
       unfollow_q:"Tu ne suivras plus cette personne.",
       unfollow_short:"Ne plus suivre",
@@ -2605,6 +2640,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     de:{
       _name:"Deutsch",
+      feed_switched_community:"Beiträge der Community",
+      feed_switched_friends:"Beiträge von Freunden",
+      feed_mode_unsupported:"Freunde-Feed ist nicht bereit",
+      feed_community:"Community",
+      feed_friends:"Freunde",
+      f_last:"Nachname",
+      f_first:"Vorname",
       unfollowed_ok:"Nicht mehr gefolgt",
       unfollow_q:"Du folgst dieser Person nicht mehr.",
       unfollow_short:"Entfolgen",
@@ -3119,6 +3161,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     ru:{
       _name:"Русский",
+      feed_switched_community:"Публикации сообщества",
+      feed_switched_friends:"Публикации друзей",
+      feed_mode_unsupported:"Лента друзей не готова",
+      feed_community:"Сообщество",
+      feed_friends:"Друзья",
+      f_last:"Фамилия",
+      f_first:"Имя",
       unfollowed_ok:"Вы отписались",
       unfollow_q:"Вы отпишетесь от этого человека.",
       unfollow_short:"Отписаться",
@@ -3633,6 +3682,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     pt:{
       _name:"Português",
+      feed_switched_community:"Publicações da comunidade",
+      feed_switched_friends:"Publicações de amigos",
+      feed_mode_unsupported:"O feed de amigos não está pronto",
+      feed_community:"Comunidade",
+      feed_friends:"Amigos",
+      f_last:"Sobrenome",
+      f_first:"Nome",
       unfollowed_ok:"Deixou de seguir",
       unfollow_q:"Você deixará de seguir esta pessoa.",
       unfollow_short:"Deixar",
@@ -4147,6 +4203,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     hi:{
       _name:"हिन्दी",
+      feed_switched_community:"समुदाय की पोस्ट",
+      feed_switched_friends:"मित्रों की पोस्ट",
+      feed_mode_unsupported:"मित्र फ़ीड तैयार नहीं है",
+      feed_community:"समुदाय",
+      feed_friends:"मित्र",
+      f_last:"उपनाम",
+      f_first:"नाम",
       unfollowed_ok:"अनफ़ॉलो किया",
       unfollow_q:"आप इस व्यक्ति को फ़ॉलो करना बंद कर देंगे।",
       unfollow_short:"अनफ़ॉलो",
@@ -4661,6 +4724,13 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
     },
     id:{
       _name:"Bahasa Indonesia",
+      feed_switched_community:"Postingan komunitas",
+      feed_switched_friends:"Postingan teman",
+      feed_mode_unsupported:"Beranda teman belum siap",
+      feed_community:"Komunitas",
+      feed_friends:"Teman",
+      f_last:"Nama belakang",
+      f_first:"Nama depan",
       unfollowed_ok:"Berhenti mengikuti",
       unfollow_q:"Kamu akan berhenti mengikuti orang ini.",
       unfollow_short:"Berhenti",
@@ -5672,7 +5742,8 @@ svg{display:block}
 .relYes{width:100%;height:2.75rem;border:0;border-radius:0.9rem;color:#fff;font:700 0.9rem inherit;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);margin-bottom:0.5rem}
 .relNo{width:100%;height:2.5rem;border:0;border-radius:0.9rem;background:var(--surf2);color:var(--t1);font:650 0.875rem inherit}
-#followSheet .flTag{margin-left:auto;flex:none;min-width:6.75rem;height:2rem;padding:0 0.7rem;border:0;border-radius:0.7rem;
+#followSheet .flTag{margin-left:auto;flex:none;width:8.25rem;height:2rem;padding:0 0.6rem;border:0;border-radius:0.7rem;
+  display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
   font:700 0.7rem inherit;letter-spacing:-.02em;white-space:nowrap;text-align:center;
   box-shadow:0 0.35rem 0.9rem -0.45rem rgba(255,59,107,.7)}
@@ -5687,18 +5758,42 @@ svg{display:block}
 #userSearch .usPill input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--t1);font:650 0.95rem/1.2 inherit}
 #userSearch .usHint{padding:0.4rem 1rem 0.2rem;font-size:0.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
 #userSearch .usList{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 calc(var(--sab) + 1rem)}
-#userSearch .usRow{display:flex;align-items:center;gap:0.75rem;width:100%;padding:0.65rem 1rem;text-align:left;background:none;border:0;color:inherit}
+/* ARAMA SATIRI, TAKİP LİSTESİYLE AYNI ÖLÇÜDE.
+   Avatar 2.625rem, iç boşluk 0.625rem, köşe yarıçapı 1rem —
+   hepsi .shrow ile aynı. İki liste yan yana konsa fark edilmez. */
+#userSearch .usRow{display:flex;align-items:center;gap:0.75rem;width:100%;
+  padding:0.625rem 0.625rem;margin:0 0.375rem;
+  width:calc(100% - 0.75rem);
+  border-radius:1rem;text-align:left;background:none;border:0;color:inherit;
+  cursor:pointer;-webkit-user-select:none;user-select:none;
+  transition:background .15s}
 #userSearch .usRow:active{background:var(--surf2)}
-#userSearch .usAv{width:3rem;height:3rem;border-radius:99px;flex:none;background:var(--avatar-bg) center/cover no-repeat}
-#userSearch .usNm{font-size:0.95rem;font-weight:650;letter-spacing:-.02em}
-#userSearch .usUn{font-size:0.75rem;color:var(--t3)}
+#userSearch .usAv{width:2.625rem;height:2.625rem;border-radius:99px;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat;
+  box-shadow:0 0 0 1px var(--edge)}
+#userSearch .usRow > div:not([class]){flex:1 1 0;min-width:0;overflow:hidden}
+#userSearch .usNm{font-size:0.9rem;font-weight:650;letter-spacing:-.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#userSearch .usUn{font-size:0.75rem;color:var(--t3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #userSearch .usNm em,#userSearch .usUn em{font-style:normal;color:#FF3B6B;font-weight:750}
 #userSearch .usEmpty{padding:4.5rem 1.75rem;text-align:center;font-size:1.15rem;font-weight:650;letter-spacing:-.03em;color:var(--t2)}
+/* ARAMADAKİ ETİKET, TAKİP LİSTESİYLE AYNI.
+   Önceden içeriğe göre daralıp genişliyordu: "Takip" kısa,
+   "Seni takip ediyor" uzun çıkıyor, liste dağınık görünüyordu.
+   Artık sabit genişlikte ve aynı köşe yarıçapında. */
+/* SABİT GENİŞLİK — en az değil.
+   "Arkadaşlar" kısa, "Seni takip ediyor" uzun: en az genişlik
+   verilince uzun metin taşıyor ve etiketler farklı boyda kalıyordu.
+   Sabit genişlikte hepsi aynı; sığmayan metin kısaltılır. */
 #userSearch .usFollow,.flwBtn{
-  margin-left:auto;flex:none;height:2rem;padding:0 0.9rem;border-radius:99px;border:0;
+  margin-left:auto;flex:none;width:8.25rem;height:2rem;padding:0 0.6rem;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:0.7rem;border:0;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
-  font:700 0.75rem inherit;letter-spacing:-.02em;
-  box-shadow:0 0.4rem 1rem -0.5rem rgba(255,59,107,.8)}
+  font:700 0.7rem inherit;letter-spacing:-.02em;
+  white-space:nowrap;text-align:center;overflow:hidden;text-overflow:ellipsis;
+  box-shadow:0 0.35rem 0.9rem -0.45rem rgba(255,59,107,.7)}
 #userSearch .usFollow.on,#userSearch .usFollow.friends,
 .flwBtn.on,.flwBtn.friends,.pcFollow.friends,.pcFollow.on{
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF)!important;color:#fff!important;
@@ -6250,6 +6345,40 @@ svg{display:block}
 /* eylem satırı en altta — gövdenin kendi alt dolgusu yeterli */
 #profile .profbody.otherProf .profActs{margin-top:auto;padding:1.375rem 0 0;border:0}
 
+/* ═══ AKIŞ KİPİ DÜĞMESİ ═══
+   Başlık çubuğunda, arama ve konum düğmelerinin yanında.
+   Metin dinamik: hangi akıştaysan onun adı yazıyor. */
+/* İKON DÜĞME — metin yerine şekil.
+   İki kişi silueti Arkadaşlar, küre Topluluk. Diğer başlık
+   düğmeleriyle aynı ölçüde, yer kaplamıyor. */
+.topbar .modeBtn{position:relative;flex:none;
+  transition:transform .16s cubic-bezier(.34,1.56,.64,1)}
+.topbar .modeBtn:active{transform:scale(.9)}
+.topbar .modeBtn .mIc{display:flex;align-items:center;justify-content:center}
+.topbar .modeBtn .mIc svg{width:1.0625rem;height:1.0625rem;display:block;
+  fill:none;stroke:currentColor;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* Arkadaşlar kipindeyken belirgin: hangi akışta olduğun net olsun. */
+.topbar .modeBtn.friends{
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  box-shadow:0 0.35rem 0.9rem -0.45rem rgba(255,59,107,.7)}
+
+/* Yeni an noktası — sayı değil, yalnızca "yeni var" işareti. */
+.topbar .ftDot{position:absolute;top:0.25rem;right:0.3125rem;
+  width:0.375rem;height:0.375rem;border-radius:99px;
+  background:#FF3B6B;box-shadow:0 0 0 0.125rem var(--bg)}
+.topbar .modeBtn.friends .ftDot{background:#fff;box-shadow:none}
+.topbar .ftDot.hide{display:none}
+
+/* Kayıt formunda ad ve soyad yan yana. */
+.gfield.gIkili{display:flex;gap:0.625rem}
+.gfield.gIkili > div{flex:1 1 0;min-width:0}
+
+/* Ad ve soyad yan yana — dar ekranda alt alta iner. */
+.obIkili{display:flex;gap:0.625rem;flex-wrap:wrap}
+.obIkili .obField{flex:1 1 7.5rem;min-width:0}
+
 /* ═══ TAKİPÇİ ÇIKARMA — KAYAN SATIR ═══
    Satır sola kayınca altından kırmızı alan çıkar. Panel açmaktan
    daha hızlı: kullanıcı listeden ayrılmadan işini bitiriyor. */
@@ -6271,8 +6400,7 @@ svg{display:block}
 #followSheet .shrow .nm i{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Sıra: ad soyad → etiket → üç nokta.
    Ad esner, etiket ve üç nokta sağa yaslanır. */
-#followSheet .flTag{flex:none;max-width:8rem;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;margin-left:auto}
+#followSheet .flTag{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .flUcNokta{position:static;flex:none;margin-left:0.25rem;
   width:2.25rem;height:2.25rem;border-radius:99px;border:0;
@@ -8368,16 +8496,43 @@ html.native button,html.native .tab{touch-action:manipulation}
 }
 .gscreen{position:absolute;inset:0;display:none;flex-direction:column;z-index:2}
 .gscreen.on{display:flex}
-.gwall{position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;overflow:hidden;pointer-events:none}
-.gwall .gcol{position:absolute;top:-20%;width:34%;display:flex;flex-direction:column;gap:0.75rem;will-change:transform}
-.gwall .gcol.c1{left:0;animation:gdrift1 38s linear infinite}
-.gwall .gcol.c2{left:33.5%;animation:gdrift2 46s linear infinite}
-.gwall .gcol.c3{left:67%;animation:gdrift1 42s linear infinite}
+/* ═══ GİRİŞ DUVARI — EĞİK IZGARA ═══
+   Üç dik sütun yerine beş sütunluk eğik bir ızgara. Perspektifle
+   uzaklaşıyor, sütunlar farklı hızda akıyor. Ekranda boşluk kalmıyor
+   ve gerçek anlar daha çok görünüyor.
+
+   Yalnızca dönüşüm kullanılır — ekran kartında çalışır, 60 kare akar. */
+.gwall{position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;
+  overflow:hidden;pointer-events:none;perspective:43.75rem}
+.gwall .gizgara{position:absolute;top:-30%;left:-30%;width:160%;height:160%;
+  display:flex;gap:0.375rem;
+  transform:rotateX(15deg) rotateZ(-9deg) scale(1.05);
+  transform-origin:center center;
+  filter:brightness(.66)}
+/* Sütunlar akış içinde: konumları elle verilmiyor, ızgara diziyor. */
+.gwall .gcol{position:static;flex:1;min-width:0;
+  display:flex;flex-direction:column;gap:0.375rem;will-change:transform}
+.gwall .gcol.c1{animation:gdrift1 34s linear infinite}
+.gwall .gcol.c2{animation:gdrift2 44s linear infinite}
+.gwall .gcol.c3{animation:gdrift1 39s linear infinite}
+.gwall .gcol.c4{animation:gdrift2 49s linear infinite}
+.gwall .gcol.c5{animation:gdrift1 30s linear infinite}
 #gate.off .gwall .gcol{animation:none!important;will-change:auto}
 @keyframes gdrift1{from{transform:translateY(0)}to{transform:translateY(-50%)}}
 @keyframes gdrift2{from{transform:translateY(-50%)}to{transform:translateY(0)}}
-.gtile{width:100%;aspect-ratio:3/4;border-radius:0.875rem;overflow:hidden;position:relative;flex:none;
+/* DİKEY oran korunur: 3/4 (genişlik/yükseklik).
+   Sabit yükseklik verilince kareler yatay dikdörtgene dönüyordu.
+   Yedek yükseklik oranla uyumlu hesaplanır: beş sütunda her kutucuk
+   yaklaşık 7.9rem genişlikte, yüksekliği de onun 4/3'ü: 10.5rem. */
+.gtile{width:100%;height:10.5rem;border-radius:0.625rem;
+  overflow:hidden;position:relative;flex:none;
   background:#16161C center/cover no-repeat;border:1px solid rgba(255,255,255,.06)}
+/* Oran desteği varsa yükseklik ondan hesaplanır ve sabit değer
+   devre dışı kalır. Böylece kareler her ekranda dikey kalır. */
+@supports (aspect-ratio: 3/4){
+  .gtile{height:auto;aspect-ratio:3/4}
+}
+
 .gtile.empty{background-image:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
 .gtile .em{position:absolute;top:0.4375rem;left:0.5rem;font-size:0.9375rem;filter:drop-shadow(0 1px 0.25rem rgba(0,0,0,.8))}
 .gveil{position:absolute;inset:0;z-index:1;
@@ -8680,16 +8835,23 @@ html.native button,html.native .tab{touch-action:manipulation}
     try{
       var el=document.getElementById('gWall2');
       if(!el) return;
-      for(var ci=0;ci<3;ci++){
+
+      /* Eğik ızgara: sütunlar bir sarmalayıcının içinde durur,
+         eğim ve perspektif ona uygulanır. */
+      var iz=document.createElement('div');
+      iz.className='gizgara';
+
+      for(var ci=0;ci<5;ci++){
         var col=document.createElement('div');
         col.className='gcol c'+(ci+1);
-        for(var r=0;r<2;r++)for(var i=0;i<5;i++){
+        for(var r=0;r<2;r++)for(var i=0;i<9;i++){
           var t=document.createElement('div');
           t.className='gtile empty';
           col.appendChild(t);
         }
-        el.appendChild(col);
+        iz.appendChild(col);
       }
+      el.appendChild(iz);
     }catch(e){}
   })();
   </script>
@@ -8737,7 +8899,10 @@ html.native button,html.native .tab{touch-action:manipulation}
               try{ renderSettings(); }catch(e){}
             }
           });
-          list.appendChild(b);
+          b.addEventListener('keydown', ev=>{
+        if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); b.click(); }
+      });
+      list.appendChild(b);
         });
       }
 
@@ -8882,6 +9047,18 @@ html.native button,html.native .tab{touch-action:manipulation}
         <button id="gTabLogin" class="on" data-i18n="login">Giriş yap</button>
         <button id="gTabSignup" data-i18n="signup">Kayıt ol</button>
       </div>
+      <!-- AD SOYAD — yalnızca kayıt olurken görünür.
+           Önceden hiç sorulmuyordu, kullanıcı adıyla devam ediliyordu. -->
+      <div class="gfield gIkili" id="gfName" style="display:none">
+        <div>
+          <label data-i18n="f_first">Ad</label>
+          <div class="ginwrap"><input id="gFirst" type="text" autocomplete="given-name" placeholder="Ad" maxlength="20"></div>
+        </div>
+        <div>
+          <label data-i18n="f_last">Soyad</label>
+          <div class="ginwrap"><input id="gLast" type="text" autocomplete="family-name" placeholder="Soyad" maxlength="20"></div>
+        </div>
+      </div>
       <div class="gfield" id="gfUsername" style="display:none">
         <label data-i18n="username2">Kullanıcı adı</label>
         <div class="ginwrap">
@@ -8906,7 +9083,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.0.0</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.1.6</span></div>
     </div>
   </section>
 </div>
@@ -8915,6 +9092,16 @@ html.native button,html.native .tab{touch-action:manipulation}
 
   <header class="topbar" id="topbar">
     <div class="spacer"></div>
+
+    <!-- AKIŞ KİPİ — TEK DÜĞME
+         İki ayrı sekme yüzer bir kapsül olarak dururken paylaşan
+         kişinin adının üstüne biniyordu. Artık başlık çubuğunda tek
+         düğme: dokununca Arkadaşlar ile Topluluk arasında geçiyor. -->
+    <button class="pill icon modeBtn" id="feedMode" aria-label="Akış">
+      <span class="mIc" id="feedModeIcon"></span>
+      <i class="ftDot hide" id="ftDot"></i>
+    </button>
+
     <button class="pill icon" id="userSearchBtn" aria-label="Ara" data-i18n-aria="search_people">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.2"/><path d="m20 20-3.4-3.4"/></svg>
     </button>
@@ -10030,6 +10217,139 @@ async function _fetchMomentsPage(beforeTs, limit){
 }
 
 /* Bir sayfa getir: önce get_feed, olmazsa moments. */
+/* ═══ AKIŞ SEKMELERİ ═══
+   Arkadaşlar: karşılıklı takipleşenler. Topluluk: herkes.
+   Seçim hatırlanır; ilk açılışta arkadaşı olmayan kullanıcı
+   Topluluk sekmesiyle karşılaşır — boş ekran görmesin. */
+let _akisKipi = "community";
+
+function akisKipi(){ return _akisKipi; }
+
+/* Akış kipi ikonları — aynı ölçüde çizildi, yan yana dengeli. */
+const AKIS_IKON = {
+  /* İki kişi silueti: arkadaşlar */
+  friends:
+    '<svg viewBox="0 0 24 24">'+
+    '<path d="M16 19v-1.6a3.2 3.2 0 0 0-3.2-3.2H6.2A3.2 3.2 0 0 0 3 17.4V19"/>'+
+    '<circle cx="9.5" cy="7.6" r="3.2"/>'+
+    '<path d="M21 19v-1.6a3.2 3.2 0 0 0-2.4-3.1"/>'+
+    '<path d="M15.4 4.6a3.2 3.2 0 0 1 0 6.2"/></svg>',
+
+  /* Küre: topluluk */
+  community:
+    '<svg viewBox="0 0 24 24">'+
+    '<circle cx="12" cy="12" r="8.4"/>'+
+    '<path d="M3.6 12h16.8"/>'+
+    '<path d="M12 3.6a13 13 0 0 1 0 16.8 13 13 0 0 1 0-16.8z"/></svg>',
+};
+
+/* Düğmenin ikonunu ve görünümünü kipe göre ayarla. */
+function akisSekmeCiz(){
+  const btn = document.getElementById("feedMode");
+  const ic  = document.getElementById("feedModeIcon");
+  if(!btn || !ic) return;
+
+  const arkadas = (_akisKipi === "friends");
+  ic.innerHTML = AKIS_IKON[arkadas ? "friends" : "community"];
+  btn.classList.toggle("friends", arkadas);
+
+  /* Erişilebilirlik: ikon tek başına ne olduğunu söylemiyor. */
+  btn.setAttribute("aria-label", t(arkadas ? "feed_friends" : "feed_community"));
+  btn.setAttribute("title",      t(arkadas ? "feed_friends" : "feed_community"));
+}
+
+async function akisKipiDegistir(kip){
+  /* Kip verilmezse diğerine geçilir — tek düğme böyle çalışıyor. */
+  if(!kip) kip = (_akisKipi === "friends") ? "community" : "friends";
+  if(kip === _akisKipi) return;
+  _akisKipi = kip;
+  try{ localStorage.setItem("klipsy_akis_kipi", kip); }catch(e){}
+  akisSekmeCiz();
+  try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+
+  /* Arkadaşlar sekmesine geçince yeni an noktası söner. */
+  if(kip === "friends"){
+    const d = document.getElementById("ftDot");
+    if(d) d.classList.add("hide");
+    try{ localStorage.setItem("klipsy_arkadas_gorulen", new Date().toISOString()); }catch(e){}
+  }
+
+  /* Akış baştan yüklenir. */
+  _feedHasMore = true;
+  _feedUseDirect = false;
+  items = [];
+  render();
+  const f = document.getElementById("feed");
+  if(f) f.scrollTop = 0;
+  await loadFeed();
+  activeIdx = -1;
+  syncActive();
+
+  /* HANGİ AKIŞTA OLDUĞUNU SÖYLE.
+     İkon tek başına yeterince açık değil; kısa bir bildirim
+     kullanıcıyı yönlendiriyor. */
+  const yol = window.__akisYol || "?";
+
+  if(yol.indexOf("rpc:") === 0 && yol !== "rpc:kipsiz"){
+    toast(t(kip === "friends" ? "feed_switched_friends" : "feed_switched_community"));
+  }else{
+    /* Sunucuya ulaşılamadı: sessizce geçme, sebebi söyle. */
+    toast(t("feed_mode_unsupported"));
+    console.warn("[Klipsy] akış yolu:", yol, window.__akisHata || "");
+  }
+}
+
+/* Arkadaşlarda yeni an var mı — sekmede küçük nokta. */
+async function arkadasYeniDenetle(){
+  try{
+    const sb = window.__sb;
+    if(!sb || _akisKipi === "friends") return;
+
+    let gorulen = null;
+    try{ gorulen = localStorage.getItem("klipsy_arkadas_gorulen"); }catch(e){}
+    if(!gorulen){
+      gorulen = new Date(Date.now() - 24*60*60*1000).toISOString();
+    }
+
+    const { data, error } = await sb.rpc('friends_has_new', { since: gorulen });
+    if(error) return;
+
+    const d = document.getElementById("ftDot");
+    if(d) d.classList.toggle("hide", !data);
+  }catch(e){}
+}
+
+/* İlk açılışta varsayılan sekmeyi seç. */
+async function akisKipiKur(){
+  let kayitli = null;
+  try{ kayitli = localStorage.getItem("klipsy_akis_kipi"); }catch(e){}
+
+  if(kayitli === "friends" || kayitli === "community"){
+    _akisKipi = kayitli;
+  }else{
+    /* Kayıt yoksa: arkadaşı olan Arkadaşlar'la, olmayan
+       Topluluk'la başlar. */
+    try{
+      const sb = window.__sb;
+      if(sb){
+        const { data } = await sb.rpc('friend_count');
+        _akisKipi = (Number(data) > 0) ? "friends" : "community";
+      }
+    }catch(e){}
+  }
+
+  akisSekmeCiz();
+
+  const btn = document.getElementById("feedMode");
+  if(btn && !btn._bagli){
+    btn._bagli = true;
+    btn.addEventListener("click", ()=>akisKipiDegistir());
+  }
+
+  setTimeout(arkadasYeniDenetle, 1500);
+  setInterval(arkadasYeniDenetle, 120000);
+}
+
 async function _fetchFeedPage(opts){
   opts = opts || {};
   const sb=window.__sb; if(!sb) return [];
@@ -10043,9 +10363,40 @@ async function _fetchFeedPage(opts){
 
   // 1) get_feed — sayfalama parametrelerini dene
   if(!beforeTs){
-    const { data, error } = await sb.rpc('get_feed', { page_size: limit });
-    if(!error && Array.isArray(data)) return data;
-    // RPC tamamen bozulduysa tabloya düş
+    const { data, error } = await sb.rpc('get_feed',
+      { page_size: limit, feed_mode: akisKipi() });
+
+    if(!error && Array.isArray(data)){
+      window.__akisYol = "rpc:" + akisKipi();
+      return data;
+    }
+
+    /* KİP DESTEKLENMİYORSA SESSİZCE GEÇME.
+       Doğrudan tabloya düşünce herkes görünüyor — Arkadaşlar
+       kipi çalışmıyor ama kullanıcı sebebini bilmiyordu. */
+    window.__akisHata = (error && (error.message || error.hint)) || "bilinmeyen";
+    console.warn("[Klipsy] get_feed kip destekli değil:", window.__akisHata);
+
+    /* Kipsiz bir kez daha dene — eski sunucuda çalışsın. */
+    const y = await sb.rpc('get_feed', { page_size: limit });
+    if(!y.error && Array.isArray(y.data)){
+      window.__akisYol = "rpc:kipsiz";
+      if(akisKipi() === "friends"){
+        toast(t("feed_mode_unsupported"));
+      }
+      return y.data;
+    }
+
+    /* ARKADAŞLAR KİPİNDE TABLOYA DÜŞÜLMEZ.
+       Doğrudan tabloda arkadaş süzgeci yok — herkes görünüyor ve
+       kullanıcı Arkadaşlar sandığı yerde Topluluk'u izliyor.
+       Yanlış içerik göstermektense boş göstermek doğru. */
+    if(akisKipi() === "friends"){
+      window.__akisYol = "tablo-engellendi";
+      return [];
+    }
+
+    window.__akisYol = "tablo";
     _feedUseDirect = true;
     return _fetchMomentsPage(null, limit);
   }
@@ -10053,7 +10404,7 @@ async function _fetchFeedPage(opts){
   // Eski sayfa: before_ts / before_created_at dene
   for(const key of ['before_ts', 'before_created_at', 'cursor']){
     try{
-      const params = { page_size: limit };
+      const params = { page_size: limit, feed_mode: akisKipi() };
       params[key] = new Date(beforeTs).toISOString();
       const { data, error } = await sb.rpc('get_feed', params);
       if(!error && Array.isArray(data)){
@@ -11974,8 +12325,14 @@ async function runUserSearch(q){
     }
     list.innerHTML='';
     rows.forEach(r=>{
-      const b=document.createElement('button');
+      /* SATIR DÜĞME DEĞİL.
+         İçinde takip düğmesi var; düğme içinde düğme geçersiz ve
+         tarayıcı içtekini dışarı atıyor, düzen bozuluyordu.
+         Satır artık bir bölüm; dokunma davranışı elle veriliyor. */
+      const b=document.createElement('div');
       b.className='usRow';
+      b.setAttribute('role','button');
+      b.setAttribute('tabindex','0');
       const av=document.createElement('div'); av.className='usAv';
       if(r.avatar_url){
         try{ if(typeof setRealAvatar==='function') setRealAvatar(r.username,r.avatar_url); }catch(e){}
@@ -15014,7 +15371,9 @@ function paintFollowBtn(btn, name){
   const st=followState(name);
   btn.classList.toggle('on', st==='following' || st==='friends');
   btn.classList.toggle('friends', st==='friends');
-  btn.textContent = (window.t?t(st==='follows_you'?'follows_you':st):st);
+  /* Kısa karşılık kullanılır: "Seni takip ediyor" sabit genişlikli
+     etikete sığmıyor ve kırpılıyordu. "Takipçi" hem kısa hem net. */
+  btn.textContent = (window.t ? t(st==='follows_you' ? 'follower_short' : st) : st);
 }
 async function markWhoFollowsMe(names){
   const sb=window.__sb, me=window.__me;
@@ -15819,7 +16178,11 @@ function zodiacSec(bitince){
 }
 
 function epFields(){ return [
-  ["display_name",t("f_name"),t("f_name_sub"),"text",40],
+  /* AD VE SOYAD AYRI GİRİLİR.
+     Kaydederken birleştirilip tek alanda saklanır; veritabanı
+     yapısı değişmiyor. */
+  ["_ad",   t("f_first"), t("f_name_sub"), "text", 20],
+  ["_soyad",t("f_last"),  "",              "text", 20],
   ["city",t("f_city"),t("loc_city_only"),"text",40],
   ["education",t("f_edu"),t("f_edu_sub"),"text",60],
   ["job",t("f_job"),t("f_job_sub"),"text",60],
@@ -15831,6 +16194,11 @@ function openEditProfile(){
   _epVals={};
   const u=meUser;
   epFields().forEach(([key])=>{ _epVals[key]=(u&&u[key])?u[key]:""; });
+
+  /* Kayıtlı ad iki alana bölünür: ilk kelime ad, kalanı soyad. */
+  const parcalar = String((u && u.display_name) || "").trim().split(/\s+/).filter(Boolean);
+  _epVals._ad    = parcalar[0] || "";
+  _epVals._soyad = parcalar.slice(1).join(" ");
   const box=$("#epBody");box.innerHTML="";
 
   /* --- BİYOGRAFİ ---
@@ -15906,7 +16274,18 @@ function openEditProfile(){
 $("#epSave").addEventListener("click",async ()=>{
   if(!window.__sb||!window.__me){ toast(t("err_offline")); return; }
   const patch={};
-  epFields().forEach(([key])=>{ patch[key]=(_epVals[key]||"").trim()||null; });
+  epFields().forEach(([key])=>{
+    /* Ad ve soyad ayrı girilir ama tek alanda saklanır — aşağıda
+       birleştiriliyor, burada atlanır. */
+    if(key === "_ad" || key === "_soyad") return;
+    patch[key]=(_epVals[key]||"").trim()||null;
+  });
+
+  /* Ad soyad birleştirilip düzeltilir: baş harfler büyük,
+     rakam ve simge atılır. */
+  const birlesik = adDuzelt(((_epVals._ad||"") + " " + (_epVals._soyad||"")).trim());
+  patch.display_name = birlesik || null;
+
   patch.gender = _epVals.gender || null;   // cinsiyet (avatar rengi)
   /* Biyografi 200 karakterle sınırlı (veritabanı kısıtı da 200).
      Fazlası kırpılır ki sunucudan hata dönmesin. */
@@ -16261,7 +16640,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.0.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.1.6";
   box.appendChild(ver);
 }
 
@@ -20858,6 +21237,9 @@ window.__bildirimAdim = "hiç çalışmadı";
    enterApp ise ayrı bir modül bloğunda. Modül buradaki adlara
    doğrudan erişemiyor, çağrı sessizce boşa gidiyordu:
    tanılamada "hiç çalışmadı" yazmasının sebebi buydu. */
+window.akisKipiKurBaslat = function(){
+  try{ return akisKipiKur(); }catch(e){}
+};
 window.bildirimKurBaslat = function(){
   try{ return bildirimKur(); }catch(e){
     window.__bildirimAdim = "çağrı hatası: " + String(e && e.message || e).slice(0,50);
@@ -21084,6 +21466,11 @@ async function bildirimTest(){
     // 4) izin
     let izin = await PN.checkPermissions();
     if(izin.receive !== "granted") izin = await PN.requestPermissions();
+    yaz("akış kipi", (window.__akisYol||"").indexOf("rpc:") === 0,
+        "kip: " + (typeof akisKipi === "function" ? akisKipi() : "?") +
+        "  yol: " + (window.__akisYol || "henüz yüklenmedi") +
+        (window.__akisHata ? ("\n    hata: " + String(window.__akisHata).slice(0,90)) : ""));
+
     yaz("bildirim izni", izin.receive === "granted",
         "durum: " + izin.receive +
         "\n    açılıştaki kurulum: " + (window.__bildirimAdim || "?"));
@@ -21511,14 +21898,23 @@ function buildWall(el){
   // Boş kareler kurulur; içlerini gerçek anlar doldurur (liveWall).
   // Demo görsel yok — an yoksa kareler sade renkli kalır.
   el.innerHTML='';
-  for(let ci=0;ci<3;ci++){
+
+  /* Sütunlar eğik ızgaranın içinde. Eğim ve perspektif sarmalayıcıya
+     uygulanır; sütunlar yalnızca akar. */
+  const iz=document.createElement('div');
+  iz.className='gizgara';
+
+  for(let ci=0;ci<5;ci++){
     const col=document.createElement('div');col.className='gcol c'+(ci+1);
-    for(let rep=0;rep<2;rep++)for(let i=0;i<5;i++){
+    /* İki tur: akış kesintisiz görünsün. Yedi sütun ve dokuz kare,
+       eğik ızgarada ekranı doldurup daha çok an gösteriyor. */
+    for(let rep=0;rep<2;rep++)for(let i=0;i<9;i++){
       const t=document.createElement('div');t.className='gtile empty';
       col.appendChild(t);
     }
-    el.appendChild(col);
+    iz.appendChild(col);
   }
+  el.appendChild(iz);
 }
 
 /* Giriş ekranı arka planını GERÇEK anlarla besle.
@@ -21672,6 +22068,8 @@ function setMode(m){
   $('#gTabLogin').classList.toggle('on',!su);
   $('#gTabSignup').classList.toggle('on',su);
   $('#gfUsername').style.display=su?'block':'none';
+  const adAlan=$('#gfName');
+  if(adAlan) adAlan.style.display=su?'flex':'none';
   $('#gSubmitText').textContent=su?t("signup2"):t("login2");
   gclearMsg();
 }
@@ -21707,7 +22105,16 @@ async function submit(){
     if(mode==='signup'){
       const {data:av}=await sb.rpc('username_available',{candidate:username});
       if(!av)throw new Error('Bu kullanici adi alinmis.');
-      const {data,error}=await sb.auth.signUp({email,password,options:{data:{username}}});
+      /* Ad soyad kayıtla birlikte gider; sonraki adımda tekrar
+         sorulmasın diye. Boşsa sorun değil, orada doldurulur. */
+      const ad=($('#gFirst').value||'').trim();
+      const soyad=($('#gLast').value||'').trim();
+      const tamAd=adDuzelt((ad+' '+soyad).trim());
+
+      const {data,error}=await sb.auth.signUp({
+        email, password,
+        options:{ data: tamAd ? {username, full_name:tamAd} : {username} }
+      });
       if(error)throw error;
       if(data.session){enterApp();}
       else{rb(btn,txt);gmsg('Kayit alindi. E-posta dogrulamasi gerekiyorsa gelen kutunu kontrol et.','ok');setMode('login');}
@@ -21852,7 +22259,14 @@ function showOnboarding(user, prof){
       '<div class="obBox">'+
       '<h2>'+t("welcome2")+'</h2>'+
       '<p>'+t("pick_name2")+'</p>'+
-      '<div class="obField"><label>'+t("f_name")+'</label><input id="obName" type="text" maxlength="40" placeholder="'+t("f_name")+'" autocomplete="off"></div>'+
+      /* AD VE SOYAD AYRI.
+         Tek alanda toplanınca kullanıcılar farklı biçimlerde
+         yazıyordu. İki alan hem net hem de sunucuda ayrı
+         saklanabiliyor. */
+      '<div class="obIkili">'+
+        '<div class="obField"><label>'+t("f_first")+'</label><input id="obName" type="text" maxlength="20" placeholder="'+t("f_first")+'" autocomplete="given-name"></div>'+
+        '<div class="obField"><label>'+t("f_last")+'</label><input id="obLast" type="text" maxlength="20" placeholder="'+t("f_last")+'" autocomplete="family-name"></div>'+
+      '</div>'+
       '<div class="obField"><label>'+t("username2")+'</label><div class="obUwrap"><span>@</span><input id="obUser" type="text" maxlength="20" placeholder="kullaniciadi" autocapitalize="none" autocomplete="off" spellcheck="false"></div><div class="obHint" id="obHint">'+t("username_rule")+'</div></div>'+
       '<div class="obField"><label>'+t("f_gender")+'</label>'+
         '<div class="epGender" id="obGender">'+
@@ -21881,7 +22295,13 @@ function showOnboarding(user, prof){
   const hint=document.getElementById('obHint');
   const save=document.getElementById('obSave');
   // varsayılan doldur
-  nameI.value = prof.display_name || (user.user_metadata && (user.user_metadata.full_name||user.user_metadata.name)) || '';
+  /* Kayıtlı ad iki alana bölünür: ilk kelime ad, kalanı soyad. */
+  const tamAd = prof.display_name ||
+                (user.user_metadata && (user.user_metadata.full_name||user.user_metadata.name)) || '';
+  const parcalar = String(tamAd).trim().split(/\s+/).filter(Boolean);
+  nameI.value = parcalar[0] || '';
+  const lastI0 = document.getElementById('obLast');
+  if(lastI0) lastI0.value = parcalar.slice(1).join(' ');
 
   /* Kullanıcı adını e-postadan öner.
      Google ile girenlerde boş alan yerine hazır bir öneri gelir;
@@ -21899,7 +22319,10 @@ function showOnboarding(user, prof){
     else{ hint.textContent=t("v_available"); hint.className='obHint ok'; }
   });
   save.onclick=async ()=>{
-    const nm = adDuzelt(nameI.value);
+    /* İki alan birleştirilip tek ad olarak saklanır.
+       Veritabanı yapısı değişmiyor; yalnızca giriş ayrıldı. */
+    const lastI = document.getElementById('obLast');
+    const nm = adDuzelt((nameI.value||'') + ' ' + ((lastI && lastI.value) || ''));
     const un=(userI.value||'').trim().toLowerCase();
     if(un.length<3||un.length>20){ hint.textContent=t("v_username_len"); hint.className='obHint err'; return; }
     if(!/^[a-z0-9_]+$/.test(un)){ hint.textContent=t("v_chars"); hint.className='obHint err'; return; }
@@ -21985,6 +22408,10 @@ async function enterApp(){
      gecikmeyle sorulur; açılışta üst üste izin penceresi çıkmasın. */
   /* Pencere üzerinden çağrılır — modül bloğu ana bloktaki adlara
      doğrudan erişemiyor. */
+  /* Akış sekmesi ilk yüklemeden ÖNCE seçilmeli: yanlış kiple
+     yüklenip sonra baştan çekmek gereksiz istek demek. */
+  if(window.akisKipiKurBaslat) await window.akisKipiKurBaslat();
+
   setTimeout(()=>{ if(window.bildirimKurBaslat) window.bildirimKurBaslat(); }, 1800);
   setTimeout(()=>{ if(window.oturumAktarBaslat) window.oturumAktarBaslat(); }, 2400);
 

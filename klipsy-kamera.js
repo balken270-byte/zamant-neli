@@ -262,25 +262,65 @@
       throw KameraHatasi(HATA.DESTEKSIZ);
     }
 
-    /* GÖRÜŞ ALANI NOTU
-       Kameradan belirli bir EN-BOY ORANI istemek, tarayıcının sensör
-       görüntüsünü kırpmasına yol açar; görüntü yakınlaşmış gibi olur.
-       Bu yüzden orana karışılmaz, yalnızca genişlik istenir. */
+    /* GÖRÜŞ ALANI + PERFORMANS NOTU
+       Mobil tarayıcıda kamera sensörü 16:9 (yatay) gelir. Ekran dikey
+       olduğu için object-fit:cover görüntüyü aşırı büyütüp kenarları
+       kırpar ("yakınlaşmış" görünür). Ayrıca 1920px istemek mobil
+       işlemciyi zorlayıp kaydı dondurur.
+
+       Çözüm: mobilde makul çözünürlük (1280) iste ve ekranın gerçek
+       en-boy oranını aspectRatio olarak ver; böylece tarayıcı dikey
+       bir akış üretir, kırpma en aza iner ve akıcılık artar. */
     const sesVar = secenek.ses !== false;
-    /* KARE HIZI HER DENEMEDE İSTENİR.
-       Yalnızca ilk denemede belirtiliyordu; o başarısız olunca
-       tarayıcı kendi seçtiği düşük hızı kullanıyor ve kayıt
-       takılıyormuş gibi görünüyordu. */
     const kare = { ideal: 30, min: 24 };
-    const denemeler = [
-      { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
-                 frameRate: kare, resizeMode: "none" }, audio: sesVar },
-      { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
-                 frameRate: kare }, audio: sesVar },
-      { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
-      { video: { frameRate: kare }, audio: sesVar },
-      { video: true, audio: sesVar },
-    ];
+
+    /* Mobil mi? Dokunmatik + dar ekran. */
+    const mobil = (function () {
+      try {
+        return (navigator.maxTouchPoints > 0) &&
+               (Math.min(screen.width, screen.height) <= 820 ||
+                /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent));
+      } catch (e) { return false; }
+    })();
+
+    /* Ekranın dikey en-boy oranı (yükseklik/genişlik değil, video için
+       genişlik/yükseklik beklenir; dikey ekranda bu <1 olur). Tarayıcıya
+       "portre bir kare ver" demenin yolu budur. */
+    let ekranOran = null;
+    try {
+      const eg = Math.min(screen.width, screen.height);
+      const ey = Math.max(screen.width, screen.height);
+      if (eg && ey) ekranOran = +(eg / ey).toFixed(4);   // ör. 0.4618 (dar telefon)
+    } catch (e) {}
+
+    /* Denemeler kademeli: en iyi eşleşmeden en gevşeğe.
+       - Mobilde 1280 genişlik + dikey aspectRatio (kırpmayı önler).
+       - Masaüstünde eski davranış (yüksek çözünürlük, orana karışma). */
+    let denemeler;
+    if (mobil) {
+      const ar = ekranOran ? { ideal: ekranOran } : undefined;
+      denemeler = [
+        { video: { facingMode: { exact: "environment" }, width: { ideal: 1280 },
+                   height: { ideal: 1707 }, aspectRatio: ar, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1080 },
+                   aspectRatio: ar, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
+                   frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
+        { video: { frameRate: kare }, audio: sesVar },
+        { video: true, audio: sesVar },
+      ];
+    } else {
+      denemeler = [
+        { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
+                   frameRate: kare, resizeMode: "none" }, audio: sesVar },
+        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
+                   frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
+        { video: { frameRate: kare }, audio: sesVar },
+        { video: true, audio: sesVar },
+      ];
+    }
 
     let sonHata = null;
     for (let i = 0; i < denemeler.length; i++) {
@@ -536,9 +576,17 @@
           const kare = a.frameRate || 30;
 
           /* Piksel başına yaklaşık 0.12 bit — akıcı hareket için yeterli,
-             dosya boyutu makul kalıyor. */
+             dosya boyutu makul kalıyor. Mobilde yazılım kodlayıcı yüksek
+             veri hızında takıldığı için üst sınır düşük tutulur. */
           let hiz = Math.round(g * y * kare * 0.12);
-          hiz = Math.max(2500000, Math.min(hiz, 12000000));   // 2.5 – 12 Mbit
+          const mobilKayit = (function () {
+            try {
+              return (navigator.maxTouchPoints > 0) &&
+                     /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+            } catch (e) { return false; }
+          })();
+          const ustSinir = mobilKayit ? 6000000 : 12000000;   // mobil 6, masaüstü 12 Mbit
+          hiz = Math.max(2500000, Math.min(hiz, ustSinir));
 
           const ayar = {
             videoBitsPerSecond: secenek.bitHizi || hiz,

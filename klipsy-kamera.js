@@ -286,14 +286,18 @@
     }
 
     const cihaz = await webKameraBul(istenenYuz);
+    /* width ideal — height/aspectRatio YOK (kırpmaz).
+       resizeMode none: native kare. 1920 çoğu telefonda HD önizleme verir. */
+    const hd = { width: { ideal: 1920 }, resizeMode: "none" };
     const denemeler = [];
     if (cihaz && cihaz.deviceId) {
-      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId }, resizeMode: "none" }, audio: sesVar });
+      denemeler.push({ video: Object.assign({ deviceId: { exact: cihaz.deviceId } }, hd), audio: sesVar });
+      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId }, width: { ideal: 1920 } }, audio: sesVar });
       denemeler.push({ video: { deviceId: { exact: cihaz.deviceId } }, audio: sesVar });
     }
-    denemeler.push({ video: { facingMode: { exact: istenenYuz }, resizeMode: "none" }, audio: sesVar });
-    denemeler.push({ video: { facingMode: { exact: istenenYuz } }, audio: sesVar });
-    denemeler.push({ video: { facingMode: { ideal: istenenYuz }, resizeMode: "none" }, audio: sesVar });
+    denemeler.push({ video: Object.assign({ facingMode: { exact: istenenYuz } }, hd), audio: sesVar });
+    denemeler.push({ video: { facingMode: { exact: istenenYuz }, width: { ideal: 1920 } }, audio: sesVar });
+    denemeler.push({ video: { facingMode: { ideal: istenenYuz }, width: { ideal: 1920 }, resizeMode: "none" }, audio: sesVar });
     denemeler.push({ video: { facingMode: istenenYuz }, audio: sesVar });
 
     let sonHata = null;
@@ -452,7 +456,7 @@
 
   function fotoCek(secenek) {
     secenek = secenek || {};
-    const kalite = secenek.kalite || 88;
+    const kalite = secenek.kalite || 92;
 
     return sirala(async function () {
       if (!durum.acik) return null;

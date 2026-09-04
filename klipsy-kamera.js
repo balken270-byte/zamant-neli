@@ -1,8 +1,13 @@
 /* ============================================================================
-   KLİPSY — KAMERA KATMANI  v3.3.5
+   KLİPSY — KAMERA KATMANI  v3.3.6
    ============================================================================
    Kamera bu uygulamanın bel kemiği. Bu dosya kameranın TEK giriş noktasıdır;
    uygulamanın geri kalanı kamera ayrıntılarını bilmez.
+
+   SÜRÜM 3.3.6 (2026-09-04)
+     - Her iki kamerada aşırı yakın görünüm geri alındı. 9:16 kısıtı
+       sensörü kırpıyordu; canlı akış tekrar doğal / 4:3, zoom cihaz
+       minimumuna (geniş açı) çekiliyor. 9:16 kırpma yalnız kayıtta.
 
    SÜRÜM 3.3.5 (2026-09-04)
      - Web'de ön kamera açıldı. Çevirme getUserMedia'yı facingMode ile
@@ -240,7 +245,9 @@
     const secenekler = {
       position: yonNative(durum.yon),
       toBack: true,
-      aspectRatio: "fill",
+      /* 4:3 fill değil: fill+cover 9:16 ekranda kenarları kesip
+         görüntüyü yakına çekiyordu. 4:3 daha geniş alan verir. */
+      aspectRatio: 4 / 3,
       aspectMode: "cover",
       enableVideoMode: true,
       /* Kilit + otomatik döndürme BİRLİKTE olunca telefonu sola
@@ -273,6 +280,8 @@
       : null;
 
     document.documentElement.classList.add("camNativeOn");
+    _aralik = null;
+    try { await enGenisAci(); } catch (e) {}
   }
 
   async function webBaslat(secenek) {
@@ -303,17 +312,14 @@
       } catch (e) { return false; }
     })();
 
-    /* Çelişkili kısıt (1280×1707 + dar aspectRatio) bazı tarayıcılarda
-       320×240 / 640×480 gibi düşük moda düşüyordu. 9:16 720p iste. */
+    /* 9:16 / 0.56 istemek sensörü kırpıyor → "çok yakın" görünüm.
+       4:3 (0.75) telefon kamerasına daha yakın, daha geniş alan. */
     let denemeler;
     if (mobil) {
       denemeler = [
-        { video: { facingMode: { ideal: bakis }, width: { ideal: 720 },
-                   height: { ideal: 1280 }, aspectRatio: { ideal: 0.5625 },
-                   frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis }, width: { ideal: 720 },
-                   height: { ideal: 1280 }, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis }, height: { ideal: 1280 },
+        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
+                   aspectRatio: { ideal: 3 / 4 }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
         { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
         { video: { facingMode: { ideal: bakis } }, audio: sesVar },
@@ -321,8 +327,6 @@
       ];
     } else {
       denemeler = [
-        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
-                   height: { ideal: 720 }, frameRate: kare }, audio: sesVar },
         { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
         { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
@@ -339,18 +343,18 @@
 
     const iz = webAkis.getVideoTracks()[0];
 
-    /* Açılan akış yatay veya düşük kare hızındaysa düzeltmeyi dene. */
+    /* Kare hızı düşükse düzelt. 9:16'ya ZORLAMA — görüşü daraltır. */
     try {
       const s0 = (iz && iz.getSettings) ? iz.getSettings() : {};
-      if (iz && iz.applyConstraints) {
-        const hedef = {};
-        if (s0.frameRate && s0.frameRate < 24) hedef.frameRate = { ideal: 30, min: 24 };
-        if (s0.width && s0.height && s0.width > s0.height) {
-          hedef.width = { ideal: 720 };
-          hedef.height = { ideal: 1280 };
-          hedef.aspectRatio = { ideal: 0.5625 };
-        }
-        if (Object.keys(hedef).length) await iz.applyConstraints(hedef);
+      if (iz && iz.applyConstraints && s0.frameRate && s0.frameRate < 24) {
+        await iz.applyConstraints({ frameRate: { ideal: 30, min: 24 } });
+      }
+    } catch (e) {}
+    try {
+      const capz = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
+      if (iz && iz.applyConstraints && capz && capz.zoom && typeof capz.zoom.min === "number") {
+        await iz.applyConstraints({ advanced: [{ zoom: capz.zoom.min }] });
+        durum.yakinlik = capz.zoom.min;
       }
     } catch (e) {}
 

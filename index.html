@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.4.0</title>
-<script src="klipsy-kamera.js?v=3.4.0"></script>
+<title>Klipsy 3.6.0</title>
+<script src="klipsy-kamera.js?v=3.6.0"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -7276,13 +7276,16 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem);box-shadow:0 0.25rem 1rem rgba(0,0,0,.28)}
 .camtop .iconbtn{width:2.5rem;height:2.5rem;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.14);
   color:#fff;backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem)}
-.camSide{position:absolute;right:0.75rem;top:calc(var(--sat) + 4.15rem);z-index:6;
-  display:flex;flex-direction:column;align-items:center;gap:0.85rem}
-.camSideBtn{width:2.65rem;height:2.65rem;border-radius:6.1875rem;border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.36);color:#fff;display:grid;place-items:center;
-  backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem)}
-.camSideBtn.on{background:rgba(255,255,255,.92);color:#111}
-.camSideBtn small{display:block;margin-top:0.2rem;font:650 0.5625rem/1 Inter,sans-serif;color:#fff;text-shadow:0 1px 4px #000}
+.camSide{position:absolute;right:0.7rem;top:calc(var(--sat) + 4.35rem);z-index:6;
+  display:flex;flex-direction:column;align-items:center;gap:1.05rem}
+.camSideBtn{width:2.75rem;height:auto;border:0;background:none;color:#fff;
+  display:flex;flex-direction:column;align-items:center;gap:0.28rem;padding:0}
+.camSideBtn svg{width:2.55rem;height:2.55rem;padding:0.5rem;border-radius:6.1875rem;
+  background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(0.9rem);-webkit-backdrop-filter:blur(0.9rem);box-sizing:border-box}
+.camSideBtn em{font:650 0.62rem/1 Inter,sans-serif;font-style:normal;text-shadow:0 1px 6px #000}
+.camSideBtn.on svg{background:rgba(255,255,255,.94);color:#111;border-color:transparent}
+.camSlot{width:3rem;flex:none}
 .cambody{flex:1;position:relative;z-index:1}
 .cambot{position:relative;z-index:2;padding:0 1.1rem calc(var(--sab) + 1.15rem);
   background:linear-gradient(to top,rgba(0,0,0,.55) 20%,transparent)}
@@ -8417,9 +8420,13 @@ html.native button,html.native .tab{touch-action:manipulation}
 .shrow.done .go2{background:rgba(95,214,154,.18);border-color:rgba(95,214,154,.4);color:#8FE3B4}
 
 /* ============ paylaşım ekranı ============ */
-#compose{position:absolute;inset:0;z-index:75;background:#000;display:none;flex-direction:column;
+#compose{position:absolute;inset:0;z-index:80;background:#000;display:none;flex-direction:column;
   --mood:#7B5BFF}
-#compose.open{display:flex;animation:fadeIn .22s ease}
+#compose.open{display:flex}
+#cam.open.camEdit #camSide,
+#cam.open.camEdit .cambot,
+#cam.open.camEdit .camtop .title,
+#cam.open.camEdit .camZoomBar{visibility:hidden;pointer-events:none}
 
 /* medya tam ekran arka plan */
 .cpMediaFull{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
@@ -9351,7 +9358,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.4.0</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.6.0</span></div>
   </section>
 </div>
 
@@ -9521,6 +9528,11 @@ html.native button,html.native .tab{touch-action:manipulation}
     <div class="camSide" id="camSide">
       <button class="camSideBtn" id="camFlash" type="button" aria-label="Flaş">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 10-14h-7l0-6z"/></svg>
+        <em>Flaş</em>
+      </button>
+      <button class="camSideBtn" id="flip" type="button" aria-label="Kamerayı çevir" data-i18n-aria="flip_cam">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-14.6 6"/><path d="M3.5 12a8.5 8.5 0 0 1 14.6-6"/><path d="M18.1 2.4V6h-3.6"/><path d="M5.9 21.6V18h3.6"/></svg>
+        <em>Çevir</em>
       </button>
     </div>
     <div class="rectime" id="recTime"><i></i><span>0:00 / 0:30</span></div>
@@ -9537,9 +9549,7 @@ html.native button,html.native .tab{touch-action:manipulation}
           <small data-i18n="no_gallery">Galeri yok</small>
         </div>
         <button class="shutter" id="shutter" aria-label="Çek" data-i18n-aria="shoot"><i></i></button>
-        <button class="flip" id="flip" aria-label="Kamerayı çevir" data-i18n-aria="flip_cam">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-14.6 6"/><path d="M3.5 12a8.5 8.5 0 0 1 14.6-6"/><path d="M18.1 2.4V6h-3.6"/><path d="M5.9 21.6V18h3.6"/></svg>
-        </button>
+        <span class="camSlot"></span>
       </div>
     </div>
     <div class="camfail" id="camFail">
@@ -15348,6 +15358,8 @@ function openCompose(src,kind,blob,durationMs){
     const im=document.createElement("img");
     im.src=src; im.alt=""; box.appendChild(im);
   }
+  const camEl=document.getElementById("cam");
+  if(camEl){ camEl.classList.add("open","camEdit"); camEl.setAttribute("aria-hidden","false"); }
   $("#compose").classList.add("open");
   _pushHistory("compose");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
@@ -15796,11 +15808,18 @@ function closeCompose(back){
   const c=$("#compose");
   cpStopPreview();
   c.classList.remove("open");c.setAttribute("aria-hidden","true");
+  const camEl=document.getElementById("cam");
+  if(camEl) camEl.classList.remove("camEdit");
   _popHistory("compose");
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#cpMedia").innerHTML="";$("#cpMedia").style.backgroundImage="";
   draft=null;pickedMood=null;
-  if(back) openCam("post"); else setTab($("#tabFeed"));
+  if(back){
+    if(!camEl || !camEl.classList.contains("open")) openCam("post");
+  } else {
+    if(typeof closeCam==="function") closeCam();
+    else setTab($("#tabFeed"));
+  }
 }
 $("#cpBack").addEventListener("click",()=>closeCompose(true));
 $("#cpShare").addEventListener("click",()=>{
@@ -17128,7 +17147,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.4.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.6.0";
   box.appendChild(ver);
 }
 
@@ -21374,7 +21393,7 @@ function startRec(){
     tuvalDurdur();
     const blob=new Blob(chunks,{type:chunks[0]?chunks[0].type:"video/webm"});
     const durMs=(recSecs||0)*1000;
-    closeCam();openCompose(URL.createObjectURL(blob),"video",blob,durMs);
+    openCompose(URL.createObjectURL(blob),"video",blob,durMs);
   };
   recorder.start();
   $("#shutter").classList.add("rec");
@@ -21560,7 +21579,7 @@ sh.addEventListener("pointerup", async ()=>{
     await kameraKapanmaEfekti();
     if(target==="profile"){ closeCam(); blockGhostTap(); avatarKirp(foto); }
     else if(target==="dm"){ closeCam(); sendMedia(foto); }
-    else { closeCam(); openCompose(foto,"photo"); }
+    else { openCompose(foto,"photo"); }
     return;
   }
 
@@ -21574,7 +21593,7 @@ sh.addEventListener("pointerup", async ()=>{
     avatarKirp(src);
   }
   else if(target==="dm"){closeCam();sendMedia(src);}
-  else{closeCam();openCompose(src,"photo");}
+  else{openCompose(src,"photo");}
 });
 sh.addEventListener("pointercancel",()=>{holding=false;clearTimeout(holdT);});
 $("#fakeShot").addEventListener("click",()=>{
@@ -21585,7 +21604,7 @@ $("#fakeShot").addEventListener("click",()=>{
     avatarKirp(src);
   }
   else if(target==="dm"){closeCam();sendMedia(src);}
-  else{closeCam();openCompose(src,"photo");}
+  else{openCompose(src,"photo");}
 });
 
 /* ---------- başlat ---------- */

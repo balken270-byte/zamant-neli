@@ -121,6 +121,7 @@
     yon: "arka",
     flas: "off",
     yakinlik: 1,
+    onizlemeKip: "fit",
     kayitBaslangic: 0,
     yerel: false,
     coz: null,
@@ -223,11 +224,23 @@
          aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
+    const fit = durum.onizlemeKip !== "fill";
+    const vw = Math.max(1, (window.innerWidth || screen.width || 360));
+    const vh = Math.max(1, (window.innerHeight || screen.height || 640));
+    /* Tam: 4:3 kareyi ekrana SIĞDIR (kırpma yok, şerit kalır).
+       Doldur: tüm ekran cover. */
+    let x = 0, y = 0, w = vw, h = vh;
+    if (fit) {
+      const oran = 3 / 4;
+      if (vw / vh > oran) { h = vh; w = Math.round(vh * oran); x = Math.round((vw - w) / 2); }
+      else { w = vw; h = Math.round(vw / oran); y = Math.round((vh - h) / 2); }
+    }
     const secenekler = {
       position: yonNative(durum.yon),
       toBack: true,
-      aspectRatio: "fill",
-      aspectMode: "cover",
+      x: x, y: y, width: w, height: h,
+      aspectRatio: fit ? "4:3" : "fill",
+      aspectMode: fit ? "fit" : "cover",
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,
@@ -924,6 +937,25 @@
     yakinlastir: yakinlastir,
     yakinlikAraligi: yakinlikAraligi,
     enGenisAci: enGenisAci,
+
+    onizlemeKipi: function (kip) {
+      return sirala(async function () {
+        durum.onizlemeKip = (kip === "fill") ? "fill" : "fit";
+        if (!durum.yerel || !durum.acik || durum.kaydediyor) return durum.onizlemeKip;
+        try {
+          await CP().stop();
+          document.documentElement.classList.remove("camNativeOn");
+          await yerelBaslat(sonSecenek || {});
+          document.documentElement.classList.add("camNativeOn");
+        } catch (e) {
+          try {
+            await yerelBaslat(Object.assign({}, sonSecenek || {}, { force: true }));
+            document.documentElement.classList.add("camNativeOn");
+          } catch (e2) {}
+        }
+        return durum.onizlemeKip;
+      });
+    },
 
     olay: olay,
     yerelMi: yerelMi,

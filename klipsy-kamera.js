@@ -229,32 +229,25 @@
          aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
-    try {
-      const el = document.getElementById(secenek.kap || "camRoot");
-      if (el) {
-        const fit = durum.onizlemeKip !== "fill";
-        if (!fit) {
-          el.style.inset = "0";
-          el.style.width = ""; el.style.height = "";
-          el.style.left = ""; el.style.top = "";
-          el.style.right = ""; el.style.bottom = "";
-        } else {
-          const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
-          const oran = 3 / 4;
-          let w, h, x, y;
-          if (vw / vh > oran) { h = vh; w = Math.round(h * oran); x = Math.round((vw - w) / 2); y = 0; }
-          else { w = vw; h = Math.round(w / oran); x = 0; y = Math.round((vh - h) / 2); }
-          el.style.position = "absolute";
-          el.style.inset = "auto";
-          el.style.left = x + "px";
-          el.style.top = y + "px";
-          el.style.width = w + "px";
-          el.style.height = h + "px";
-          el.style.right = "auto";
-          el.style.bottom = "auto";
-        }
+    function onizlemeKutusu() {
+      const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
+      const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
+      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
+      const ust = sat + 56;
+      const alt = sab + 210;
+      const aw = vw, ah = Math.max(120, vh - ust - alt);
+      const fit = durum.onizlemeKip !== "fill";
+      const oran = 16 / 9;
+      let w, h, x, y;
+      if (!fit) {
+        w = aw; h = ah; x = 0; y = ust;
+      } else if (aw / ah > oran) {
+        h = ah; w = Math.round(h * oran); x = Math.round((aw - w) / 2); y = ust;
+      } else {
+        w = aw; h = Math.round(w / oran); x = 0; y = Math.round(ust + (ah - h) / 2);
       }
-    } catch (e) {}
+      return { x: x, y: y, width: w, height: h };
+    }
 
     const taban = {
       position: yonNative(durum.yon),
@@ -295,8 +288,11 @@
       ? { g: sonuc.width, y: sonuc.height, x: sonuc.x, y0: sonuc.y }
       : null;
 
-    /* setPreviewSize start ile çakışırsa eklenti oturumu düşürüyor.
-       Boyut ayarı yapılmaz; oran start seçeneklerinde. */
+    if (CP().setPreviewSize) {
+      try {
+        await CP().setPreviewSize(onizlemeKutusu());
+      } catch (e) {}
+    }
 
     document.documentElement.classList.add("camNativeOn");
   }

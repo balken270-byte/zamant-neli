@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.15</title>
-<script src="klipsy-kamera.js?v=3.3.15"></script>
+<title>Klipsy 3.3.16</title>
+<script src="klipsy-kamera.js?v=3.3.16"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -8423,7 +8423,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 /* medya tam ekran arka plan */
 .cpMediaFull{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
-.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000}
 #compose.cpFill .cpMediaFull video,
 #compose.cpFill .cpMediaFull img{object-fit:cover}
 #cpOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 7.25rem);transform:translateX(-50%);
@@ -9357,7 +9357,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.15</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.16</span></div>
   </section>
 </div>
 
@@ -17129,7 +17129,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.15";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.16";
   box.appendChild(ver);
 }
 
@@ -20489,8 +20489,7 @@ $("#camClose").addEventListener("click",closeCam);
 
     /* Akış 9:16 tam ekran. Profil kırpma ekranı tam kare ister.
        Tam önizleme geniş sensör gösterir; akışa giden dosya ekranı doldurur. */
-    const akisIcin = (typeof target==="string" && target!=="profile");
-    if(akisIcin){
+    if(kip==="fill" && typeof target==="string" && target!=="profile"){
       const oran = 9/16;
       if(sw/sh > oran){ const n=sh*oran; sx+= (sw-n)/2; sw=n; }
       else { const n=sw/oran; sy+= (sh-n)/2; sh=n; }
@@ -20512,7 +20511,7 @@ $("#camClose").addEventListener("click",closeCam);
       im.onload=function(){
         try{
           let sx=0,sy=0,sw=im.width,sh=im.height;
-          if(typeof target==="string" && target!=="profile"){
+          if(kip==="fill" && typeof target==="string" && target!=="profile"){
             const oran=9/16;
             if(sw/sh>oran){ const n=sh*oran; sx=(sw-n)/2; sw=n; }
             else { const n=sw/oran; sy=(sh-n)/2; sh=n; }

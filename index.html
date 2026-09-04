@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.6</title>
-<script src="klipsy-kamera.js?v=3.3.6"></script>
+<title>Klipsy 3.3.7</title>
+<script src="klipsy-kamera.js?v=3.3.7"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5678,7 +5678,10 @@ svg{display:block}
 
 .pmedia{position:absolute;top:0;left:0;right:0;bottom:calc(var(--tab) + var(--sab));
   overflow:hidden;touch-action:pan-y;transition:bottom .34s var(--ease)}
-.pmedia img,.pmedia video{width:100%;height:100%;object-fit:cover;display:block;
+.pmedia .pmediaBg{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;
+  filter:blur(1.5rem) saturate(1.08) brightness(.45);transform:none;z-index:0;pointer-events:none}
+.pmedia img,.pmedia video{width:100%;height:100%;object-fit:cover;object-position:center;
+  display:block;position:relative;z-index:1;
   transform-origin:center center;transition:transform .28s var(--ease);will-change:transform}
 .pmedia.drag img,.pmedia.drag video{transition:none}
 .pshade{display:none!important}
@@ -9354,7 +9357,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.6</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.7</span></div>
   </section>
 </div>
 
@@ -11442,6 +11445,11 @@ function build(it){
     mediaEl.src=it.src;
   }
   if(it.kind!=="video") mediaEl.style.filter=agingFilter(it.ts);
+  if(it.src){
+    const bg=document.createElement("img");
+    bg.className="pmediaBg"; bg.alt=""; bg.src=it.poster||it.src;
+    media.appendChild(bg);
+  }
   media.appendChild(mediaEl);
   // video ilerleme + sarma çubuğu
   let seekbar=null;
@@ -17121,7 +17129,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.7";
   box.appendChild(ver);
 }
 
@@ -20451,6 +20459,16 @@ $("#camClose").addEventListener("click",closeCam);
     let sw=Math.min(vw,cw/tot), sh=Math.min(vh,ch/tot);
     if(sx+sw>vw) sw=vw-sx; if(sy+sh>vh) sh=vh-sy;
     if(sw<2||sh<2){ sx=0;sy=0;sw=vw;sh=vh; }
+
+    /* Akış 9:16 tam ekran. Profil kırpma ekranı tam kare ister.
+       Tam önizleme geniş sensör gösterir; akışa giden dosya ekranı doldurur. */
+    const akisIcin = (typeof target==="string" && target!=="profile");
+    if(akisIcin){
+      const oran = 9/16;
+      if(sw/sh > oran){ const n=sh*oran; sx+= (sw-n)/2; sw=n; }
+      else { const n=sw/oran; sy+= (sh-n)/2; sh=n; }
+    }
+
     const k=Math.min(1,1600/Math.max(sw,sh));
     const c=document.createElement("canvas");
     c.width=Math.max(2,Math.round(sw*k)); c.height=Math.max(2,Math.round(sh*k));

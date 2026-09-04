@@ -510,7 +510,23 @@
 
       try {
         if (durum.yerel) {
-          const r = await CP().capture({ quality: kalite });
+          /*
+             ÖNİZLEME ↔ FOTOĞRAF KADRAJI
+             Native CameraPreview varsayılan capture boyutunu cihaza
+             bırakınca bazı Android telefonlarda preview ile fotoğrafın
+             en-boy oranı farklı seçiliyor. Bu da paylaşım ekranında
+             yanlardan daha fazla/az alan görülmesine neden oluyor.
+
+             Preview'ı uygulamada 9:16 olarak kullandığımız için capture
+             isteğini de aynı oranla yapıyoruz. Eklenti desteklediği en
+             yakın fotoğraf boyutunu seçer; sonrasında index.html yalnızca
+             gerekiyorsa aynı 9:16 oranını uygular.
+          */
+          const r = await CP().capture({
+            quality: kalite,
+            width: 1080,
+            height: 1920
+          });
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;

@@ -20504,12 +20504,6 @@ $("#camClose").addEventListener("click",closeCam);
     return c.toDataURL("image/jpeg",0.92);
   }
 
-  /* Native Android fotoğrafı, CameraPreview önizlemesinden biraz daha geniş
-     bir kadrajla dönebiliyor. Önizlemede görünen çerçeveyle paylaşım ekranının
-     aynı görünmesi için post fotoğrafında yanlardan küçük bir ek kırpma yap.
-     0.90 = mevcut 9:16 kadrajın %90 genişliği; dikey alan korunur. */
-  const NATIVE_PREVIEW_CROP_X = 0.90;
-
   function kareAlData(src){
     return new Promise(function(coz){
       if(!src) return coz(src);
@@ -20518,7 +20512,10 @@ $("#camClose").addEventListener("click",closeCam);
         try{
           let sx=0,sy=0,sw=im.width,sh=im.height;
           if(typeof target==="string" && target!=="profile"){
-            const oran=(9/16) * NATIVE_PREVIEW_CROP_X;
+            /* Native capture artık 9:16 isteniyor. Burada ikinci bir
+               yapay zoom/kırpma yapmıyoruz; yalnızca cihaz farklı bir
+               oran döndürürse gerçek 9:16 sınırına getiriyoruz. */
+            const oran=9/16;
             if(sw/sh>oran){ const n=sh*oran; sx=(sw-n)/2; sw=n; }
             else { const n=sw/oran; sy=(sh-n)/2; sh=n; }
           }

@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.17</title>
-<script src="klipsy-kamera.js?v=3.3.17"></script>
+<title>Klipsy 3.4.0</title>
+<script src="klipsy-kamera.js?v=3.4.0"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -7181,20 +7181,10 @@ video::-webkit-media-controls-overlay-play-button{
   display:none !important;-webkit-appearance:none;opacity:0;pointer-events:none}
 video{background-color:#12121a}
 
-#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;transform-origin:center center}
-#cam.camFill video{object-fit:cover}
-#cam.camOlcek #camZoomBar{display:none !important}
-#webCamOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 9.25rem);transform:translateX(-50%);
-  z-index:6;display:none;flex-direction:column;align-items:center;gap:0.35rem;width:min(16.5rem,78%)}
-#cam.open.camOlcek:not(.waiting) #webCamOlcek{display:flex}
-#webCamOlcek .wcoBar{display:flex;align-items:center;gap:0.25rem;padding:0.28rem;
-  border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
-  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
-#webCamOlcek .wcoBtn{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.7rem;
-  background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
-#webCamOlcek .wcoBtn.on{background:rgba(255,255,255,.92);color:#111}
-#webCamOlcek .wcoVal{color:#fff;font:700 0.72rem/1 Inter,sans-serif;min-width:2rem;text-align:center;padding:0 0.2rem}
-#webCamOlcek input[type=range]{width:100%;height:1.1rem;accent-color:#FF3B6B}
+#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;background:#000;transform-origin:center center}
+#webCamOlcek{display:none !important}
+#cam,#cam .camtop,#cam .cambot,#cam .camSide{color:#fff}
+html[data-theme="light"] #cam{background:#000}
 /* izin beklenirken: video gizli, sade zemin ve dönen gösterge */
 #cam.waiting video{opacity:0}
 #cam.waiting::before{content:"";position:absolute;inset:0;z-index:2;
@@ -7280,13 +7270,23 @@ html.camNativeOn #camVideo{display:none !important}
    tasarım bozuluyordu. Yalnızca katman sırası verilir. */
 html.camNativeOn #cam > *:not(.camRoot){z-index:5}
 html.camNativeOn #cam > .camRoot{z-index:0}
-.camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.75rem) 0.875rem 0;display:flex;align-items:center;justify-content:space-between}
-.camtop .title{font-size:0.875rem;font-weight:600;letter-spacing:-.018em;
-  background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:0.4375rem 0.875rem;border-radius:6.1875rem;
-  backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
+.camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.65rem) 0.85rem 0;display:flex;align-items:center;justify-content:space-between}
+.camtop .title{font-size:0.8125rem;font-weight:650;letter-spacing:-.018em;color:#fff;
+  background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.14);padding:0.4rem 0.85rem;border-radius:6.1875rem;
+  backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem);box-shadow:0 0.25rem 1rem rgba(0,0,0,.28)}
+.camtop .iconbtn{width:2.5rem;height:2.5rem;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.14);
+  color:#fff;backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem)}
+.camSide{position:absolute;right:0.75rem;top:calc(var(--sat) + 4.15rem);z-index:6;
+  display:flex;flex-direction:column;align-items:center;gap:0.85rem}
+.camSideBtn{width:2.65rem;height:2.65rem;border-radius:6.1875rem;border:1px solid rgba(255,255,255,.16);
+  background:rgba(0,0,0,.36);color:#fff;display:grid;place-items:center;
+  backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem)}
+.camSideBtn.on{background:rgba(255,255,255,.92);color:#111}
+.camSideBtn small{display:block;margin-top:0.2rem;font:650 0.5625rem/1 Inter,sans-serif;color:#fff;text-shadow:0 1px 4px #000}
 .cambody{flex:1;position:relative;z-index:1}
-.cambot{position:relative;z-index:2;padding:0 1.25rem calc(var(--sab) + 1.375rem)}
-.modes{display:flex;justify-content:center;gap:0.25rem;margin-bottom:1.25rem}
+.cambot{position:relative;z-index:2;padding:0 1.1rem calc(var(--sab) + 1.15rem);
+  background:linear-gradient(to top,rgba(0,0,0,.55) 20%,transparent)}
+.modes{display:flex;justify-content:center;gap:0.15rem;margin-bottom:0.85rem}
 .mode{font-size:0.7188rem;font-weight:600;letter-spacing:.05em;color:rgba(255,255,255,.5);
   padding:0.5rem 1rem;border-radius:6.1875rem;transition:all .18s}
 .mode.on{color:#fff;background:rgba(255,255,255,.17);border:1px solid var(--edge);
@@ -7322,7 +7322,7 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .vvClose:active{transform:scale(.9)}
 
 /* ── yakınlaştırma kısayolları ── */
-.camZoomBar{position:absolute;left:50%;bottom:calc(var(--sab) + 9.375rem);
+.camZoomBar{position:absolute;left:50%;bottom:calc(var(--sab) + 8.15rem);
   transform:translateX(-50%);z-index:6;
   display:flex;gap:0.3125rem;padding:0.3125rem;border-radius:6.1875rem;
   background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
@@ -8423,14 +8423,8 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 /* medya tam ekran arka plan */
 .cpMediaFull{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
-.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000}
-#compose.cpFill .cpMediaFull video,
-#compose.cpFill .cpMediaFull img{object-fit:cover}
-#cpOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 7.25rem);transform:translateX(-50%);
-  z-index:6;display:none;align-items:center;gap:0.25rem;padding:0.28rem;
-  border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
-  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
-#compose.open #cpOlcek{display:flex}
+.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;background:#000}
+#cpOlcek{display:none !important}
 #cpOlcek button{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.75rem;
   background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
 #cpOlcek button.on{background:rgba(255,255,255,.92);color:#111}
@@ -9357,7 +9351,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.17</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.4.0</span></div>
   </section>
 </div>
 
@@ -9522,7 +9516,12 @@ html.native button,html.native .tab{touch-action:manipulation}
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
       <span class="title" id="camTitle" data-i18n="act_shoot_now">Şu anı çek</span>
-      <span style="width:36px"></span>
+      <span style="width:2.5rem"></span>
+    </div>
+    <div class="camSide" id="camSide">
+      <button class="camSideBtn" id="camFlash" type="button" aria-label="Flaş">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 10-14h-7l0-6z"/></svg>
+      </button>
     </div>
     <div class="rectime" id="recTime"><i></i><span>0:00 / 0:30</span></div>
     <div class="recprog" id="recProg"><i></i></div>
@@ -17129,7 +17128,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.17";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.4.0";
   box.appendChild(ver);
 }
 
@@ -20169,6 +20168,17 @@ $("#flip").addEventListener("click", async ()=>{
   start();
 });
 $("#camClose").addEventListener("click",closeCam);
+(function camFlashBtn(){
+  const btn=document.getElementById("camFlash");
+  if(!btn || btn._bagli) return;
+  btn._bagli=true;
+  let mod="off";
+  btn.addEventListener("click", async ()=>{
+    mod = (mod==="off") ? "torch" : "off";
+    try{ if(window.Kamera && Kamera.flas) await Kamera.flas(mod); }catch(e){}
+    btn.classList.toggle("on", mod!=="off");
+  });
+})();
 
 /* ═══ KAMERA HAREKETLERİ ═══
    Kaydırarak kapatma ve iki parmakla yakınlaştırma.
@@ -20401,7 +20411,7 @@ $("#camClose").addEventListener("click",closeCam);
   kap.addEventListener("pointercancel", bitir);
 })();
 (function webCamOlcek(){
-  let kip="fit", olcek=1;
+  let kip="fill", olcek=1;
   try{
     const k=localStorage.getItem("klipsy_web_cam_kip");
     const o=parseFloat(localStorage.getItem("klipsy_web_cam_olcek")||"1");
@@ -20439,36 +20449,7 @@ $("#camClose").addEventListener("click",closeCam);
       const v=document.getElementById("camVideo");
       if(v) v.style.transform="";
     }
-    if(!box){
-      box=document.createElement("div");
-      box.id="webCamOlcek";
-      box.innerHTML='<div class="wcoBar">'+
-        '<button type="button" class="wcoBtn" data-kip="fit">Tam</button>'+
-        '<button type="button" class="wcoBtn" data-kip="fill">Doldur</button>'+
-        '<span class="wcoVal" id="wcoVal">1.0×</span></div>'+
-        '<input id="wcoRange" type="range" min="1" max="2.5" step="0.1" value="1">';
-      cam.appendChild(box);
-      box.querySelectorAll(".wcoBtn").forEach(b=>{
-        b.addEventListener("click", ev=>{
-          ev.stopPropagation();
-          kip=b.dataset.kip;
-          if(kip==="fit") olcek=1;
-          uygula();
-          if(window.Kamera && Kamera.yerelMi() && Kamera.onizlemeKipi) Kamera.onizlemeKipi(kip);
-        });
-      });
-      box.querySelector("#wcoRange").addEventListener("input", e=>{
-        olcek=Number(e.target.value)||1;
-        uygula();
-        if(window.Kamera && Kamera.yerelMi() && Kamera.yakinlikAraligi){
-          Kamera.yakinlikAraligi().then(a=>{
-            if(!a || a.max<=a.min) return;
-            const t=(olcek-1)/1.5;
-            Kamera.yakinlastir(a.min + t*(a.max-a.min), false);
-          });
-        }
-      });
-    }
+    if(box) box.remove();
     uygula();
   }
 
@@ -20479,7 +20460,7 @@ $("#camClose").addEventListener("click",closeCam);
     const vw=v.videoWidth, vh=v.videoHeight;
     const cw=cam.clientWidth||window.innerWidth;
     const ch=cam.clientHeight||window.innerHeight;
-    const base=(kip==="fill")?Math.max(cw/vw,ch/vh):Math.min(cw/vw,ch/vh);
+    const base=Math.max(cw/vw,ch/vh);
     const tot=base*Math.max(1,olcek);
     const left=(cw-vw*tot)/2, top=(ch-vh*tot)/2;
     let sx=Math.max(0,-left/tot), sy=Math.max(0,-top/tot);

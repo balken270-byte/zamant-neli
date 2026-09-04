@@ -229,7 +229,11 @@
       aspectRatio: "fill",
       aspectMode: "cover",
       enableVideoMode: true,
+      /* Kilit + otomatik döndürme BİRLİKTE olunca telefonu sola
+         çevirince görüntü sağa gidiyordu. Yönü kilitliyoruz,
+         eklentinin ekstra dönüşünü kapatıyoruz. */
       lockAndroidOrientation: true,
+      rotateWhenOrientationChanged: false,
       disableAudio: secenek.ses === false,
       videoQuality: "high",
       includeSafeAreaInsets: false,
@@ -273,6 +277,8 @@
        bir akış üretir, kırpma en aza iner ve akıcılık artar. */
     const sesVar = secenek.ses !== false;
     const kare = { ideal: 30, min: 24 };
+    const onKamera = (secenek.yon === "on" || secenek.yon === "front" || secenek.yon === "user");
+    const bakis = onKamera ? "user" : "environment";
 
     /* Mobil mi? Dokunmatik + dar ekran. */
     const mobil = (function () {
@@ -283,41 +289,29 @@
       } catch (e) { return false; }
     })();
 
-    /* Ekranın dikey en-boy oranı (yükseklik/genişlik değil, video için
-       genişlik/yükseklik beklenir; dikey ekranda bu <1 olur). Tarayıcıya
-       "portre bir kare ver" demenin yolu budur. */
-    let ekranOran = null;
-    try {
-      const eg = Math.min(screen.width, screen.height);
-      const ey = Math.max(screen.width, screen.height);
-      if (eg && ey) ekranOran = +(eg / ey).toFixed(4);   // ör. 0.4618 (dar telefon)
-    } catch (e) {}
-
-    /* Denemeler kademeli: en iyi eşleşmeden en gevşeğe.
-       - Mobilde 1280 genişlik + dikey aspectRatio (kırpmayı önler).
-       - Masaüstünde eski davranış (yüksek çözünürlük, orana karışma). */
+    /* Çelişkili kısıt (1280×1707 + dar aspectRatio) bazı tarayıcılarda
+       320×240 / 640×480 gibi düşük moda düşüyordu. 9:16 720p iste. */
     let denemeler;
     if (mobil) {
-      const ar = ekranOran ? { ideal: ekranOran } : undefined;
       denemeler = [
-        { video: { facingMode: { exact: "environment" }, width: { ideal: 1280 },
-                   height: { ideal: 1707 }, aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1080 },
-                   aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
+        { video: { facingMode: { ideal: bakis }, width: { ideal: 720 },
+                   height: { ideal: 1280 }, aspectRatio: { ideal: 0.5625 },
                    frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
-        { video: { frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis }, width: { ideal: 720 },
+                   height: { ideal: 1280 }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis }, height: { ideal: 1280 },
+                   frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis } }, audio: sesVar },
         { video: true, audio: sesVar },
       ];
     } else {
       denemeler = [
-        { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
-                   frameRate: kare, resizeMode: "none" }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
+        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
+                   height: { ideal: 720 }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
-        { video: { frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
         { video: true, audio: sesVar },
       ];
     }
@@ -331,12 +325,18 @@
 
     const iz = webAkis.getVideoTracks()[0];
 
-    /* Açılan akışın kare hızı düşükse yükseltmeyi dene.
-       Bazı tarayıcılar ilk isteği yok sayıp 10-15 kare veriyor. */
+    /* Açılan akış yatay veya düşük kare hızındaysa düzeltmeyi dene. */
     try {
       const s0 = (iz && iz.getSettings) ? iz.getSettings() : {};
-      if (iz && iz.applyConstraints && s0.frameRate && s0.frameRate < 24) {
-        await iz.applyConstraints({ frameRate: { ideal: 30, min: 24 } });
+      if (iz && iz.applyConstraints) {
+        const hedef = {};
+        if (s0.frameRate && s0.frameRate < 24) hedef.frameRate = { ideal: 30, min: 24 };
+        if (s0.width && s0.height && s0.width > s0.height) {
+          hedef.width = { ideal: 720 };
+          hedef.height = { ideal: 1280 };
+          hedef.aspectRatio = { ideal: 0.5625 };
+        }
+        if (Object.keys(hedef).length) await iz.applyConstraints(hedef);
       }
     } catch (e) {}
 
@@ -430,18 +430,24 @@
   /* ══════════════════════════════════════════════════════════════════
      FOTOĞRAF
      ══════════════════════════════════════════════════════════════════ */
-  /* Bir görseli yatay çevirir (ayna). */
-  function aynala(veriAdresi) {
+  /* JPEG'i tuvale çizerek EXIF yönünü sabitle. İstenirse ayna da uygular.
+     Native önizleme zaten eklenti tarafında doğru; ekstra ayna çift
+     çevirme yapıp kırpma ekranında fotoğrafı ters düşürüyordu. */
+  function jpegNormalize(veriAdresi, aynaYap) {
     return new Promise(function (coz) {
       try {
         const im = new Image();
         im.onload = function () {
           try {
             const c = document.createElement("canvas");
-            c.width = im.width; c.height = im.height;
+            c.width = im.naturalWidth || im.width;
+            c.height = im.naturalHeight || im.height;
+            if (!c.width || !c.height) { coz(veriAdresi); return; }
             const x = c.getContext("2d");
-            x.translate(c.width, 0);
-            x.scale(-1, 1);
+            if (aynaYap) {
+              x.translate(c.width, 0);
+              x.scale(-1, 1);
+            }
             x.drawImage(im, 0, 0);
             coz(c.toDataURL("image/jpeg", 0.92));
           } catch (e) { coz(veriAdresi); }
@@ -466,15 +472,10 @@
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
 
-          /* ÖN KAMERADA AYNALAMA
-             Önizleme ayna gibi gösteriliyor (kullanıcı kendini
-             alışık olduğu yönde görüyor). Çekilen kare ise
-             aynalanmıyordu; paylaşınca yazılar ters çıkıyor ve
-             yüz "başkasının gördüğü" yönde oluyordu. Önizlemeyle
-             aynı olması için kare de çevrilir. */
-          if (durum.yon === "on") {
-            veri = await aynala(veri);
-          }
+          /* Native önizleme CameraX tarafından zaten doğru yönde.
+             Burada tekrar aynalamak kırpma ekranında fotoğrafı
+             ters çeviriyordu. Yalnızca EXIF yönünü sabitle. */
+          veri = await jpegNormalize(veri, false);
 
           yay("foto", { boyut: veri.length });
           return veri;
@@ -575,18 +576,17 @@
           const y  = a.height || 720;
           const kare = a.frameRate || 30;
 
-          /* Piksel başına yaklaşık 0.12 bit — akıcı hareket için yeterli,
-             dosya boyutu makul kalıyor. Mobilde yazılım kodlayıcı yüksek
-             veri hızında takıldığı için üst sınır düşük tutulur. */
-          let hiz = Math.round(g * y * kare * 0.12);
+          /* Piksel başına ~0.18 bit: 720p30 ≈ 5 Mbps, bloklanma azalır.
+             Çok düşük taban (eski 2.5) videoyu izlenemez yapıyordu. */
+          let hiz = Math.round(g * y * kare * 0.18);
           const mobilKayit = (function () {
             try {
               return (navigator.maxTouchPoints > 0) &&
                      /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
             } catch (e) { return false; }
           })();
-          const ustSinir = mobilKayit ? 6000000 : 12000000;   // mobil 6, masaüstü 12 Mbit
-          hiz = Math.max(2500000, Math.min(hiz, ustSinir));
+          const ustSinir = mobilKayit ? 8000000 : 14000000;
+          hiz = Math.max(4500000, Math.min(hiz, ustSinir));
 
           const ayar = {
             videoBitsPerSecond: secenek.bitHizi || hiz,

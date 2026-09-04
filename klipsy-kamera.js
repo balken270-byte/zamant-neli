@@ -1,17 +1,30 @@
 /* ============================================================================
-   KLİPSY — KAMERA KATMANI
+   KLİPSY — KAMERA KATMANI  v3.3.5
    ============================================================================
    Kamera bu uygulamanın bel kemiği. Bu dosya kameranın TEK giriş noktasıdır;
    uygulamanın geri kalanı kamera ayrıntılarını bilmez.
+
+   SÜRÜM 3.3.5 (2026-09-04)
+     - Web'de ön kamera açıldı. Çevirme getUserMedia'yı facingMode ile
+       yeniden başlatır (eski kod "yalnızca arka" deyip çıkıyordu).
+     - Web kayıt: ham yatay 16:9 akış artık 9:16'ya kırpılıp 720×1280
+       tuvalden kaydediliyor. Önizleme object-fit:cover olduğu için eski
+       kayıt ekranda görülenden farklı, yatay ve bloklu çıkıyordu.
+     - Web kayıt codec sırası: H.264/MP4 → webm/h264 → VP9 → VP8.
+       VP8 yazılım kodlayıcı düşük bit hızında izlenemez oluyordu.
+     - videoBitsPerSecond 720p için ~5–8 Mbps (Chrome varsayılanı 2.5
+       Mbps; 720p'de bloklanmanın asıl sebebi buydu).
+     - Native profil fotoğrafında çift ayna kaldırıldı; EXIF tuvale
+       işleniyor. lockAndroidOrientation + rotateWhenOrientationChanged
+       çakışması kapatıldı (sola çevirince sağa dönme).
 
    İKİ YOL
      UYGULAMA (APK)  → Android'in kendi kamerası (CameraX).
                        Önizleme donanımdan doğrudan ekrana çizilir, kayıt
                        donanım kodlayıcıyla yapılır. Görüntü hiç JavaScript'ten
                        geçmez. Kayıt sırasında kamera çevirmek de bedavadır.
-     WEB             → getUserMedia, yalnızca arka kamera, doğrudan kayıt.
-                       Tuval KULLANILMAZ: her kareyi JavaScript ile kopyalamak
-                       kaydı dondurur. Web bir vitrindir; ciddi çekim uygulamada.
+     WEB             → getUserMedia, ön ve arka kamera. Kayıt 9:16 tuval
+                       üzerinden (önizlemeyle aynı kırpma + ön kamerada ayna).
 
    TASARIM KURALLARI
      1. Hiçbir hata sessizce yutulmaz. Her hata sınıflandırılır ve bildirilir.
@@ -130,6 +143,7 @@
   let webKayit = null;
   let webParcalar = [];
   let kayitZamanlayici = null;
+  let webTuval = null, webTctx = null, webTRAF = null, webTStream = null;
 
   /* Kayıt süre/dosya sınırına takılıp kendiliğinden bittiğinde eklenti
      dosya yolunu olayla bildirir. Uygulama sonradan istediğinde
@@ -365,8 +379,17 @@
   /* ══════════════════════════════════════════════════════════════════
      DURDUR / TEMİZLE
      ══════════════════════════════════════════════════════════════════ */
+  function webTuvalDurdur() {
+    if (webTRAF) { try { cancelAnimationFrame(webTRAF); } catch (e) {} webTRAF = null; }
+    if (webTStream) {
+      try { webTStream.getVideoTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+      webTStream = null;
+    }
+  }
+
   async function temizle() {
     clearTimeout(kayitZamanlayici); kayitZamanlayici = null;
+    webTuvalDurdur();
 
     if (webKayit) {
       try { if (webKayit.state !== "inactive") webKayit.stop(); } catch (e) {}
@@ -421,8 +444,25 @@
         return durum.yon;
       }
 
-      /* Web: yalnızca arka kamera desteklenir. */
-      yay("bilgi", { kod: "web_tek_kamera" });
+      /* Web: kaydı durdurmadan kamera değiştirmek MediaRecorder'ı koparır.
+         Önizlemede eski akışı kapatıp yeni facingMode ile açıyoruz. */
+      if (durum.kaydediyor) {
+        yay("bilgi", { kod: "web_kayitta_cevirme_yok" });
+        return durum.yon;
+      }
+      const yeni = durum.yon === "on" ? "arka" : "on";
+      try {
+        if (webAkis) {
+          try { webAkis.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+          webAkis = null;
+        }
+        durum.yon = yeni;
+        await webBaslat(Object.assign({}, sonSecenek || {}, { yon: yeni }));
+        _aralik = null;
+        yay("cevrildi", { yon: durum.yon });
+      } catch (e) {
+        yay("hata", { hataTuru: hataCevir(e), hata: e });
+      }
       return durum.yon;
     });
   }
@@ -552,7 +592,10 @@
           if (!webAkis) return false;
 
           const turler = [
+            "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
             "video/mp4;codecs=h264,aac",
+            "video/mp4",
+            "video/webm;codecs=h264,opus",
             "video/webm;codecs=vp9,opus",
             "video/webm;codecs=vp8,opus",
             "video/webm",
@@ -565,40 +608,64 @@
           }
 
           webParcalar = [];
+          webTuvalDurdur();
 
-          /* VERİ HIZI ÇÖZÜNÜRLÜĞE GÖRE.
-             Sabit 3.4 Mbit kullanılıyordu. 1080p için bu düşük;
-             görüntü bloklu ve bulanık çıkıyordu. Piksel sayısına
-             göre hesaplanınca kalite belirgin şekilde düzeliyor. */
-          const iz = webAkis.getVideoTracks()[0];
-          const a  = (iz && iz.getSettings) ? iz.getSettings() : {};
-          const g  = a.width  || 1280;
-          const y  = a.height || 720;
-          const kare = a.frameRate || 30;
+          /* 9:16 kayıt — önizleme object-fit:cover. Ham yatay akışı
+             kaydetmek videoyu yatık, kırpılmış ve bloklu bırakıyordu.
+             720×1280 tuval önizlemeyle aynı alanı çizer. */
+          const kayitW = 720, kayitH = 1280, kayitFps = 30;
+          const vEl = document.getElementById("camVideo");
+          if (!webTuval) webTuval = document.createElement("canvas");
+          webTuval.width = kayitW;
+          webTuval.height = kayitH;
+          webTctx = webTuval.getContext("2d", { alpha: false, desynchronized: true });
 
-          /* Piksel başına ~0.18 bit: 720p30 ≈ 5 Mbps, bloklanma azalır.
-             Çok düşük taban (eski 2.5) videoyu izlenemez yapıyordu. */
-          let hiz = Math.round(g * y * kare * 0.18);
-          const mobilKayit = (function () {
-            try {
-              return (navigator.maxTouchPoints > 0) &&
-                     /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
-            } catch (e) { return false; }
-          })();
-          const ustSinir = mobilKayit ? 8000000 : 14000000;
-          hiz = Math.max(4500000, Math.min(hiz, ustSinir));
+          const hedefOran = kayitW / kayitH;
+          const cizKare = function () {
+            webTRAF = requestAnimationFrame(cizKare);
+            if (!vEl || !vEl.videoWidth || !webTctx) return;
+            const vw = vEl.videoWidth, vh = vEl.videoHeight;
+            let sw, sh;
+            if (vw / vh > hedefOran) { sh = vh; sw = vh * hedefOran; }
+            else { sw = vw; sh = vw / hedefOran; }
+            const sx = (vw - sw) / 2, sy = (vh - sh) / 2;
+            webTctx.save();
+            if (durum.yon === "on") {
+              webTctx.translate(kayitW, 0);
+              webTctx.scale(-1, 1);
+            }
+            webTctx.drawImage(vEl, sx, sy, sw, sh, 0, 0, kayitW, kayitH);
+            webTctx.restore();
+          };
+          cizKare();
+
+          try { webTStream = webTuval.captureStream(kayitFps); }
+          catch (e) { webTStream = webTuval.captureStream(); }
+
+          try {
+            const ses = webAkis.getAudioTracks()[0];
+            if (ses && webTStream && !webTStream.getAudioTracks().length) {
+              webTStream.addTrack(ses);
+            }
+          } catch (e) {}
+
+          const kaynak = webTStream || webAkis;
+
+          /* 720p30 dikey ≈ 5 Mbps. Chrome varsayılanı 2.5 Mbps;
+             VP8 ile birleşince kayıt izlenemez oluyordu. */
+          const hiz = secenek.bitHizi || 5500000;
 
           const ayar = {
-            videoBitsPerSecond: secenek.bitHizi || hiz,
+            videoBitsPerSecond: hiz,
             audioBitsPerSecond: 128000,
+            bitsPerSecond: hiz + 128000,
           };
           if (tur) ayar.mimeType = tur;
 
-          try { webKayit = new MediaRecorder(webAkis, ayar); }
+          try { webKayit = new MediaRecorder(kaynak, ayar); }
           catch (e) {
-            /* Bazı tarayıcılar ses hızını kabul etmiyor. */
-            try { webKayit = new MediaRecorder(webAkis, { mimeType: tur }); }
-            catch (e2) { webKayit = new MediaRecorder(webAkis); }
+            try { webKayit = new MediaRecorder(kaynak, tur ? { mimeType: tur } : undefined); }
+            catch (e2) { webKayit = new MediaRecorder(kaynak); }
           }
 
           webKayit.ondataavailable = function (e) {
@@ -607,8 +674,6 @@
           webKayit.onerror = function (e) {
             yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
           };
-          /* Parça aralığı büyütüldü: her çeyrek saniyede parça üretmek
-             işlemciyi meşgul ediyor ve kayıt takılıyordu. */
           webKayit.start(1000);
         }
 
@@ -714,6 +779,7 @@
         if (!webKayit) { durum.kaydediyor = false; coz(null); return; }
 
         webKayit.onstop = function () {
+          webTuvalDurdur();
           const tur = webParcalar[0] ? webParcalar[0].type : "video/webm";
           const blob = new Blob(webParcalar, { type: tur });
           webParcalar = [];

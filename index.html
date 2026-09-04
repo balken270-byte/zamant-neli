@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.2.6</title>
+<title>Klipsy 3.2.8</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -5583,7 +5583,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
   --surf1:rgba(255,255,255,.05); --surf2:rgba(255,255,255,.06); --surf3:rgba(255,255,255,.09); --surf4:rgba(255,255,255,.12);
   --input-bg:rgba(255,255,255,.06); --input-bg-msg:rgba(255,255,255,.1); --input-bg-focus:rgba(255,255,255,.1);
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
-  --top:3.25rem; --tab:3.5rem;
+  --top:3.25rem; --tab:3.025rem;
   --sheetH:calc(min(55vh,31.25rem) - 4.25rem);   /* uygulama açılınca yeniden hesaplanır */
   --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
@@ -5880,26 +5880,26 @@ svg{display:block}
 [data-theme="light"] .tabbar.onLight .tab svg{filter:none}
 [data-theme="light"] .tabbar.onLight .tab.on{color:#141418}
 .tabbar.away{opacity:0;transform:translateY(100%);pointer-events:none}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.25rem;
-  color:rgba(255,255,255,.55);position:relative;transition:color .16s,transform .12s;padding-top:0.1875rem}
-.tab span{font-size:0.625rem;font-weight:500;letter-spacing:-.008em;text-shadow:0 1px 0.375rem rgba(0,0,0,.7)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.1875rem;
+  color:rgba(255,255,255,.55);position:relative;transition:color .16s,transform .12s;padding-top:0.125rem}
+.tab span{font-size:0.5625rem;font-weight:500;letter-spacing:-.008em;text-shadow:0 1px 0.375rem rgba(0,0,0,.7)}
 .tab svg{filter:drop-shadow(0 1px 0.3125rem rgba(0,0,0,.6))}
 .tab.on{color:#fff}
 .tab.on span{font-weight:600}
 .tab:active{transform:scale(.92)}
-.tab .av{width:1.5rem;height:1.5rem;border-radius:6.1875rem;background:#22222A center/cover no-repeat;
-  border:0.0938rem solid currentColor;display:grid;place-items:center;font-size:0.5625rem;font-weight:600}
+.tab .av{width:1.375rem;height:1.375rem;border-radius:6.1875rem;background:#22222A center/cover no-repeat;
+  border:0.0938rem solid currentColor;display:grid;place-items:center;font-size:0.5rem;font-weight:600}
 .tab .dot{position:absolute;top:0.5rem;right:calc(50% - 1.125rem);min-width:1.0625rem;height:1.0625rem;padding:0 0.25rem;
   border-radius:6.1875rem;background:var(--accent);color:#fff;font-size:0.5938rem;font-weight:700;
   display:grid;place-items:center;box-shadow:0 0 0 0.125rem rgba(0,0,0,.85)}
 .tab .dot.hide{display:none}
 .camtab{flex:none;width:4.125rem;display:grid;place-items:center}
-.cambtn{width:2.875rem;height:2.875rem;margin-top:0;display:grid;place-items:center;padding:0;
-  background:transparent;border:0;
-  filter:drop-shadow(0 0.25rem 0.625rem rgba(0,0,0,.6));
+.cambtn{width:2.375rem;height:2.375rem;margin-top:0;display:grid;place-items:center;padding:0;
+  background:transparent;border:0;color:#fff;--camPlus:#17171F;
+  filter:drop-shadow(0 1px 0.3125rem rgba(0,0,0,.55));
   transition:transform .13s var(--ease)}
 .cambtn .klipsyCamIcon{width:100%;height:100%;display:block}
-[data-theme="light"] .tabbar.onLight .cambtn{filter:drop-shadow(0 0.1875rem 0.5rem rgba(0,0,0,.28))}
+[data-theme="light"] .tabbar.onLight .cambtn{color:#141418;--camPlus:#fff;filter:none}
 .cambtn:active{transform:scale(.9)}
 
 /* ============ paneller ============ */
@@ -9324,7 +9324,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.2.6</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.2.8</span></div>
     </div>
   </section>
 </div>
@@ -9365,47 +9365,27 @@ html.native button,html.native .tab{touch-action:manipulation}
 
   <nav class="tabbar" id="tabbar">
     <button class="tab on" id="tabFeed">
-      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7.5" y="2.8" width="13.7" height="13.7" rx="3.4" opacity=".42"/><rect x="2.8" y="7.5" width="13.7" height="13.7" rx="3.4"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7.5" y="2.8" width="13.7" height="13.7" rx="3.4" opacity=".42"/><rect x="2.8" y="7.5" width="13.7" height="13.7" rx="3.4"/></svg>
       <span data-i18n="tab_feed">Akış</span>
     </button>
     <button class="tab" id="tabMsg">
-      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 8h9M7.5 12h5"/><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9l-4 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 8h9M7.5 12h5"/><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9l-4 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/></svg>
       <span data-i18n="tab_msg">Mesajlar</span>
       <em class="dot hide" id="dmDot">0</em>
     </button>
     <div class="camtab">
       <button class="cambtn" id="openCam" aria-label="Çek" data-i18n-aria="shoot">
-        <svg class="klipsyCamIcon" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="kcBarrel" x1="12" y1="6" x2="44" y2="50" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#3A3A4C"/>
-              <stop offset="48%" stop-color="#1A1A24"/>
-              <stop offset="100%" stop-color="#2E2E3E"/>
-            </linearGradient>
-            <radialGradient id="kcEye" cx="36%" cy="30%" r="80%">
-              <stop offset="0%" stop-color="#FF7C9C"/>
-              <stop offset="45%" stop-color="#C24BC4"/>
-              <stop offset="100%" stop-color="#4B2FA8"/>
-            </radialGradient>
-            <linearGradient id="kcRim" x1="14" y1="8" x2="42" y2="48" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#fff" stop-opacity=".6"/>
-              <stop offset="50%" stop-color="#fff" stop-opacity=".07"/>
-              <stop offset="100%" stop-color="#fff" stop-opacity=".34"/>
-            </linearGradient>
-          </defs>
-          <circle cx="28" cy="28" r="25" fill="url(#kcBarrel)"/>
-          <circle cx="28" cy="28" r="24.1" fill="none" stroke="url(#kcRim)" stroke-width="1.8"/>
-          <circle cx="28" cy="28" r="20" fill="none" stroke="#fff" stroke-opacity=".1" stroke-width="1.6"/>
-          <circle cx="28" cy="28" r="16.4" fill="url(#kcEye)"/>
-          <circle cx="28" cy="28" r="16.4" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="1.4"/>
-          <circle cx="28" cy="28" r="7.6" fill="#150A22" opacity=".55"/>
-          <ellipse cx="22.4" cy="21.8" rx="4.6" ry="3" fill="#fff" opacity=".62" transform="rotate(-34 22.4 21.8)"/>
-          <ellipse cx="34.4" cy="35.6" rx="2.4" ry="1.5" fill="#fff" opacity=".2" transform="rotate(-34 34.4 35.6)"/>
+        <svg class="klipsyCamIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="11" fill="currentColor"/>
+          <g stroke="var(--camPlus, #17171F)" stroke-width="2.4" stroke-linecap="round">
+            <line x1="6.5" y1="12" x2="17.5" y2="12"/>
+            <line x1="12" y1="6.5" x2="12" y2="17.5"/>
+          </g>
         </svg>
       </button>
     </div>
     <button class="tab" id="tabTime">
-      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.2 4.2v4.4h4.4"/><path d="M12 8v4.2l2.8 1.7"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.2 4.2v4.4h4.4"/><path d="M12 8v4.2l2.8 1.7"/></svg>
       <span data-i18n="tab_time">Zaman</span>
     </button>
     <button class="tab" id="tabProfile">
@@ -17092,7 +17072,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.2.6";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.2.8";
   box.appendChild(ver);
 }
 

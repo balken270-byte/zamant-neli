@@ -236,16 +236,11 @@
       const ust = sat + 56;
       const alt = sab + 210;
       const aw = vw, ah = Math.max(120, vh - ust - alt);
-      const fit = durum.onizlemeKip !== "fill";
-      const oran = 16 / 9;
-      let w, h, x, y;
-      if (!fit) {
-        w = aw; h = ah; x = 0; y = ust;
-      } else if (aw / ah > oran) {
-        h = ah; w = Math.round(h * oran); x = Math.round((aw - w) / 2); y = ust;
-      } else {
-        w = aw; h = Math.round(w / oran); x = 0; y = Math.round(ust + (ah - h) / 2);
-      }
+      const h9 = Math.round(aw * 16 / 9);
+      const w = aw;
+      const h = Math.min(ah, h9);
+      const x = 0;
+      const y = Math.round(ust + (ah - h) / 2);
       return { x: x, y: y, width: w, height: h };
     }
 

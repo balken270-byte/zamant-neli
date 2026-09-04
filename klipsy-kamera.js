@@ -220,15 +220,12 @@
   }
 
   async function yerelBaslat(secenek) {
-    /* SEÇENEKLER — belgeye göre düzeltildi:
-         enableZoom      KALDIRILMIŞ bir seçenek; gönderilmez.
-                         Yakınlaştırma artık setZoom ile yapılıyor.
-         enableVideoMode Video kaydı için ŞART. Varsayılanı kapalı;
-                         açılmadığı için kayıt hiç başlamıyordu.
-         aspectRatio     'fill' → önizleme ekranı doldurur.
-         aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
-         storeToFile     BURADA verilmez; verilirse fotoğraf base64
-                         yerine dosya yolu döner. */
+    /* SEÇENEKLER
+         enableZoom      Gönderilmiyor; yakınlaştırma setZoom ile yapılıyor.
+         enableVideoMode Video kaydı için gerekli.
+         width/height/x/y start() aşamasında gerçek 9:16 preview alanını
+                         native tarafa bildirir.
+         storeToFile     Burada verilmez; fotoğraf base64 olarak döner. */
     function onizlemeKutusu() {
       const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
       const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
@@ -244,8 +241,26 @@
       return { x: x, y: y, width: w, height: h };
     }
 
+    /*
+       KRITIK 9:16 KAMERA KADRAJI
+       --------------------------
+       setPreviewSize() sadece native View'un dikdortgenini degistirir.
+       CameraPreview ise start() aninda kamera icin uygun preview
+       cozunurlugunu secer. Start() ekran boyutlariyla (ornegin 691x1536)
+       baslatilirsa Android 4:3 bir preview secip onu sonradan 9:16
+       kutuya yerlestirebilir. Kullanici ekranda 4:3 gorur, capture ise
+       9:16 doner ve kadraj degisir.
+
+       Bu nedenle ayni 9:16 dikdortgeni START asamasinda veriyoruz.
+       Boylece native preview secimi de 9:16 hedefini goruyor.
+    */
+    const previewRect = onizlemeKutusu();
     const taban = {
       position: yonNative(durum.yon),
+      width: previewRect.width,
+      height: previewRect.height,
+      x: previewRect.x,
+      y: previewRect.y,
       toBack: true,
       enableVideoMode: true,
       lockAndroidOrientation: true,
@@ -285,7 +300,7 @@
 
     if (CP().setPreviewSize) {
       try {
-        await CP().setPreviewSize(onizlemeKutusu());
+        await CP().setPreviewSize(previewRect);
       } catch (e) {}
     }
 

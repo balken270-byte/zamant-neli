@@ -1,36 +1,17 @@
 /* ============================================================================
-   KLİPSY — KAMERA KATMANI  v3.3.8
+   KLİPSY — KAMERA KATMANI
    ============================================================================
    Kamera bu uygulamanın bel kemiği. Bu dosya kameranın TEK giriş noktasıdır;
    uygulamanın geri kalanı kamera ayrıntılarını bilmez.
-
-   SÜRÜM 3.3.8 (2026-09-04)
-     - Yakın görünümün sebebi: önizleme 9:16 ekranı COVER ile dolduruyordu
-       (sensör 4:3/16:9 → kenarlar kesiliyor = dijital yakınlaştırma)
-       ve zoom 1× ana mercekte kilitleniyordu (0.6× geniş açı atlanıyordu).
-     - Native aspectMode "fit"; açılış zoom'u cihaz minimumu.
-
-   SÜRÜM 3.3.5 (2026-09-04)
-     - Web'de ön kamera açıldı. Çevirme getUserMedia'yı facingMode ile
-       yeniden başlatır (eski kod "yalnızca arka" deyip çıkıyordu).
-     - Web kayıt: ham yatay 16:9 akış artık 9:16'ya kırpılıp 720×1280
-       tuvalden kaydediliyor. Önizleme object-fit:cover olduğu için eski
-       kayıt ekranda görülenden farklı, yatay ve bloklu çıkıyordu.
-     - Web kayıt codec sırası: H.264/MP4 → webm/h264 → VP9 → VP8.
-       VP8 yazılım kodlayıcı düşük bit hızında izlenemez oluyordu.
-     - videoBitsPerSecond 720p için ~5–8 Mbps (Chrome varsayılanı 2.5
-       Mbps; 720p'de bloklanmanın asıl sebebi buydu).
-     - Native profil fotoğrafında çift ayna kaldırıldı; EXIF tuvale
-       işleniyor. lockAndroidOrientation + rotateWhenOrientationChanged
-       çakışması kapatıldı (sola çevirince sağa dönme).
 
    İKİ YOL
      UYGULAMA (APK)  → Android'in kendi kamerası (CameraX).
                        Önizleme donanımdan doğrudan ekrana çizilir, kayıt
                        donanım kodlayıcıyla yapılır. Görüntü hiç JavaScript'ten
                        geçmez. Kayıt sırasında kamera çevirmek de bedavadır.
-     WEB             → getUserMedia, ön ve arka kamera. Kayıt 9:16 tuval
-                       üzerinden (önizlemeyle aynı kırpma + ön kamerada ayna).
+     WEB             → getUserMedia, yalnızca arka kamera, doğrudan kayıt.
+                       Tuval KULLANILMAZ: her kareyi JavaScript ile kopyalamak
+                       kaydı dondurur. Web bir vitrindir; ciddi çekim uygulamada.
 
    TASARIM KURALLARI
      1. Hiçbir hata sessizce yutulmaz. Her hata sınıflandırılır ve bildirilir.
@@ -149,7 +130,6 @@
   let webKayit = null;
   let webParcalar = [];
   let kayitZamanlayici = null;
-  let webTuval = null, webTctx = null, webTRAF = null, webTStream = null;
 
   /* Kayıt süre/dosya sınırına takılıp kendiliğinden bittiğinde eklenti
      dosya yolunu olayla bildirir. Uygulama sonradan istediğinde
@@ -247,13 +227,9 @@
       position: yonNative(durum.yon),
       toBack: true,
       aspectRatio: "fill",
-      aspectMode: "fit",
+      aspectMode: "cover",
       enableVideoMode: true,
-      /* Kilit + otomatik döndürme BİRLİKTE olunca telefonu sola
-         çevirince görüntü sağa gidiyordu. Yönü kilitliyoruz,
-         eklentinin ekstra dönüşünü kapatıyoruz. */
       lockAndroidOrientation: true,
-      rotateWhenOrientationChanged: false,
       disableAudio: secenek.ses === false,
       videoQuality: "high",
       includeSafeAreaInsets: false,
@@ -297,8 +273,6 @@
        bir akış üretir, kırpma en aza iner ve akıcılık artar. */
     const sesVar = secenek.ses !== false;
     const kare = { ideal: 30, min: 24 };
-    const onKamera = (secenek.yon === "on" || secenek.yon === "front" || secenek.yon === "user");
-    const bakis = onKamera ? "user" : "environment";
 
     /* Mobil mi? Dokunmatik + dar ekran. */
     const mobil = (function () {
@@ -309,35 +283,40 @@
       } catch (e) { return false; }
     })();
 
+    /* Ekranın dikey en-boy oranı (yükseklik/genişlik değil, video için
+       genişlik/yükseklik beklenir; dikey ekranda bu <1 olur). Tarayıcıya
+       "portre bir kare ver" demenin yolu budur. */
     let ekranOran = null;
     try {
       const eg = Math.min(screen.width, screen.height);
       const ey = Math.max(screen.width, screen.height);
-      if (eg && ey) ekranOran = +(eg / ey).toFixed(4);
+      if (eg && ey) ekranOran = +(eg / ey).toFixed(4);   // ör. 0.4618 (dar telefon)
     } catch (e) {}
 
-    /* Orijinal deneme listesi. facingMode artık ön/arka (bakis). */
+    /* Denemeler kademeli: en iyi eşleşmeden en gevşeğe.
+       - Mobilde 1280 genişlik + dikey aspectRatio (kırpmayı önler).
+       - Masaüstünde eski davranış (yüksek çözünürlük, orana karışma). */
     let denemeler;
     if (mobil) {
       const ar = ekranOran ? { ideal: ekranOran } : undefined;
       denemeler = [
-        { video: { facingMode: { exact: bakis }, width: { ideal: 1280 },
+        { video: { facingMode: { exact: "environment" }, width: { ideal: 1280 },
                    height: { ideal: 1707 }, aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis }, width: { ideal: 1080 },
+        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1080 },
                    aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
+        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
         { video: { frameRate: kare }, audio: sesVar },
         { video: true, audio: sesVar },
       ];
     } else {
       denemeler = [
-        { video: { facingMode: { exact: bakis }, width: { ideal: 1920 },
+        { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
                    frameRate: kare, resizeMode: "none" }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
+        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
         { video: { frameRate: kare }, audio: sesVar },
         { video: true, audio: sesVar },
       ];
@@ -352,6 +331,8 @@
 
     const iz = webAkis.getVideoTracks()[0];
 
+    /* Açılan akışın kare hızı düşükse yükseltmeyi dene.
+       Bazı tarayıcılar ilk isteği yok sayıp 10-15 kare veriyor. */
     try {
       const s0 = (iz && iz.getSettings) ? iz.getSettings() : {};
       if (iz && iz.applyConstraints && s0.frameRate && s0.frameRate < 24) {
@@ -384,17 +365,8 @@
   /* ══════════════════════════════════════════════════════════════════
      DURDUR / TEMİZLE
      ══════════════════════════════════════════════════════════════════ */
-  function webTuvalDurdur() {
-    if (webTRAF) { try { cancelAnimationFrame(webTRAF); } catch (e) {} webTRAF = null; }
-    if (webTStream) {
-      try { webTStream.getVideoTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
-      webTStream = null;
-    }
-  }
-
   async function temizle() {
     clearTimeout(kayitZamanlayici); kayitZamanlayici = null;
-    webTuvalDurdur();
 
     if (webKayit) {
       try { if (webKayit.state !== "inactive") webKayit.stop(); } catch (e) {}
@@ -449,25 +421,8 @@
         return durum.yon;
       }
 
-      /* Web: kaydı durdurmadan kamera değiştirmek MediaRecorder'ı koparır.
-         Önizlemede eski akışı kapatıp yeni facingMode ile açıyoruz. */
-      if (durum.kaydediyor) {
-        yay("bilgi", { kod: "web_kayitta_cevirme_yok" });
-        return durum.yon;
-      }
-      const yeni = durum.yon === "on" ? "arka" : "on";
-      try {
-        if (webAkis) {
-          try { webAkis.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
-          webAkis = null;
-        }
-        durum.yon = yeni;
-        await webBaslat(Object.assign({}, sonSecenek || {}, { yon: yeni }));
-        _aralik = null;
-        yay("cevrildi", { yon: durum.yon });
-      } catch (e) {
-        yay("hata", { hataTuru: hataCevir(e), hata: e });
-      }
+      /* Web: yalnızca arka kamera desteklenir. */
+      yay("bilgi", { kod: "web_tek_kamera" });
       return durum.yon;
     });
   }
@@ -475,24 +430,18 @@
   /* ══════════════════════════════════════════════════════════════════
      FOTOĞRAF
      ══════════════════════════════════════════════════════════════════ */
-  /* JPEG'i tuvale çizerek EXIF yönünü sabitle. İstenirse ayna da uygular.
-     Native önizleme zaten eklenti tarafında doğru; ekstra ayna çift
-     çevirme yapıp kırpma ekranında fotoğrafı ters düşürüyordu. */
-  function jpegNormalize(veriAdresi, aynaYap) {
+  /* Bir görseli yatay çevirir (ayna). */
+  function aynala(veriAdresi) {
     return new Promise(function (coz) {
       try {
         const im = new Image();
         im.onload = function () {
           try {
             const c = document.createElement("canvas");
-            c.width = im.naturalWidth || im.width;
-            c.height = im.naturalHeight || im.height;
-            if (!c.width || !c.height) { coz(veriAdresi); return; }
+            c.width = im.width; c.height = im.height;
             const x = c.getContext("2d");
-            if (aynaYap) {
-              x.translate(c.width, 0);
-              x.scale(-1, 1);
-            }
+            x.translate(c.width, 0);
+            x.scale(-1, 1);
             x.drawImage(im, 0, 0);
             coz(c.toDataURL("image/jpeg", 0.92));
           } catch (e) { coz(veriAdresi); }
@@ -517,10 +466,15 @@
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
 
-          /* Native önizleme CameraX tarafından zaten doğru yönde.
-             Burada tekrar aynalamak kırpma ekranında fotoğrafı
-             ters çeviriyordu. Yalnızca EXIF yönünü sabitle. */
-          veri = await jpegNormalize(veri, false);
+          /* ÖN KAMERADA AYNALAMA
+             Önizleme ayna gibi gösteriliyor (kullanıcı kendini
+             alışık olduğu yönde görüyor). Çekilen kare ise
+             aynalanmıyordu; paylaşınca yazılar ters çıkıyor ve
+             yüz "başkasının gördüğü" yönde oluyordu. Önizlemeyle
+             aynı olması için kare de çevrilir. */
+          if (durum.yon === "on") {
+            veri = await aynala(veri);
+          }
 
           yay("foto", { boyut: veri.length });
           return veri;
@@ -597,10 +551,7 @@
           if (!webAkis) return false;
 
           const turler = [
-            "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
             "video/mp4;codecs=h264,aac",
-            "video/mp4",
-            "video/webm;codecs=h264,opus",
             "video/webm;codecs=vp9,opus",
             "video/webm;codecs=vp8,opus",
             "video/webm",
@@ -613,21 +564,28 @@
           }
 
           webParcalar = [];
-          webTuvalDurdur();
 
+          /* VERİ HIZI ÇÖZÜNÜRLÜĞE GÖRE.
+             Sabit 3.4 Mbit kullanılıyordu. 1080p için bu düşük;
+             görüntü bloklu ve bulanık çıkıyordu. Piksel sayısına
+             göre hesaplanınca kalite belirgin şekilde düzeliyor. */
           const iz = webAkis.getVideoTracks()[0];
           const a  = (iz && iz.getSettings) ? iz.getSettings() : {};
           const g  = a.width  || 1280;
           const y  = a.height || 720;
-          const kareH = a.frameRate || 30;
-          let hiz = Math.round(g * y * kareH * 0.12);
+          const kare = a.frameRate || 30;
+
+          /* Piksel başına yaklaşık 0.12 bit — akıcı hareket için yeterli,
+             dosya boyutu makul kalıyor. Mobilde yazılım kodlayıcı yüksek
+             veri hızında takıldığı için üst sınır düşük tutulur. */
+          let hiz = Math.round(g * y * kare * 0.12);
           const mobilKayit = (function () {
             try {
               return (navigator.maxTouchPoints > 0) &&
                      /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
             } catch (e) { return false; }
           })();
-          const ustSinir = mobilKayit ? 6000000 : 12000000;
+          const ustSinir = mobilKayit ? 6000000 : 12000000;   // mobil 6, masaüstü 12 Mbit
           hiz = Math.max(2500000, Math.min(hiz, ustSinir));
 
           const ayar = {
@@ -638,7 +596,8 @@
 
           try { webKayit = new MediaRecorder(webAkis, ayar); }
           catch (e) {
-            try { webKayit = new MediaRecorder(webAkis, tur ? { mimeType: tur } : undefined); }
+            /* Bazı tarayıcılar ses hızını kabul etmiyor. */
+            try { webKayit = new MediaRecorder(webAkis, { mimeType: tur }); }
             catch (e2) { webKayit = new MediaRecorder(webAkis); }
           }
 
@@ -648,6 +607,8 @@
           webKayit.onerror = function (e) {
             yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
           };
+          /* Parça aralığı büyütüldü: her çeyrek saniyede parça üretmek
+             işlemciyi meşgul ediyor ve kayıt takılıyordu. */
           webKayit.start(1000);
         }
 
@@ -753,7 +714,6 @@
         if (!webKayit) { durum.kaydediyor = false; coz(null); return; }
 
         webKayit.onstop = function () {
-          webTuvalDurdur();
           const tur = webParcalar[0] ? webParcalar[0].type : "video/webm";
           const blob = new Blob(webParcalar, { type: tur });
           webParcalar = [];

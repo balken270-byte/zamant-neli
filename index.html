@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.6.0</title>
-<script src="klipsy-kamera.js?v=3.6.0"></script>
+<title>Klipsy 3.3.17</title>
+<script src="klipsy-kamera.js?v=3.3.17"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -7181,10 +7181,20 @@ video::-webkit-media-controls-overlay-play-button{
   display:none !important;-webkit-appearance:none;opacity:0;pointer-events:none}
 video{background-color:#12121a}
 
-#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;background:#000;transform-origin:center center}
-#webCamOlcek{display:none !important}
-#cam,#cam .camtop,#cam .cambot,#cam .camSide{color:#fff}
-html[data-theme="light"] #cam{background:#000}
+#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;transform-origin:center center}
+#cam.camFill video{object-fit:cover}
+#cam.camOlcek #camZoomBar{display:none !important}
+#webCamOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 9.25rem);transform:translateX(-50%);
+  z-index:6;display:none;flex-direction:column;align-items:center;gap:0.35rem;width:min(16.5rem,78%)}
+#cam.open.camOlcek:not(.waiting) #webCamOlcek{display:flex}
+#webCamOlcek .wcoBar{display:flex;align-items:center;gap:0.25rem;padding:0.28rem;
+  border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
+  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
+#webCamOlcek .wcoBtn{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.7rem;
+  background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
+#webCamOlcek .wcoBtn.on{background:rgba(255,255,255,.92);color:#111}
+#webCamOlcek .wcoVal{color:#fff;font:700 0.72rem/1 Inter,sans-serif;min-width:2rem;text-align:center;padding:0 0.2rem}
+#webCamOlcek input[type=range]{width:100%;height:1.1rem;accent-color:#FF3B6B}
 /* izin beklenirken: video gizli, sade zemin ve dönen gösterge */
 #cam.waiting video{opacity:0}
 #cam.waiting::before{content:"";position:absolute;inset:0;z-index:2;
@@ -7270,26 +7280,13 @@ html.camNativeOn #camVideo{display:none !important}
    tasarım bozuluyordu. Yalnızca katman sırası verilir. */
 html.camNativeOn #cam > *:not(.camRoot){z-index:5}
 html.camNativeOn #cam > .camRoot{z-index:0}
-.camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.65rem) 0.85rem 0;display:flex;align-items:center;justify-content:space-between}
-.camtop .title{font-size:0.8125rem;font-weight:650;letter-spacing:-.018em;color:#fff;
-  background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.14);padding:0.4rem 0.85rem;border-radius:6.1875rem;
-  backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem);box-shadow:0 0.25rem 1rem rgba(0,0,0,.28)}
-.camtop .iconbtn{width:2.5rem;height:2.5rem;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.14);
-  color:#fff;backdrop-filter:blur(0.85rem);-webkit-backdrop-filter:blur(0.85rem)}
-.camSide{position:absolute;right:0.7rem;top:calc(var(--sat) + 4.35rem);z-index:6;
-  display:flex;flex-direction:column;align-items:center;gap:1.05rem}
-.camSideBtn{width:2.75rem;height:auto;border:0;background:none;color:#fff;
-  display:flex;flex-direction:column;align-items:center;gap:0.28rem;padding:0}
-.camSideBtn svg{width:2.55rem;height:2.55rem;padding:0.5rem;border-radius:6.1875rem;
-  background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.16);
-  backdrop-filter:blur(0.9rem);-webkit-backdrop-filter:blur(0.9rem);box-sizing:border-box}
-.camSideBtn em{font:650 0.62rem/1 Inter,sans-serif;font-style:normal;text-shadow:0 1px 6px #000}
-.camSideBtn.on svg{background:rgba(255,255,255,.94);color:#111;border-color:transparent}
-.camSlot{width:3rem;flex:none}
+.camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.75rem) 0.875rem 0;display:flex;align-items:center;justify-content:space-between}
+.camtop .title{font-size:0.875rem;font-weight:600;letter-spacing:-.018em;
+  background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:0.4375rem 0.875rem;border-radius:6.1875rem;
+  backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
 .cambody{flex:1;position:relative;z-index:1}
-.cambot{position:relative;z-index:2;padding:0 1.1rem calc(var(--sab) + 1.15rem);
-  background:linear-gradient(to top,rgba(0,0,0,.55) 20%,transparent)}
-.modes{display:flex;justify-content:center;gap:0.15rem;margin-bottom:0.85rem}
+.cambot{position:relative;z-index:2;padding:0 1.25rem calc(var(--sab) + 1.375rem)}
+.modes{display:flex;justify-content:center;gap:0.25rem;margin-bottom:1.25rem}
 .mode{font-size:0.7188rem;font-weight:600;letter-spacing:.05em;color:rgba(255,255,255,.5);
   padding:0.5rem 1rem;border-radius:6.1875rem;transition:all .18s}
 .mode.on{color:#fff;background:rgba(255,255,255,.17);border:1px solid var(--edge);
@@ -7325,7 +7322,7 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .vvClose:active{transform:scale(.9)}
 
 /* ── yakınlaştırma kısayolları ── */
-.camZoomBar{position:absolute;left:50%;bottom:calc(var(--sab) + 8.15rem);
+.camZoomBar{position:absolute;left:50%;bottom:calc(var(--sab) + 9.375rem);
   transform:translateX(-50%);z-index:6;
   display:flex;gap:0.3125rem;padding:0.3125rem;border-radius:6.1875rem;
   background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
@@ -8420,18 +8417,20 @@ html.native button,html.native .tab{touch-action:manipulation}
 .shrow.done .go2{background:rgba(95,214,154,.18);border-color:rgba(95,214,154,.4);color:#8FE3B4}
 
 /* ============ paylaşım ekranı ============ */
-#compose{position:absolute;inset:0;z-index:80;background:#000;display:none;flex-direction:column;
+#compose{position:absolute;inset:0;z-index:75;background:#000;display:none;flex-direction:column;
   --mood:#7B5BFF}
-#compose.open{display:flex}
-#cam.open.camEdit #camSide,
-#cam.open.camEdit .cambot,
-#cam.open.camEdit .camtop .title,
-#cam.open.camEdit .camZoomBar{visibility:hidden;pointer-events:none}
+#compose.open{display:flex;animation:fadeIn .22s ease}
 
 /* medya tam ekran arka plan */
 .cpMediaFull{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
-.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;background:#000}
-#cpOlcek{display:none !important}
+.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000}
+#compose.cpFill .cpMediaFull video,
+#compose.cpFill .cpMediaFull img{object-fit:cover}
+#cpOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 7.25rem);transform:translateX(-50%);
+  z-index:6;display:none;align-items:center;gap:0.25rem;padding:0.28rem;
+  border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
+  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
+#compose.open #cpOlcek{display:flex}
 #cpOlcek button{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.75rem;
   background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
 #cpOlcek button.on{background:rgba(255,255,255,.92);color:#111}
@@ -9358,7 +9357,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.6.0</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.17</span></div>
   </section>
 </div>
 
@@ -9523,17 +9522,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
       <span class="title" id="camTitle" data-i18n="act_shoot_now">Şu anı çek</span>
-      <span style="width:2.5rem"></span>
-    </div>
-    <div class="camSide" id="camSide">
-      <button class="camSideBtn" id="camFlash" type="button" aria-label="Flaş">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 10-14h-7l0-6z"/></svg>
-        <em>Flaş</em>
-      </button>
-      <button class="camSideBtn" id="flip" type="button" aria-label="Kamerayı çevir" data-i18n-aria="flip_cam">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-14.6 6"/><path d="M3.5 12a8.5 8.5 0 0 1 14.6-6"/><path d="M18.1 2.4V6h-3.6"/><path d="M5.9 21.6V18h3.6"/></svg>
-        <em>Çevir</em>
-      </button>
+      <span style="width:36px"></span>
     </div>
     <div class="rectime" id="recTime"><i></i><span>0:00 / 0:30</span></div>
     <div class="recprog" id="recProg"><i></i></div>
@@ -9549,7 +9538,9 @@ html.native button,html.native .tab{touch-action:manipulation}
           <small data-i18n="no_gallery">Galeri yok</small>
         </div>
         <button class="shutter" id="shutter" aria-label="Çek" data-i18n-aria="shoot"><i></i></button>
-        <span class="camSlot"></span>
+        <button class="flip" id="flip" aria-label="Kamerayı çevir" data-i18n-aria="flip_cam">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-14.6 6"/><path d="M3.5 12a8.5 8.5 0 0 1 14.6-6"/><path d="M18.1 2.4V6h-3.6"/><path d="M5.9 21.6V18h3.6"/></svg>
+        </button>
       </div>
     </div>
     <div class="camfail" id="camFail">
@@ -15358,8 +15349,6 @@ function openCompose(src,kind,blob,durationMs){
     const im=document.createElement("img");
     im.src=src; im.alt=""; box.appendChild(im);
   }
-  const camEl=document.getElementById("cam");
-  if(camEl){ camEl.classList.add("open","camEdit"); camEl.setAttribute("aria-hidden","false"); }
   $("#compose").classList.add("open");
   _pushHistory("compose");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
@@ -15808,18 +15797,11 @@ function closeCompose(back){
   const c=$("#compose");
   cpStopPreview();
   c.classList.remove("open");c.setAttribute("aria-hidden","true");
-  const camEl=document.getElementById("cam");
-  if(camEl) camEl.classList.remove("camEdit");
   _popHistory("compose");
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#cpMedia").innerHTML="";$("#cpMedia").style.backgroundImage="";
   draft=null;pickedMood=null;
-  if(back){
-    if(!camEl || !camEl.classList.contains("open")) openCam("post");
-  } else {
-    if(typeof closeCam==="function") closeCam();
-    else setTab($("#tabFeed"));
-  }
+  if(back) openCam("post"); else setTab($("#tabFeed"));
 }
 $("#cpBack").addEventListener("click",()=>closeCompose(true));
 $("#cpShare").addEventListener("click",()=>{
@@ -17147,7 +17129,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.6.0";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.17";
   box.appendChild(ver);
 }
 
@@ -20187,17 +20169,6 @@ $("#flip").addEventListener("click", async ()=>{
   start();
 });
 $("#camClose").addEventListener("click",closeCam);
-(function camFlashBtn(){
-  const btn=document.getElementById("camFlash");
-  if(!btn || btn._bagli) return;
-  btn._bagli=true;
-  let mod="off";
-  btn.addEventListener("click", async ()=>{
-    mod = (mod==="off") ? "torch" : "off";
-    try{ if(window.Kamera && Kamera.flas) await Kamera.flas(mod); }catch(e){}
-    btn.classList.toggle("on", mod!=="off");
-  });
-})();
 
 /* ═══ KAMERA HAREKETLERİ ═══
    Kaydırarak kapatma ve iki parmakla yakınlaştırma.
@@ -20430,7 +20401,7 @@ $("#camClose").addEventListener("click",closeCam);
   kap.addEventListener("pointercancel", bitir);
 })();
 (function webCamOlcek(){
-  let kip="fill", olcek=1;
+  let kip="fit", olcek=1;
   try{
     const k=localStorage.getItem("klipsy_web_cam_kip");
     const o=parseFloat(localStorage.getItem("klipsy_web_cam_olcek")||"1");
@@ -20468,7 +20439,36 @@ $("#camClose").addEventListener("click",closeCam);
       const v=document.getElementById("camVideo");
       if(v) v.style.transform="";
     }
-    if(box) box.remove();
+    if(!box){
+      box=document.createElement("div");
+      box.id="webCamOlcek";
+      box.innerHTML='<div class="wcoBar">'+
+        '<button type="button" class="wcoBtn" data-kip="fit">Tam</button>'+
+        '<button type="button" class="wcoBtn" data-kip="fill">Doldur</button>'+
+        '<span class="wcoVal" id="wcoVal">1.0×</span></div>'+
+        '<input id="wcoRange" type="range" min="1" max="2.5" step="0.1" value="1">';
+      cam.appendChild(box);
+      box.querySelectorAll(".wcoBtn").forEach(b=>{
+        b.addEventListener("click", ev=>{
+          ev.stopPropagation();
+          kip=b.dataset.kip;
+          if(kip==="fit") olcek=1;
+          uygula();
+          if(window.Kamera && Kamera.yerelMi() && Kamera.onizlemeKipi) Kamera.onizlemeKipi(kip);
+        });
+      });
+      box.querySelector("#wcoRange").addEventListener("input", e=>{
+        olcek=Number(e.target.value)||1;
+        uygula();
+        if(window.Kamera && Kamera.yerelMi() && Kamera.yakinlikAraligi){
+          Kamera.yakinlikAraligi().then(a=>{
+            if(!a || a.max<=a.min) return;
+            const t=(olcek-1)/1.5;
+            Kamera.yakinlastir(a.min + t*(a.max-a.min), false);
+          });
+        }
+      });
+    }
     uygula();
   }
 
@@ -20479,7 +20479,7 @@ $("#camClose").addEventListener("click",closeCam);
     const vw=v.videoWidth, vh=v.videoHeight;
     const cw=cam.clientWidth||window.innerWidth;
     const ch=cam.clientHeight||window.innerHeight;
-    const base=Math.max(cw/vw,ch/vh);
+    const base=(kip==="fill")?Math.max(cw/vw,ch/vh):Math.min(cw/vw,ch/vh);
     const tot=base*Math.max(1,olcek);
     const left=(cw-vw*tot)/2, top=(ch-vh*tot)/2;
     let sx=Math.max(0,-left/tot), sy=Math.max(0,-top/tot);
@@ -20504,6 +20504,12 @@ $("#camClose").addEventListener("click",closeCam);
     return c.toDataURL("image/jpeg",0.92);
   }
 
+  /* Native Android fotoğrafı, CameraPreview önizlemesinden biraz daha geniş
+     bir kadrajla dönebiliyor. Önizlemede görünen çerçeveyle paylaşım ekranının
+     aynı görünmesi için post fotoğrafında yanlardan küçük bir ek kırpma yap.
+     0.90 = mevcut 9:16 kadrajın %90 genişliği; dikey alan korunur. */
+  const NATIVE_PREVIEW_CROP_X = 0.90;
+
   function kareAlData(src){
     return new Promise(function(coz){
       if(!src) return coz(src);
@@ -20512,7 +20518,7 @@ $("#camClose").addEventListener("click",closeCam);
         try{
           let sx=0,sy=0,sw=im.width,sh=im.height;
           if(typeof target==="string" && target!=="profile"){
-            const oran=9/16;
+            const oran=(9/16) * NATIVE_PREVIEW_CROP_X;
             if(sw/sh>oran){ const n=sh*oran; sx=(sw-n)/2; sw=n; }
             else { const n=sw/oran; sy=(sh-n)/2; sh=n; }
           }
@@ -21393,7 +21399,7 @@ function startRec(){
     tuvalDurdur();
     const blob=new Blob(chunks,{type:chunks[0]?chunks[0].type:"video/webm"});
     const durMs=(recSecs||0)*1000;
-    openCompose(URL.createObjectURL(blob),"video",blob,durMs);
+    closeCam();openCompose(URL.createObjectURL(blob),"video",blob,durMs);
   };
   recorder.start();
   $("#shutter").classList.add("rec");
@@ -21579,7 +21585,7 @@ sh.addEventListener("pointerup", async ()=>{
     await kameraKapanmaEfekti();
     if(target==="profile"){ closeCam(); blockGhostTap(); avatarKirp(foto); }
     else if(target==="dm"){ closeCam(); sendMedia(foto); }
-    else { openCompose(foto,"photo"); }
+    else { closeCam(); openCompose(foto,"photo"); }
     return;
   }
 
@@ -21593,7 +21599,7 @@ sh.addEventListener("pointerup", async ()=>{
     avatarKirp(src);
   }
   else if(target==="dm"){closeCam();sendMedia(src);}
-  else{openCompose(src,"photo");}
+  else{closeCam();openCompose(src,"photo");}
 });
 sh.addEventListener("pointercancel",()=>{holding=false;clearTimeout(holdT);});
 $("#fakeShot").addEventListener("click",()=>{
@@ -21604,7 +21610,7 @@ $("#fakeShot").addEventListener("click",()=>{
     avatarKirp(src);
   }
   else if(target==="dm"){closeCam();sendMedia(src);}
-  else{openCompose(src,"photo");}
+  else{closeCam();openCompose(src,"photo");}
 });
 
 /* ---------- başlat ---------- */

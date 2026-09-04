@@ -229,11 +229,24 @@
          aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
+    function onizlemeKutusu() {
+      const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
+      const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
+      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
+      const ust = sat + 56;
+      const alt = sab + 210;
+      const aw = vw, ah = Math.max(120, vh - ust - alt);
+      const h9 = Math.round(aw * 16 / 9);
+      const w = aw;
+      const h = Math.min(ah, h9);
+      const x = 0;
+      const y = Math.round(ust + (ah - h) / 2);
+      return { x: x, y: y, width: w, height: h };
+    }
+
     const taban = {
       position: yonNative(durum.yon),
       toBack: true,
-      aspectRatio: "fill",
-      aspectMode: "cover",
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,
@@ -243,18 +256,9 @@
     if (secenek.kap)   taban.parent    = secenek.kap;
     if (secenek.sinif) taban.className = secenek.sinif;
 
-    const sade = {
-      position: yonNative(durum.yon),
-      toBack: true,
-      enableVideoMode: true,
-      disableAudio: secenek.ses === false,
-    };
-    if (secenek.kap) sade.parent = secenek.kap;
     const denemeler = [
       Object.assign({}, taban),
       Object.assign({}, taban, { force: true }),
-      Object.assign({}, sade),
-      Object.assign({}, sade, { force: true }),
     ];
 
     let sonuc = null;
@@ -278,6 +282,12 @@
     durum.coz = sonuc
       ? { g: sonuc.width, y: sonuc.height, x: sonuc.x, y0: sonuc.y }
       : null;
+
+    if (CP().setPreviewSize) {
+      try {
+        await CP().setPreviewSize(onizlemeKutusu());
+      } catch (e) {}
+    }
 
     document.documentElement.classList.add("camNativeOn");
   }

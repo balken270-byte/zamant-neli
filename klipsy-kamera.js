@@ -1,13 +1,14 @@
 /* ============================================================================
-   KLİPSY — KAMERA KATMANI  v3.3.6
+   KLİPSY — KAMERA KATMANI  v3.3.7
    ============================================================================
    Kamera bu uygulamanın bel kemiği. Bu dosya kameranın TEK giriş noktasıdır;
    uygulamanın geri kalanı kamera ayrıntılarını bilmez.
 
-   SÜRÜM 3.3.6 (2026-09-04)
-     - Her iki kamerada aşırı yakın görünüm geri alındı. 9:16 kısıtı
-       sensörü kırpıyordu; canlı akış tekrar doğal / 4:3, zoom cihaz
-       minimumuna (geniş açı) çekiliyor. 9:16 kırpma yalnız kayıtta.
+   SÜRÜM 3.3.7 (2026-09-04)
+     - Görüş alanı / zoom orijinal dosyadaki değerlere döndü:
+       native aspectRatio "fill" + aspectMode "cover";
+       web 1280×1707 + ekran oranı (eski deneme listesi).
+       4:3 ve ekstra zoom zorlaması kaldırıldı.
 
    SÜRÜM 3.3.5 (2026-09-04)
      - Web'de ön kamera açıldı. Çevirme getUserMedia'yı facingMode ile
@@ -245,9 +246,7 @@
     const secenekler = {
       position: yonNative(durum.yon),
       toBack: true,
-      /* 4:3 fill değil: fill+cover 9:16 ekranda kenarları kesip
-         görüntüyü yakına çekiyordu. 4:3 daha geniş alan verir. */
-      aspectRatio: 4 / 3,
+      aspectRatio: "fill",
       aspectMode: "cover",
       enableVideoMode: true,
       /* Kilit + otomatik döndürme BİRLİKTE olunca telefonu sola
@@ -280,8 +279,6 @@
       : null;
 
     document.documentElement.classList.add("camNativeOn");
-    _aralik = null;
-    try { await enGenisAci(); } catch (e) {}
   }
 
   async function webBaslat(secenek) {
@@ -312,24 +309,36 @@
       } catch (e) { return false; }
     })();
 
-    /* 9:16 / 0.56 istemek sensörü kırpıyor → "çok yakın" görünüm.
-       4:3 (0.75) telefon kamerasına daha yakın, daha geniş alan. */
+    let ekranOran = null;
+    try {
+      const eg = Math.min(screen.width, screen.height);
+      const ey = Math.max(screen.width, screen.height);
+      if (eg && ey) ekranOran = +(eg / ey).toFixed(4);
+    } catch (e) {}
+
+    /* Orijinal deneme listesi. facingMode artık ön/arka (bakis). */
     let denemeler;
     if (mobil) {
+      const ar = ekranOran ? { ideal: ekranOran } : undefined;
       denemeler = [
-        { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
-                   aspectRatio: { ideal: 3 / 4 }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { exact: bakis }, width: { ideal: 1280 },
+                   height: { ideal: 1707 }, aspectRatio: ar, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: bakis }, width: { ideal: 1080 },
+                   aspectRatio: ar, frameRate: kare }, audio: sesVar },
         { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
         { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: bakis } }, audio: sesVar },
+        { video: { frameRate: kare }, audio: sesVar },
         { video: true, audio: sesVar },
       ];
     } else {
       denemeler = [
+        { video: { facingMode: { exact: bakis }, width: { ideal: 1920 },
+                   frameRate: kare, resizeMode: "none" }, audio: sesVar },
         { video: { facingMode: { ideal: bakis }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
         { video: { facingMode: { ideal: bakis }, frameRate: kare }, audio: sesVar },
+        { video: { frameRate: kare }, audio: sesVar },
         { video: true, audio: sesVar },
       ];
     }
@@ -343,18 +352,10 @@
 
     const iz = webAkis.getVideoTracks()[0];
 
-    /* Kare hızı düşükse düzelt. 9:16'ya ZORLAMA — görüşü daraltır. */
     try {
       const s0 = (iz && iz.getSettings) ? iz.getSettings() : {};
       if (iz && iz.applyConstraints && s0.frameRate && s0.frameRate < 24) {
         await iz.applyConstraints({ frameRate: { ideal: 30, min: 24 } });
-      }
-    } catch (e) {}
-    try {
-      const capz = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
-      if (iz && iz.applyConstraints && capz && capz.zoom && typeof capz.zoom.min === "number") {
-        await iz.applyConstraints({ advanced: [{ zoom: capz.zoom.min }] });
-        durum.yakinlik = capz.zoom.min;
       }
     } catch (e) {}
 
@@ -614,62 +615,31 @@
           webParcalar = [];
           webTuvalDurdur();
 
-          /* 9:16 kayıt — önizleme object-fit:cover. Ham yatay akışı
-             kaydetmek videoyu yatık, kırpılmış ve bloklu bırakıyordu.
-             720×1280 tuval önizlemeyle aynı alanı çizer. */
-          const kayitW = 720, kayitH = 1280, kayitFps = 30;
-          const vEl = document.getElementById("camVideo");
-          if (!webTuval) webTuval = document.createElement("canvas");
-          webTuval.width = kayitW;
-          webTuval.height = kayitH;
-          webTctx = webTuval.getContext("2d", { alpha: false, desynchronized: true });
-
-          const hedefOran = kayitW / kayitH;
-          const cizKare = function () {
-            webTRAF = requestAnimationFrame(cizKare);
-            if (!vEl || !vEl.videoWidth || !webTctx) return;
-            const vw = vEl.videoWidth, vh = vEl.videoHeight;
-            let sw, sh;
-            if (vw / vh > hedefOran) { sh = vh; sw = vh * hedefOran; }
-            else { sw = vw; sh = vw / hedefOran; }
-            const sx = (vw - sw) / 2, sy = (vh - sh) / 2;
-            webTctx.save();
-            if (durum.yon === "on") {
-              webTctx.translate(kayitW, 0);
-              webTctx.scale(-1, 1);
-            }
-            webTctx.drawImage(vEl, sx, sy, sw, sh, 0, 0, kayitW, kayitH);
-            webTctx.restore();
-          };
-          cizKare();
-
-          try { webTStream = webTuval.captureStream(kayitFps); }
-          catch (e) { webTStream = webTuval.captureStream(); }
-
-          try {
-            const ses = webAkis.getAudioTracks()[0];
-            if (ses && webTStream && !webTStream.getAudioTracks().length) {
-              webTStream.addTrack(ses);
-            }
-          } catch (e) {}
-
-          const kaynak = webTStream || webAkis;
-
-          /* 720p30 dikey ≈ 5 Mbps. Chrome varsayılanı 2.5 Mbps;
-             VP8 ile birleşince kayıt izlenemez oluyordu. */
-          const hiz = secenek.bitHizi || 5500000;
+          const iz = webAkis.getVideoTracks()[0];
+          const a  = (iz && iz.getSettings) ? iz.getSettings() : {};
+          const g  = a.width  || 1280;
+          const y  = a.height || 720;
+          const kareH = a.frameRate || 30;
+          let hiz = Math.round(g * y * kareH * 0.12);
+          const mobilKayit = (function () {
+            try {
+              return (navigator.maxTouchPoints > 0) &&
+                     /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+            } catch (e) { return false; }
+          })();
+          const ustSinir = mobilKayit ? 6000000 : 12000000;
+          hiz = Math.max(2500000, Math.min(hiz, ustSinir));
 
           const ayar = {
-            videoBitsPerSecond: hiz,
+            videoBitsPerSecond: secenek.bitHizi || hiz,
             audioBitsPerSecond: 128000,
-            bitsPerSecond: hiz + 128000,
           };
           if (tur) ayar.mimeType = tur;
 
-          try { webKayit = new MediaRecorder(kaynak, ayar); }
+          try { webKayit = new MediaRecorder(webAkis, ayar); }
           catch (e) {
-            try { webKayit = new MediaRecorder(kaynak, tur ? { mimeType: tur } : undefined); }
-            catch (e2) { webKayit = new MediaRecorder(kaynak); }
+            try { webKayit = new MediaRecorder(webAkis, tur ? { mimeType: tur } : undefined); }
+            catch (e2) { webKayit = new MediaRecorder(webAkis); }
           }
 
           webKayit.ondataavailable = function (e) {

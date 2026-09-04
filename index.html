@@ -20512,12 +20512,15 @@ $("#camClose").addEventListener("click",closeCam);
         try{
           let sx=0,sy=0,sw=im.width,sh=im.height;
           if(typeof target==="string" && target!=="profile"){
-            /* Native capture artık 9:16 isteniyor. Burada ikinci bir
-               yapay zoom/kırpma yapmıyoruz; yalnızca cihaz farklı bir
-               oran döndürürse gerçek 9:16 sınırına getiriyoruz. */
+            /* Native Capgo capture preview kadrajini takip eder. Yine de
+               bazi cihazlar farkli JPEG orani dondurebilir; o durumda
+               yalnizca 9:16 disina tasan kenarlari esit miktarda al.
+               Bu bir zoom degeri degildir; hedef preview oranini korur. */
             const oran=9/16;
-            if(sw/sh>oran){ const n=sh*oran; sx=(sw-n)/2; sw=n; }
-            else { const n=sw/oran; sy=(sh-n)/2; sh=n; }
+            if(Math.abs((sw/sh)-oran) > 0.002){
+              if(sw/sh>oran){ const n=sh*oran; sx+=(sw-n)/2; sw=n; }
+              else { const n=sw/oran; sy+=(sh-n)/2; sh=n; }
+            }
           }
           const k=Math.min(1,1920/Math.max(sw,sh));
           const c=document.createElement("canvas");

@@ -229,15 +229,25 @@
     function onizlemeKutusu() {
       const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
       const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
-      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
       const ust = sat + 56;
-      const alt = sab + 210;
-      const aw = vw, ah = Math.max(120, vh - ust - alt);
-      const h9 = Math.round(aw * 16 / 9);
-      const w = aw;
-      const h = Math.min(ah, h9);
+
+      /*
+         TIKTOK TARZI GERCEK 9:16 KADRAJ
+         --------------------------------
+         Preview alani artik alt taraftaki kamera kontrolleri icin
+         yuksekligi kisaltmiyor. Native kamera 9:16 kadraji ekranin
+         altindaki kontrollerin ARKASINA kadar uzaniyor; HTML kontrolleri
+         toBack=true sayesinde onun ustunde kalmaya devam ediyor.
+
+         Onceki kodda h = min(ah, 16:9 yuksekligi) kullaniliyordu.
+         Telefon ekraninda ah yaklasik 920px oldugu icin 691x920 = 3:4
+         native preview olusuyordu. Capture ise 9:16 olunca kadraj
+         degisiyordu. Burada preview'nin kendisi 691x1228 oluyor.
+      */
+      const w = vw;
+      const h = Math.round(w * 16 / 9);
       const x = 0;
-      const y = Math.round(ust + (ah - h) / 2);
+      const y = Math.round(ust);
       return { x: x, y: y, width: w, height: h };
     }
 
@@ -257,10 +267,10 @@
     const previewRect = onizlemeKutusu();
     const taban = {
       position: yonNative(durum.yon),
-      width: previewRect.width,
-      height: previewRect.height,
-      x: previewRect.x,
-      y: previewRect.y,
+      /* Capgo 8.11.2: aspectRatio 16:9 kamera akisini native tarafta
+         secmeye zorlar. width/height ile birlikte kullanilmaz. */
+      aspectRatio: "16:9",
+      aspectMode: "cover",
       toBack: true,
       enableVideoMode: true,
       lockAndroidOrientation: true,
@@ -537,11 +547,9 @@
              yakın fotoğraf boyutunu seçer; sonrasında index.html yalnızca
              gerekiyorsa aynı 9:16 oranını uygular.
           */
-          const r = await CP().capture({
-            quality: kalite,
-            width: 1080,
-            height: 1920
-          });
+          /* width/height vermiyoruz. Capgo'ya gore bu durumda capture,
+             aktif preview'nin gorunen alanini/kadrajini takip eder. */
+          const r = await CP().capture({ quality: kalite });
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;

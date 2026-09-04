@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.2.5</title>
+<title>Klipsy 3.2.6</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -9324,7 +9324,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <span data-i18n="google_continue">Google ile devam et</span>
       </button>
       </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.2.5</span></div>
+      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.2.6</span></div>
     </div>
   </section>
 </div>
@@ -10766,14 +10766,12 @@ function _applyVisibilityGuard(list){
     const myId = me ? me.id : null;
     const kip = (typeof akisKipi==="function") ? akisKipi() : "community";
     return list.filter(it=>{
-      const mine = it.mine || (myId && it.author_id===myId);
+      /* _mapFeedRow çıktısında author_id yok; sahiplik "mine" ile gelir.
+         _fetchMomentsPage çıktısında author_id var — ikisini de destekle. */
+      const mine = it.mine || (myId && it.author_id && it.author_id===myId);
       if(mine) return true;                 // kendi anlarım her akışta görünür
       const vis = it.visibility || "community";
-      if(kip === "friends"){
-        /* Arkadaşlar akışını sunucu zaten arkadaşlarla sınırlar; burada
-           yalnızca 'friends' ve 'everyone' bırakılır, güvenli taraf. */
-        return vis !== "__never__";
-      }
+      if(kip === "friends") return true;    // arkadaşlar akışını sunucu sınırlar
       /* Topluluk akışı: 'friends' işaretli başkalarının anları görünmez. */
       return vis !== "friends";
     });
@@ -17094,7 +17092,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.2.5";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.2.6";
   box.appendChild(ver);
 }
 

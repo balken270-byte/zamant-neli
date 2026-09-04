@@ -7178,7 +7178,16 @@ video::-webkit-media-controls-overlay-play-button{
   display:none !important;-webkit-appearance:none;opacity:0;pointer-events:none}
 video{background-color:#12121a}
 
-#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;transform-origin:center center}
+#cam.camFill video{object-fit:cover}
+#webCamOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 9.25rem);transform:translateX(-50%);
+  z-index:6;display:none;flex-direction:column;align-items:center;gap:0.4rem;width:min(88%,18rem)}
+#cam.open:not(.waiting) #webCamOlcek.webOn{display:flex}
+#webCamOlcek .wcoRow{display:flex;gap:0.35rem}
+#webCamOlcek .wcoBtn{border:0;border-radius:6.1875rem;padding:0.35rem 0.75rem;font:600 0.75rem/1 Inter,sans-serif;
+  background:rgba(0,0,0,.45);color:#fff;letter-spacing:.02em}
+#webCamOlcek .wcoBtn.on{background:#fff;color:#111}
+#webCamOlcek input[type=range]{width:100%;accent-color:#FF3B6B}
 /* izin beklenirken: video gizli, sade zemin ve dönen gösterge */
 #cam.waiting video{opacity:0}
 #cam.waiting::before{content:"";position:absolute;inset:0;z-index:2;
@@ -19737,7 +19746,10 @@ let recorder=null,chunks=[],recInt=null,holdT=null,holding=false,recSecs=0;
 const MAX_REC=30;
 async function openCam(which){
   target=which;
-  if(which==="profile"){camMode="photo";facing="user";}
+  if(which==="profile"){
+    camMode="photo";
+    facing = (window.Kamera && Kamera.yerelMi()) ? "user" : "environment";
+  }
 
   // Profil fotoğrafı çekerken FOTOĞRAF/VİDEO seçicisi gizlenir.
   // (Videoya basınca paylaşım ekranına düşüyordu — olmaması gereken bir akış.)
@@ -19763,7 +19775,7 @@ async function start(kayitSurerken){
   if(window.Kamera && !window.__kameraKatmaniKapali){
     try{
       const v=$("#camVideo");
-      v.classList.toggle("mirror", facing==="user" && !Kamera.yerelMi());
+      if(v) v.classList.remove("mirror");
       $("#camFail").classList.remove("on");
       const camPanel=$("#cam");
       if(camPanel) camPanel.classList.add("waiting");
@@ -19777,8 +19789,15 @@ async function start(kayitSurerken){
       });
       await Kamera.enGenisAci();
 
+      try{
+        const d = Kamera.durum();
+        facing = (d && d.yon === "on") ? "user" : "environment";
+        if(v) v.classList.toggle("mirror", facing==="user" && !Kamera.yerelMi());
+      }catch(e){}
+
       if(camPanel) camPanel.classList.remove("waiting");
       document.documentElement.classList.toggle("camNativeOn", Kamera.yerelMi());
+      if(typeof window.__webCamOlcekKur === "function") window.__webCamOlcekKur();
 
       /* Cihazın yakınlık aralığını oku ve kısayolları çiz.
          Geniş açı merceği varsa 0.6× düğmesi de görünür. */
@@ -20044,16 +20063,9 @@ function closeCam(){
 function setMode(m){camMode=m;$$(".mode").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));}
 $$(".mode").forEach(b=>b.addEventListener("click",()=>{if(camMode!==b.dataset.mode){setMode(b.dataset.mode);start();}}));
 $("#flip").addEventListener("click", async ()=>{
-  facing = facing==="user" ? "environment" : "user";
-
-  /* KAYIT SIRASINDA KAMERA DEĞİŞTİRME
-     Kayıt tuval üzerinden yapıldığı için kamera değişse de kayıt
-     kesilmez; yeni görüntü aynı videonun devamı olarak işlenir. */
-  /* Katman varsa çevirmeyi o yapar. Uygulamada kayıt BÖLÜNMEZ. */
   if(window.Kamera && !window.__kameraKatmaniKapali){
     const d = Kamera.durum();
     if(d.kaydediyor && !Kamera.kayittaCevirmeVar()){
-      facing = facing==="user" ? "environment" : "user";   // geri al
       toast(t("rec_flip_off"));
       return;
     }
@@ -20079,10 +20091,15 @@ $("#flip").addEventListener("click", async ()=>{
       ortu.style.opacity = "0";
     }, 260);
 
+    const d1 = Kamera.durum();
+    facing = (d1 && d1.yon === "on") ? "user" : "environment";
     const v=$("#camVideo");
     if(v) v.classList.toggle("mirror", facing==="user" && !Kamera.yerelMi());
+    if(typeof window.__webCamOlcekKur === "function") window.__webCamOlcekKur();
     return;
   }
+
+  facing = facing==="user" ? "environment" : "user";
 
   if(recorder && recorder.state === "recording"){
     if(!prefFlipWhileRec){
@@ -20327,6 +20344,115 @@ $("#camClose").addEventListener("click",closeCam);
   kap.addEventListener("pointermove", hareket);
   kap.addEventListener("pointerup", bitir);
   kap.addEventListener("pointercancel", bitir);
+})();
+/* Web ölçek: varsayılan kırpma yok. Kullanıcı Tamamı / Doldur ve kaydırıcı ile seçer. */
+(function webCamOlcek(){
+  let kip = "fit";   // fit = tamamı, fill = doldur
+  let olcek = 1;
+  try{
+    const k = localStorage.getItem("klipsy_web_cam_kip");
+    const o = parseFloat(localStorage.getItem("klipsy_web_cam_olcek")||"1");
+    if(k==="fill"||k==="fit") kip = k;
+    if(o>=1 && o<=3) olcek = o;
+  }catch(e){}
+
+  function uygula(){
+    const cam = document.getElementById("cam");
+    const v = document.getElementById("camVideo");
+    if(!cam || !v) return;
+    cam.classList.toggle("camFill", kip==="fill");
+    const ayna = v.classList.contains("mirror");
+    const s = Math.max(1, olcek);
+    v.style.transform = ayna ? ("scaleX(-1) scale("+s+")") : ("scale("+s+")");
+    const lab = document.getElementById("wcoVal");
+    if(lab) lab.textContent = s.toFixed(1)+"×";
+    document.querySelectorAll("#webCamOlcek .wcoBtn").forEach(b=>{
+      b.classList.toggle("on", b.dataset.kip===kip);
+    });
+    const rng = document.getElementById("wcoRange");
+    if(rng && String(rng.value)!==String(s)) rng.value = String(s);
+    try{
+      localStorage.setItem("klipsy_web_cam_kip", kip);
+      localStorage.setItem("klipsy_web_cam_olcek", String(s));
+    }catch(e){}
+  }
+
+  function kur(){
+    const cam = document.getElementById("cam");
+    if(!cam) return;
+    const native = !!(window.Kamera && Kamera.yerelMi());
+    let box = document.getElementById("webCamOlcek");
+    if(native){
+      if(box) box.classList.remove("webOn");
+      const v = document.getElementById("camVideo");
+      if(v) v.style.transform = "";
+      cam.classList.remove("camFill");
+      return;
+    }
+    if(!box){
+      box = document.createElement("div");
+      box.id = "webCamOlcek";
+      box.innerHTML =
+        '<div class="wcoRow">'+
+          '<button type="button" class="wcoBtn" data-kip="fit">'+(t("crop_all")||"Tamamı")+'</button>'+
+          '<button type="button" class="wcoBtn" data-kip="fill">'+(t("crop_fill")||"Doldur")+'</button>'+
+          '<span id="wcoVal" style="color:#fff;font:600 12px Inter,sans-serif;min-width:2.2rem;text-align:center">1.0×</span>'+
+        '</div>'+
+        '<input id="wcoRange" type="range" min="1" max="2.5" step="0.1" value="1">';
+      cam.appendChild(box);
+      box.querySelectorAll(".wcoBtn").forEach(b=>{
+        b.addEventListener("click", ev=>{
+          ev.stopPropagation();
+          kip = b.dataset.kip;
+          if(kip==="fit") olcek = 1;
+          uygula();
+        });
+      });
+      box.querySelector("#wcoRange").addEventListener("input", e=>{
+        olcek = Number(e.target.value)||1;
+        uygula();
+      });
+    }
+    box.classList.add("webOn");
+    uygula();
+  }
+
+  /* Ekranda görünen alanı video pikseline çevirip çeker — WYSIWYG. */
+  function kareAl(){
+    const v = document.getElementById("camVideo");
+    const cam = document.getElementById("cam");
+    if(!v || !v.videoWidth || !cam) return null;
+    const vw = v.videoWidth, vh = v.videoHeight;
+    const cw = cam.clientWidth || window.innerWidth;
+    const ch = cam.clientHeight || window.innerHeight;
+    const base = (kip==="fill") ? Math.max(cw/vw, ch/vh) : Math.min(cw/vw, ch/vh);
+    const tot = base * Math.max(1, olcek);
+    const dw = vw * tot, dh = vh * tot;
+    const left = (cw - dw) / 2;
+    const top  = (ch - dh) / 2;
+    let sx = Math.max(0, -left / tot);
+    let sy = Math.max(0, -top / tot);
+    let sw = Math.min(vw, cw / tot);
+    let sh = Math.min(vh, ch / tot);
+    if(sx+sw > vw) sw = vw - sx;
+    if(sy+sh > vh) sh = vh - sy;
+    if(sw<2 || sh<2){ sx=0; sy=0; sw=vw; sh=vh; }
+
+    const maxLong = 1600;
+    const k = Math.min(1, maxLong / Math.max(sw, sh));
+    const c = document.createElement("canvas");
+    c.width = Math.max(2, Math.round(sw * k));
+    c.height = Math.max(2, Math.round(sh * k));
+    const x = c.getContext("2d");
+    x.imageSmoothingQuality = "high";
+    const ayna = v.classList.contains("mirror");
+    if(ayna){ x.translate(c.width, 0); x.scale(-1, 1); }
+    x.drawImage(v, sx, sy, sw, sh, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", 0.88);
+  }
+
+  window.__webCamOlcekKur = kur;
+  window.__webCamKareAl = kareAl;
 })();
 $("#openCam").addEventListener("click",()=>openCam("post"));
 function grab(){
@@ -21362,7 +21488,11 @@ sh.addEventListener("pointerup", async ()=>{
     if(d.kaydediyor){ await kayitBitirVeAc(); return; }
     if(camMode==="video"){ await kayitBaslatUI(); return; }
 
-    const foto = await Kamera.fotoCek({ kalite: 88 });
+    let foto = null;
+    if(!Kamera.yerelMi() && typeof window.__webCamKareAl === "function"){
+      foto = window.__webCamKareAl();
+    }
+    if(!foto) foto = await Kamera.fotoCek({ kalite: 88 });
     if(!foto) return;
     await kameraKapanmaEfekti();
     if(target==="profile"){ closeCam(); blockGhostTap(); avatarKirp(foto); }

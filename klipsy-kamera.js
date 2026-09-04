@@ -9,7 +9,7 @@
                        Önizleme donanımdan doğrudan ekrana çizilir, kayıt
                        donanım kodlayıcıyla yapılır. Görüntü hiç JavaScript'ten
                        geçmez. Kayıt sırasında kamera çevirmek de bedavadır.
-     WEB             → getUserMedia, yalnızca arka kamera, doğrudan kayıt.
+     WEB             → getUserMedia, ön ve arka kamera, doğrudan kayıt.
                        Tuval KULLANILMAZ: her kareyi JavaScript ile kopyalamak
                        kaydı dondurur. Web bir vitrindir; ciddi çekim uygulamada.
 
@@ -272,7 +272,9 @@
        en-boy oranını aspectRatio olarak ver; böylece tarayıcı dikey
        bir akış üretir, kırpma en aza iner ve akıcılık artar. */
     const sesVar = secenek.ses !== false;
-    const kare = { ideal: 30, min: 24 };
+    /* Yalnızca ideal; min katı olunca cihaz tüm denemeyi reddedip
+       daha gevşek (belki ön kamera) denemeye düşebiliyordu. */
+    const kare = { ideal: 30 };
 
     /* Mobil mi? Dokunmatik + dar ekran. */
     const mobil = (function () {
@@ -293,30 +295,50 @@
       if (eg && ey) ekranOran = +(eg / ey).toFixed(4);   // ör. 0.4618 (dar telefon)
     } catch (e) {}
 
+    /* YÖN: ön kamera (selfie) mi arka kamera mı?
+       durum.yon "on" ise ön (user), değilse arka (environment). */
+    const onKamera = (durum.yon === "on");
+
     /* Denemeler kademeli: en iyi eşleşmeden en gevşeğe.
-       - Mobilde 1280 genişlik + dikey aspectRatio (kırpmayı önler).
-       - Masaüstünde eski davranış (yüksek çözünürlük, orana karışma). */
+       Arka kamerada exact:environment ile arka garantilenir (ön kameraya
+       düşmez). Ön kamerada exact:user istenir; bulunamazsa ideal:user'a
+       ve son çare herhangi bir kameraya düşülür. */
     let denemeler;
     if (mobil) {
       const ar = ekranOran ? { ideal: ekranOran } : undefined;
-      denemeler = [
-        { video: { facingMode: { exact: "environment" }, width: { ideal: 1280 },
-                   height: { ideal: 1707 }, aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1080 },
-                   aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
-                   frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
-        { video: { frameRate: kare }, audio: sesVar },
-        { video: true, audio: sesVar },
-      ];
+      if (onKamera) {
+        const onYon = { exact: "user" };
+        denemeler = [
+          { video: { facingMode: onYon, width: { ideal: 1280 },
+                     aspectRatio: ar, frameRate: kare }, audio: sesVar },
+          { video: { facingMode: onYon, width: { ideal: 1080 }, frameRate: kare }, audio: sesVar },
+          { video: { facingMode: onYon, frameRate: kare }, audio: sesVar },
+          { video: { facingMode: { ideal: "user" }, frameRate: kare }, audio: sesVar },
+          { video: { frameRate: kare }, audio: sesVar },
+          { video: true, audio: sesVar },
+        ];
+      } else {
+        const arka = { exact: "environment" };
+        denemeler = [
+          { video: { facingMode: arka, width: { ideal: 1280 },
+                     aspectRatio: ar, frameRate: kare }, audio: sesVar },
+          { video: { facingMode: arka, width: { ideal: 1080 }, frameRate: kare }, audio: sesVar },
+          { video: { facingMode: arka, frameRate: kare }, audio: sesVar },
+          { video: { facingMode: arka }, audio: sesVar },
+          { video: { frameRate: kare }, audio: sesVar },
+          { video: true, audio: sesVar },
+        ];
+      }
     } else {
+      /* Masaüstü: ön/arka ayrımı genelde yok; tek kamera. Yön yine de
+         tercih olarak verilir. */
+      const mYon = onKamera ? "user" : "environment";
       denemeler = [
-        { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
+        { video: { facingMode: { ideal: mYon }, width: { ideal: 1920 },
                    frameRate: kare, resizeMode: "none" }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
+        { video: { facingMode: { ideal: mYon }, width: { ideal: 1280 },
                    frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
+        { video: { facingMode: { ideal: mYon }, frameRate: kare }, audio: sesVar },
         { video: { frameRate: kare }, audio: sesVar },
         { video: true, audio: sesVar },
       ];
@@ -421,8 +443,37 @@
         return durum.yon;
       }
 
-      /* Web: yalnızca arka kamera desteklenir. */
-      yay("bilgi", { kod: "web_tek_kamera" });
+      /* WEB: kamerayı gerçekten çevir.
+         Mevcut akışı durdur, yönü ters çevir, yeni yönle yeniden başlat.
+         Kayıt sürerken çevirmeye izin verilmez (akış kesilir). */
+      if (durum.kaydediyor) {
+        yay("bilgi", { kod: "kayitta_cevrilemez" });
+        return durum.yon;
+      }
+      const yeniYon = (durum.yon === "on") ? "arka" : "on";
+      const oncekiYon = durum.yon;
+      try {
+        /* Yalnızca web akışını bırak (olay/durum sıfırlanmasın diye
+           tam temizle yerine sadece parçaları durdur). */
+        if (webKayit) {
+          try { if (webKayit.state !== "inactive") webKayit.stop(); } catch (e) {}
+          webKayit = null;
+        }
+        if (webAkis) {
+          try { webAkis.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+          webAkis = null;
+        }
+        durum.yon = yeniYon;
+        await webBaslat({ ses: sonSecenek ? (sonSecenek.ses !== false) : true,
+                          video: sonSecenek ? sonSecenek.video : "camVideo" });
+        yay("cevrildi", { yon: durum.yon });
+      } catch (e) {
+        /* Yeni yön açılamadıysa eskisine dön. */
+        durum.yon = oncekiYon;
+        try { await webBaslat({ ses: sonSecenek ? (sonSecenek.ses !== false) : true,
+                                video: sonSecenek ? sonSecenek.video : "camVideo" }); } catch (e2) {}
+        yay("hata", { hataTuru: hataCevir(e), hata: e });
+      }
       return durum.yon;
     });
   }
@@ -550,12 +601,31 @@
         } else {
           if (!webAkis) return false;
 
-          const turler = [
-            "video/mp4;codecs=h264,aac",
-            "video/webm;codecs=vp9,opus",
-            "video/webm;codecs=vp8,opus",
-            "video/webm",
-          ];
+          const mobilKayit = (function () {
+            try {
+              return (navigator.maxTouchPoints > 0) &&
+                     /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+            } catch (e) { return false; }
+          })();
+
+          /* CODEC SIRASI KAYIT AKICILIĞINI BELİRLER.
+             Mobil tarayıcıda MP4/H264 kaydı çoğu cihazda YAZILIM
+             kodlayıcı kullanır: işlemci yetişemez, kayıt 5 fps gibi
+             takılır. WebM/VP8 ise donanım hızlandırmalı ve akıcıdır.
+             Bu yüzden mobilde VP8 öne alınır; masaüstünde mp4 kalır. */
+          const turler = mobilKayit
+            ? [
+                "video/webm;codecs=vp8,opus",
+                "video/webm;codecs=vp9,opus",
+                "video/webm",
+                "video/mp4;codecs=h264,aac",
+              ]
+            : [
+                "video/mp4;codecs=h264,aac",
+                "video/webm;codecs=vp9,opus",
+                "video/webm;codecs=vp8,opus",
+                "video/webm",
+              ];
           let tur = "";
           for (let i = 0; i < turler.length; i++) {
             if (global.MediaRecorder && MediaRecorder.isTypeSupported(turler[i])) {
@@ -565,28 +635,18 @@
 
           webParcalar = [];
 
-          /* VERİ HIZI ÇÖZÜNÜRLÜĞE GÖRE.
-             Sabit 3.4 Mbit kullanılıyordu. 1080p için bu düşük;
-             görüntü bloklu ve bulanık çıkıyordu. Piksel sayısına
-             göre hesaplanınca kalite belirgin şekilde düzeliyor. */
+          /* Piksel başına yaklaşık 0.12 bit — akıcı hareket için yeterli,
+             dosya boyutu makul kalıyor. Mobilde yazılım kodlayıcı yüksek
+             veri hızında takıldığı için üst sınır düşük tutulur. */
           const iz = webAkis.getVideoTracks()[0];
           const a  = (iz && iz.getSettings) ? iz.getSettings() : {};
           const g  = a.width  || 1280;
           const y  = a.height || 720;
           const kare = a.frameRate || 30;
 
-          /* Piksel başına yaklaşık 0.12 bit — akıcı hareket için yeterli,
-             dosya boyutu makul kalıyor. Mobilde yazılım kodlayıcı yüksek
-             veri hızında takıldığı için üst sınır düşük tutulur. */
           let hiz = Math.round(g * y * kare * 0.12);
-          const mobilKayit = (function () {
-            try {
-              return (navigator.maxTouchPoints > 0) &&
-                     /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
-            } catch (e) { return false; }
-          })();
-          const ustSinir = mobilKayit ? 6000000 : 12000000;   // mobil 6, masaüstü 12 Mbit
-          hiz = Math.max(2500000, Math.min(hiz, ustSinir));
+          const ustSinir = mobilKayit ? 4500000 : 12000000;   // mobil 4.5, masaüstü 12 Mbit
+          hiz = Math.max(2000000, Math.min(hiz, ustSinir));
 
           const ayar = {
             videoBitsPerSecond: secenek.bitHizi || hiz,
@@ -607,9 +667,10 @@
           webKayit.onerror = function (e) {
             yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e });
           };
-          /* Parça aralığı büyütüldü: her çeyrek saniyede parça üretmek
-             işlemciyi meşgul ediyor ve kayıt takılıyordu. */
-          webKayit.start(1000);
+          /* Parça aralığı büyük: sık chunk üretmek ana iş parçacığını
+             meşgul edip kaydı takıyordu. Tek parça (chunk'sız) en akıcısı;
+             yalnızca uzun kayıtta bellek için 2 sn'lik parça kullanılır. */
+          webKayit.start(2000);
         }
 
         durum.kaydediyor = true;

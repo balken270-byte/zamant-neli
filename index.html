@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.2.8</title>
+<title>Klipsy 3.3.2</title>
 <script src="klipsy-kamera.js"></script>
 <script>
 /* ============================================================
@@ -8791,7 +8791,8 @@ html.native button,html.native .tab{touch-action:manipulation}
   text-shadow:0 0.125rem 0.875rem rgba(0,0,0,.45)}
 /* Son slayt: form — duvar görünsün diye hafif cam */
 .gstory-slide.gsAuth{
-  justify-content:center;padding:calc(var(--sat) + 1.5rem) 1.375rem calc(var(--sab) + 1.5rem)}
+  justify-content:center;padding:calc(var(--sat) + 1.5rem) 1.375rem calc(var(--sab) + 1.5rem);
+  overflow-y:auto}
 .gstory-slide.gsAuth .gsAuthBox{
   width:100%;max-width:22.5rem;margin:0 auto;
   background:rgba(12,12,18,.55);
@@ -8803,8 +8804,8 @@ html.native button,html.native .tab{touch-action:manipulation}
 .gstory-slide.gsAuth .gsAuthBox .logo{
   font-family:"Space Grotesk",sans-serif;font-size:1.75rem;font-weight:700;letter-spacing:-.03em;
   text-align:center;margin-bottom:0.375rem;
-  background:linear-gradient(135deg,#FF7A96,#FF3B6B 45%,#9B7BFF);
-  -webkit-background-clip:text;background-clip:text;color:transparent}
+  background:linear-gradient(135deg,#fff 30%,#FFD9E4 60%,#C9B8FF);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .gstory-slide.gsAuth .gsAuthBox .tag{text-align:center;font-size:0.8125rem;color:var(--t2);margin-bottom:0.875rem;line-height:1.4}
 .gstory-bar{position:absolute;left:1.125rem;right:1.125rem;bottom:calc(var(--sab) + 1rem);z-index:5;
   display:flex;align-items:center;gap:0.75rem}
@@ -8828,17 +8829,17 @@ html.native button,html.native .tab{touch-action:manipulation}
 .gauth::-webkit-scrollbar{display:none}
 /* ===== giriş ekranı dil seçici ===== */
 .gLangBtn{position:absolute;top:calc(var(--sat) + 0.875rem);right:0.875rem;z-index:30;
-  width:2.375rem;height:2.375rem;display:grid;place-items:center;border-radius:6.1875rem;
+  width:2rem;height:2rem;display:grid;place-items:center;border-radius:6.1875rem;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
   color:rgba(255,255,255,.88);
   backdrop-filter:blur(1.25rem) saturate(160%);-webkit-backdrop-filter:blur(1.25rem) saturate(160%);
   box-shadow:0 0.125rem 0.75rem -0.25rem rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
   transition:all .22s var(--ease)}
-.gLangBtn svg{width:1.1875rem;height:1.1875rem;flex:none;opacity:.88}
+.gLangBtn svg{width:1.0625rem;height:1.0625rem;flex:none;opacity:.88}
 .gLangBtn:active{transform:scale(.94);background:rgba(255,255,255,.13)}
 
 /* alt sayfa */
-.gLangSheet{position:fixed;inset:0;z-index:120;display:none}
+.gLangSheet{position:fixed;inset:0;z-index:400;display:none}
 .gLangSheet.open{display:block}
 .gLangSheet .glsScrim{position:absolute;inset:0;background:rgba(0,0,0,.6);
   backdrop-filter:blur(0.25rem);-webkit-backdrop-filter:blur(0.25rem);
@@ -9203,13 +9204,20 @@ html.native button,html.native .tab{touch-action:manipulation}
         if(e.key==='Escape' && sheet.classList.contains('open')) close();
       });
     }
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
-    else init();
+    function boot(){
+      var btn=document.getElementById('gLangBtn');
+      if(!btn || !window.I18N || !document.getElementById('gLangSheet')){
+        return setTimeout(boot, 60);
+      }
+      init();
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+    else boot();
   })();
   </script>
 
   <!-- Dil seçici: hikâye + girişte ortak -->
-  <button class="gLangBtn" id="gLangBtn" aria-label="Dil" style="display:none">
+  <button class="gLangBtn" id="gLangBtn" aria-label="Dil" style="display:none" onclick="(function(){if(window.openLangSheet){window.openLangSheet();}else{var n=0,iv=setInterval(function(){if(window.openLangSheet){clearInterval(iv);window.openLangSheet();}else if(++n>30){clearInterval(iv);}},50);}})()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M2.6 6.2h7.2M6.2 4.4v1.8"/>
       <path d="M8.1 6.2c0 3.4-2.1 6.2-5.5 7.6"/>
@@ -9260,13 +9268,57 @@ html.native button,html.native .tab{touch-action:manipulation}
         <div class="gstory-slide gsAuth">
           <div class="gsAuthBox">
             <div class="logo">Klipsy</div>
-            <p class="tag" data-i18n="story_ready">Hazırsan, ilk anını çek.</p>
-            <button type="button" class="gGoogle" id="gStoryGoogle" style="margin-bottom:10px">
-              <svg width="19" height="19" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-              <span data-i18n="google_continue">Google ile devam et</span>
-            </button>
-            <button type="button" class="gprimary" id="gStoryEmail" data-i18n="story_email">E-posta ile devam et</button>
-            <p style="text-align:center;font-size:12px;color:var(--t3);margin-top:12px"><span data-i18n="story_have">Zaten hesabın var mı?</span> <button type="button" id="gStoryLogin" data-i18n="login" style="background:none;border:0;color:#FF7A96;font-weight:600;font-size:12px;font-family:inherit;cursor:pointer;padding:0">Giriş yap</button></p>
+            <p class="tag" data-i18n="tagline">Yaşadığın anı, olduğu gibi paylaş.</p>
+
+            <!-- GİRİŞ SEÇİMİ (varsayılan görünüm) -->
+            <div id="gsChoose">
+              <button type="button" class="gGoogle" id="gStoryGoogle" style="margin-bottom:10px">
+                <svg width="19" height="19" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                <span data-i18n="google_continue">Google ile devam et</span>
+              </button>
+              <button type="button" class="gprimary" id="gStoryEmail" data-i18n="story_email">E-posta ile devam et</button>
+              <p style="text-align:center;font-size:12px;color:var(--t3);margin-top:12px"><span data-i18n="story_have">Zaten hesabın var mı?</span> <button type="button" id="gStoryLogin" data-i18n="login" style="background:none;border:0;color:#FF7A96;font-weight:600;font-size:12px;font-family:inherit;cursor:pointer;padding:0">Giriş yap</button></p>
+            </div>
+
+            <!-- E-POSTA FORMU (E-posta ile devam edilince açılır) -->
+            <div id="gsForm" style="display:none">
+              <div class="gtabs">
+                <button id="gTabLogin" class="on" data-i18n="login">Giriş yap</button>
+                <button id="gTabSignup" data-i18n="signup">Kayıt ol</button>
+              </div>
+              <div class="gfield gIkili" id="gfName" style="display:none">
+                <div>
+                  <label data-i18n="f_first">Ad</label>
+                  <div class="ginwrap"><input id="gFirst" type="text" autocomplete="given-name" placeholder="Ad" maxlength="20"></div>
+                </div>
+                <div>
+                  <label data-i18n="f_last">Soyad</label>
+                  <div class="ginwrap"><input id="gLast" type="text" autocomplete="family-name" placeholder="Soyad" maxlength="20"></div>
+                </div>
+              </div>
+              <div class="gfield" id="gfUsername" style="display:none">
+                <label data-i18n="username2">Kullanıcı adı</label>
+                <div class="ginwrap">
+                  <span class="pre">@</span>
+                  <input id="gUsername" class="pad" type="text" autocomplete="off" placeholder="kullaniciadi" maxlength="20" autocapitalize="none" spellcheck="false">
+                </div>
+                <div class="ghint" id="ghUsername" data-i18n="chars_hint">3-20 karakter</div>
+              </div>
+              <div class="gfield">
+                <label>E-posta</label>
+                <div class="ginwrap"><input id="gEmail" type="email" autocomplete="email" placeholder="ornek@eposta.com" autocapitalize="none" spellcheck="false"></div>
+              </div>
+              <div class="gfield">
+                <label>Parola</label>
+                <div class="ginwrap"><input id="gPassword" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
+              </div>
+              <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giriş yap</span></button>
+              <div class="gmsg" id="gMsg"></div>
+              <p style="text-align:center;font-size:12px;color:var(--t3);margin-top:12px">
+                <button type="button" id="gsBack" style="background:none;border:0;color:var(--t3);font-weight:600;font-size:12px;font-family:inherit;cursor:pointer;padding:0" data-i18n="back">Geri</button>
+              </p>
+            </div>
+
           </div>
         </div>
       </div>
@@ -9277,55 +9329,8 @@ html.native button,html.native .tab{touch-action:manipulation}
     </div>
   </section>
 
-  <section class="gscreen on" id="gAuth">
-    <div class="gauth">
-      <div class="gbrand">
-        <h1>Klipsy</h1>
-        <p data-i18n="tagline">Yaşadığın anı, olduğu gibi paylaş.</p>
-      </div>
-      <div class="gcard">
-      <div class="gtabs">
-        <button id="gTabLogin" class="on" data-i18n="login">Giriş yap</button>
-        <button id="gTabSignup" data-i18n="signup">Kayıt ol</button>
-      </div>
-      <!-- AD SOYAD — yalnızca kayıt olurken görünür.
-           Önceden hiç sorulmuyordu, kullanıcı adıyla devam ediliyordu. -->
-      <div class="gfield gIkili" id="gfName" style="display:none">
-        <div>
-          <label data-i18n="f_first">Ad</label>
-          <div class="ginwrap"><input id="gFirst" type="text" autocomplete="given-name" placeholder="Ad" maxlength="20"></div>
-        </div>
-        <div>
-          <label data-i18n="f_last">Soyad</label>
-          <div class="ginwrap"><input id="gLast" type="text" autocomplete="family-name" placeholder="Soyad" maxlength="20"></div>
-        </div>
-      </div>
-      <div class="gfield" id="gfUsername" style="display:none">
-        <label data-i18n="username2">Kullanıcı adı</label>
-        <div class="ginwrap">
-          <span class="pre">@</span>
-          <input id="gUsername" class="pad" type="text" autocomplete="off" placeholder="kullaniciadi" maxlength="20" autocapitalize="none" spellcheck="false">
-        </div>
-        <div class="ghint" id="ghUsername" data-i18n="chars_hint">3-20 karakter</div>
-      </div>
-      <div class="gfield">
-        <label>E-posta</label>
-        <div class="ginwrap"><input id="gEmail" type="email" autocomplete="email" placeholder="ornek@eposta.com" autocapitalize="none" spellcheck="false"></div>
-      </div>
-      <div class="gfield">
-        <label>Parola</label>
-        <div class="ginwrap"><input id="gPassword" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
-      </div>
-      <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giriş yap</span></button>
-      <div class="gmsg" id="gMsg"></div>
-      <div class="gOr"><span data-i18n="or_word">veya</span></div>
-      <button class="gGoogle" id="gGoogle">
-        <svg width="19" height="19" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        <span data-i18n="google_continue">Google ile devam et</span>
-      </button>
-      </div>
-      <div class="gfoot"><span data-i18n="terms">Devam ederek kullanım koşullarını kabul etmiş olursun.</span><br><span style="opacity:.5;font-size:11px">Klipsy 3.2.8</span></div>
-    </div>
+  <section class="gscreen" id="gAuth" style="display:none">
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.2</span></div>
   </section>
 </div>
 
@@ -17072,7 +17077,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.2.8";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.2";
   box.appendChild(ver);
 }
 
@@ -22312,21 +22317,36 @@ const STORY_KEY='klipsy_story_seen';
     if(bar) bar.style.pointerEvents = i>=n-1 ? 'none' : 'auto';
   }
   window.__storyPaint = paint;
+  window.__gsJump = function(idx){ i=Math.max(0,Math.min(n-1,idx)); paint(); };
   function finish(){
     try{ localStorage.setItem(STORY_KEY,'1'); }catch(e){}
-    gate.classList.remove('story-mode','story-auth');
-    gshow('gAuth');
+    /* Son slayttaki auth kutusuna geç (foto 1 tasarımı). Artık gAuth yok. */
+    i=n-1; paint();
   }
   next.addEventListener('click',()=>{
-    if(i>=n-1){ finish(); return; }
+    if(i>=n-1){ return; }
     i++; paint();
   });
   const emailBtn=$('#gStoryEmail'), loginBtn=$('#gStoryLogin'), gBtn=$('#gStoryGoogle');
-  if(emailBtn) emailBtn.addEventListener('click', finish);
-  if(loginBtn) loginBtn.addEventListener('click', finish);
+  const chooseBox=$('#gsChoose'), formBox=$('#gsForm'), backBtn=$('#gsBack');
+  function openForm(which){
+    if(chooseBox) chooseBox.style.display='none';
+    if(formBox) formBox.style.display='block';
+    if(typeof setMode==='function') setMode(which==='signup'?'signup':'login');
+    try{ const em=$('#gEmail'); if(em) em.focus(); }catch(e){}
+  }
+  function closeForm(){
+    if(formBox) formBox.style.display='none';
+    if(chooseBox) chooseBox.style.display='block';
+    if(typeof gclearMsg==='function') gclearMsg();
+  }
+  window.__gsOpenForm=openForm; window.__gsCloseForm=closeForm;
+  if(emailBtn) emailBtn.addEventListener('click',()=>openForm('login'));
+  if(loginBtn) loginBtn.addEventListener('click',()=>openForm('login'));
+  if(backBtn) backBtn.addEventListener('click', closeForm);
   if(gBtn) gBtn.addEventListener('click',()=>{
-    finish();
-    setTimeout(()=>{ const b=$('#gGoogle'); if(b) b.click(); }, 40);
+    try{ localStorage.setItem(STORY_KEY,'1'); }catch(e){}
+    if(typeof window.__googleSignIn==='function') window.__googleSignIn();
   });
   // kaydırma ile de geç
   let sx=0;
@@ -22609,9 +22629,8 @@ function cevir(m){
 $('#gSubmit').addEventListener('click',submit);
 $('#gPassword').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 
-// Google ile giriş
-const gGoogleBtn=$('#gGoogle');
-if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
+// Google ile giriş — story kutusundaki butondan çağrılır
+window.__googleSignIn = async function(){
   gclearMsg();
   try{
     const cap = window.Capacitor;
@@ -22697,7 +22716,7 @@ if(gGoogleBtn) gGoogleBtn.addEventListener('click',async ()=>{
     });
     if(error){ gmsg(error.message||t("err_google"),'err'); }
   }catch(e){ gmsg(t("err_google_start"),'err'); }
-});
+};
 
 /* --- uygulamaya gir --- */
 // Google/ilk giriş: kullanıcı adı + isim seçme ekranı
@@ -22828,7 +22847,11 @@ function withTimeout(p, ms, fallback){
 async function enterApp(){
   const ures = await withTimeout(sb.auth.getUser(), 4000, {data:{user:null}});
   const user = ures && ures.data ? ures.data.user : null;
-  if(!user){ gshow('gAuth'); return; }
+  if(!user){
+    gshow('gStory');
+    try{ const track=$('#gStoryTrack'); if(track){ const n=track.children.length; window.__gsJump && window.__gsJump(n-1); } }catch(e){}
+    return;
+  }
 
   // profil çekilemezse bile uygulamayı aç — asla splash'ta kalma
   const pres = await withTimeout(
@@ -22969,10 +22992,18 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   // Oturum yok: giriş ekranı gösterilecek, duvarı şimdi yükle
   const wall = (async()=>{ try{ await liveWall($('#gWall2')); }catch(e){} })();
   await Promise.race([ wall, new Promise(r=>setTimeout(r,2500)) ]);
-  // İlk kez: hikâye (canlı duvar üstünde). Sonra / tekrar: doğrudan giriş.
+  // Giriş her zaman foto 1 tasarımı (gStory) ile açılır.
+  // Daha önce hikâye görüldüyse doğrudan son slayttaki auth kutusuna geç.
   let storySeen=false;
   try{ storySeen = localStorage.getItem(STORY_KEY)==='1'; }catch(e){}
-  gshow(storySeen ? 'gAuth' : 'gStory');
+  gshow('gStory');
+  if(storySeen && typeof window.__storyPaint==='function'){
+    /* Hikâye daha önce görüldü: slaytları atla, auth kutusunu göster. */
+    try{
+      const track=$('#gStoryTrack');
+      if(track){ const n=track.children.length; window.__gsJump && window.__gsJump(n-1); }
+    }catch(e){}
+  }
 })();
 </script>
 </body>

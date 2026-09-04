@@ -257,13 +257,26 @@
     document.documentElement.classList.add("camNativeOn");
   }
 
+  async function webKameraBul(istenenYuz) {
+    try {
+      const list = await navigator.mediaDevices.enumerateDevices();
+      const cam = list.filter(function (d) { return d.kind === "videoinput"; });
+      const on = [], arka = [];
+      cam.forEach(function (d) {
+        const L = String(d.label || "").toLowerCase();
+        if (/front|user|face|\bön\b|selfie/.test(L)) on.push(d);
+        else if (/back|rear|environment|world|\barka\b/.test(L)) arka.push(d);
+      });
+      if (istenenYuz === "user") return (on[0] || null);
+      return (arka[0] || null);
+    } catch (e) { return null; }
+  }
+
   async function webBaslat(secenek) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       throw KameraHatasi(HATA.DESTEKSIZ);
     }
 
-    /* Web: oran/çözünürlük DAYATILMAZ. MDN — width/height/aspectRatio
-       verilince tarayıcı crop-and-scale yapar. resizeMode:"none" native kare. */
     const sesVar = secenek.ses !== false;
     const istenenYuz = (durum.yon === "on") ? "user" : "environment";
 
@@ -272,13 +285,16 @@
       webAkis = null;
     }
 
-    const denemeler = [
-      { video: { facingMode: { exact: istenenYuz }, resizeMode: "none" }, audio: sesVar },
-      { video: { facingMode: { ideal: istenenYuz }, resizeMode: "none" }, audio: sesVar },
-      { video: { facingMode: { ideal: istenenYuz } }, audio: sesVar },
-      { video: { facingMode: istenenYuz }, audio: sesVar },
-      { video: true, audio: sesVar },
-    ];
+    const cihaz = await webKameraBul(istenenYuz);
+    const denemeler = [];
+    if (cihaz && cihaz.deviceId) {
+      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId }, resizeMode: "none" }, audio: sesVar });
+      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId } }, audio: sesVar });
+    }
+    denemeler.push({ video: { facingMode: { exact: istenenYuz }, resizeMode: "none" }, audio: sesVar });
+    denemeler.push({ video: { facingMode: { exact: istenenYuz } }, audio: sesVar });
+    denemeler.push({ video: { facingMode: { ideal: istenenYuz }, resizeMode: "none" }, audio: sesVar });
+    denemeler.push({ video: { facingMode: istenenYuz }, audio: sesVar });
 
     let sonHata = null;
     for (let i = 0; i < denemeler.length; i++) {
@@ -291,6 +307,8 @@
     const a = (iz && iz.getSettings) ? iz.getSettings() : {};
     if (a.facingMode === "user") durum.yon = "on";
     else if (a.facingMode === "environment") durum.yon = "arka";
+    else if (istenenYuz === "user") durum.yon = "on";
+    else durum.yon = "arka";
 
     try {
       const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
@@ -388,8 +406,8 @@
           try { webAkis.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
           webAkis = null;
         }
-        const v = document.getElementById("camVideo");
-        if (v) { try { v.srcObject = null; } catch (e) {} }
+        const v0 = document.getElementById("camVideo");
+        if (v0) { try { v0.srcObject = null; } catch (e) {} }
         durum.yon = durum.yon === "on" ? "arka" : "on";
         _aralik = null;
         await webBaslat(sonSecenek || {});

@@ -7180,14 +7180,18 @@ video{background-color:#12121a}
 
 #cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;transform-origin:center center}
 #cam.camFill video{object-fit:cover}
+#cam.camWeb #camZoomBar{display:none !important}
 #webCamOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 9.25rem);transform:translateX(-50%);
-  z-index:6;display:none;flex-direction:column;align-items:center;gap:0.4rem;width:min(88%,18rem)}
-#cam.open:not(.waiting) #webCamOlcek.webOn{display:flex}
-#webCamOlcek .wcoRow{display:flex;gap:0.35rem}
-#webCamOlcek .wcoBtn{border:0;border-radius:6.1875rem;padding:0.35rem 0.75rem;font:600 0.75rem/1 Inter,sans-serif;
-  background:rgba(0,0,0,.45);color:#fff;letter-spacing:.02em}
-#webCamOlcek .wcoBtn.on{background:#fff;color:#111}
-#webCamOlcek input[type=range]{width:100%;accent-color:#FF3B6B}
+  z-index:6;display:none;flex-direction:column;align-items:center;gap:0.35rem;width:min(16.5rem,78%)}
+#cam.open.camWeb:not(.waiting) #webCamOlcek{display:flex}
+#webCamOlcek .wcoBar{display:flex;align-items:center;gap:0.25rem;padding:0.28rem;
+  border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
+  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
+#webCamOlcek .wcoBtn{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.7rem;
+  background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
+#webCamOlcek .wcoBtn.on{background:rgba(255,255,255,.92);color:#111}
+#webCamOlcek .wcoVal{color:#fff;font:700 0.72rem/1 Inter,sans-serif;min-width:2rem;text-align:center;padding:0 0.2rem}
+#webCamOlcek input[type=range]{width:100%;height:1.1rem;accent-color:#FF3B6B}
 /* izin beklenirken: video gizli, sade zemin ve dönen gösterge */
 #cam.waiting video{opacity:0}
 #cam.waiting::before{content:"";position:absolute;inset:0;z-index:2;
@@ -20345,15 +20349,13 @@ $("#camClose").addEventListener("click",closeCam);
   kap.addEventListener("pointerup", bitir);
   kap.addEventListener("pointercancel", bitir);
 })();
-/* Web ölçek: varsayılan kırpma yok. Kullanıcı Tamamı / Doldur ve kaydırıcı ile seçer. */
 (function webCamOlcek(){
-  let kip = "fit";   // fit = tamamı, fill = doldur
-  let olcek = 1;
+  let kip = "fit", olcek = 1;
   try{
     const k = localStorage.getItem("klipsy_web_cam_kip");
     const o = parseFloat(localStorage.getItem("klipsy_web_cam_olcek")||"1");
     if(k==="fill"||k==="fit") kip = k;
-    if(o>=1 && o<=3) olcek = o;
+    if(o>=1 && o<=2.5) olcek = o;
   }catch(e){}
 
   function uygula(){
@@ -20370,7 +20372,7 @@ $("#camClose").addEventListener("click",closeCam);
       b.classList.toggle("on", b.dataset.kip===kip);
     });
     const rng = document.getElementById("wcoRange");
-    if(rng && String(rng.value)!==String(s)) rng.value = String(s);
+    if(rng) rng.value = String(s);
     try{
       localStorage.setItem("klipsy_web_cam_kip", kip);
       localStorage.setItem("klipsy_web_cam_olcek", String(s));
@@ -20381,9 +20383,10 @@ $("#camClose").addEventListener("click",closeCam);
     const cam = document.getElementById("cam");
     if(!cam) return;
     const native = !!(window.Kamera && Kamera.yerelMi());
+    cam.classList.toggle("camWeb", !native);
     let box = document.getElementById("webCamOlcek");
     if(native){
-      if(box) box.classList.remove("webOn");
+      if(box) box.remove();
       const v = document.getElementById("camVideo");
       if(v) v.style.transform = "";
       cam.classList.remove("camFill");
@@ -20393,10 +20396,10 @@ $("#camClose").addEventListener("click",closeCam);
       box = document.createElement("div");
       box.id = "webCamOlcek";
       box.innerHTML =
-        '<div class="wcoRow">'+
-          '<button type="button" class="wcoBtn" data-kip="fit">'+(t("crop_all")||"Tamamı")+'</button>'+
-          '<button type="button" class="wcoBtn" data-kip="fill">'+(t("crop_fill")||"Doldur")+'</button>'+
-          '<span id="wcoVal" style="color:#fff;font:600 12px Inter,sans-serif;min-width:2.2rem;text-align:center">1.0×</span>'+
+        '<div class="wcoBar">'+
+          '<button type="button" class="wcoBtn" data-kip="fit">Tam</button>'+
+          '<button type="button" class="wcoBtn" data-kip="fill">Doldur</button>'+
+          '<span class="wcoVal" id="wcoVal">1.0×</span>'+
         '</div>'+
         '<input id="wcoRange" type="range" min="1" max="2.5" step="0.1" value="1">';
       cam.appendChild(box);
@@ -20413,11 +20416,9 @@ $("#camClose").addEventListener("click",closeCam);
         uygula();
       });
     }
-    box.classList.add("webOn");
     uygula();
   }
 
-  /* Ekranda görünen alanı video pikseline çevirip çeker — WYSIWYG. */
   function kareAl(){
     const v = document.getElementById("camVideo");
     const cam = document.getElementById("cam");
@@ -20427,26 +20428,22 @@ $("#camClose").addEventListener("click",closeCam);
     const ch = cam.clientHeight || window.innerHeight;
     const base = (kip==="fill") ? Math.max(cw/vw, ch/vh) : Math.min(cw/vw, ch/vh);
     const tot = base * Math.max(1, olcek);
-    const dw = vw * tot, dh = vh * tot;
-    const left = (cw - dw) / 2;
-    const top  = (ch - dh) / 2;
+    const left = (cw - vw*tot) / 2;
+    const top  = (ch - vh*tot) / 2;
     let sx = Math.max(0, -left / tot);
     let sy = Math.max(0, -top / tot);
     let sw = Math.min(vw, cw / tot);
     let sh = Math.min(vh, ch / tot);
-    if(sx+sw > vw) sw = vw - sx;
-    if(sy+sh > vh) sh = vh - sy;
-    if(sw<2 || sh<2){ sx=0; sy=0; sw=vw; sh=vh; }
-
-    const maxLong = 1600;
-    const k = Math.min(1, maxLong / Math.max(sw, sh));
+    if(sx+sw>vw) sw = vw-sx;
+    if(sy+sh>vh) sh = vh-sy;
+    if(sw<2||sh<2){ sx=0;sy=0;sw=vw;sh=vh; }
+    const k = Math.min(1, 1600 / Math.max(sw, sh));
     const c = document.createElement("canvas");
-    c.width = Math.max(2, Math.round(sw * k));
-    c.height = Math.max(2, Math.round(sh * k));
+    c.width = Math.max(2, Math.round(sw*k));
+    c.height = Math.max(2, Math.round(sh*k));
     const x = c.getContext("2d");
     x.imageSmoothingQuality = "high";
-    const ayna = v.classList.contains("mirror");
-    if(ayna){ x.translate(c.width, 0); x.scale(-1, 1); }
+    if(v.classList.contains("mirror")){ x.translate(c.width,0); x.scale(-1,1); }
     x.drawImage(v, sx, sy, sw, sh, 0, 0, c.width, c.height);
     return c.toDataURL("image/jpeg", 0.88);
   }

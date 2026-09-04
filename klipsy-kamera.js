@@ -1,14 +1,14 @@
 /* ============================================================================
-   KLİPSY — KAMERA KATMANI  v3.3.7
+   KLİPSY — KAMERA KATMANI  v3.3.8
    ============================================================================
    Kamera bu uygulamanın bel kemiği. Bu dosya kameranın TEK giriş noktasıdır;
    uygulamanın geri kalanı kamera ayrıntılarını bilmez.
 
-   SÜRÜM 3.3.7 (2026-09-04)
-     - Görüş alanı / zoom orijinal dosyadaki değerlere döndü:
-       native aspectRatio "fill" + aspectMode "cover";
-       web 1280×1707 + ekran oranı (eski deneme listesi).
-       4:3 ve ekstra zoom zorlaması kaldırıldı.
+   SÜRÜM 3.3.8 (2026-09-04)
+     - Yakın görünümün sebebi: önizleme 9:16 ekranı COVER ile dolduruyordu
+       (sensör 4:3/16:9 → kenarlar kesiliyor = dijital yakınlaştırma)
+       ve zoom 1× ana mercekte kilitleniyordu (0.6× geniş açı atlanıyordu).
+     - Native aspectMode "fit"; açılış zoom'u cihaz minimumu.
 
    SÜRÜM 3.3.5 (2026-09-04)
      - Web'de ön kamera açıldı. Çevirme getUserMedia'yı facingMode ile
@@ -247,7 +247,7 @@
       position: yonNative(durum.yon),
       toBack: true,
       aspectRatio: "fill",
-      aspectMode: "cover",
+      aspectMode: "fit",
       enableVideoMode: true,
       /* Kilit + otomatik döndürme BİRLİKTE olunca telefonu sola
          çevirince görüntü sağa gidiyordu. Yönü kilitliyoruz,

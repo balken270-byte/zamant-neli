@@ -257,70 +257,44 @@
     document.documentElement.classList.add("camNativeOn");
   }
 
+  async function webKameraBul(istenenYuz) {
+    try {
+      const list = await navigator.mediaDevices.enumerateDevices();
+      const cam = list.filter(function (d) { return d.kind === "videoinput"; });
+      const on = [], arka = [];
+      cam.forEach(function (d) {
+        const L = String(d.label || "").toLowerCase();
+        if (/front|user|face|\bön\b|selfie/.test(L)) on.push(d);
+        else if (/back|rear|environment|world|\barka\b/.test(L)) arka.push(d);
+      });
+      if (istenenYuz === "user") return on[0] || null;
+      return arka[0] || null;
+    } catch (e) { return null; }
+  }
+
   async function webBaslat(secenek) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       throw KameraHatasi(HATA.DESTEKSIZ);
     }
 
-    /* GÖRÜŞ ALANI + PERFORMANS NOTU
-       Mobil tarayıcıda kamera sensörü 16:9 (yatay) gelir. Ekran dikey
-       olduğu için object-fit:cover görüntüyü aşırı büyütüp kenarları
-       kırpar ("yakınlaşmış" görünür). Ayrıca 1920px istemek mobil
-       işlemciyi zorlayıp kaydı dondurur.
-
-       Çözüm: mobilde makul çözünürlük (1280) iste ve ekranın gerçek
-       en-boy oranını aspectRatio olarak ver; böylece tarayıcı dikey
-       bir akış üretir, kırpma en aza iner ve akıcılık artar. */
     const sesVar = secenek.ses !== false;
-    const kare = { ideal: 30, min: 24 };
+    const istenenYuz = (durum.yon === "on") ? "user" : "environment";
 
-    /* Mobil mi? Dokunmatik + dar ekran. */
-    const mobil = (function () {
-      try {
-        return (navigator.maxTouchPoints > 0) &&
-               (Math.min(screen.width, screen.height) <= 820 ||
-                /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent));
-      } catch (e) { return false; }
-    })();
-
-    /* Ekranın dikey en-boy oranı (yükseklik/genişlik değil, video için
-       genişlik/yükseklik beklenir; dikey ekranda bu <1 olur). Tarayıcıya
-       "portre bir kare ver" demenin yolu budur. */
-    let ekranOran = null;
-    try {
-      const eg = Math.min(screen.width, screen.height);
-      const ey = Math.max(screen.width, screen.height);
-      if (eg && ey) ekranOran = +(eg / ey).toFixed(4);   // ör. 0.4618 (dar telefon)
-    } catch (e) {}
-
-    /* Denemeler kademeli: en iyi eşleşmeden en gevşeğe.
-       - Mobilde 1280 genişlik + dikey aspectRatio (kırpmayı önler).
-       - Masaüstünde eski davranış (yüksek çözünürlük, orana karışma). */
-    let denemeler;
-    if (mobil) {
-      const ar = ekranOran ? { ideal: ekranOran } : undefined;
-      denemeler = [
-        { video: { facingMode: { exact: "environment" }, width: { ideal: 1280 },
-                   height: { ideal: 1707 }, aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1080 },
-                   aspectRatio: ar, frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
-                   frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
-        { video: { frameRate: kare }, audio: sesVar },
-        { video: true, audio: sesVar },
-      ];
-    } else {
-      denemeler = [
-        { video: { facingMode: { exact: "environment" }, width: { ideal: 1920 },
-                   frameRate: kare, resizeMode: "none" }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 },
-                   frameRate: kare }, audio: sesVar },
-        { video: { facingMode: { ideal: "environment" }, frameRate: kare }, audio: sesVar },
-        { video: { frameRate: kare }, audio: sesVar },
-        { video: true, audio: sesVar },
-      ];
+    if (webAkis) {
+      try { webAkis.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+      webAkis = null;
     }
+
+    const cihaz = await webKameraBul(istenenYuz);
+    const denemeler = [];
+    if (cihaz && cihaz.deviceId) {
+      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId }, resizeMode: "none" }, audio: sesVar });
+      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId } }, audio: sesVar });
+    }
+    denemeler.push({ video: { facingMode: { exact: istenenYuz }, resizeMode: "none" }, audio: sesVar });
+    denemeler.push({ video: { facingMode: { exact: istenenYuz } }, audio: sesVar });
+    denemeler.push({ video: { facingMode: { ideal: istenenYuz }, resizeMode: "none" }, audio: sesVar });
+    denemeler.push({ video: { facingMode: istenenYuz }, audio: sesVar });
 
     let sonHata = null;
     for (let i = 0; i < denemeler.length; i++) {
@@ -330,17 +304,21 @@
     if (!webAkis) throw sonHata || KameraHatasi(HATA.BILINMEYEN);
 
     const iz = webAkis.getVideoTracks()[0];
+    const a = (iz && iz.getSettings) ? iz.getSettings() : {};
+    if (a.facingMode === "user") durum.yon = "on";
+    else if (a.facingMode === "environment") durum.yon = "arka";
+    else if (istenenYuz === "user") durum.yon = "on";
+    else durum.yon = "arka";
 
-    /* Açılan akışın kare hızı düşükse yükseltmeyi dene.
-       Bazı tarayıcılar ilk isteği yok sayıp 10-15 kare veriyor. */
     try {
-      const s0 = (iz && iz.getSettings) ? iz.getSettings() : {};
-      if (iz && iz.applyConstraints && s0.frameRate && s0.frameRate < 24) {
-        await iz.applyConstraints({ frameRate: { ideal: 30, min: 24 } });
+      const y = (iz && iz.getCapabilities) ? iz.getCapabilities() : null;
+      if (iz && iz.applyConstraints && y && y.zoom && typeof y.zoom.min === "number") {
+        await iz.applyConstraints({ advanced: [{ zoom: y.zoom.min }] });
+        durum.yakinlik = y.zoom.min;
+        _aralik = { min: y.zoom.min, max: Math.min(y.zoom.max || 8, 8) };
       }
     } catch (e) {}
 
-    const a = (iz && iz.getSettings) ? iz.getSettings() : {};
     durum.coz = { g: a.width || null, y: a.height || null, fps: Math.round(a.frameRate || 0) };
 
     const v = document.getElementById(secenek.video || "camVideo");
@@ -421,8 +399,28 @@
         return durum.yon;
       }
 
-      /* Web: yalnızca arka kamera desteklenir. */
-      yay("bilgi", { kod: "web_tek_kamera" });
+      if (durum.kaydediyor) {
+        yay("bilgi", { kod: "web_kayitta_cevirme_yok" });
+        return durum.yon;
+      }
+      try {
+        if (webAkis) {
+          try { webAkis.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+          webAkis = null;
+        }
+        const v0 = document.getElementById("camVideo");
+        if (v0) { try { v0.srcObject = null; } catch (e) {} }
+        durum.yon = durum.yon === "on" ? "arka" : "on";
+        _aralik = null;
+        await webBaslat(sonSecenek || {});
+        yay("cevrildi", { yon: durum.yon });
+      } catch (e) {
+        try {
+          durum.yon = durum.yon === "on" ? "arka" : "on";
+          await webBaslat(sonSecenek || {});
+        } catch (e2) {}
+        yay("hata", { hataTuru: hataCevir(e), hata: e });
+      }
       return durum.yon;
     });
   }

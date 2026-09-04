@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.10</title>
-<script src="klipsy-kamera.js?v=3.3.10"></script>
+<title>Klipsy 3.3.13</title>
+<script src="klipsy-kamera.js?v=3.3.13"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -9357,7 +9357,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.10</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.13</span></div>
   </section>
 </div>
 
@@ -17129,7 +17129,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.10";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.13";
   box.appendChild(ver);
 }
 
@@ -19892,13 +19892,25 @@ async function start(kayitSurerken){
                            "\n\n(dokunarak kapat)";
       }catch(x){}
 
-      /* Eski yola SESSİZCE düşmek yanıltıcıydı: kamera açılıyor ama
-         kayıt ve çevirme çalışmıyordu. Artık düşerken haber veriliyor. */
+      /* APK'da tarayıcı yoluna DÜŞÜLMEZ.
+         content:// / capacitor:// getUserMedia'yı keser; "güvenli bağlam"
+         ekranı çıkar, kamera kopmuş görünür. Native yeniden denenir. */
       if(Kamera.yerelMi()){
-        console.warn("[Klipsy] tarayıcı yoluna dönülüyor");
-        window.__kameraKatmaniKapali = true;
-        toast(t("cam_fallback"));
-        return start(kayitSurerken);
+        try{
+          await Kamera.baslat({
+            yon: facing==="user" ? "on" : "arka",
+            ses: (camMode==="video"),
+            kap: "camRoot",
+            video: "camVideo"
+          });
+          if(camPanel) camPanel.classList.remove("waiting");
+          document.documentElement.classList.add("camNativeOn");
+          if(typeof window.__webCamOlcekKur === "function") window.__webCamOlcekKur();
+          return;
+        }catch(e2){
+          $("#camFail").classList.add("on");
+          return;
+        }
       }
       $("#camFail").classList.add("on");
       return;

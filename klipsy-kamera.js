@@ -86,8 +86,13 @@
 
   function guvenliBaglamMi() {
     if (yerelMi()) return true;
+    try {
+      const c = cap();
+      if (c && c.isNativePlatform && c.isNativePlatform()) return true;
+    } catch (e) {}
+    const proto = String(location.protocol || "");
+    if (/^(capacitor|ionic|file|http|https):/.test(proto)) return true;
     return !!(global.isSecureContext ||
-              location.protocol === "https:" ||
               /^(localhost|127\.0\.0\.1)$/.test(location.hostname));
   }
 
@@ -225,47 +230,49 @@
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
     const fit = durum.onizlemeKip !== "fill";
-    const vw = Math.max(1, (window.innerWidth || screen.width || 360));
-    const vh = Math.max(1, (window.innerHeight || screen.height || 640));
-    /* Tam: 4:3 kareyi ekrana SIĞDIR (kırpma yok, şerit kalır).
-       Doldur: tüm ekran cover. */
-    let x = 0, y = 0, w = vw, h = vh;
-    if (fit) {
-      const oran = 3 / 4;
-      if (vw / vh > oran) { h = vh; w = Math.round(vh * oran); x = Math.round((vw - w) / 2); }
-      else { w = vw; h = Math.round(vw / oran); y = Math.round((vh - h) / 2); }
-    }
-    const secenekler = {
+    const taban = {
       position: yonNative(durum.yon),
       toBack: true,
-      x: x, y: y, width: w, height: h,
-      aspectRatio: fit ? "4:3" : "fill",
-      aspectMode: fit ? "fit" : "cover",
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,
       videoQuality: "high",
       includeSafeAreaInsets: false,
     };
-    if (secenek.kap)   secenekler.parent    = secenek.kap;
-    if (secenek.sinif) secenekler.className = secenek.sinif;
+    if (secenek.kap)   taban.parent    = secenek.kap;
+    if (secenek.sinif) taban.className = secenek.sinif;
+
+    const denemeler = [
+      Object.assign({}, taban, { aspectRatio: fit ? "4:3" : "fill", aspectMode: fit ? "fit" : "cover" }),
+      Object.assign({}, taban, { aspectRatio: fit ? "4:3" : "fill" }),
+      Object.assign({}, taban),
+      Object.assign({}, taban, { force: true }),
+    ];
 
     let sonuc = null;
-    try {
-      sonuc = await CP().start(secenekler);
-    } catch (e) {
-      /* Kamera zaten açık kalmış olabilir (önceki ekran düzgün
-         kapanmadıysa). "force" ile oturumu tazeleyip yeniden dene. */
+    let sonHata = null;
+    for (let i = 0; i < denemeler.length; i++) {
       try {
-        sonuc = await CP().start(Object.assign({ force: true }, secenekler));
-      } catch (e2) {
-        throw e2;
+        sonuc = await CP().start(denemeler[i]);
+        sonHata = null;
+        break;
+      } catch (e) {
+        sonHata = e;
+        const msg = String((e && (e.message || e.errorMessage)) || e || "");
+        if (/already|is running|already started/i.test(msg)) {
+          sonHata = null;
+          break;
+        }
       }
     }
+    if (sonHata) throw sonHata;
 
     durum.coz = sonuc
       ? { g: sonuc.width, y: sonuc.height, x: sonuc.x, y0: sonuc.y }
       : null;
+
+    /* setPreviewSize start ile çakışırsa eklenti oturumu düşürüyor.
+       Boyut ayarı yapılmaz; oran start seçeneklerinde. */
 
     document.documentElement.classList.add("camNativeOn");
   }
@@ -405,13 +412,25 @@
       if (!durum.acik) return durum.yon;
 
       if (durum.yerel) {
-        /* Yerel tarafta çevirme kaydı BÖLMEZ — CameraX akışı sürdürür. */
+        const hedef = durum.yon === "on" ? "arka" : "on";
         try {
           await CP().flip();
-          durum.yon = durum.yon === "on" ? "arka" : "on";
+          durum.yon = hedef;
           yay("cevrildi", { yon: durum.yon });
         } catch (e) {
-          yay("hata", { hataTuru: hataCevir(e), hata: e });
+          try {
+            durum.yon = hedef;
+            if (sonSecenek) sonSecenek.yon = hedef;
+            await CP().stop();
+          } catch (e0) {}
+          try {
+            await yerelBaslat(Object.assign({}, sonSecenek || {}, { yon: hedef }));
+            document.documentElement.classList.add("camNativeOn");
+            yay("cevrildi", { yon: durum.yon });
+          } catch (e2) {
+            durum.yon = hedef === "on" ? "arka" : "on";
+            try { await yerelBaslat(sonSecenek || {}); document.documentElement.classList.add("camNativeOn"); } catch (e3) {}
+          }
         }
         return durum.yon;
       }
@@ -943,13 +962,14 @@
         durum.onizlemeKip = (kip === "fill") ? "fill" : "fit";
         if (!durum.yerel || !durum.acik || durum.kaydediyor) return durum.onizlemeKip;
         try {
-          await CP().stop();
-          document.documentElement.classList.remove("camNativeOn");
-          await yerelBaslat(sonSecenek || {});
+          await yerelBaslat(Object.assign({}, sonSecenek || {}, { force: true }));
           document.documentElement.classList.add("camNativeOn");
         } catch (e) {
           try {
-            await yerelBaslat(Object.assign({}, sonSecenek || {}, { force: true }));
+            await CP().stop();
+          } catch (e0) {}
+          try {
+            await yerelBaslat(sonSecenek || {});
             document.documentElement.classList.add("camNativeOn");
           } catch (e2) {}
         }

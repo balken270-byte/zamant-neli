@@ -229,7 +229,33 @@
          aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
-    const fit = durum.onizlemeKip !== "fill";
+    try {
+      const el = document.getElementById(secenek.kap || "camRoot");
+      if (el) {
+        const fit = durum.onizlemeKip !== "fill";
+        if (!fit) {
+          el.style.inset = "0";
+          el.style.width = ""; el.style.height = "";
+          el.style.left = ""; el.style.top = "";
+          el.style.right = ""; el.style.bottom = "";
+        } else {
+          const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
+          const oran = 3 / 4;
+          let w, h, x, y;
+          if (vw / vh > oran) { h = vh; w = Math.round(h * oran); x = Math.round((vw - w) / 2); y = 0; }
+          else { w = vw; h = Math.round(w / oran); x = 0; y = Math.round((vh - h) / 2); }
+          el.style.position = "absolute";
+          el.style.inset = "auto";
+          el.style.left = x + "px";
+          el.style.top = y + "px";
+          el.style.width = w + "px";
+          el.style.height = h + "px";
+          el.style.right = "auto";
+          el.style.bottom = "auto";
+        }
+      }
+    } catch (e) {}
+
     const taban = {
       position: yonNative(durum.yon),
       toBack: true,
@@ -243,8 +269,6 @@
     if (secenek.sinif) taban.className = secenek.sinif;
 
     const denemeler = [
-      Object.assign({}, taban, { aspectRatio: fit ? "4:3" : "fill", aspectMode: fit ? "fit" : "cover" }),
-      Object.assign({}, taban, { aspectRatio: fit ? "4:3" : "fill" }),
       Object.assign({}, taban),
       Object.assign({}, taban, { force: true }),
     ];
@@ -960,19 +984,6 @@
     onizlemeKipi: function (kip) {
       return sirala(async function () {
         durum.onizlemeKip = (kip === "fill") ? "fill" : "fit";
-        if (!durum.yerel || !durum.acik || durum.kaydediyor) return durum.onizlemeKip;
-        try {
-          await yerelBaslat(Object.assign({}, sonSecenek || {}, { force: true }));
-          document.documentElement.classList.add("camNativeOn");
-        } catch (e) {
-          try {
-            await CP().stop();
-          } catch (e0) {}
-          try {
-            await yerelBaslat(sonSecenek || {});
-            document.documentElement.classList.add("camNativeOn");
-          } catch (e2) {}
-        }
         return durum.onizlemeKip;
       });
     },

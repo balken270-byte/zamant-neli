@@ -730,7 +730,7 @@
       quality: new mb.Quality({ bitrate: cfg.bitrate, bitrateMode: "variable" }),
       latencyMode: "realtime",
       hardwareAcceleration: "prefer-hardware",
-      keyFrameInterval: 3,
+      keyFrameInterval: 2,
       sizeChangeBehavior: "deny",
     }, {
       frameRate: cfg.fps,

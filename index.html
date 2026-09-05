@@ -5660,7 +5660,9 @@ svg{display:block}
 /* ============ akış: tam ekran ============ */
 #feed{position:absolute;inset:0;z-index:1;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  scroll-snap-type:y mandatory;transition:opacity .2s}
+  scroll-snap-type:y proximity;transition:opacity .2s;
+  padding:calc(var(--sat) + var(--top) + 0.35rem) 0.5rem calc(var(--tab) + var(--sab) + 0.5rem);
+  box-sizing:border-box;background:#08080C}
 #feed::-webkit-scrollbar{display:none}
 #feed.locked{overflow:hidden}
 #ptr{position:absolute;top:0;left:0;right:0;height:0;z-index:20;display:flex;align-items:center;justify-content:center;
@@ -5671,16 +5673,23 @@ svg{display:block}
 #ptr.ready .ptrSpin{opacity:1}
 #ptr.spinning .ptrSpin{opacity:1;animation:ptrspin .7s linear infinite}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
-#list{display:flex;flex-direction:column;contain:layout style}
+#list{display:flex;flex-direction:column;contain:layout style;gap:0.875rem}
 
-.post{position:relative;height:var(--vh,100dvh);flex:none;scroll-snap-align:start;scroll-snap-stop:always;
-  overflow:hidden;background:#000;content-visibility:auto;contain-intrinsic-size:auto var(--vh,100dvh)}
+.post{position:relative;height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.85rem);
+  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.85rem);
+  flex:none;scroll-snap-align:start;scroll-snap-stop:normal;
+  overflow:hidden;background:#111116;content-visibility:auto;
+  contain-intrinsic-size:auto calc(var(--vh,100dvh) - 5rem);
+  border-radius:1.125rem;border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 0.5rem 1.5rem rgba(0,0,0,.35)}
 
-.pmedia{position:absolute;top:0;left:0;right:0;bottom:calc(var(--tab) + var(--sab));
-  overflow:hidden;touch-action:pan-y;transition:bottom .34s var(--ease)}
+.pmedia{position:absolute;inset:0;
+  width:100%;height:100%;
+  overflow:hidden;touch-action:pan-y;transition:none;background:#0a0a10}
 .pmedia .pmediaBg{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;
   filter:blur(1.5rem) saturate(1.08) brightness(.45);transform:none;z-index:0;pointer-events:none}
-.pmedia img,.pmedia video{width:100%;height:100%;object-fit:contain;object-position:center;
+.pmedia img,.pmedia video{width:100%;height:100%;
+  object-fit:cover;object-position:center;
   display:block;position:relative;z-index:1;
   transform-origin:center center;transition:transform .28s var(--ease);will-change:transform}
 .pmedia.drag img,.pmedia.drag video{transition:none}
@@ -5692,8 +5701,9 @@ svg{display:block}
 .post.bare .plate{opacity:0;pointer-events:none}
 
 /* --- kim: sol üst --- */
-.pauthor{position:absolute;top:calc(var(--sat) + 0.625rem);left:0.8125rem;right:6rem;z-index:3;
-  display:flex;align-items:center;gap:0.625rem}
+.pauthor{position:absolute;top:0.7rem;left:0.7rem;right:4.5rem;z-index:4;
+  display:flex;align-items:center;gap:0.5625rem;
+  padding:0;border-radius:0;background:none;max-width:calc(100% - 5.25rem)}
 .pav{width:2.375rem;height:2.375rem;border-radius:6.1875rem;flex:none;background:#22222A center/cover no-repeat;
   border:0.125rem solid rgba(255,255,255,.92);display:grid;place-items:center;
   font-size:0.8125rem;font-weight:600;color:var(--t2);
@@ -5721,27 +5731,8 @@ svg{display:block}
 .pwhere span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* --- ne zaman: dönem göstergesi --- */
-.eraChip{position:absolute;z-index:29;left:50%;top:calc(var(--sat) + var(--top) + 0.25rem);
-  transform:translateX(-50%);pointer-events:none;white-space:nowrap;max-width:62vw;
-  display:flex;align-items:center;gap:0.5rem;height:1.625rem;padding:0 0.75rem;border-radius:6.1875rem;
-  /* BULANIK CAM KALDIRILDI.
-     Android'in tarayıcı katmanı, yuvarlatılmış küçük öğelerde
-     bulanıklığı öğenin sınırlarının dışına taşırıyor ve kocaman
-     soluk bir daire çiziyor. Yeni paylaşımda görülen çember buydu.
-     Yerine biraz daha koyu düz zemin kullanılıyor. */
-  background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.18);
-  font-size:0.625rem;font-weight:700;letter-spacing:.11em;color:rgba(255,255,255,.92);
-  text-transform:uppercase;transition:opacity .25s}
-.eraChip .ln{width:0.625rem;height:1px;background:rgba(255,255,255,.45);flex:none}
-.eraChip span:not(.ln){white-space:nowrap}
-.eraChip.flip{animation:eraIn .5s var(--ease)}
-@keyframes eraIn{
-  0%{opacity:0;transform:translateX(-50%) translateY(-0.5rem)}
-  100%{opacity:1;transform:translateX(-50%) translateY(0)}
-}
-
 /* --- video ses düğmesi --- */
-.soundBtn{position:absolute;z-index:4;right:0.8125rem;top:calc(var(--sat) + var(--top) + 0.375rem);
+.soundBtn{position:absolute;z-index:4;right:0.7rem;top:0.7rem;
   display:flex;align-items:center;gap:0.375rem;height:1.875rem;padding:0 0.75rem;border-radius:6.1875rem;
   background:rgba(0,0,0,.44);border:1px solid rgba(255,255,255,.2);
   backdrop-filter:blur(0.875rem);-webkit-backdrop-filter:blur(0.875rem);
@@ -5750,15 +5741,15 @@ svg{display:block}
 .soundBtn.on{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.34)}
 
 /* --- alt bilgi perdesi: blur yok (video üstünde her kare GPU yer) --- */
-.pveil{position:absolute;left:0;right:0;bottom:calc(var(--tab) + var(--sab));height:3.25rem;
+.pveil{position:absolute;left:0;right:0;bottom:0;height:3.25rem;
   z-index:2;pointer-events:none;
   background:linear-gradient(to top,rgba(0,0,0,.46),rgba(0,0,0,.12) 70%,transparent);
   backdrop-filter:none;-webkit-backdrop-filter:none}
 .post.active .pveil{backdrop-filter:none;-webkit-backdrop-filter:none}
 
 /* --- ne hissettirdi: alt blok --- */
-.pbottom{position:absolute;left:0;right:0;bottom:calc(var(--tab) + var(--sab) + 0.75rem);
-  z-index:3;padding:0 1rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.5625rem}
+.pbottom{position:absolute;left:0;right:0;bottom:0.7rem;
+  z-index:3;padding:0 0.9rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.5rem}
 .ab.abSong{padding:0}
 .ab.abSong.empty{opacity:0;pointer-events:none}
 .abSong .songDisc{width:1.5rem;height:1.5rem;border-radius:6.1875rem;background:#181820 center/cover no-repeat;
@@ -9094,6 +9085,298 @@ html.native button,html.native .tab{touch-action:manipulation}
 })();
 </script>
 
+
+<style id="feed-single-post-nav-fix">
+/* AKIŞ: ekranda tek gönderi + kart navigasyonun başladığı yere kadar */
+#feed{
+  padding-top:calc(var(--sat) + var(--top) + 0.35rem);
+  padding-bottom:0;
+}
+
+#list{
+  gap:0;
+}
+
+.post{
+  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
+  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
+  border-radius:1.125rem;
+}
+
+/* Alt navigasyon kartın üzerinde kalsın */
+.tabbar{
+  z-index:var(--z-tab);
+}
+</style>
+
+
+<style id="feed-v9-post-extends-behind-nav">
+/* V3 baz alınmıştır.
+   Sadece gönderi yüksekliği navigasyon yüksekliği kadar uzatılır.
+   Böylece 2. gönderi ilk ekranda görünmez; navigasyon kartın üstünde kalır. */
+.post{
+  height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+  );
+  min-height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+  );
+  flex:none;
+}
+</style>
+
+
+<style id="feed-v10-final-sizing">
+/* V9 bazlı: gönderiyi çok az daha uzat */
+.post{
+  height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  );
+  min-height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  );
+}
+
+/* Görseli kartın sınırları içinde tut; kenarlardan taşma/kırpılma olmasın */
+.pmedia img,
+.pmedia video{
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:#0a0a10;
+}
+</style>
+
+
+<style id="feed-v12-vertical-actions">
+/* TikTok / Instagram tarzı: ikonlar gönderinin TAM SAĞ kenarında dikey */
+.post .pbottom{
+  left:0;
+  right:0;
+  padding-right:4.25rem;
+  box-sizing:border-box;
+}
+
+.post .actbar{
+  position:absolute;
+  right:0.65rem;
+  bottom:0;
+  width:2.75rem;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  gap:0.85rem;
+  z-index:20;
+}
+
+.post .actbar .ab{
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:0.16rem;
+  width:2.75rem;
+  min-width:2.75rem;
+  padding:0;
+  color:#fff;
+}
+
+.post .actbar .ab svg{
+  width:1.75rem;
+  height:1.75rem;
+  flex:none;
+}
+
+.post .actbar .ab em{
+  font-size:0.72rem;
+  line-height:1;
+}
+
+.post .actbar .abSong .songDisc{
+  width:2rem;
+  height:2rem;
+}
+</style>
+
+
+<style id="feed-v13-actions-and-meta">
+/* Sağdaki dikey eylemler: bloğun sağında ve navigasyondan belirgin biçimde yukarıda */
+.post .actbar{
+  right:0.65rem;
+  bottom:6.2rem;
+  width:2.75rem;
+  gap:0.85rem;
+  z-index:20;
+}
+
+/* İçerik bilgileri sol altta; navigasyonun arkasına düşmesin */
+.post .pbottom{
+  left:0.75rem;
+  right:4.25rem;
+  bottom:0.75rem;
+  padding-right:0;
+  z-index:7;
+}
+
+.post .pbottom .meta,
+.post .pbottom .caption,
+.post .pbottom .desc{
+  max-width:100%;
+}
+</style>
+
+
+<style id="feed-v14-final-layout">
+/* SOL ALT: içerik + paylaşım zamanı, navigasyonun hemen üstünde */
+.post .pbottom{
+  left:0.75rem;
+  right:4.25rem;
+  bottom:calc(var(--tab) + var(--sab) + 0.7rem);
+  padding:0;
+  z-index:7;
+  box-sizing:border-box;
+}
+
+/* SAĞ: eylemler doğrudan .plate/.post koordinat sisteminde.
+   Dikey grup, navigasyonun üzerinde ve bloğun sağ kenarında. */
+.post .actbar{
+  position:absolute;
+  right:0.65rem;
+  bottom:calc(var(--tab) + var(--sab) + 1.1rem);
+  width:2.75rem;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  gap:0.82rem;
+  z-index:20;
+  pointer-events:auto;
+}
+
+.post .actbar .ab{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0.16rem;
+  width:2.75rem;
+  min-width:2.75rem;
+  padding:0;
+  color:#fff;
+}
+
+.post .actbar .ab svg{
+  width:1.75rem;
+  height:1.75rem;
+  flex:none;
+}
+
+.post .actbar .ab em{
+  font-size:0.72rem;
+  line-height:1;
+}
+
+.post .actbar .abSong .songDisc{
+  width:2rem;
+  height:2rem;
+}
+</style>
+
+
+<style id="feed-v15-snap-like">
+/* Her kaydırmada tam bir gönderiye otur */
+#feed{
+  scroll-snap-type:y mandatory;
+  overscroll-behavior-y:contain;
+}
+
+.post{
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+}
+
+/* Beğenilince kalp KIRMIZI */
+.post .actbar .ab.liked{
+  color:#FF3040 !important;
+}
+
+.post .actbar .ab.liked svg{
+  color:#FF3040 !important;
+  fill:#FF3040 !important;
+  stroke:#FF3040 !important;
+  filter:drop-shadow(0 1px 0.5rem rgba(255,48,64,.55));
+}
+</style>
+
+
+<style id="feed-v16-date-above-content">
+.post .pbottom .ptime{
+  margin-bottom:0.28rem;
+}
+.post .pbottom .pnote{
+  margin-top:0;
+}
+</style>
+
+
+<style id="feed-v17-seekbar-under-content">
+/* Video seek barı: içerik/metin alanının hemen altında */
+.post > .plate > .seekbar{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:calc(var(--tab) + var(--sab) + 0.18rem);
+  height:1.25rem;
+  z-index:12;
+  display:flex;
+  align-items:flex-end;
+  padding-bottom:0.18rem;
+  pointer-events:auto;
+}
+
+/* Çubuğun tamamı kart genişliğinde; içerik yazısının altında */
+.post > .plate > .seekbar::before{
+  left:0;
+  right:0;
+  bottom:0.18rem;
+}
+
+.post > .plate > .seekbar .seekfill{
+  bottom:0.18rem;
+}
+
+.post > .plate > .seekbar .seekknob{
+  bottom:0.095rem;
+}
+</style>
+
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
@@ -9415,7 +9698,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   </header>
 
   <main id="feed"><div id="ptr" aria-hidden="true"><div class="ptrSpin"></div></div><div id="list"></div></main>
-  <div class="eraChip" id="eraChip"><span class="ln"></span><span id="eraText" data-i18n="t_today">BUGÜN</span><span class="ln"></span></div>
   <div class="railwrap" id="rail"><i id="railDot"></i></div>
 
   <nav class="tabbar" id="tabbar">
@@ -11599,19 +11881,25 @@ function build(it){
     el.appendChild(moreBtn);
   }
 
+  /* Video ilerleme çubuğu artık görüntünün en altında değil,
+     içerik/metin alanının hemen altında olacak. */
+  if(seekbar) plate.appendChild(seekbar);
+
   /* --- ne hissettirdi + not + eylemler --- */
   const bot=document.createElement("div");bot.className="pbottom";
 
   /* Duygu etiketi kaldırıldı — artık avatarın halkasında.
      Etiket alt köşede yer kaplıyordu; halka hem daha az yer alıyor
      hem de anın kimliğiyle bütünleşiyor. */
+  /* Tarih/saat, gönderi metninin (yorum/açıklama) ÜSTÜNDE */
+  const tmLine=document.createElement("div");tmLine.className="ptime";
+  tmLine.textContent=relLong(it.ts)+" · "+clockOf(it.ts);
+  bot.appendChild(tmLine);
+
   if(it.note){
     const nt=document.createElement("div");nt.className="pnote";nt.textContent=it.note;
     bot.appendChild(nt);
   }
-  const tmLine=document.createElement("div");tmLine.className="ptime";
-  tmLine.textContent=relLong(it.ts)+" · "+clockOf(it.ts);
-  bot.appendChild(tmLine);
 
   const bar=document.createElement("div");bar.className="actbar";
   const like=document.createElement("button");
@@ -11640,7 +11928,11 @@ function build(it){
     send.setAttribute("aria-hidden","true");send.tabIndex=-1;
   }
   bar.append(like,chat,eyes,save,send);
-  bot.appendChild(bar);
+  /* Eylem çubuğu pbottom'un içinde OLMAMALI.
+     pbottom yalnızca sol alttaki içerik/metin alanıdır.
+     Barı doğrudan plate'e alıyoruz; böylece right/bottom koordinatları
+     gönderi bloğuna göre hesaplanır ve ikonlar kaymaz. */
+  plate.appendChild(bar);
   plate.appendChild(bot);
 
   // --- eklenmiş şarkı (varsa): arkaplanda önizleme sesi, baştan döngülü ---
@@ -11897,8 +12189,18 @@ window.__onLangChange = function(){
 /* ---------- aktif kare takibi ---------- */
 let activeIdx=0;
 function currentIndex(){
-  const h=feed.clientHeight||1;
-  return Math.round(feed.scrollTop/h);
+  const posts=list.querySelectorAll(".post");
+  if(!posts.length) return 0;
+  const mid = feed.scrollTop + feed.clientHeight * 0.38;
+  let best=0, bestDist=Infinity;
+  for(let i=0;i<posts.length;i++){
+    const top = posts[i].offsetTop;
+    const h = posts[i].offsetHeight || 1;
+    const c = top + h * 0.5;
+    const d = Math.abs(c - mid);
+    if(d < bestDist){ bestDist=d; best=i; }
+  }
+  return best;
 }
 let curEra="";
 let soundOn=true;
@@ -11999,17 +12301,6 @@ function syncActive(){
     const node=list.querySelectorAll(".post")[idx];
     if(node&&node._sync) node._sync();
   }
-  const chip=$("#eraChip");
-  const it=items[Math.min(idx,items.length-1)];
-  if(it){
-    const e=era(it.ts);
-    if(e!==curEra){
-      curEra=e;
-      $("#eraText").textContent=e;
-      chip.classList.remove("flip");void chip.offsetWidth;chip.classList.add("flip");
-    }
-  }
-  chip.style.opacity=(idx>=items.length)?"0":"";
   const dot=$("#railDot");
   const max=Math.max(1,items.length);
   const pct=Math.min(1,idx/max);

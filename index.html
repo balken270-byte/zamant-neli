@@ -20444,6 +20444,12 @@ $("#camClose").addEventListener("click",closeCam);
     const v=document.getElementById("camVideo");
     if(!cam||!v) return;
     cam.classList.toggle("camFill", kip==="fill");
+    if(window.Kamera && Kamera.yerelMi() && Kamera.onizlemeKipi){
+      const hedef = kip==="fill" ? "fill" : "fit";
+      Promise.resolve(Kamera.onizlemeKipi(hedef)).catch(()=>{
+        try{ Kamera.onizlemeKipi(kip==="fill" ? "cover" : "contain"); }catch(e){}
+      });
+    }
     const ayna=v.classList.contains("mirror");
     const s=Math.max(1,olcek);
     v.style.transform=ayna?("scaleX(-1) scale("+s+")"):("scale("+s+")");
@@ -20491,9 +20497,29 @@ $("#camClose").addEventListener("click",closeCam);
           kip=b.dataset.kip;
           if(kip==="fit") olcek=1;
           uygula();
-          if(window.Kamera && Kamera.onizlemeKipi) Kamera.onizlemeKipi(kip);
+          if(window.Kamera && Kamera.yerelMi() && Kamera.onizlemeKipi) Kamera.onizlemeKipi(kip);
         });
       });
+      const fitBtn=document.getElementById("camFitBtn");
+      if(fitBtn && !fitBtn._wired){
+        fitBtn._wired=true;
+        fitBtn.addEventListener("click", ev=>{
+          ev.stopPropagation();
+          kip = (kip==="fill") ? "fit" : "fill";
+          if(kip==="fit") olcek=1;
+          uygula();
+          if(window.Kamera && Kamera.yerelMi() && Kamera.onizlemeKipi) Kamera.onizlemeKipi(kip);
+        });
+      }
+      const zBtn=document.getElementById("camZoomToggle");
+      if(zBtn && !zBtn._wired){
+        zBtn._wired=true;
+        zBtn.addEventListener("click", ev=>{
+          ev.stopPropagation();
+          cam.classList.toggle("zoomOpen");
+          zBtn.classList.toggle("on", cam.classList.contains("zoomOpen"));
+        });
+      }
       box.querySelector("#wcoRange").addEventListener("input", e=>{
         olcek=Number(e.target.value)||1;
         uygula();
@@ -20504,26 +20530,6 @@ $("#camClose").addEventListener("click",closeCam);
             Kamera.yakinlastir(a.min + t*(a.max-a.min), false);
           });
         }
-      });
-    }
-    const fitBtn=document.getElementById("camFitBtn");
-    if(fitBtn && !fitBtn._wired){
-      fitBtn._wired=true;
-      fitBtn.addEventListener("click", ev=>{
-        ev.stopPropagation();
-        kip = (kip==="fill") ? "fit" : "fill";
-        if(kip==="fit") olcek=1;
-        uygula();
-        if(window.Kamera && Kamera.onizlemeKipi) Kamera.onizlemeKipi(kip);
-      });
-    }
-    const zBtn=document.getElementById("camZoomToggle");
-    if(zBtn && !zBtn._wired){
-      zBtn._wired=true;
-      zBtn.addEventListener("click", ev=>{
-        ev.stopPropagation();
-        cam.classList.toggle("zoomOpen");
-        zBtn.classList.toggle("on", cam.classList.contains("zoomOpen"));
       });
     }
     uygula();

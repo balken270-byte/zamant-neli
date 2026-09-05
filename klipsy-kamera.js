@@ -235,29 +235,19 @@
                          yerine dosya yolu döner. */
     function onizlemeKutusu() {
       const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
-      const cam = document.getElementById("cam");
-      const topEl = cam && cam.querySelector(".camtop");
-      const botEl = cam && cam.querySelector(".cambot");
-
-      /* Native SurfaceView ile HTML arayüzünün sınırını aynı kaynaktan
-         hesapla. Sabit 56/210 değerleri farklı cihazlarda cambody ile
-         native preview arasında beyaz bir şerit bırakabiliyordu. */
-      if (topEl && botEl) {
-        const tr = topEl.getBoundingClientRect();
-        const br = botEl.getBoundingClientRect();
-        const x = 0;
-        const y = Math.max(0, Math.round(tr.bottom));
-        const bottom = Math.min(vh, Math.round(br.top));
-        const h = Math.max(120, bottom - y);
-        return { x, y, width: vw, height: h };
-      }
-
-      /* DOM henüz ölçülemiyorsa güvenli fallback. */
       const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
       const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
-      const y = Math.round(sat + 56);
-      const h = Math.max(120, vh - y - sab - 210);
-      return { x: 0, y, width: vw, height: h };
+      const ust = sat + 56;
+      const alt = sab + 210;
+      const ah = Math.max(120, vh - ust - alt);
+      // Klipsy'nin kamera çerçevesi her zaman gerçek 9:16 portrait kutusudur.
+      // Native preview bu kutunun içinde contain/cover ile ölçeklenir;
+      // native yüzeyi asla ekranın tamamına taşırmıyoruz.
+      const w = vw;
+      const h = Math.min(ah, Math.round(w * 16 / 9));
+      const x = 0;
+      const y = Math.round(ust + Math.max(0, (ah - h) / 2));
+      return { x: x, y: y, width: w, height: h };
     }
 
     const taban = {

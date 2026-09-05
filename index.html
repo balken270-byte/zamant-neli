@@ -9377,6 +9377,23 @@ html.native button,html.native .tab{touch-action:manipulation}
 }
 </style>
 
+
+<style id="feed-v21-media-zoom">
+/* Deneme: içerik görsel/video %10 büyütülür.
+   Merkezden büyüdüğü için sağ ve sol kayıp eşit olur. */
+.post .pmedia{
+  overflow:hidden;
+}
+.post .pmedia > img,
+.post .pmedia > video{
+  transform:scale(1.10);
+  transform-origin:center center;
+}
+.post .pmedia .pmediaBg{
+  transform:none;
+}
+</style>
+
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">

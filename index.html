@@ -7172,6 +7172,20 @@ svg{display:block}
 /* ============ kamera ============ */
 #cam{position:absolute;inset:0;z-index:var(--z-cam);background:#000;display:none;flex-direction:column}
 #cam.open{display:flex;animation:fadeIn .2s ease}
+/* Açık temada kamera beyaza boyanmasın — önizleme letterbox’ı siyah kalsın */
+[data-theme="light"] #cam,
+[data-theme="light"] #cam.open,
+[data-theme="light"] #cam .camtop,
+[data-theme="light"] #cam .cambot,
+[data-theme="light"] #cam .cambody,
+[data-theme="light"] #cam .camRoot,
+[data-theme="light"] #cam #camRoot{
+  background:#000 !important;
+  background-color:#000 !important;
+}
+[data-theme="light"] #cam .title{color:#fff;background:rgba(0,0,0,.45)}
+[data-theme="light"] #cam .mode{color:rgba(255,255,255,.45)}
+[data-theme="light"] #cam .mode.on{color:#fff;background:none}
 /* Tarayıcının video üzerine koyduğu oynat ikonunu ve denetimlerini gizle.
    (APK'da içerik gelene kadar ortada büyük bir ▶ görünüyordu.) */
 video::-webkit-media-controls,
@@ -7277,7 +7291,15 @@ html.camNativeOn #cam *{visibility:visible !important}
 html.camNativeOn #cam,
 html.camNativeOn #cam .camStage,
 html.camNativeOn #cam .camWrap,
-html.camNativeOn #cam .camBody{background:transparent !important}
+html.camNativeOn #cam .camBody,
+html.camNativeOn #cam .cambody,
+html.camNativeOn #cam .camtop,
+html.camNativeOn #cam .cambot,
+html.camNativeOn #cam .camRoot,
+html.camNativeOn #cam #camRoot{
+  background:transparent !important;
+  background-color:transparent !important;
+}
 
 /* yerelde video etiketi gereksiz */
 html.camNativeOn #camVideo{display:none !important}
@@ -20415,6 +20437,12 @@ $("#camClose").addEventListener("click",closeCam);
     const v=document.getElementById("camVideo");
     if(!cam||!v) return;
     cam.classList.toggle("camFill", kip==="fill");
+    if(window.Kamera && Kamera.yerelMi() && Kamera.onizlemeKipi){
+      const hedef = kip==="fill" ? "fill" : "fit";
+      Promise.resolve(Kamera.onizlemeKipi(hedef)).catch(()=>{
+        try{ Kamera.onizlemeKipi(kip==="fill" ? "cover" : "contain"); }catch(e){}
+      });
+    }
     const ayna=v.classList.contains("mirror");
     const s=Math.max(1,olcek);
     v.style.transform=ayna?("scaleX(-1) scale("+s+")"):("scale("+s+")");

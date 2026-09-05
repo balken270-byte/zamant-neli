@@ -233,21 +233,19 @@
          aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
-    function onizlemeKutusu() {
-      const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
-      const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
-      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
-      const ust = sat + 56;
-      const alt = sab + 210;
-      const aw = vw, ah = Math.max(120, vh - ust - alt);
-      const h9 = Math.round(aw * 16 / 9);
-      const w = aw;
-      const h = Math.min(ah, h9);
-      const x = 0;
-      const y = Math.round(ust + (ah - h) / 2);
-      return { x: x, y: y, width: w, height: h };
+    function onizlemeKutusu(kip) {
+      const vw = Math.round(window.innerWidth || 360);
+      const vh = Math.round(window.innerHeight || 640);
+      const k = kip || durum.onizlemeKip || "fit";
+      if (k === "fill") {
+        return { x: 0, y: 0, width: vw, height: vh };
+      }
+      const w = vw;
+      const h = Math.min(vh, Math.round(w * 16 / 9));
+      return { x: 0, y: Math.max(0, Math.round((vh - h) / 2)), width: w, height: h };
     }
 
+    const doldur = (durum.onizlemeKip === "fill");
     const taban = {
       position: yonNative(durum.yon),
       toBack: true,
@@ -256,6 +254,8 @@
       disableAudio: secenek.ses === false,
       videoQuality: "high",
       includeSafeAreaInsets: false,
+      aspectRatio: doldur ? "fill" : "fit",
+      aspectMode: doldur ? "cover" : "fit",
     };
     if (secenek.kap)   taban.parent    = secenek.kap;
     if (secenek.sinif) taban.className = secenek.sinif;
@@ -289,7 +289,7 @@
 
     if (CP().setPreviewSize) {
       try {
-        await CP().setPreviewSize(onizlemeKutusu());
+        await CP().setPreviewSize(onizlemeKutusu(durum.onizlemeKip));
       } catch (e) {}
     }
 
@@ -1188,7 +1188,20 @@
 
     onizlemeKipi: function (kip) {
       return sirala(async function () {
-        durum.onizlemeKip = (kip === "fill") ? "fill" : "fit";
+        const k = (kip === "fill" || kip === "cover") ? "fill" : "fit";
+        durum.onizlemeKip = k;
+        if (durum.yerel && durum.acik && CP() && CP().setPreviewSize) {
+          try {
+            const vw = Math.round(window.innerWidth || 360);
+            const vh = Math.round(window.innerHeight || 640);
+            const kutu = (k === "fill")
+              ? { x: 0, y: 0, width: vw, height: vh }
+              : { x: 0, y: Math.max(0, Math.round((vh - Math.min(vh, Math.round(vw * 16 / 9))) / 2)),
+                  width: vw, height: Math.min(vh, Math.round(vw * 16 / 9)) };
+            await CP().setPreviewSize(kutu);
+          } catch (e) {}
+        }
+        yay("onizlemeKip", { kip: durum.onizlemeKip });
         return durum.onizlemeKip;
       });
     },

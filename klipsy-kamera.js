@@ -130,6 +130,7 @@
     kayitBaslangic: 0,
     yerel: false,
     coz: null,
+    kayitMotoru: null,
   };
 
   let webAkis = null;
@@ -347,6 +348,19 @@
     if (!webAkis) throw sonHata || KameraHatasi(HATA.BILINMEYEN);
 
     const iz = webAkis.getVideoTracks()[0];
+    /* Kamera akışına hareket odaklı içerik ipucu ver. Tarayıcı bunu
+       encoder/pipeline seçiminde kullanabilir; görüntü katmanına dokunmaz. */
+    try { if (iz && "contentHint" in iz) iz.contentHint = "motion"; } catch (e) {}
+    /* Kayıt başlamadan önce bir kez daha 30 FPS sınırını uygula.
+       Desteklemeyen cihazlarda kamera akışını bozmak yerine sessizce
+       mevcut ayarlarda bırakıyoruz. */
+    try {
+      if (iz && iz.applyConstraints) {
+        await iz.applyConstraints({
+          frameRate: { ideal: 30, max: 30 }
+        });
+      }
+    } catch (e) {}
     const a = (iz && iz.getSettings) ? iz.getSettings() : {};
     if (a.facingMode === "user") durum.yon = "on";
     else if (a.facingMode === "environment") durum.yon = "arka";
@@ -643,10 +657,22 @@
     if (!vt) throw new Error("Video track yok");
 
     const a = vt.getSettings ? vt.getSettings() : {};
-    const width = Math.max(2, Math.min(a.width || 1280, 1280));
-    const height = Math.max(2, Math.min(a.height || 720, 1280));
-    const fps = Math.max(24, Math.min(Math.round(a.frameRate || 30), 30));
-    const bitrate = secenek.bitHizi || Math.min(6000000, Math.max(3000000, Math.round(width * height * fps * 0.12)));
+    /* Kaynak ister yatay ister dikey gelsin, uzun kenarı 1280 px ile
+       sınırla ve oranı KESİNLİKLE koru. Böylece 720x1280 gibi telefon
+       portre akışları yanlışlıkla 1280x1280'e çevrilmez. */
+    const sw = Math.max(2, Math.round(a.width || 1280));
+    const sh = Math.max(2, Math.round(a.height || 720));
+    const uzun = Math.max(sw, sh);
+    const olcek = Math.min(1, 1280 / uzun);
+    let width = Math.max(2, Math.round(sw * olcek));
+    let height = Math.max(2, Math.round(sh * olcek));
+    width &= ~1; height &= ~1;
+    width = Math.max(2, width); height = Math.max(2, height);
+    const fps = 30;
+    /* 720p/portre 720x1280 için ~3.5 Mbps civarı; gereksiz bitrate
+       yüzünden encoder kuyruğunu şişirmemek için üst sınır koy. */
+    const otomatikBitrate = Math.round(width * height * fps * 0.125);
+    const bitrate = secenek.bitHizi || Math.min(4500000, Math.max(2800000, otomatikBitrate));
 
     /* Önce MP4/H.264 + AAC denenir. Bu, son kullanıcı açısından en uyumlu
        çıktı olur. AAC encode cihazda yoksa WebM + VP9/VP8 + Opus'a geçilir.
@@ -663,6 +689,9 @@
           width: width,
           height: height,
           bitrate: bitrate,
+          framerate: fps,
+          latencyMode: "realtime",
+          hardwareAcceleration: "prefer-hardware",
         });
         if (videoCodec && webAkis.getAudioTracks().length && mb.getFirstEncodableAudioCodec) {
           audioCodec = await mb.getFirstEncodableAudioCodec(f.getSupportedAudioCodecs(), {
@@ -690,6 +719,9 @@
         width: width,
         height: height,
         bitrate: bitrate,
+        framerate: fps,
+        latencyMode: "realtime",
+        hardwareAcceleration: "prefer-hardware",
       });
       if (!videoCodec) throw new Error("WebCodecs video encoder bulunamadı");
 
@@ -825,6 +857,7 @@
             await webCodecsKaydiBaslat(secenek, enFazlaSn);
           } catch (e) {
             webCodecsKayit = null;
+            durum.kayitMotoru = null;
             yay("kayitMotoru", {
               motor: "webcodecs",
               durum: "baslatilamadi",
@@ -838,6 +871,7 @@
             return false;
           }
 
+          durum.kayitMotoru = "WebCodecs ⚡";
           yay("kayitMotoru", {
             motor: "webcodecs",
             codec: webCodecsKayit.codec,
@@ -848,6 +882,7 @@
         }
 
         durum.kaydediyor = true;
+        durum.kayitMotoru = durum.yerel ? "native" : "WebCodecs ⚡";
         durum.kayitBaslangic = Date.now();
         yay("kayitBasladi", { enFazlaSn: enFazlaSn });
 
@@ -958,6 +993,7 @@
           const mime = isMp4 ? "video/mp4" : "video/webm";
           const blob = new Blob([buf], { type: mime });
           durum.kaydediyor = false;
+          durum.kayitMotoru = null;
           yay("kayitBitti", {
             sure: sure,
             boyut: blob.size,
@@ -982,6 +1018,7 @@
           webParcalar = [];
           webKayit = null;
           durum.kaydediyor = false;
+          durum.kayitMotoru = null;
           yay("kayitBitti", { sure: sure, boyut: blob.size });
           coz({ blob: blob, yol: null, sure: sure, tur: tur });
         };
@@ -995,6 +1032,7 @@
       });
     } catch (e) {
       durum.kaydediyor = false;
+      durum.kayitMotoru = null;
       const tur = (e && e.tur) ? e.tur : hataCevir(e);
       yay("hata", { hataTuru: tur, hata: e });
       return null;

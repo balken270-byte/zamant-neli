@@ -19951,14 +19951,12 @@ async function start(kayitSurerken){
        resizeMode:"none" ile de "kırpma, olduğu gibi ver" denir. */
     const vcon = {
       facingMode: facing,
-      width: { ideal: 1920 },              // SADECE genişlik — orana karışma
-      frameRate: { ideal: 60, min: 24 },
+      width: { ideal: 1280, max: 1280 },    // WEB: akıcılık için 720/30 hedefi
+      frameRate: { ideal: 30, max: 30 },
       resizeMode: "none",                  // kırpma yapma, doğal görüntüyü ver
       advanced: [
-        { frameRate: { min: 60 } },          // 1. tercih: gerçek 60 fps
-        { frameRate: { min: 50 } },
-        { width: { min: 1280 } },            // sonra çözünürlük
-        { frameRate: { min: 30 } }
+        { frameRate: { ideal: 30, max: 30 } },
+        { width: { ideal: 1280, max: 1280 } }
       ]
     };
     try{

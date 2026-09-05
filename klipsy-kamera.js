@@ -220,57 +220,32 @@
   }
 
   async function yerelBaslat(secenek) {
-    /* SEÇENEKLER
-         enableZoom      Gönderilmiyor; yakınlaştırma setZoom ile yapılıyor.
-         enableVideoMode Video kaydı için gerekli.
-         width/height/x/y start() aşamasında gerçek 9:16 preview alanını
-                         native tarafa bildirir.
-         storeToFile     Burada verilmez; fotoğraf base64 olarak döner. */
+    /* SEÇENEKLER — belgeye göre düzeltildi:
+         enableZoom      KALDIRILMIŞ bir seçenek; gönderilmez.
+                         Yakınlaştırma artık setZoom ile yapılıyor.
+         enableVideoMode Video kaydı için ŞART. Varsayılanı kapalı;
+                         açılmadığı için kayıt hiç başlamıyordu.
+         aspectRatio     'fill' → önizleme ekranı doldurur.
+         aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
+         storeToFile     BURADA verilmez; verilirse fotoğraf base64
+                         yerine dosya yolu döner. */
     function onizlemeKutusu() {
       const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
       const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
+      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
       const ust = sat + 56;
-
-      /*
-         TIKTOK TARZI GERCEK 9:16 KADRAJ
-         --------------------------------
-         Preview alani artik alt taraftaki kamera kontrolleri icin
-         yuksekligi kisaltmiyor. Native kamera 9:16 kadraji ekranin
-         altindaki kontrollerin ARKASINA kadar uzaniyor; HTML kontrolleri
-         toBack=true sayesinde onun ustunde kalmaya devam ediyor.
-
-         Onceki kodda h = min(ah, 16:9 yuksekligi) kullaniliyordu.
-         Telefon ekraninda ah yaklasik 920px oldugu icin 691x920 = 3:4
-         native preview olusuyordu. Capture ise 9:16 olunca kadraj
-         degisiyordu. Burada preview'nin kendisi 691x1228 oluyor.
-      */
-      const w = vw;
-      const h = Math.round(w * 16 / 9);
+      const alt = sab + 210;
+      const aw = vw, ah = Math.max(120, vh - ust - alt);
+      const h9 = Math.round(aw * 16 / 9);
+      const w = aw;
+      const h = Math.min(ah, h9);
       const x = 0;
-      const y = Math.round(ust);
+      const y = Math.round(ust + (ah - h) / 2);
       return { x: x, y: y, width: w, height: h };
     }
 
-    /*
-       KRITIK 9:16 KAMERA KADRAJI
-       --------------------------
-       setPreviewSize() sadece native View'un dikdortgenini degistirir.
-       CameraPreview ise start() aninda kamera icin uygun preview
-       cozunurlugunu secer. Start() ekran boyutlariyla (ornegin 691x1536)
-       baslatilirsa Android 4:3 bir preview secip onu sonradan 9:16
-       kutuya yerlestirebilir. Kullanici ekranda 4:3 gorur, capture ise
-       9:16 doner ve kadraj degisir.
-
-       Bu nedenle ayni 9:16 dikdortgeni START asamasinda veriyoruz.
-       Boylece native preview secimi de 9:16 hedefini goruyor.
-    */
-    const previewRect = onizlemeKutusu();
     const taban = {
       position: yonNative(durum.yon),
-      /* Capgo 8.11.2: aspectRatio 16:9 kamera akisini native tarafta
-         secmeye zorlar. width/height ile birlikte kullanilmaz. */
-      aspectRatio: "16:9",
-      aspectMode: "cover",
       toBack: true,
       enableVideoMode: true,
       lockAndroidOrientation: true,
@@ -310,7 +285,7 @@
 
     if (CP().setPreviewSize) {
       try {
-        await CP().setPreviewSize(previewRect);
+        await CP().setPreviewSize(onizlemeKutusu());
       } catch (e) {}
     }
 
@@ -348,16 +323,16 @@
     const cihaz = await webKameraBul(istenenYuz);
     /* width ideal — height/aspectRatio YOK (kırpmaz).
        resizeMode none: native kare. 1920 çoğu telefonda HD önizleme verir. */
-    const hd = { width: { ideal: 1920 }, resizeMode: "none" };
+    const hd = { width: { ideal: 1280, max: 1280 }, frameRate: { ideal: 30, max: 30 }, resizeMode: "none" };
     const denemeler = [];
     if (cihaz && cihaz.deviceId) {
       denemeler.push({ video: Object.assign({ deviceId: { exact: cihaz.deviceId } }, hd), audio: sesVar });
-      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId }, width: { ideal: 1920 } }, audio: sesVar });
+      denemeler.push({ video: { deviceId: { exact: cihaz.deviceId }, width: { ideal: 1280, max: 1280 }, frameRate: { ideal: 30, max: 30 }, resizeMode: "none" }, audio: sesVar });
       denemeler.push({ video: { deviceId: { exact: cihaz.deviceId } }, audio: sesVar });
     }
     denemeler.push({ video: Object.assign({ facingMode: { exact: istenenYuz } }, hd), audio: sesVar });
-    denemeler.push({ video: { facingMode: { exact: istenenYuz }, width: { ideal: 1920 } }, audio: sesVar });
-    denemeler.push({ video: { facingMode: { ideal: istenenYuz }, width: { ideal: 1920 }, resizeMode: "none" }, audio: sesVar });
+    denemeler.push({ video: { facingMode: { exact: istenenYuz }, width: { ideal: 1280, max: 1280 }, frameRate: { ideal: 30, max: 30 }, resizeMode: "none" }, audio: sesVar });
+    denemeler.push({ video: { facingMode: { ideal: istenenYuz }, width: { ideal: 1280, max: 1280 }, frameRate: { ideal: 30, max: 30 }, resizeMode: "none" }, audio: sesVar });
     denemeler.push({ video: { facingMode: istenenYuz }, audio: sesVar });
 
     let sonHata = null;
@@ -547,9 +522,11 @@
              yakın fotoğraf boyutunu seçer; sonrasında index.html yalnızca
              gerekiyorsa aynı 9:16 oranını uygular.
           */
-          /* width/height vermiyoruz. Capgo'ya gore bu durumda capture,
-             aktif preview'nin gorunen alanini/kadrajini takip eder. */
-          const r = await CP().capture({ quality: kalite });
+          const r = await CP().capture({
+            quality: kalite,
+            width: 1080,
+            height: 1920
+          });
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
@@ -639,10 +616,11 @@
           if (!webAkis) return false;
 
           const turler = [
-            "video/mp4;codecs=h264,aac",
-            "video/webm;codecs=vp9,opus",
             "video/webm;codecs=vp8,opus",
+            "video/webm;codecs=vp8",
             "video/webm",
+            "video/mp4;codecs=h264,aac",
+            "video/mp4;codecs=avc1",
           ];
           let tur = "";
           for (let i = 0; i < turler.length; i++) {
@@ -652,6 +630,22 @@
           }
 
           webParcalar = [];
+
+          /* WEB AKIŞINI KAYIT ÖNCESİ SABİTLE:
+             1080p/60 veya cihazın seçtiği yüksek FPS, özellikle mobil
+             tarayıcılarda MediaRecorder ile birlikte ana iş parçacığını
+             zorlayıp önizlemeyi birkaç FPS'e düşürebiliyor.
+             1280 genişlik + 30 FPS, web için akıcı ve daha öngörülebilir
+             bir kayıt hedefidir. Oranı zorlamıyoruz; doğal kamera oranı korunur. */
+          try {
+            const iz0 = webAkis.getVideoTracks()[0];
+            if (iz0 && iz0.applyConstraints) {
+              await iz0.applyConstraints({
+                width: { ideal: 1280, max: 1280 },
+                frameRate: { ideal: 30, max: 30 },
+              });
+            }
+          } catch (e) {}
 
           /* VERİ HIZI ÇÖZÜNÜRLÜĞE GÖRE.
              Sabit 3.4 Mbit kullanılıyordu. 1080p için bu düşük;
@@ -673,7 +667,7 @@
                      /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
             } catch (e) { return false; }
           })();
-          const ustSinir = mobilKayit ? 6000000 : 12000000;   // mobil 6, masaüstü 12 Mbit
+          const ustSinir = mobilKayit ? 5000000 : 10000000;   // mobil 6, masaüstü 12 Mbit
           hiz = Math.max(2500000, Math.min(hiz, ustSinir));
 
           const ayar = {

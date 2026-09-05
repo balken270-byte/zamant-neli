@@ -250,6 +250,12 @@
 
     const taban = {
       position: yonNative(durum.yon),
+      // Kamera sensörünü 16:9 seçiyoruz; portre önizleme alanı
+      // setPreviewSize ile 9:16 olduğunda plugin bunu cover olarak
+      // ölçekleyip kenarlardan kırpar. Böylece 4:3 sensör görüntüsü
+      // ekranda artık 4:3 bir kutu olarak kalmaz.
+      aspectRatio: "16:9",
+      aspectMode: "cover",
       toBack: true,
       enableVideoMode: true,
       lockAndroidOrientation: true,
@@ -1189,6 +1195,15 @@
     onizlemeKipi: function (kip) {
       return sirala(async function () {
         durum.onizlemeKip = (kip === "fill") ? "fill" : "fit";
+        // Native preview stays inside the same 9:16 camera window.
+        // Do NOT resize it to the whole screen when Doldur is tapped;
+        // that puts the native camera surface over the HTML controls.
+        if (durum.yerel && durum.acik && CP() && CP().setPreviewSize) {
+          try {
+            await CP().setPreviewSize(onizlemeKutusu());
+          } catch (e) {}
+        }
+        yay("onizlemeKip", { kip: durum.onizlemeKip });
         return durum.onizlemeKip;
       });
     },

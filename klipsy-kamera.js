@@ -412,8 +412,10 @@
 
     if (yerelMi()) {
       try { await CP().stop(); } catch (e) {}
-      document.documentElement.classList.remove("camNativeOn");
-      _aralik = null;   // kamera değişince aralık yeniden sorulur
+      /* camNativeOn burada kalkmaz. Kalkarsa WebView tema rengine
+         (açık temada beyaz) döner; yeniden açılana kadar flaş görünür.
+         Sınıf yalnızca kamera ekranı kapanınca index.html kaldırır. */
+      _aralik = null;
     }
 
     durum.kaydediyor = false;

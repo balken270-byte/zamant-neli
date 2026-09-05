@@ -7172,6 +7172,14 @@ svg{display:block}
 /* ============ kamera ============ */
 #cam{position:absolute;inset:0;z-index:var(--z-cam);background:#000;display:none;flex-direction:column}
 #cam.open{display:flex;animation:fadeIn .2s ease}
+/* Kamera oturumu: tema ne olursa olsun zemin siyah kalsın (beyaz flaş yok) */
+html.camSession,
+html.camSession body,
+html.camSession #phone,
+html.camSession #app{
+  background:#000 !important;
+  background-color:#000 !important;
+}
 /* Açık tema: kontroller okunur kalsın, önizleme deliği asla boyanmasın */
 [data-theme="light"] #cam .title{color:#fff;background:rgba(0,0,0,.45)}
 [data-theme="light"] #cam .mode{color:rgba(255,255,255,.45)}
@@ -19813,6 +19821,7 @@ async function openCam(which){
   setMode("photo");
   $("#camTitle").textContent=which==="profile"?t("profile_photo"):(which==="dm"?t("act_send_msg"):t("act_shoot_now"));
   $("#cam").classList.add("open");$("#cam").setAttribute("aria-hidden","false");
+  document.documentElement.classList.add("camSession");
   _pushHistory("cam");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();
@@ -20123,13 +20132,21 @@ function closeCam(){
   try{ if(window.__kameraYakinligiSifirla) window.__kameraYakinligiSifirla(); }catch(e){}
   stopCam();
   $("#cam").classList.remove("open","zoomOpen");$("#cam").setAttribute("aria-hidden","true");
+  document.documentElement.classList.remove("camSession","camNativeOn");
   const zb=document.getElementById("camZoomToggle"); if(zb) zb.classList.remove("on");
   _popHistory("cam");
   if(target!=="dm") setTab($("#tabFeed"));
   if(typeof syncStatusBar==="function") syncStatusBar();
 }
 function setMode(m){camMode=m;$$(".mode").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));}
-$$(".mode").forEach(b=>b.addEventListener("click",()=>{if(camMode!==b.dataset.mode){setMode(b.dataset.mode);start();}}));
+$$(".mode").forEach(b=>b.addEventListener("click",()=>{
+  if(camMode===b.dataset.mode) return;
+  setMode(b.dataset.mode);
+  /* APK: foto/video yalnızca kayıt türü. Kamerayı kapatıp açmak
+     WebView'i opak yapıp beyaz flaş ve boş bar üretiyor. */
+  const native = !!(window.Kamera && Kamera.yerelMi && Kamera.yerelMi());
+  if(!native) start();
+}));
 $("#flip").addEventListener("click", async ()=>{
   if(window.Kamera && !window.__kameraKatmaniKapali){
     const d = Kamera.durum();

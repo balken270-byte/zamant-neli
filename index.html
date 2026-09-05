@@ -11034,6 +11034,9 @@ function adDuzelt(ham){
   return s.split(" ").slice(0, 2).map(kelime).join(" ").slice(0, 40);
 }
 
+// ESM/module tarafında da güvenilir biçimde erişilebilir olsun.
+window.adDuzelt = adDuzelt;
+
 function adiniGoster(username){
   if(!username) return "";
   const u = USERS[username];
@@ -22514,6 +22517,17 @@ requestAnimationFrame(tick);
 };
 </script>
 <script type="module">
+// MODULE KAYIT AKIŞI: klasik script kapsamına güvenme.
+// Ad-soyad temizleyicisini burada da yerel olarak tanımlıyoruz.
+function adDuzelt(ham){
+  if(!ham) return "";
+  let s=String(ham).replace(/[^\p{L}\s]/gu, "").replace(/\s+/g," ").trim();
+  if(!s) return "";
+  const buyut=h => h === "i" ? "İ" : h === "ı" ? "I" : h.toLocaleUpperCase("tr-TR");
+  const kucult=h => h.toLocaleLowerCase("tr-TR");
+  return s.split(" ").slice(0,2).map(k=>k ? buyut(k[0])+kucult(k.slice(1)) : "").join(" ").slice(0,40);
+}
+
 // Supabase kütüphanesini yükle: yavaş/erişilemez kaynakta takılmasın diye
 // birden fazla CDN sırayla denenir, her biri için zaman aşımı vardır.
 async function loadSupabase(){

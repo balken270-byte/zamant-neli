@@ -233,21 +233,19 @@
          aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
-    function onizlemeKutusu(kip) {
-      const vw = Math.round(window.innerWidth || 360);
-      const vh = Math.round(window.innerHeight || 640);
+    function onizlemeKutusu() {
+      const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
       const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
       const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
-      const k = kip || durum.onizlemeKip || "fit";
-      if (k === "fill") {
-        return { x: 0, y: 0, width: vw, height: vh };
-      }
       const ust = sat + 56;
       const alt = sab + 210;
       const aw = vw, ah = Math.max(120, vh - ust - alt);
       const h9 = Math.round(aw * 16 / 9);
+      const w = aw;
       const h = Math.min(ah, h9);
-      return { x: 0, y: Math.round(ust + (ah - h) / 2), width: aw, height: h };
+      const x = 0;
+      const y = Math.round(ust + (ah - h) / 2);
+      return { x: x, y: y, width: w, height: h };
     }
 
     const taban = {
@@ -291,7 +289,7 @@
 
     if (CP().setPreviewSize) {
       try {
-        await CP().setPreviewSize(onizlemeKutusu(durum.onizlemeKip));
+        await CP().setPreviewSize(onizlemeKutusu());
       } catch (e) {}
     }
 
@@ -412,10 +410,8 @@
 
     if (yerelMi()) {
       try { await CP().stop(); } catch (e) {}
-      /* camNativeOn burada kalkmaz. Kalkarsa WebView tema rengine
-         (açık temada beyaz) döner; yeniden açılana kadar flaş görünür.
-         Sınıf yalnızca kamera ekranı kapanınca index.html kaldırır. */
-      _aralik = null;
+      document.documentElement.classList.remove("camNativeOn");
+      _aralik = null;   // kamera değişince aralık yeniden sorulur
     }
 
     durum.kaydediyor = false;
@@ -1192,37 +1188,7 @@
 
     onizlemeKipi: function (kip) {
       return sirala(async function () {
-        const k = (kip === "fill" || kip === "cover") ? "fill" : "fit";
-        durum.onizlemeKip = k;
-        if (durum.yerel && durum.acik && CP() && CP().setPreviewSize) {
-          try {
-            const vw = Math.round(window.innerWidth || 360);
-            const vh = Math.round(window.innerHeight || 640);
-            /* Native preview ölçüsü: Doldur modunda bile gerçek kamera
-               önizleme alanını 9:16 koru. Önceki tasarımda fill için
-               doğrudan tüm ekran (vw x vh) gönderiliyordu; yeni kamera
-               katmanında bu, setPreviewSize ile UI katmanının çakışmasına
-               ve Doldur geçişinin çalışmamasına yol açabiliyor. */
-            const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
-            const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
-            /* Fit ve Doldur aynı 9:16 native pencereyi kullanır.
-               Doldur artık native preview katmanını tüm ekrana yaymaz. */
-            const ust = sat + 56;
-            const alt = sab + 210;
-            const aw = vw;
-            const ah = Math.max(120, vh - ust - alt);
-            const h9 = Math.round(aw * 16 / 9);
-            const fitH = Math.min(ah, h9);
-            const kutu = {
-              x: 0,
-              y: Math.round(ust + (ah - fitH) / 2),
-              width: aw,
-              height: fitH
-            };
-            await CP().setPreviewSize(kutu);
-          } catch (e) {}
-        }
-        yay("onizlemeKip", { kip: durum.onizlemeKip });
+        durum.onizlemeKip = (kip === "fill") ? "fill" : "fit";
         return durum.onizlemeKip;
       });
     },

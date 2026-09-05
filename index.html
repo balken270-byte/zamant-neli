@@ -7184,12 +7184,12 @@ video{background-color:#12121a}
 #cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;transform-origin:center center}
 #cam.camFill video{object-fit:cover}
 #cam.camOlcek #camZoomBar{display:none !important}
-#webCamOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 10.15rem);transform:translateX(-50%);
-  z-index:6;display:none;flex-direction:column;align-items:center;gap:0.35rem;width:min(16.5rem,78%)}
+#webCamOlcek{position:absolute;left:12px;right:12px;bottom:calc(var(--sab) + 4.35rem);transform:none;
+  z-index:6;display:none;flex-direction:column;align-items:stretch;gap:0.2rem;width:auto}
 #cam.open.camOlcek:not(.waiting) #webCamOlcek{display:flex}
-#webCamOlcek .wcoBar{display:flex;align-items:center;gap:0.25rem;padding:0.28rem;
-  border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
-  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
+#webCamOlcek .wcoBar{display:flex;align-items:center;justify-content:center;gap:0.25rem;padding:0;
+  border-radius:0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border:0}
+#webCamOlcek input[type=range]{display:none}
 #webCamOlcek .wcoBtn{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.7rem;
   background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
 #webCamOlcek .wcoBtn.on{background:rgba(255,255,255,.92);color:#111}
@@ -7280,16 +7280,13 @@ html.camNativeOn #camVideo{display:none !important}
    tasarım bozuluyordu. Yalnızca katman sırası verilir. */
 html.camNativeOn #cam > *:not(.camRoot){z-index:5}
 html.camNativeOn #cam > .camRoot{z-index:0}
-.camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.7rem) 0.875rem 0;display:flex;align-items:center;justify-content:center}
-.camTopPill{display:flex;align-items:center;gap:0.35rem;min-width:13.5rem;padding:0.22rem 0.28rem 0.22rem 0.22rem;
-  border-radius:6.1875rem;background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.14);
-  backdrop-filter:blur(0.9rem);-webkit-backdrop-filter:blur(0.9rem)}
-.camTopPill .iconbtn{width:2rem;height:2rem;background:transparent;border:0}
-.camtop .title{font-size:0.8125rem;font-weight:650;letter-spacing:-.018em;flex:1;text-align:center;
-  background:none;border:0;padding:0 0.4rem 0 0;backdrop-filter:none;-webkit-backdrop-filter:none}
+.camtop{display:none}
+.camTopPill{display:contents}
+.camTopPill .iconbtn{width:2.35rem;height:2.35rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);flex:none}
+.camtop .title{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .cambody{flex:1;position:relative;z-index:1}
-.cambot{position:relative;z-index:2;padding:0 0.75rem calc(var(--sab) + 0.85rem);display:flex;flex-direction:column;align-items:center}
-.camDock{width:100%;display:flex;align-items:center;gap:0.45rem;padding:0.55rem 0.55rem;
+.cambot{position:relative;z-index:2;padding:0 0.75rem calc(var(--sab) + 0.75rem);display:flex;flex-direction:column;align-items:center}
+.camDock{width:100%;display:flex;align-items:center;gap:0.4rem;padding:2.35rem 0.5rem 0.55rem;
   border-radius:1.75rem;background:rgba(0,0,0,.46);border:1px solid rgba(255,255,255,.14);
   backdrop-filter:blur(1rem);-webkit-backdrop-filter:blur(1rem)}
 .modes{display:flex;justify-content:center;align-items:center;gap:0.2rem;margin:0;flex:1}
@@ -9525,12 +9522,7 @@ html.native button,html.native .tab{touch-action:manipulation}
     <div id="camRoot" class="camRoot"></div>
       <video id="camVideo" playsinline muted autoplay></video>
     <div class="camtop">
-      <div class="camTopPill">
-        <button class="iconbtn" id="camClose" aria-label="Kapat">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-        </button>
-        <span class="title" id="camTitle" data-i18n="act_shoot_now">Şu anı çek</span>
-      </div>
+      <span class="title" id="camTitle" data-i18n="act_shoot_now">Şu anı çek</span>
     </div>
     <div class="rectime" id="recTime"><i></i><span>0:00 / 0:30</span></div>
     <div class="recprog" id="recProg"><i></i></div>
@@ -9538,6 +9530,9 @@ html.native button,html.native .tab{touch-action:manipulation}
     <div class="cambot">
       <button class="shutter" id="shutter" aria-label="Çek" data-i18n-aria="shoot"><i></i></button>
       <div class="camDock">
+        <button class="iconbtn" id="camClose" aria-label="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
         <div class="nogallery">
           <div class="box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 19 20 5"/></svg></div>
           <small data-i18n="no_gallery">Galeri yok</small>

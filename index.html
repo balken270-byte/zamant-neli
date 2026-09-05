@@ -9395,19 +9395,16 @@ html.native button,html.native .tab{touch-action:manipulation}
 </style>
 
 
-<style id="feed-v22-native-pwa-mode">
-/* APK'da SADECE AKIŞI PWA görünümüne yaklaştır.
-   Native WebView'da contain kaynaklı alt siyah alanı kaldır:
-   medya kartın tamamını kaplar. Diğer ekranlara dokunulmaz. */
+<style id="feed-v23-apk-same-as-pwa">
+/* APK Akış medya davranışı PWA ile birebir aynı:
+   contain + merkez. Native için ayrıca cover uygulanmaz. */
 html.native #feed .pmedia > img,
 html.native #feed .pmedia > video{
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:contain;
   object-position:center center;
 }
-
-/* Kartın sınırı dışına hiçbir medya taşmasın */
 html.native #feed .post{
   overflow:hidden;
 }

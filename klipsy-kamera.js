@@ -135,6 +135,10 @@
   let webAkis = null;
   let webKayit = null;
   let webParcalar = [];
+  /* WebCodecs yolu: Mediabunny üzerinden güvenli WebM mux + WebCodecs.
+     Başlatılamazsa aynı kamera akışı MediaRecorder ile devam eder. */
+  let webCodecsKayit = null;
+  let mediabunnyYukleme = null;
   let kayitZamanlayici = null;
 
   /* Kayıt süre/dosya sınırına takılıp kendiliğinden bittiğinde eklenti
@@ -389,6 +393,11 @@
       try { if (webKayit.state !== "inactive") webKayit.stop(); } catch (e) {}
       webKayit = null;
     }
+    if (webCodecsKayit) {
+      const wc = webCodecsKayit;
+      webCodecsKayit = null;
+      try { if (wc.output) await wc.output.cancel(); } catch (e) {}
+    }
     webParcalar = [];
 
     if (webAkis) {
@@ -575,6 +584,168 @@
   /* ══════════════════════════════════════════════════════════════════
      VİDEO KAYDI
      ══════════════════════════════════════════════════════════════════ */
+  /*
+     WEB HYBRID / WEBCODECS
+     ---------------------
+     WebCodecs tek başına bir dosya kapsayıcısı üretmez. Bu nedenle burada
+     WebCodecs'i doğrudan "ham chunk -> Blob" şeklinde kullanmıyoruz.
+     Mediabunny; WebCodecs tabanlı gerçek zamanlı video/ses kaynaklarını
+     WebM içine güvenli şekilde mux eder. Kütüphane yüklenemez veya cihaz
+     codec'i desteklemezse MediaRecorder'a geri dönülür.
+
+     ÖNEMLİ: Kamera görüntüsünü canvas'a kopyalamıyoruz. Aynı webAkis
+     kullanılıyor; böylece ikinci bir görüntü işleme katmanı ve gereksiz
+     frame kopyası yok.
+  */
+  function mediabunnyYukle() {
+    if (global.Mediabunny) return Promise.resolve(global.Mediabunny);
+    if (mediabunnyYukleme) return mediabunnyYukleme;
+    if (typeof document === "undefined") return Promise.resolve(null);
+
+    mediabunnyYukleme = new Promise(function (coz) {
+      let bitti = false;
+      const zaman = setTimeout(function () {
+        if (bitti) return;
+        bitti = true;
+        coz(null);
+      }, 5000);
+
+      const sc = document.createElement("script");
+      sc.async = true;
+      sc.src = "https://cdn.jsdelivr.net/npm/mediabunny@1.55.6/dist/bundles/mediabunny.min.cjs";
+      sc.onload = function () {
+        clearTimeout(zaman);
+        if (bitti) return;
+        bitti = true;
+        coz(global.Mediabunny || null);
+      };
+      sc.onerror = function () {
+        clearTimeout(zaman);
+        if (bitti) return;
+        bitti = true;
+        coz(null);
+      };
+      (document.head || document.documentElement).appendChild(sc);
+    });
+    return mediabunnyYukleme;
+  }
+
+  async function webCodecsUygunMu(mb, secenek) {
+    try {
+      if (!mb || !global.VideoEncoder || !global.VideoFrame) return false;
+      if (!global.MediaStreamTrackProcessor) return false;
+      if (!webAkis || !webAkis.getVideoTracks().length) return false;
+
+      const vt = webAkis.getVideoTracks()[0];
+      const a = vt.getSettings ? vt.getSettings() : {};
+      const g = Math.min(a.width || 1280, 1280);
+      const y = Math.min(a.height || 720, 1280);
+      const fps = Math.min(Math.max(Math.round(a.frameRate || 30), 24), 30);
+
+      /* WebM + VP9/VP8 gerçek encode desteğini doğrudan tarayıcıdan sor. */
+      if (mb.getFirstEncodableVideoCodec && mb.WebMOutputFormat) {
+        const format = new mb.WebMOutputFormat();
+        const codec = await mb.getFirstEncodableVideoCodec(
+          format.getSupportedVideoCodecs(),
+          { width: g, height: y }
+        );
+        if (!codec) return false;
+      }
+
+      /* Ses isteniyorsa Opus encode edilebilir olmalı. Ses yoksa sadece video. */
+      if (secenek.ses !== false && webAkis.getAudioTracks().length) {
+        if (mb.getFirstEncodableAudioCodec && mb.WebMOutputFormat) {
+          const format2 = new mb.WebMOutputFormat();
+          const ac = await mb.getFirstEncodableAudioCodec(
+            format2.getSupportedAudioCodecs()
+          );
+          if (!ac) return false;
+        } else if (!global.AudioEncoder) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function webCodecsKaydiBaslat(secenek, enFazlaSn) {
+    const mb = await mediabunnyYukle();
+    if (!(await webCodecsUygunMu(mb, secenek))) return false;
+
+    try {
+      const vt = webAkis.getVideoTracks()[0];
+      const at = webAkis.getAudioTracks()[0] || null;
+      const a = vt.getSettings ? vt.getSettings() : {};
+      const g = Math.min(a.width || 1280, 1280);
+      const y = Math.min(a.height || 720, 1280);
+      const bitrate = secenek.bitHizi || Math.min(5000000, Math.max(2500000, Math.round(g * y * 30 * 0.12)));
+
+      const format = new mb.WebMOutputFormat();
+      const target = new mb.BufferTarget();
+      const output = new mb.Output({ format: format, target: target });
+
+      /* VP9, cihazın gerçek WebCodecs encoder'ı desteklemiyorsa start()
+         aşamasında hata verir ve aşağıdaki catch MediaRecorder'a döner. */
+      const videoSource = new mb.MediaStreamVideoTrackSource(vt, {
+        codec: "vp9",
+        bitrate: bitrate,
+        quality: new mb.Quality({ bitrate: bitrate, bitrateMode: "variable" }),
+        latencyMode: "realtime",
+        hardwareAcceleration: "prefer-hardware",
+        keyFrameInterval: 2,
+        sizeChangeBehavior: "deny",
+      }, {
+        frameRate: 30,
+        timestampBase: "zero",
+      });
+      output.addVideoTrack(videoSource);
+
+      let audioSource = null;
+      if (at && secenek.ses !== false) {
+        audioSource = new mb.MediaStreamAudioTrackSource(at, {
+          codec: "opus",
+          bitrate: 128000,
+          quality: new mb.Quality({ bitrate: 128000, bitrateMode: "variable" }),
+        }, {
+          timestampBase: "zero",
+        });
+        output.addAudioTrack(audioSource);
+      }
+
+      await output.start();
+
+      webCodecsKayit = {
+        output: output,
+        videoSource: videoSource,
+        audioSource: audioSource,
+        baslangic: Date.now(),
+        max: enFazlaSn,
+        codec: "webcodecs-vp9-webm",
+      };
+
+      /* İç hata olursa sonraki stop/finalize bunu yakalar. */
+      Promise.resolve(videoSource.errorPromise).catch(function (e) {
+        yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e, ayrinti: "WebCodecs video" });
+      });
+      if (audioSource) {
+        Promise.resolve(audioSource.errorPromise).catch(function (e) {
+          yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e, ayrinti: "WebCodecs ses" });
+        });
+      }
+
+      return true;
+    } catch (e) {
+      try {
+        if (webCodecsKayit && webCodecsKayit.output) await webCodecsKayit.output.cancel();
+      } catch (_) {}
+      webCodecsKayit = null;
+      return false;
+    }
+  }
+
   function kayitBaslat(secenek) {
     secenek = secenek || {};
     const enFazlaSn = secenek.enFazlaSn || 30;
@@ -614,6 +785,28 @@
           }
         } else {
           if (!webAkis) return false;
+
+          /* ÖNCE GÜVENLİ WEBCODECS YOLU.
+             Başlatma testi başarısız olursa mevcut MediaRecorder aynen
+             devreye girer. Kamera akışı/canvas değişmez. */
+          const webCodecsOk = await webCodecsKaydiBaslat(secenek, enFazlaSn);
+          if (webCodecsOk) {
+            yay("kayitMotoru", { motor: "webcodecs", codec: "vp9", mux: "webm" });
+          } else {
+            yay("kayitMotoru", { motor: "mediarecorder", neden: "webcodecs_kullanilamadi" });
+          }
+
+          if (webCodecsOk) {
+            durum.kaydediyor = true;
+            durum.kayitBaslangic = Date.now();
+            yay("kayitBasladi", { enFazlaSn: enFazlaSn });
+            clearTimeout(kayitZamanlayici);
+            kayitZamanlayici = setTimeout(function () {
+              yay("kayitSuresiDoldu");
+              kayitBitir().catch(function () {});
+            }, enFazlaSn * 1000);
+            return true;
+          }
 
           const turler = [
             "video/webm;codecs=vp8,opus",
@@ -792,6 +985,26 @@
       }
 
       // web
+      if (webCodecsKayit) {
+        const wc = webCodecsKayit;
+        webCodecsKayit = null;
+        try {
+          if (wc.videoSource && wc.videoSource.close) wc.videoSource.close();
+          if (wc.audioSource && wc.audioSource.close) wc.audioSource.close();
+          await wc.output.finalize();
+          const buf = wc.output.target && wc.output.target.buffer;
+          if (!buf || !buf.byteLength) throw new Error("WebCodecs çıktısı boş");
+          const blob = new Blob([buf], { type: "video/webm" });
+          durum.kaydediyor = false;
+          yay("kayitBitti", { sure: sure, boyut: blob.size, motor: "webcodecs" });
+          return { blob: blob, yol: null, sure: sure, tur: "video/webm" };
+        } catch (e) {
+          durum.kaydediyor = false;
+          yay("hata", { hataTuru: HATA.KAYIT_HATASI, hata: e, ayrinti: "WebCodecs finalize" });
+          return null;
+        }
+      }
+
       return await new Promise(function (coz) {
         if (!webKayit) { durum.kaydediyor = false; coz(null); return; }
 

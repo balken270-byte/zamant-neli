@@ -158,6 +158,22 @@
 
   function yonNative(y) { return y === "on" ? "front" : "rear"; }
 
+  function onizlemeOlcut(kip) {
+    const vw = Math.round(window.innerWidth || 360);
+    const vh = Math.round(window.innerHeight || 640);
+    const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
+    const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
+    const k = kip || "fit";
+    if (k === "fill") {
+      return { x: 0, y: 0, width: vw, height: vh };
+    }
+    const ust = Math.round(sat + 56);
+    const alt = Math.round(sab + 210);
+    const ah = Math.max(120, vh - ust - alt);
+    const h = Math.min(ah, Math.round(vw * 16 / 9));
+    return { x: 0, y: Math.round(ust + (ah - h) / 2), width: vw, height: h };
+  }
+
   /* ══════════════════════════════════════════════════════════════════
      İZİNLER
      ══════════════════════════════════════════════════════════════════ */
@@ -234,20 +250,7 @@
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
     function onizlemeKutusu(kip) {
-      const vw = Math.round(window.innerWidth || 360);
-      const vh = Math.round(window.innerHeight || 640);
-      const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
-      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
-      const k = kip || durum.onizlemeKip || "fit";
-      if (k === "fill") {
-        return { x: 0, y: 0, width: vw, height: vh };
-      }
-      const ust = sat + 56;
-      const alt = sab + 210;
-      const aw = vw, ah = Math.max(120, vh - ust - alt);
-      const h9 = Math.round(aw * 16 / 9);
-      const h = Math.min(ah, h9);
-      return { x: 0, y: Math.round(ust + (ah - h) / 2), width: aw, height: h };
+      return onizlemeOlcut(kip || durum.onizlemeKip);
     }
 
     const taban = {
@@ -1194,18 +1197,37 @@
       return sirala(async function () {
         const k = (kip === "fill" || kip === "cover") ? "fill" : "fit";
         durum.onizlemeKip = k;
-        if (durum.yerel && durum.acik && CP() && CP().setPreviewSize) {
+        if (!durum.yerel || !CP()) return durum.onizlemeKip;
+        const kutu = onizlemeOlcut(k);
+        let oldu = false;
+        if (CP().setPreviewSize) {
           try {
-            const vw = Math.round(window.innerWidth || 360);
-            const vh = Math.round(window.innerHeight || 640);
-            const kutu = (k === "fill")
-              ? { x: 0, y: 0, width: vw, height: vh }
-              : { x: 0, y: Math.max(0, Math.round((vh - Math.min(vh, Math.round(vw * 16 / 9))) / 2)),
-                  width: vw, height: Math.min(vh, Math.round(vw * 16 / 9)) };
             await CP().setPreviewSize(kutu);
+            oldu = true;
           } catch (e) {}
         }
-        yay("onizlemeKip", { kip: durum.onizlemeKip });
+        if (!oldu && durum.acik) {
+          try {
+            await CP().stop();
+            const taban = {
+              position: yonNative(durum.yon),
+              toBack: true,
+              enableVideoMode: true,
+              lockAndroidOrientation: true,
+              includeSafeAreaInsets: false,
+              force: true,
+              x: kutu.x,
+              y: kutu.y,
+              width: kutu.width,
+              height: kutu.height,
+            };
+            if (sonSecenek && sonSecenek.kap) taban.parent = sonSecenek.kap;
+            await CP().start(taban);
+            document.documentElement.classList.add("camNativeOn");
+            oldu = true;
+          } catch (e) {}
+        }
+        yay("onizlemeKip", { kip: durum.onizlemeKip, kutu: kutu, oldu: oldu });
         return durum.onizlemeKip;
       });
     },

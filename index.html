@@ -7198,11 +7198,12 @@ video{background-color:#12121a}
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);color:#fff;
   backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
 .camFitBtn svg{width:18px;height:18px}
-.camZoomBtn{width:3rem;height:3rem;flex:none;display:grid;place-items:center;border-radius:6.1875rem;
+.camFitBtn.on{background:rgba(255,255,255,.92);color:#111}
+.camZoomToggle{width:3rem;height:3rem;flex:none;display:grid;place-items:center;border-radius:6.1875rem;
   background:rgba(255,255,255,.13);border:1px solid var(--edge-soft);color:#fff;
-  backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
-.camZoomBtn.on{background:rgba(255,255,255,.92);color:#111}
-.camZoomBtn svg{width:20px;height:20px}
+  backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem);
+  font:700 0.82rem/1 Inter,sans-serif;letter-spacing:-.02em}
+.camZoomToggle.on{background:rgba(255,255,255,.92);color:#111}
 /* izin beklenirken: video gizli, sade zemin ve dönen gösterge */
 #cam.waiting video{opacity:0}
 #cam.waiting::before{content:"";position:absolute;inset:0;z-index:2;
@@ -9525,7 +9526,7 @@ html.native button,html.native .tab{touch-action:manipulation}
       </button>
       <span class="title" id="camTitle" data-i18n="act_shoot_now">Şu anı çek</span>
       <button class="camFitBtn" id="camFitBtn" type="button" aria-label="Doldur">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16M15 4v16M4 9h16M4 15h16"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V4h4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M8 20H4v-4"/></svg>
       </button>
     </div>
     <div class="rectime" id="recTime"><i></i><span>0:00 / 0:30</span></div>
@@ -9537,9 +9538,7 @@ html.native button,html.native .tab{touch-action:manipulation}
         <button class="mode" data-mode="video" data-i18n="video_up">VİDEO</button>
       </div>
       <div class="camrow">
-        <button class="camZoomBtn" id="camZoomBtn" type="button" aria-label="Yakınlaştır">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.2"/><path d="m20 20-4.2-4.2"/><path d="M11 8.2v5.6M8.2 11h5.6"/></svg>
-        </button>
+        <button class="camZoomToggle" id="camZoomToggle" type="button" aria-label="Yakınlaştır">1×</button>
         <button class="shutter" id="shutter" aria-label="Çek" data-i18n-aria="shoot"><i></i></button>
         <button class="flip" id="flip" aria-label="Kamerayı çevir" data-i18n-aria="flip_cam">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-14.6 6"/><path d="M3.5 12a8.5 8.5 0 0 1 14.6-6"/><path d="M18.1 2.4V6h-3.6"/><path d="M5.9 21.6V18h3.6"/></svg>
@@ -20112,7 +20111,7 @@ function closeCam(){
   try{ if(window.__kameraYakinligiSifirla) window.__kameraYakinligiSifirla(); }catch(e){}
   stopCam();
   $("#cam").classList.remove("open","zoomOpen");$("#cam").setAttribute("aria-hidden","true");
-  const zb=document.getElementById("camZoomBtn"); if(zb) zb.classList.remove("on");
+  const zb=document.getElementById("camZoomToggle"); if(zb) zb.classList.remove("on");
   _popHistory("cam");
   if(target!=="dm") setTab($("#tabFeed"));
   if(typeof syncStatusBar==="function") syncStatusBar();
@@ -20421,6 +20420,8 @@ $("#camClose").addEventListener("click",closeCam);
     v.style.transform=ayna?("scaleX(-1) scale("+s+")"):("scale("+s+")");
     const lab=document.getElementById("wcoVal");
     if(lab) lab.textContent=s.toFixed(1)+"×";
+    const zLab=document.getElementById("camZoomToggle");
+    if(zLab) zLab.textContent = (Math.abs(s-1)<0.05) ? "1×" : (s.toFixed(1)+"×");
     document.querySelectorAll("#webCamOlcek .wcoBtn").forEach(b=>b.classList.toggle("on", b.dataset.kip===kip));
     const rng=document.getElementById("wcoRange");
     if(rng) rng.value=String(s);
@@ -20428,9 +20429,6 @@ $("#camClose").addEventListener("click",closeCam);
     if(fitBtn){
       fitBtn.classList.toggle("on", kip==="fill");
       fitBtn.setAttribute("aria-label", kip==="fill" ? "Tam" : "Doldur");
-      fitBtn.innerHTML = kip==="fill"
-        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M8 9h8M8 12h8M8 15h5"/></svg>'
-        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16M15 4v16M4 9h16M4 15h16"/></svg>';
     }
     try{
       localStorage.setItem("klipsy_web_cam_kip", kip);
@@ -20478,7 +20476,7 @@ $("#camClose").addEventListener("click",closeCam);
           if(window.Kamera && Kamera.yerelMi() && Kamera.onizlemeKipi) Kamera.onizlemeKipi(kip);
         });
       }
-      const zBtn=document.getElementById("camZoomBtn");
+      const zBtn=document.getElementById("camZoomToggle");
       if(zBtn && !zBtn._wired){
         zBtn._wired=true;
         zBtn.addEventListener("click", ev=>{

@@ -7309,6 +7309,26 @@ html.camNativeOn #camVideo{display:none !important}
    tasarım bozuluyordu. Yalnızca katman sırası verilir. */
 html.camNativeOn #cam > *:not(.camRoot){z-index:5}
 html.camNativeOn #cam > .camRoot{z-index:0}
+
+/* KALICI ANDROID NATIVE CAMERA KATMANI ZEMİNİ
+   CameraPreview(toBack:true) WebView'ın arkasında ayrı bir native yüzeydir.
+   WebView saydam olmak zorunda; ancak bu saydamlık kamera kontrollerinin
+   bulunduğu alanlara taşarsa Android/WebView'ın altında kalan açık tema
+   zemini görünür ve ekranın altı beyazlaşır. Kamera önizlemesinin dışındaki
+   UI bölgelerini fiziksel olarak siyah tutuyoruz. Böylece native yüzeyin
+   sadece kendi preview dikdörtgeni görünür, kontrollerin zemini asla tema
+   beyazına düşmez.
+*/
+html.camNativeOn #cam > .camtop{
+  background:#000 !important;
+  background-color:#000 !important;
+  background-image:none !important;
+}
+html.camNativeOn #cam > .cambot{
+  background:#000 !important;
+  background-color:#000 !important;
+  background-image:none !important;
+}
 .camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.75rem) 0.875rem 0;display:flex;align-items:center;justify-content:space-between}
 .camtop .title{font-size:0.875rem;font-weight:600;letter-spacing:-.018em;
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:0.4375rem 0.875rem;border-radius:6.1875rem;

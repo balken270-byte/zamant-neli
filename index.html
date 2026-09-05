@@ -7339,6 +7339,19 @@ html.camNativeOn #cam > .cambot{
    sonra alttaki bölüm şeffaf bırakılırsa açık temanın beyaz zemini görünür.
    Kontrol bölgesi kameranın parçası değildir; daima siyah kalmalıdır. */
 html.camNativeOn .cambot{background:#000 !important;background-color:#000 !important}
+/* Native preview yüzeyi kendi gerçek yüksekliğinde bittiğinde cambody
+   içinde kalan boşluk WebView arka planından sızmasın. Bu alt bant yalnızca
+   native kamera yüzeyinin DIŞINDA kalan bölgeyi siyaha boyar; üstteki alan
+   transparan kaldığı için native preview görünmeye devam eder. */
+html.camNativeOn #cam .cambody::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:clamp(7rem, 9vh, 9rem);
+  background:#000 !important;
+  z-index:3;
+  pointer-events:none;
+}
 .modes{display:flex;justify-content:center;align-items:center;gap:1.15rem;margin-bottom:1.25rem}
 .mode{font-size:0.8125rem;font-weight:650;letter-spacing:.04em;color:rgba(255,255,255,.42);
   padding:0;border:0;background:none;border-radius:0;box-shadow:none;backdrop-filter:none}

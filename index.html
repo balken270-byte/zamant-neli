@@ -5681,7 +5681,7 @@ svg{display:block}
 .pmedia .pmediaBg{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;
   filter:blur(1.5rem) saturate(1.08) brightness(.45);transform:none;z-index:0;pointer-events:none}
 .pmedia img,.pmedia video{width:100%;height:100%;object-fit:contain;object-position:center;
-  display:block;position:relative;z-index:1;background:#000;
+  display:block;position:relative;z-index:1;
   transform-origin:center center;transition:transform .28s var(--ease);will-change:transform}
 .pmedia.drag img,.pmedia.drag video{transition:none}
 .pshade{display:none!important}
@@ -7309,49 +7309,12 @@ html.camNativeOn #camVideo{display:none !important}
    tasarım bozuluyordu. Yalnızca katman sırası verilir. */
 html.camNativeOn #cam > *:not(.camRoot){z-index:5}
 html.camNativeOn #cam > .camRoot{z-index:0}
-
-/* KALICI ANDROID NATIVE CAMERA KATMANI ZEMİNİ
-   CameraPreview(toBack:true) WebView'ın arkasında ayrı bir native yüzeydir.
-   WebView saydam olmak zorunda; ancak bu saydamlık kamera kontrollerinin
-   bulunduğu alanlara taşarsa Android/WebView'ın altında kalan açık tema
-   zemini görünür ve ekranın altı beyazlaşır. Kamera önizlemesinin dışındaki
-   UI bölgelerini fiziksel olarak siyah tutuyoruz. Böylece native yüzeyin
-   sadece kendi preview dikdörtgeni görünür, kontrollerin zemini asla tema
-   beyazına düşmez.
-*/
-html.camNativeOn #cam > .camtop{
-  background:#000 !important;
-  background-color:#000 !important;
-  background-image:none !important;
-}
-html.camNativeOn #cam > .cambot{
-  background:#000 !important;
-  background-color:#000 !important;
-  background-image:none !important;
-}
 .camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.75rem) 0.875rem 0;display:flex;align-items:center;justify-content:space-between}
 .camtop .title{font-size:0.875rem;font-weight:600;letter-spacing:-.018em;
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:0.4375rem 0.875rem;border-radius:6.1875rem;
   backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
 .cambody{flex:1;position:relative;z-index:1}
 .cambot{position:relative;z-index:2;padding:0 1.25rem calc(var(--sab) + 1.375rem)}
-/* Native preview WebView'ın arkasında olduğu için kamera alanı bittikten
-   sonra alttaki bölüm şeffaf bırakılırsa açık temanın beyaz zemini görünür.
-   Kontrol bölgesi kameranın parçası değildir; daima siyah kalmalıdır. */
-html.camNativeOn .cambot{background:#000 !important;background-color:#000 !important}
-/* Native preview yüzeyi kendi gerçek yüksekliğinde bittiğinde cambody
-   içinde kalan boşluk WebView arka planından sızmasın. Bu alt bant yalnızca
-   native kamera yüzeyinin DIŞINDA kalan bölgeyi siyaha boyar; üstteki alan
-   transparan kaldığı için native preview görünmeye devam eder. */
-html.camNativeOn #cam .cambody::after{
-  content:"";
-  position:absolute;
-  left:0; right:0; bottom:0;
-  height:clamp(7rem, 9vh, 9rem);
-  background:#000 !important;
-  z-index:3;
-  pointer-events:none;
-}
 .modes{display:flex;justify-content:center;align-items:center;gap:1.15rem;margin-bottom:1.25rem}
 .mode{font-size:0.8125rem;font-weight:650;letter-spacing:.04em;color:rgba(255,255,255,.42);
   padding:0;border:0;background:none;border-radius:0;box-shadow:none;backdrop-filter:none}
@@ -8483,11 +8446,9 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 /* medya tam ekran arka plan */
 .cpMediaFull{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
-.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000;transform:none !important;max-width:none;max-height:none}
-/* Paylaşım önizlemesi dosyayı tekrar kırpmaz. Kamera Doldur modunda
-   çekilmişse crop zaten capture aşamasında yapılmıştır. */
+.cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000}
 #compose.cpFill .cpMediaFull video,
-#compose.cpFill .cpMediaFull img{object-fit:contain}
+#compose.cpFill .cpMediaFull img{object-fit:cover}
 #cpOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 7.25rem);transform:translateX(-50%);
   z-index:6;display:none;align-items:center;gap:0.25rem;padding:0.28rem;
   border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
@@ -15387,18 +15348,16 @@ function openCompose(src,kind,blob,durationMs){
   const box=$("#cpMedia");
   box.innerHTML="";box.style.backgroundImage="";
   const compose=$("#compose");
-  // Paylaşım ekranı kameradaki Tam/Doldur seçimini tekrar uygulamaz.
-  // Burada yalnızca kaydedilmiş medya dosyası gösterilir.
   let cpKip="fit";
-  compose.classList.remove("cpFill");
+  try{ if(localStorage.getItem("klipsy_web_cam_kip")==="fill") cpKip="fill"; }catch(e){}
+  compose.classList.toggle("cpFill", cpKip==="fill");
   const olcekBox=document.getElementById("cpOlcek");
   if(olcekBox){
     olcekBox.querySelectorAll("button").forEach(b=>{
       b.classList.toggle("on", b.dataset.kip===cpKip);
       b.onclick=()=>{
         cpKip=b.dataset.kip;
-        // Paylaşım önizlemesi crop yapmaz; seçim yalnızca eski UI durumunu tutar.
-        compose.classList.remove("cpFill");
+        compose.classList.toggle("cpFill", cpKip==="fill");
         olcekBox.querySelectorAll("button").forEach(x=>x.classList.toggle("on", x.dataset.kip===cpKip));
       };
     });
@@ -20614,10 +20573,18 @@ $("#camClose").addEventListener("click",closeCam);
       const im=new Image();
       im.onload=function(){
         try{
-          /* Paylaşım için kaydedilen fotoğrafa burada CROP uygulamıyoruz.
-             Önizlemedeki Tam/Doldur yalnızca ekranda nasıl göründüğünü
-             belirler; çekilen dosyanın sensör kadrajı aynen korunur. */
           let sx=0,sy=0,sw=im.width,sh=im.height;
+          if(typeof target==="string" && target!=="profile"){
+            /* Native Capgo capture preview kadrajini takip eder. Yine de
+               bazi cihazlar farkli JPEG orani dondurebilir; o durumda
+               yalnizca 9:16 disina tasan kenarlari esit miktarda al.
+               Bu bir zoom degeri degildir; hedef preview oranini korur. */
+            const oran=9/16;
+            if(Math.abs((sw/sh)-oran) > 0.002){
+              if(sw/sh>oran){ const n=sh*oran; sx+=(sw-n)/2; sw=n; }
+              else { const n=sw/oran; sy+=(sh-n)/2; sh=n; }
+            }
+          }
           const k=Math.min(1,1920/Math.max(sw,sh));
           const c=document.createElement("canvas");
           c.width=Math.max(2,Math.round(sw*k)); c.height=Math.max(2,Math.round(sh*k));
@@ -20648,11 +20615,20 @@ function grab(){
   const tamKare = (target === "profile");
   const square = false;
 
-  // Paylaşım için kaynak kadrajını koru. Profil akışı ayrıca kendi kırpma
-  // ekranına gittiği için orada da kaynağa dokunmuyoruz.
-  // Tam/Doldur yalnızca önizleme görünümüdür; dosyayı yeniden kırpmayız.
-  const sw = vw, sh = vh;
-  const sx = 0, sy = 0;
+  // Hedef oran: profilde kaynağın kendi oranı, diğerlerinde ekranla aynı (9:16)
+  const targetRatio = tamKare ? (vw/vh) : (9/16);
+
+  // Kaynaktan ORTADAN, hedef orana uyan en büyük alanı kes (object-fit: cover mantığı)
+  let sw, sh;
+  if(vw/vh > targetRatio){           // kaynak daha geniş → yanlardan kes
+    sh = vh;
+    sw = Math.round(vh * targetRatio);
+  }else{                             // kaynak daha dar → üst/alttan kes
+    sw = vw;
+    sh = Math.round(vw / targetRatio);
+  }
+  const sx = Math.round((vw - sw)/2);
+  const sy = Math.round((vh - sh)/2);
 
   /* BOYUT / VERİ DENGESİ
      2160 piksel ve %94 kalite ~2,5 MB dosya üretiyordu. Akışta 20 fotoğraf

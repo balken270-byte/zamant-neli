@@ -234,33 +234,21 @@
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
     function onizlemeKutusu() {
-      const vw = window.innerWidth || 360, vh = window.innerHeight || 640;
-      const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
-      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
-      const ust = sat + 56;
-      const alt = sab + 210;
-      const ah = Math.max(120, vh - ust - alt);
-      // Klipsy'nin kamera çerçevesi her zaman gerçek 9:16 portrait kutusudur.
-      // Native preview bu kutunun içinde contain/cover ile ölçeklenir;
-      // native yüzeyi asla ekranın tamamına taşırmıyoruz.
+      /* WYSIWYG portrait viewport:
+         Native preview occupies a fixed 9:16 portrait rectangle from the
+         very top of the screen. The HTML top/bottom chrome is layered above
+         it, so no white WebView seam can appear between guessed offsets. */
+      const vw = window.innerWidth || 360;
       const w = vw;
-      const h = Math.min(ah, Math.round(w * 16 / 9));
-      const x = 0;
-      const y = Math.round(ust + Math.max(0, (ah - h) / 2));
-      return { x: x, y: y, width: w, height: h };
+      const h = Math.round(w * 16 / 9);
+      return { x: 0, y: 0, width: w, height: h };
     }
 
     const taban = {
       position: yonNative(durum.yon),
-      // Kamera sensörünü 16:9 seçiyoruz; portre önizleme alanı
-      // setPreviewSize ile 9:16 olduğunda plugin bunu cover olarak
-      // ölçekleyip kenarlardan kırpar. Böylece 4:3 sensör görüntüsü
-      // ekranda artık 4:3 bir kutu olarak kalmaz.
-      aspectRatio: "16:9",
-      // Tam: aynı 9:16 kutusunda bütün 16:9 kaynak görünür.
-      // Doldur: aynı kutuyu kaplar, kenarlar kırpılır.
-      aspectMode: (durum.onizlemeKip === "fill") ? "cover" : "contain",
       toBack: true,
+      aspectRatio: "16:9",
+      aspectMode: "cover",
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,
@@ -541,11 +529,11 @@
              yakın fotoğraf boyutunu seçer; sonrasında index.html yalnızca
              gerekiyorsa aynı 9:16 oranını uygular.
           */
-          // Capture çözünürlüğünü zorla 1080x1920 istemiyoruz. Plugin'in
-          // desteklediği gerçek fotoğraf boyutunu seçmesine izin veriyoruz.
-          // Kadraj gerekiyorsa aşağıda, paylaşım ekranında değil, capture
-          // sonrasında tek kez uygulanır.
-          const r = await CP().capture({ quality: kalite });
+          const r = await CP().capture({
+            quality: kalite,
+            width: 1080,
+            height: 1920
+          });
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
@@ -1198,41 +1186,7 @@
 
     onizlemeKipi: function (kip) {
       return sirala(async function () {
-        const yeni = (kip === "fill") ? "fill" : "fit";
-        const degisti = durum.onizlemeKip !== yeni;
-        durum.onizlemeKip = yeni;
-
-        if (durum.yerel && durum.acik && CP()) {
-          // Kayıt sırasında kamera oturumunu yeniden başlatmak kayıt dosyasını bozabilir.
-          // Mod değişikliğini sonraki kamera açılışına bırakıyoruz.
-          if (durum.kaydediyor) {
-            yay("onizlemeKip", { kip: durum.onizlemeKip });
-            return durum.onizlemeKip;
-          }
-          /* aspectMode start sırasında belirleniyor; plugin'in public API'sinde
-             bunu canlı değiştiren bir method yok. Bu nedenle sadece mod değişince
-             native preview oturumunu aynı kamera ile yeniden bağlıyoruz.
-             Preview boyutu yine sabit 9:16 kalıyor ve toBack=true olduğu için
-             HTML kontrolleri native yüzeyin altında kalmıyor. */
-          if (degisti) {
-            try {
-              await CP().stop();
-              durum.acik = false;
-              await yerelBaslat(Object.assign({}, sonSecenek || {}, {
-                yon: durum.yon,
-                ses: (sonSecenek && sonSecenek.ses !== false) ? true : false
-              }));
-              durum.acik = true;
-              document.documentElement.classList.add("camNativeOn");
-            } catch (e) {
-              // Yeniden başlatma başarısızsa mevcut preview'ı bozma; mod durumu
-              // UI'da korunur ve bir sonraki kamera açılışında uygulanır.
-            }
-          } else if (CP().setPreviewSize) {
-            try { await CP().setPreviewSize(onizlemeKutusu()); } catch (e) {}
-          }
-        }
-        yay("onizlemeKip", { kip: durum.onizlemeKip });
+        durum.onizlemeKip = (kip === "fill") ? "fill" : "fit";
         return durum.onizlemeKip;
       });
     },

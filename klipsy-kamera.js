@@ -1198,10 +1198,27 @@
           try {
             const vw = Math.round(window.innerWidth || 360);
             const vh = Math.round(window.innerHeight || 640);
-            const kutu = (k === "fill")
-              ? { x: 0, y: 0, width: vw, height: vh }
-              : { x: 0, y: Math.max(0, Math.round((vh - Math.min(vh, Math.round(vw * 16 / 9))) / 2)),
-                  width: vw, height: Math.min(vh, Math.round(vw * 16 / 9)) };
+            /* Native preview ölçüsü: Doldur modunda bile gerçek kamera
+               önizleme alanını 9:16 koru. Önceki tasarımda fill için
+               doğrudan tüm ekran (vw x vh) gönderiliyordu; yeni kamera
+               katmanında bu, setPreviewSize ile UI katmanının çakışmasına
+               ve Doldur geçişinin çalışmamasına yol açabiliyor. */
+            const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
+            const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
+            /* Fit ve Doldur aynı 9:16 native pencereyi kullanır.
+               Doldur artık native preview katmanını tüm ekrana yaymaz. */
+            const ust = sat + 56;
+            const alt = sab + 210;
+            const aw = vw;
+            const ah = Math.max(120, vh - ust - alt);
+            const h9 = Math.round(aw * 16 / 9);
+            const fitH = Math.min(ah, h9);
+            const kutu = {
+              x: 0,
+              y: Math.round(ust + (ah - fitH) / 2),
+              width: aw,
+              height: fitH
+            };
             await CP().setPreviewSize(kutu);
           } catch (e) {}
         }

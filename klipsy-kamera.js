@@ -236,16 +236,20 @@
     function onizlemeKutusu(kip) {
       const vw = Math.round(window.innerWidth || 360);
       const vh = Math.round(window.innerHeight || 640);
+      const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0;
+      const sab = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0;
       const k = kip || durum.onizlemeKip || "fit";
       if (k === "fill") {
         return { x: 0, y: 0, width: vw, height: vh };
       }
-      const w = vw;
-      const h = Math.min(vh, Math.round(w * 16 / 9));
-      return { x: 0, y: Math.max(0, Math.round((vh - h) / 2)), width: w, height: h };
+      const ust = sat + 56;
+      const alt = sab + 210;
+      const aw = vw, ah = Math.max(120, vh - ust - alt);
+      const h9 = Math.round(aw * 16 / 9);
+      const h = Math.min(ah, h9);
+      return { x: 0, y: Math.round(ust + (ah - h) / 2), width: aw, height: h };
     }
 
-    const doldur = (durum.onizlemeKip === "fill");
     const taban = {
       position: yonNative(durum.yon),
       toBack: true,
@@ -254,8 +258,6 @@
       disableAudio: secenek.ses === false,
       videoQuality: "high",
       includeSafeAreaInsets: false,
-      aspectRatio: doldur ? "fill" : "fit",
-      aspectMode: doldur ? "cover" : "fit",
     };
     if (secenek.kap)   taban.parent    = secenek.kap;
     if (secenek.sinif) taban.className = secenek.sinif;

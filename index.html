@@ -7172,17 +7172,7 @@ svg{display:block}
 /* ============ kamera ============ */
 #cam{position:absolute;inset:0;z-index:var(--z-cam);background:#000;display:none;flex-direction:column}
 #cam.open{display:flex;animation:fadeIn .2s ease}
-/* Açık temada kamera beyaza boyanmasın — önizleme letterbox’ı siyah kalsın */
-[data-theme="light"] #cam,
-[data-theme="light"] #cam.open,
-[data-theme="light"] #cam .camtop,
-[data-theme="light"] #cam .cambot,
-[data-theme="light"] #cam .cambody,
-[data-theme="light"] #cam .camRoot,
-[data-theme="light"] #cam #camRoot{
-  background:#000 !important;
-  background-color:#000 !important;
-}
+/* Açık tema: kontroller okunur kalsın, önizleme deliği asla boyanmasın */
 [data-theme="light"] #cam .title{color:#fff;background:rgba(0,0,0,.45)}
 [data-theme="light"] #cam .mode{color:rgba(255,255,255,.45)}
 [data-theme="light"] #cam .mode.on{color:#fff;background:none}

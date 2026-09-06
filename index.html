@@ -9404,10 +9404,6 @@ html.native button,html.native .tab{touch-action:manipulation}
 }
 </style>
 
-<style id="apk-snap-inset-fix-test">
-/* APK TEST: snap hedefini üst insetin altına taşı; PWA etkilenmez */
-html.native #feed{scroll-padding-top:calc(var(--sat) + var(--top) + 0.35rem)!important;}
-</style>
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
@@ -23670,75 +23666,22 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 })();
 </script>
 
-<!-- APK-ONLY INSET DIAGNOSTIC: temporary, remove after measurement -->
-<style id="apk-inset-diagnostic-style">
-html.native #apk-inset-diagnostic{
-  position:fixed!important;left:8px!important;right:8px!important;bottom:calc(var(--sab, 0px) + 8px)!important;
-  z-index:2147483647!important;background:rgba(0,0,0,.94)!important;color:#fff!important;
-  border:1px solid rgba(255,255,255,.35)!important;border-radius:10px!important;
-  padding:9px 10px!important;font:12px/1.35 monospace!important;white-space:pre-wrap!important;
-  box-shadow:0 4px 20px rgba(0,0,0,.5)!important;max-height:42vh!important;overflow:auto!important;
+<style id="apk-feed-clip-only">
+/* APK ONLY: eski gönderinin üst şeridin altında görünmesini engelle.
+   Kaydırma/snap geometrisine dokunmaz; sadece feed'in görünür alanını
+   native üst barın altından başlatır. PWA etkilenmez. */
+html.apkNative #feed{
+  clip-path:inset(calc(var(--sat) + var(--top)) 0 0 0);
+  -webkit-clip-path:inset(calc(var(--sat) + var(--top)) 0 0 0);
 }
-html:not(.native) #apk-inset-diagnostic{display:none!important}
-#apk-inset-diagnostic .diag-title{font-weight:700;margin-bottom:5px}
-#apk-inset-diagnostic .diag-close{position:absolute;right:7px;top:5px;border:0;background:#333;color:#fff;border-radius:6px;padding:3px 7px;font:11px monospace}
 </style>
-<div id="apk-inset-diagnostic" aria-hidden="true"><div class="diag-title">KLIPSY APK 6PX TEST</div><button class="diag-close" onclick="this.parentElement.style.display='none'">KAPAT</button><div id="apk-inset-diagnostic-text">Ölçülüyor...</div></div>
-<script id="apk-inset-diagnostic-script">
+<script>
 (function(){
-  function pxVar(name){
-    try{
-      var e=document.createElement('div');
-      e.style.cssText='position:fixed;left:-99999px;top:0;width:1px;height:var('+name+',0px);pointer-events:none;';
-      document.body.appendChild(e); var v=e.getBoundingClientRect().height; e.remove(); return v;
-    }catch(e){return -1}
-  }
-  function cssPx(prop){
-    try{return getComputedStyle(document.documentElement).getPropertyValue(prop).trim()||'?'}catch(e){return '?'}
-  }
-  async function statusInfo(){
-    try{
-      var SB=(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.StatusBar)||window.StatusBar;
-      if(SB&&typeof SB.getInfo==='function') return await SB.getInfo();
-    }catch(e){}
-    return null;
-  }
-  async function update(){
-    var box=document.getElementById('apk-inset-diagnostic');
-    var text=document.getElementById('apk-inset-diagnostic-text');
-    if(!box||!text) return;
-    if(!document.documentElement.classList.contains('native')){box.style.display='none';return;}
-    box.style.display='block';
-    var feed=document.getElementById('feed');
-    var post=feed&&feed.querySelector('.post');
-    var topbar=document.querySelector('.topbar');
-    var fr=feed&&feed.getBoundingClientRect();
-    var pr=post&&post.getBoundingClientRect();
-    var tr=topbar&&topbar.getBoundingClientRect();
-    var csFeed=feed?getComputedStyle(feed):null;
-    var csPost=post?getComputedStyle(post):null;
-    var info=await statusInfo();
-    var vv=window.visualViewport;
-    var sat=pxVar('--sat');
-    var sab=pxVar('--sab');
-    var lines=[
-      'SAT measured: '+sat+' px   SAB: '+sab+' px',
-      '--sat raw: '+cssPx('--sat')+'   --top: '+cssPx('--top')+'   --tab: '+cssPx('--tab'),
-      'innerH: '+window.innerHeight+'   clientH: '+document.documentElement.clientHeight,
-      'visualH: '+(vv?vv.height:'n/a')+'   DPR: '+window.devicePixelRatio,
-      'topbar: '+(tr?('top='+tr.top.toFixed(1)+' bottom='+tr.bottom.toFixed(1)+' h='+tr.height.toFixed(1)):'n/a'),
-      'post:   '+(pr?('top='+pr.top.toFixed(1)+' bottom='+pr.bottom.toFixed(1)+' h='+pr.height.toFixed(1)):'n/a'),
-      'gap post-topbar: '+(pr&&tr?(pr.top-tr.bottom).toFixed(1)+' px':'n/a'),
-      'feed padding-top: '+(csFeed?csFeed.paddingTop:'n/a')+'   post h: '+(csPost?csPost.height:'n/a'),
-      'StatusBar: '+(info?JSON.stringify({height:info.height,overlays:info.overlays,visible:info.visible}):'getInfo yok')
-    ];
-    text.textContent=lines.join('\n');
-  }
-  function start(){
-    var n=0; function tick(){ update(); if(n++<20) setTimeout(tick,500); } tick();
-    window.addEventListener('resize',update); if(window.visualViewport) window.visualViewport.addEventListener('resize',update);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
+  try{
+    var cap=window.Capacitor;
+    var native=!!(cap && cap.isNativePlatform && cap.isNativePlatform());
+    if(native) document.documentElement.classList.add('apkNative');
+  }catch(e){}
 })();
 </script>
 </body>

@@ -5661,7 +5661,7 @@ svg{display:block}
 #feed{position:absolute;inset:0;z-index:1;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
   scroll-snap-type:y proximity;transition:opacity .2s;
-  padding:calc(var(--sat) + var(--top) + 2.35rem) 0.5rem calc(var(--tab) + var(--sab) + 0.5rem);
+  padding:calc(var(--sat) + var(--top) + 0.35rem) 0.5rem calc(var(--tab) + var(--sab) + 0.5rem);
   box-sizing:border-box;background:#08080C}
 #feed::-webkit-scrollbar{display:none}
 #feed.locked{overflow:hidden}
@@ -17205,7 +17205,7 @@ async function lockNativeStatusBar(){
       /* overlay AÇIK: sistem çubuğu içeriğin ÜSTÜNDE durur, WebView
          boyu değişmez. hide/show yok → titreme yok.
          Akış fotoğrafı kenara kadar gider; başlık --sat ile aşağıda kalır. */
-      await SB.setOverlaysWebView({overlay:true});
+      await SB.setOverlaysWebView({overlay:false});
     }
   }catch(e){}
   try{

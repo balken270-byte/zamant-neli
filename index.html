@@ -23667,10 +23667,16 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 </script>
 
 <style id="apk-feed-snap-final">
-/* APK ONLY: Gönderi her kaydırmada üst barın hemen altına otursun.
-   Feed'in mevcut 0.35rem boşluğu korunur; PWA etkilenmez. */
+/* APK ONLY: SNAP DÜZELTMESİ
+   scroll-padding-top kaldırılıyor. Bu değer gönderiyi her snap sonrası
+   yaklaşık 92.6px aşağı itiyordu. Mevcut padding ve post geometrisine
+   dokunmadan sadece snap'in doğal start hizası kullanılır. */
 html.native #feed{
-  scroll-padding-top:calc(var(--sat) + var(--top)) !important;
+  scroll-padding-top:0 !important;
+}
+
+html.native #feed .post{
+  scroll-margin-top:0 !important;
 }
 </style>
 </body>

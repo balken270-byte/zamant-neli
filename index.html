@@ -23666,23 +23666,12 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 })();
 </script>
 
-<style id="apk-feed-clip-only">
-/* APK ONLY: eski gönderinin üst şeridin altında görünmesini engelle.
-   Kaydırma/snap geometrisine dokunmaz; sadece feed'in görünür alanını
-   native üst barın altından başlatır. PWA etkilenmez. */
-html.apkNative #feed{
-  clip-path:inset(calc(var(--sat) + var(--top)) 0 0 0);
-  -webkit-clip-path:inset(calc(var(--sat) + var(--top)) 0 0 0);
+<style id="apk-feed-snap-final">
+/* APK ONLY: Gönderi her kaydırmada üst barın hemen altına otursun.
+   Feed'in mevcut 0.35rem boşluğu korunur; PWA etkilenmez. */
+html.native #feed{
+  scroll-padding-top:calc(var(--sat) + var(--top)) !important;
 }
 </style>
-<script>
-(function(){
-  try{
-    var cap=window.Capacitor;
-    var native=!!(cap && cap.isNativePlatform && cap.isNativePlatform());
-    if(native) document.documentElement.classList.add('apkNative');
-  }catch(e){}
-})();
-</script>
 </body>
 </html>

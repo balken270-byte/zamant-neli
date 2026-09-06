@@ -5661,7 +5661,7 @@ svg{display:block}
 #feed{position:absolute;inset:0;z-index:1;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
   scroll-snap-type:y proximity;transition:opacity .2s;
-  padding:calc(var(--sat) + var(--top) + 0.35rem) 0.5rem calc(var(--tab) + var(--sab) + 0.5rem);
+  padding:calc(var(--sat) + var(--top) + 2.35rem) 0.5rem calc(var(--tab) + var(--sab) + 0.5rem);
   box-sizing:border-box;background:#08080C}
 #feed::-webkit-scrollbar{display:none}
 #feed.locked{overflow:hidden}
@@ -9403,7 +9403,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   transform:none;
 }
 </style>
-
 
 </head>
 <body>
@@ -23666,43 +23665,5 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   }
 })();
 </script>
-
-<style id="apk-only-header-content-final">
-/* APK / native WebView ONLY — PWA'ya dokunma. */
-/* İçerik/gönderi bloğunu PWA'daki başlangıç seviyesine aşağı al. */
-html.native #feed{
-  padding-top:calc(var(--sat) + var(--top) + 4.15rem) !important;
-}
-
-/* İçerik bloğu aşağı indiği için gönderi yüksekliğini aynı miktarda azalt:
-   böylece ikinci gönderi alttan görünmez ve tek gönderi ekranı korunur. */
-html.native #feed .post{
-  height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 4.15rem
-    + var(--tab)
-    + var(--sab)
-    + 0.75rem
-  ) !important;
-  min-height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 4.15rem
-    + var(--tab)
-    + var(--sab)
-    + 0.75rem
-  ) !important;
-}
-
-/* Avatar + isim + konum bloğu içerik bloğunun üstüne taşınır;
-   sağ üstteki butonlarla aynı yatay bölgede kalır. */
-html.native #feed .post .pauthor{
-  top:-3.35rem !important;
-}
-</style>
-
 </body>
 </html>

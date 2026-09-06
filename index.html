@@ -5867,12 +5867,22 @@ svg{display:block}
   background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.35) 70%,transparent);
   /* NOT: background geçişi YOK — gradyandan düz renge animasyon titriyor */
   transition:opacity .25s,transform .3s var(--ease)}
+/* Akış DIŞINDA tab bar her zaman opak — alttan profil/sayfa sızmasın */
+.tabbar.solid{background:#0A0A0E;border-top:1px solid rgba(255,255,255,.08)}
+.tabbar.solid .tab span{text-shadow:none}
+.tabbar.solid .tab svg{filter:none}
+.tabbar.solid.onLight,
+[data-theme="light"] .tabbar.solid,
 [data-theme="light"] .tabbar.onLight{
-  background:rgba(255,255,255,.97);border-top:0}
-[data-theme="light"] .tabbar.onLight .tab{color:rgba(20,20,24,.5)}
-[data-theme="light"] .tabbar.onLight .tab span{text-shadow:none}
-[data-theme="light"] .tabbar.onLight .tab svg{filter:none}
-[data-theme="light"] .tabbar.onLight .tab.on{color:#141418}
+  background:#FFFFFF;border-top:1px solid rgba(0,0,0,.08)}
+[data-theme="light"] .tabbar.onLight .tab,
+.tabbar.solid.onLight .tab{color:rgba(20,20,24,.5)}
+[data-theme="light"] .tabbar.onLight .tab span,
+.tabbar.solid.onLight .tab span{text-shadow:none}
+[data-theme="light"] .tabbar.onLight .tab svg,
+.tabbar.solid.onLight .tab svg{filter:none}
+[data-theme="light"] .tabbar.onLight .tab.on,
+.tabbar.solid.onLight .tab.on{color:#141418}
 .tabbar.away{opacity:0;transform:translateY(100%);pointer-events:none}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.1875rem;
   color:rgba(255,255,255,.55);position:relative;transition:color .16s,transform .12s;padding-top:0.125rem}
@@ -5899,7 +5909,7 @@ svg{display:block}
 /* ============ paneller ============ */
 .panel,.sheet{position:absolute;inset:0;display:none;flex-direction:column}
 /* alt navigasyon çubuğu bu üç ekranda da görünsün diye altta yer bırakıyoruz */
-#profile,#chats,#timeSheet,#userSearch{bottom:var(--tab)}
+#profile,#chats,#timeSheet,#userSearch{bottom:calc(var(--tab) + var(--sab))}
 .relBox{padding:0.75rem 1.1rem calc(var(--sab) + 1.1rem)!important;text-align:center}
 .relBox h3{font-size:1.05rem;font-weight:750;letter-spacing:-.03em;margin:0.35rem 0 0.35rem}
 .relBox p{font-size:0.8125rem;color:var(--t3);line-height:1.45;margin:0 0 1rem}
@@ -12939,7 +12949,9 @@ function _applyTabbar(){
   const activeTab=document.querySelector(".tab.on");
   const lightTabs=["tabMsg","tabProfile","tabTime"];
   const tabLight = activeTab && lightTabs.includes(activeTab.id);
+  const onFeed = !panelOpen && activeTab && activeTab.id==="tabFeed";
   bar.classList.toggle("onLight", panelOpen || tabLight);
+  bar.classList.toggle("solid", !onFeed);
 }
 // sekmeler arası geçişte açık kalan ana panelleri kapat (tabbar artık her ekranda görünür olduğu için gerekli)
 function closeMainPanels(){
@@ -17190,7 +17202,15 @@ async function lockNativeStatusBar(){
   }catch(e){}
   try{
     if(typeof SB.setOverlaysWebView==="function"){
-      await SB.setOverlaysWebView({overlay:false});
+      /* overlay AÇIK: sistem çubuğu içeriğin ÜSTÜNDE durur, WebView
+         boyu değişmez. hide/show yok → titreme yok.
+         Akış fotoğrafı kenara kadar gider; başlık --sat ile aşağıda kalır. */
+      await SB.setOverlaysWebView({overlay:true});
+    }
+  }catch(e){}
+  try{
+    if(typeof SB.setBackgroundColor==="function"){
+      await SB.setBackgroundColor({color:'#00000000'});
     }
   }catch(e){}
 }

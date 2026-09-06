@@ -17160,9 +17160,64 @@ function resolveTheme(t){
 }
 // üstteki sistem şeridinin rengini o an açık olan ekrana göre ayarla
 // (Instagram mantığı: akış siyah, profil/mesajlar beyaz temada beyaz)
+function isNativeApp(){
+  try{
+    const cap=window.Capacitor;
+    return !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+  }catch(e){ return false; }
+}
+function capStatusBar(){
+  try{
+    const cap=window.Capacitor;
+    const P=cap && (cap.Plugins||{});
+    return (P && P.StatusBar) || (window.StatusBar) || null;
+  }catch(e){ return null; }
+}
+/* Akışta (ve kamera/çekim) sistem durum çubuğu KAPALI.
+   APK tam ekran WebView olduğu için çubuk açıkken gönderi
+   ikonların altına kayıyor; PWA'da bu şerit zaten yokmuş gibi
+   duruyor. Çubuğu gizleyip --sat'ı 0 yapınca kayma bitiyor.
+   Panel/ayar/mesaj açılınca çubuk geri gelir. */
+function feedWantsHiddenStatus(){
+  const darkScreens=["cam","compose"];
+  if(darkScreens.some(id=>{
+    const el=document.getElementById(id);
+    return el && el.classList.contains("open");
+  })) return true;
+  const panelIds=["profile","chats","chat","settings","editProfile","notif","timeSheet","blockedPanel","onboard"];
+  if(panelIds.some(id=>{
+    const el=document.getElementById(id);
+    return el && el.classList.contains("open");
+  })) return false;
+  const gateEl=document.getElementById('gate');
+  if(gateEl && !gateEl.classList.contains('off')) return false;
+  return true; // ana akış
+}
+async function applyNativeStatusBar(hide){
+  const SB=capStatusBar();
+  if(!SB) return;
+  try{
+    if(typeof SB.setOverlaysWebView==="function"){
+      await SB.setOverlaysWebView({overlay:true});
+    }
+  }catch(e){}
+  try{
+    if(hide){
+      if(typeof SB.hide==="function") await SB.hide();
+      document.documentElement.style.setProperty('--sat','0px');
+      document.documentElement.classList.add('feed-immersive');
+    }else{
+      if(typeof SB.show==="function") await SB.show();
+      document.documentElement.style.setProperty('--sat','env(safe-area-inset-top)');
+      document.documentElement.classList.remove('feed-immersive');
+    }
+  }catch(e){
+    document.documentElement.style.setProperty('--sat', hide ? '0px' : 'env(safe-area-inset-top)');
+  }
+  try{ if(typeof setVH==="function") setVH(); }catch(e){}
+}
 function syncStatusBar(){
   const tc=document.getElementById('__themeColor');
-  if(!tc) return;
   const isLight = document.documentElement.getAttribute('data-theme')==='light';
   const darkScreens=["cam","compose"];
   const onDarkScreen = darkScreens.some(id=>{
@@ -17180,7 +17235,18 @@ function syncStatusBar(){
   if(onGate || onDarkScreen) color='#08080C';
   else if(onPanel) color = isLight ? '#FFFFFF' : '#0A0A0E';
   else color='#08080C';
-  tc.setAttribute('content', color);
+  if(tc) tc.setAttribute('content', color);
+
+  const hide = feedWantsHiddenStatus();
+  /* PWA: akışta extra üst boşluğu kapat (safe-area = 0).
+     APK: Capacitor StatusBar.hide + --sat 0. */
+  if(!isNativeApp()){
+    document.documentElement.style.setProperty('--sat', hide ? '0px' : 'env(safe-area-inset-top)');
+    document.documentElement.classList.toggle('feed-immersive', hide);
+    try{ if(typeof setVH==="function") setVH(); }catch(e){}
+    return;
+  }
+  applyNativeStatusBar(hide);
 }
 
 window.syncStatusBar = syncStatusBar;  // modül kapsamından da erişilebilsin

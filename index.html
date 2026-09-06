@@ -17173,48 +17173,26 @@ function capStatusBar(){
     return (P && P.StatusBar) || (window.StatusBar) || null;
   }catch(e){ return null; }
 }
-/* Akışta (ve kamera/çekim) sistem durum çubuğu KAPALI.
-   APK tam ekran WebView olduğu için çubuk açıkken gönderi
-   ikonların altına kayıyor; PWA'da bu şerit zaten yokmuş gibi
-   duruyor. Çubuğu gizleyip --sat'ı 0 yapınca kayma bitiyor.
-   Panel/ayar/mesaj açılınca çubuk geri gelir. */
-function feedWantsHiddenStatus(){
-  const darkScreens=["cam","compose"];
-  if(darkScreens.some(id=>{
-    const el=document.getElementById(id);
-    return el && el.classList.contains("open");
-  })) return true;
-  const panelIds=["profile","chats","chat","settings","editProfile","notif","timeSheet","blockedPanel","onboard"];
-  if(panelIds.some(id=>{
-    const el=document.getElementById(id);
-    return el && el.classList.contains("open");
-  })) return false;
-  const gateEl=document.getElementById('gate');
-  if(gateEl && !gateEl.classList.contains('off')) return false;
-  return true; // ana akış
-}
-async function applyNativeStatusBar(hide){
+/* Durum çubuğu SAYFA DEĞİŞİNCE açılıp kapanmasın.
+   hide/show + --sat değişimi WebView yüksekliğini oynatıyor,
+   geçişte titreme / "tam ekrana zıplama" hissi veriyor.
+   Bir kez kilitle: çubuk HER zaman görünsün, içerik altına girmesin. */
+window.__statusBarLocked = window.__statusBarLocked || false;
+async function lockNativeStatusBar(){
+  if(window.__statusBarLocked) return;
+  window.__statusBarLocked = true;
+  document.documentElement.style.setProperty('--sat','env(safe-area-inset-top)');
+  document.documentElement.classList.remove('feed-immersive');
   const SB=capStatusBar();
   if(!SB) return;
   try{
-    if(typeof SB.setOverlaysWebView==="function"){
-      await SB.setOverlaysWebView({overlay:true});
-    }
+    if(typeof SB.show==="function") await SB.show();
   }catch(e){}
   try{
-    if(hide){
-      if(typeof SB.hide==="function") await SB.hide();
-      document.documentElement.style.setProperty('--sat','0px');
-      document.documentElement.classList.add('feed-immersive');
-    }else{
-      if(typeof SB.show==="function") await SB.show();
-      document.documentElement.style.setProperty('--sat','env(safe-area-inset-top)');
-      document.documentElement.classList.remove('feed-immersive');
+    if(typeof SB.setOverlaysWebView==="function"){
+      await SB.setOverlaysWebView({overlay:false});
     }
-  }catch(e){
-    document.documentElement.style.setProperty('--sat', hide ? '0px' : 'env(safe-area-inset-top)');
-  }
-  try{ if(typeof setVH==="function") setVH(); }catch(e){}
+  }catch(e){}
 }
 function syncStatusBar(){
   const tc=document.getElementById('__themeColor');
@@ -17237,16 +17215,7 @@ function syncStatusBar(){
   else color='#08080C';
   if(tc) tc.setAttribute('content', color);
 
-  const hide = feedWantsHiddenStatus();
-  /* PWA: akışta extra üst boşluğu kapat (safe-area = 0).
-     APK: Capacitor StatusBar.hide + --sat 0. */
-  if(!isNativeApp()){
-    document.documentElement.style.setProperty('--sat', hide ? '0px' : 'env(safe-area-inset-top)');
-    document.documentElement.classList.toggle('feed-immersive', hide);
-    try{ if(typeof setVH==="function") setVH(); }catch(e){}
-    return;
-  }
-  applyNativeStatusBar(hide);
+  if(isNativeApp()) lockNativeStatusBar();
 }
 
 window.syncStatusBar = syncStatusBar;  // modül kapsamından da erişilebilsin

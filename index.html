@@ -9405,15 +9405,6 @@ html.native button,html.native .tab{touch-action:manipulation}
 </style>
 
 
-<style id="apk-only-pauthor-position">
-/* SADECE APK / native WebView:
-   Avatar + isim + konum aynı .pauthor bloğunun içindedir.
-   PWA/orijinal web sürümüne dokunulmaz. */
-html.native .pauthor{
-  top:4rem !important;
-}
-</style>
-
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
@@ -23675,5 +23666,43 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   }
 })();
 </script>
+
+<style id="apk-only-header-content-final">
+/* APK / native WebView ONLY — PWA'ya dokunma. */
+/* İçerik/gönderi bloğunu PWA'daki başlangıç seviyesine aşağı al. */
+html.native #feed{
+  padding-top:calc(var(--sat) + var(--top) + 4.15rem) !important;
+}
+
+/* İçerik bloğu aşağı indiği için gönderi yüksekliğini aynı miktarda azalt:
+   böylece ikinci gönderi alttan görünmez ve tek gönderi ekranı korunur. */
+html.native #feed .post{
+  height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 4.15rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  ) !important;
+  min-height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 4.15rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  ) !important;
+}
+
+/* Avatar + isim + konum bloğu içerik bloğunun üstüne taşınır;
+   sağ üstteki butonlarla aynı yatay bölgede kalır. */
+html.native #feed .post .pauthor{
+  top:-3.35rem !important;
+}
+</style>
+
 </body>
 </html>

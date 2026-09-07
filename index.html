@@ -17195,6 +17195,28 @@ async function lockNativeStatusBar(){
   if(window.__statusBarLocked) return;
   window.__statusBarLocked = true;
   document.documentElement.classList.remove('feed-immersive');
+  /* @capacitor-community/safe-area: npm paketini import edecek bir bundler
+     olmadığı için (index.html düz <script> ile çalışıyor), paketin JS
+     tarafı hiç yüklenmiyor ve capacitor.config.json'daki "enabled":true
+     tek başına yetmiyor — native eklenti CSS değişkenlerini enjekte etmek
+     için bir JS çağrısı bekliyor. Capacitor HER native eklentiyi otomatik
+     olarak window.Capacitor.Plugins altında açığa çıkardığından, paketi
+     import etmeden doğrudan bu şekilde çağırabiliyoruz. Bu çağrı native
+     tarafın gerçek durum çubuğu yüksekliğini var(--safe-area-inset-top)
+     olarak sayfaya yazmasını tetikliyor. */
+  try{
+    const SA = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SafeArea;
+    if(SA && typeof SA.enable==="function"){
+      await SA.enable({config:{
+        customColorsForSystemBars:true,
+        statusBarColor:'#00000000',
+        statusBarContent:'light',
+        navigationBarColor:'#00000000',
+        navigationBarContent:'light',
+        offset:0
+      }});
+    }
+  }catch(e){}
   const SB=capStatusBar();
   if(!SB) return;
   try{

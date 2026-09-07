@@ -5585,7 +5585,8 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
   --top:3.25rem; --tab:3.025rem;
   --sheetH:calc(min(55vh,31.25rem) - 4.25rem);   /* uygulama açılınca yeniden hesaplanır */
-  --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
+  --sat:var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --sab:var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
   --z-tab:32; --z-notif:50; --z-time:52; --z-comments:60; --z-cam:70; --z-toast:80;
@@ -17193,7 +17194,6 @@ window.__statusBarLocked = window.__statusBarLocked || false;
 async function lockNativeStatusBar(){
   if(window.__statusBarLocked) return;
   window.__statusBarLocked = true;
-  document.documentElement.style.setProperty('--sat','env(safe-area-inset-top)');
   document.documentElement.classList.remove('feed-immersive');
   const SB=capStatusBar();
   if(!SB) return;
@@ -17202,19 +17202,14 @@ async function lockNativeStatusBar(){
   }catch(e){}
   try{
     if(typeof SB.setOverlaysWebView==="function"){
-      /* PLATFORM FARKI:
-         iOS'ta env(safe-area-inset-top) gerçek çentik/durum çubuğu yüksekliğini
-         verir, bu yüzden overlay açık olsa da başlık --sat ile doğru yere iner.
-         Android'de ise Capacitor WebView'i env(safe-area-inset-top) değerini
-         DOLDURMUYOR (her zaman 0 kalıyor). overlay:true verince sistem çubuğu
-         içeriğin üstüne biniyor ama --sat=0 olduğundan başlık onu telafi
-         edemiyor ve profil/kullanıcı adı saatin üstüne çakışıyordu (PWA'da
-         böyle bir sorun yok çünkü tarayıcıda "durum çubuğu" kavramı zaten
-         ayrı bir alan). Bu yüzden Android'de overlay'i KAPALI tutuyoruz:
-         sistem durum çubuğu kendi alanını ayırsın, WebView onun altından
-         başlasın — tıpkı PWA'daki gibi. */
-      const plat = (window.Capacitor && window.Capacitor.getPlatform) ? window.Capacitor.getPlatform() : "";
-      await SB.setOverlaysWebView({overlay: plat!=="android"});
+      /* overlay HER platformda AÇIK: sistem çubuğu içeriğin üstünde durur,
+         WebView boyu değişmez, hide/show yok → titreme yok.
+         Android'de --sat artık @capacitor-community/safe-area plugin'inin
+         yazdığı var(--safe-area-inset-top) değerinden geliyor (bkz. :root),
+         bu yüzden başlık artık durum çubuğunun altına doğru iniyor;
+         eskiden burada Android'i overlay:false yapıyorduk çünkü --sat hep
+         0 kalıyordu — artık gerek yok. */
+      await SB.setOverlaysWebView({overlay:true});
     }
   }catch(e){}
   try{

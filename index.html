@@ -17185,15 +17185,14 @@ function capStatusBar(){
     return (P && P.StatusBar) || (window.StatusBar) || null;
   }catch(e){ return null; }
 }
-/* Durum çubuğu SAYFA DEĞİŞİNCE açılıp kapanmasın.
-   hide/show + --sat değişimi WebView yüksekliğini oynatıyor,
-   geçişte titreme / "tam ekrana zıplama" hissi veriyor.
-   Bir kez kilitle: çubuk HER zaman görünsün, içerik altına girmesin. */
+/* Tam ekran YOK.
+   Sistem çubuğu görünür, WebView onun ALTINDAN başlar.
+   hide yok, overlay kapalı, --sat 0 (çünkü boşluk zaten sistemde). */
 window.__statusBarLocked = window.__statusBarLocked || false;
 async function lockNativeStatusBar(){
   if(window.__statusBarLocked) return;
   window.__statusBarLocked = true;
-  document.documentElement.style.setProperty('--sat','env(safe-area-inset-top)');
+  document.documentElement.style.setProperty('--sat','0px');
   document.documentElement.classList.remove('feed-immersive');
   const SB=capStatusBar();
   if(!SB) return;
@@ -17202,16 +17201,7 @@ async function lockNativeStatusBar(){
   }catch(e){}
   try{
     if(typeof SB.setOverlaysWebView==="function"){
-      /* TAM EKRAN KAPALI: durum çubuğu kendi alanını ayırıyor,
-         WebView (ve dolayısıyla tüm içerik) onun ALTINDAN başlıyor.
-         Böylece hiçbir öğe durum çubuğuyla çakışmıyor, --sat/safe-area
-         hesaplarına da gerek kalmıyor. */
       await SB.setOverlaysWebView({overlay:false});
-    }
-  }catch(e){}
-  try{
-    if(typeof SB.setBackgroundColor==="function"){
-      await SB.setBackgroundColor({color:'#000000'});
     }
   }catch(e){}
 }
@@ -17236,6 +17226,7 @@ function syncStatusBar(){
   else color='#08080C';
   if(tc) tc.setAttribute('content', color);
 
+  document.documentElement.style.setProperty('--sat','0px');
   if(isNativeApp()) lockNativeStatusBar();
 }
 

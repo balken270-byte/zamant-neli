@@ -17304,10 +17304,16 @@ function capStatusBar(){
     return (P && P.StatusBar) || (window.StatusBar) || null;
   }catch(e){ return null; }
 }
-/* Tam ekran YOK. Sistem çubuğu durur, uygulama onun altından başlar. */
+/* Tam ekran YOK — orijinal davranış.
+   Sistem çubuğu görünür, WebView onun ALTINDAN başlar. */
+window.__statusBarLocked = false;
 async function lockNativeStatusBar(){
-  document.documentElement.classList.remove('feed-immersive');
   document.documentElement.style.setProperty('--sat','0px');
+  document.documentElement.classList.remove('feed-immersive');
+  try{
+    const ex=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;
+    if(document.fullscreenElement && ex) ex.call(document);
+  }catch(e){}
   const SB=capStatusBar();
   if(!SB) return;
   try{
@@ -17316,12 +17322,6 @@ async function lockNativeStatusBar(){
   try{
     if(typeof SB.setOverlaysWebView==="function"){
       await SB.setOverlaysWebView({overlay:false});
-    }
-  }catch(e){}
-  try{
-    if(typeof SB.setBackgroundColor==="function"){
-      const isLight = document.documentElement.getAttribute('data-theme')==='light';
-      await SB.setBackgroundColor({ color: isLight ? '#FFFFFF' : '#08080C' });
     }
   }catch(e){}
 }
@@ -17513,6 +17513,10 @@ function renderSettings(){
     t("fullscreen"), t("fullscreen_sub"), !!document.fullscreenElement,
     (on)=>{
       try{
+        if(isNativeApp()){
+          lockNativeStatusBar();
+          return;
+        }
         if(on){
           const el=document.documentElement;
           const req=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;

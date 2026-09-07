@@ -5585,8 +5585,7 @@ html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</styl
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
   --top:3.25rem; --tab:3.025rem;
   --sheetH:calc(min(55vh,31.25rem) - 4.25rem);   /* uygulama açılınca yeniden hesaplanır */
-  --sat:var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
-  --sab:var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
   --z-tab:32; --z-notif:50; --z-time:52; --z-comments:60; --z-cam:70; --z-toast:80;
@@ -5702,7 +5701,7 @@ svg{display:block}
 .post.bare .plate{opacity:0;pointer-events:none}
 
 /* --- kim: sol üst --- */
-.pauthor{position:absolute;top:calc(var(--sat) + 0.7rem);left:0.7rem;right:4.5rem;z-index:4;
+.pauthor{position:absolute;top:0.7rem;left:0.7rem;right:4.5rem;z-index:4;
   display:flex;align-items:center;gap:0.5625rem;
   padding:0;border-radius:0;background:none;max-width:calc(100% - 5.25rem)}
 .pav{width:2.375rem;height:2.375rem;border-radius:6.1875rem;flex:none;background:#22222A center/cover no-repeat;
@@ -9109,8 +9108,8 @@ html.native button,html.native .tab{touch-action:manipulation}
 }
 
 .post{
-  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.35rem);
-  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.35rem);
+  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
+  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
   border-radius:1.125rem;
 }
 
@@ -9122,18 +9121,53 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 
 <style id="feed-v9-post-extends-behind-nav">
-/* KALDIRILDI: gönderiyi navigasyonun arkasına kadar uzatan eski hile
-   (--tab ve --sab'ı height'a EKLEYEN sürüm) --vh'nin native tarafta geç
-   netleşmesiyle çakışıp bir sonraki gönderinin navigasyonun oraya
-   sızmasına yol açıyordu. Artık yukarıdaki tek kural (--tab ve --sab
-   height'tan ÇIKARILARAK) kartı tam olarak navigasyonun üstünde,
-   taşmadan bitiriyor; bu blok bilerek boş bırakıldı. */
+/* V3 baz alınmıştır.
+   Sadece gönderi yüksekliği navigasyon yüksekliği kadar uzatılır.
+   Böylece 2. gönderi ilk ekranda görünmez; navigasyon kartın üstünde kalır. */
+.post{
+  height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+  );
+  min-height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+  );
+  flex:none;
+}
 </style>
 
 
 <style id="feed-v10-final-sizing">
-/* KALDIRILDI: yukarıdaki v9 hilesinin üzerine 0.75rem daha ekleyen sürüm.
-   Aynı sebeple boş bırakıldı — bkz. feed-v9-post-extends-behind-nav. */
+/* V9 bazlı: gönderiyi çok az daha uzat */
+.post{
+  height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  );
+  min-height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  );
+}
 
 /* Görseli kartın sınırları içinde tut; kenarlardan taşma/kırpılma olmasın */
 .pmedia img,
@@ -10492,36 +10526,6 @@ function setVH(){
 }
 setSheetH();
 setVH();
-
-/* Native tarafta (Capacitor/Android) durum çubuğu, safe-area eklentisi
-   gibi şeylerin TAM OLARAK NE ZAMAN gerçek viewport boyutunu değiştirdiğini
-   önceden kestirmek yerine, tarayıcının kendi "gerçek viewport değişti"
-   sinyaline (visualViewport resize) abone oluyoruz. Bu sayede --vh her
-   zaman doğru anda yeniden ölçülüyor, elle setTimeout gecikmesi tahmin
-   etmemize gerek kalmıyor. */
-(function(){
-  let t=null;
-  function relayout(){
-    clearTimeout(t);
-    t=setTimeout(()=>{
-      try{
-        setVH();
-        if(typeof setSheetH==="function") setSheetH();
-        /* NOT: render() burada bilerek çağrılmıyor — bu fonksiyon klavye
-           açılıp kapandığında da tetiklenir, tüm akışı yeniden kurmak
-           (video oynatma durumunu, kaydırma konumunu vs. kaybettirir).
-           .post yüksekliği zaten CSS'te var(--vh) ile hesaplandığından,
-           --vh değişince kart boyutu render'a gerek kalmadan kendiliğinden
-           güncelleniyor. */
-      }catch(e){}
-    },80);
-  }
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize", relayout);
-  }
-  window.addEventListener("resize", relayout);
-  window.addEventListener("orientationchange", relayout);
-})();
 
 const pad=n=>String(n).padStart(2,"0");
 // ay kısaltmaları seçili dile göre üretilir
@@ -17189,82 +17193,8 @@ window.__statusBarLocked = window.__statusBarLocked || false;
 async function lockNativeStatusBar(){
   if(window.__statusBarLocked) return;
   window.__statusBarLocked = true;
+  document.documentElement.style.setProperty('--sat','env(safe-area-inset-top)');
   document.documentElement.classList.remove('feed-immersive');
-  /* @capacitor-community/safe-area: npm paketini import edecek bir bundler
-     olmadığı için (index.html düz <script> ile çalışıyor), paketin JS
-     tarafı hiç yüklenmiyor ve capacitor.config.json'daki "enabled":true
-     tek başına yetmiyor — native eklenti CSS değişkenlerini enjekte etmek
-     için bir JS çağrısı bekliyor. Capacitor HER native eklentiyi otomatik
-     olarak window.Capacitor.Plugins altında açığa çıkardığından, paketi
-     import etmeden doğrudan bu şekilde çağırabiliyoruz. Bu çağrı native
-     tarafın gerçek durum çubuğu yüksekliğini var(--safe-area-inset-top)
-     olarak sayfaya yazmasını tetikliyor. */
-let __safeAreaDebug = {step:"başlamadı"};
-  try{
-    const cap = window.Capacitor;
-    if(!cap){ __safeAreaDebug.step = "window.Capacitor yok"; }
-    else if(!cap.Plugins){ __safeAreaDebug.step = "Capacitor.Plugins yok"; }
-    else if(!cap.Plugins.SafeArea){ __safeAreaDebug.step = "Plugins.SafeArea yok (plugin kayıtlı değil)"; }
-    else{
-      const SA = cap.Plugins.SafeArea;
-      __safeAreaDebug.step = "SafeArea bulundu, enable() metodları: " + Object.keys(SA).join(",");
-      if(typeof SA.enable==="function"){
-        await SA.enable({config:{
-          customColorsForSystemBars:true,
-          statusBarColor:'#00000000',
-          statusBarContent:'light',
-          navigationBarColor:'#00000000',
-          navigationBarContent:'light',
-          offset:0
-        }});
-        __safeAreaDebug.step = "enable() çağrıldı, hata yok";
-      }else{
-        __safeAreaDebug.step = "SafeArea var ama enable() fonksiyon değil";
-      }
-    }
-  }catch(e){
-    __safeAreaDebug.step = "enable() HATA: " + (e && e.message ? e.message : String(e));
-  }
-  window.__safeAreaDebug = __safeAreaDebug;
-  /* GEÇİCİ hata ayıklama etiketi — sorunun nerede kırıldığını ekranda gösterir.
-     Sorun çözülünce bu bloğu ve show_debug fonksiyonunu kaldırabiliriz. */
-  function __showSafeAreaDebug(){
-    try{
-      if(window.__saDebugClosed) return;
-      let box = document.getElementById('__saDebug');
-      if(!box){
-        box = document.createElement('div');
-        box.id = '__saDebug';
-        box.style.cssText = 'position:fixed;left:4px;right:4px;bottom:4px;z-index:2147483647;'+
-          'background:#000;color:#0f0;font:10px monospace;padding:6px 28px 6px 6px;border-radius:6px;'+
-          'white-space:pre-wrap;opacity:.95;max-height:40vh;overflow:auto';
-        const closeBtn=document.createElement('button');
-        closeBtn.textContent='✕';
-        closeBtn.style.cssText='position:absolute;top:2px;right:2px;width:22px;height:22px;'+
-          'background:#333;color:#fff;border:none;border-radius:4px;font:12px monospace;'+
-          'line-height:22px;padding:0;pointer-events:auto';
-        closeBtn.addEventListener('click',function(e){
-          e.stopPropagation();
-          window.__saDebugClosed=true;
-          box.remove();
-        });
-        box.appendChild(closeBtn);
-        document.body.appendChild(box);
-      }
-      const cs = getComputedStyle(document.documentElement);
-      const txt=document.createTextNode(
-        "adım: " + window.__safeAreaDebug.step + "\n" +
-        "--safe-area-inset-top: [" + cs.getPropertyValue('--safe-area-inset-top') + "]\n" +
-        "--sat: [" + cs.getPropertyValue('--sat') + "]\n" +
-        "--sab: [" + cs.getPropertyValue('--sab') + "]"
-      );
-      Array.from(box.childNodes).forEach(n=>{ if(n.nodeType===3) n.remove(); });
-      box.insertBefore(txt, box.firstChild);
-    }catch(e){}
-  }
-  __showSafeAreaDebug();
-  setTimeout(__showSafeAreaDebug, 400);
-  setTimeout(__showSafeAreaDebug, 1200);
   const SB=capStatusBar();
   if(!SB) return;
   try{
@@ -17272,13 +17202,9 @@ let __safeAreaDebug = {step:"başlamadı"};
   }catch(e){}
   try{
     if(typeof SB.setOverlaysWebView==="function"){
-      /* overlay HER platformda AÇIK: sistem çubuğu içeriğin üstünde durur,
-         WebView boyu değişmez, hide/show yok → titreme yok.
-         Android'de --sat artık @capacitor-community/safe-area plugin'inin
-         yazdığı var(--safe-area-inset-top) değerinden geliyor (bkz. :root),
-         bu yüzden başlık artık durum çubuğunun altına doğru iniyor;
-         eskiden burada Android'i overlay:false yapıyorduk çünkü --sat hep
-         0 kalıyordu — artık gerek yok. */
+      /* overlay AÇIK: sistem çubuğu içeriğin ÜSTÜNDE durur, WebView
+         boyu değişmez. hide/show yok → titreme yok.
+         Akış fotoğrafı kenara kadar gider; başlık --sat ile aşağıda kalır. */
       await SB.setOverlaysWebView({overlay:true});
     }
   }catch(e){}
@@ -17286,15 +17212,6 @@ let __safeAreaDebug = {step:"başlamadı"};
     if(typeof SB.setBackgroundColor==="function"){
       await SB.setBackgroundColor({color:'#00000000'});
     }
-  }catch(e){}
-  /* overlay ayarı native tarafta netleştikten SONRA --vh'yi yeniden ölç.
-     setVH() bu fonksiyon çağrılmadan önce (sayfa açılışında) zaten bir kez
-     çalışmış olabiliyor; o an overlay henüz uygulanmamış olduğundan --vh
-     yanlış donuyor ve ilk gönderi kartı bu yüzden kayık görünüyordu. */
-  try{
-    if(typeof setVH==="function") setVH();
-    if(typeof setSheetH==="function") setSheetH();
-    if(typeof render==="function") render();
   }catch(e){}
 }
 function syncStatusBar(){
@@ -22140,13 +22057,6 @@ feed.scrollTop=0;
 activeIdx=-1;
 syncActive();
 nextAt=Date.now()+HOLD;
-/* APK'de StatusBar overlay isteği asenkron döndüğü için ilk ölçüm bazen
-   erken alınıyor; kısa bir gecikmeyle bir kez daha düzeltiyoruz. */
-if(typeof isNativeApp==="function" && isNativeApp()){
-  setTimeout(()=>{
-    try{ setVH(); setSheetH(); render(); feed.scrollTop=0; }catch(e){}
-  },300);
-}
 /* YÜKLEME ÖNCELİĞİ
    Akış tek başına önce gider — bağlantıyı başka sorgularla paylaşmaz.
    Kullanıcı ekranda içeriği görür görmez, geri kalanı arka planda yüklenir. */

@@ -17213,6 +17213,15 @@ async function lockNativeStatusBar(){
       await SB.setBackgroundColor({color:'#00000000'});
     }
   }catch(e){}
+  /* overlay ayarı native tarafta netleştikten SONRA --vh'yi yeniden ölç.
+     setVH() bu fonksiyon çağrılmadan önce (sayfa açılışında) zaten bir kez
+     çalışmış olabiliyor; o an overlay henüz uygulanmamış olduğundan --vh
+     yanlış donuyor ve ilk gönderi kartı bu yüzden kayık görünüyordu. */
+  try{
+    if(typeof setVH==="function") setVH();
+    if(typeof setSheetH==="function") setSheetH();
+    if(typeof render==="function") render();
+  }catch(e){}
 }
 function syncStatusBar(){
   const tc=document.getElementById('__themeColor');
@@ -22057,6 +22066,13 @@ feed.scrollTop=0;
 activeIdx=-1;
 syncActive();
 nextAt=Date.now()+HOLD;
+/* APK'de StatusBar overlay isteği asenkron döndüğü için ilk ölçüm bazen
+   erken alınıyor; kısa bir gecikmeyle bir kez daha düzeltiyoruz. */
+if(typeof isNativeApp==="function" && isNativeApp()){
+  setTimeout(()=>{
+    try{ setVH(); setSheetH(); render(); feed.scrollTop=0; }catch(e){}
+  },300);
+}
 /* YÜKLEME ÖNCELİĞİ
    Akış tek başına önce gider — bağlantıyı başka sorgularla paylaşmaz.
    Kullanıcı ekranda içeriği görür görmez, geri kalanı arka planda yüklenir. */
@@ -23665,20 +23681,5 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   }
 })();
 </script>
-
-<style id="apk-feed-snap-kesin">
-/* APK ONLY — gönderinin snap alanını üst barın altına sabitler.
-   Feed padding ve .post yüksekliği DEĞİŞTİRİLMEZ.
-   İlk açılıştaki doğal 5–6px boşluk korunur; kaydırılmış
-   gönderiler de aynı üst hizaya oturur. */
-html.native #feed{
-  scroll-padding-top:0 !important;
-}
-html.native #feed .post{
-  scroll-margin-top:calc(var(--sat) + var(--top)) !important;
-  scroll-snap-align:start !important;
-  scroll-snap-stop:always !important;
-}
-</style>
 </body>
 </html>

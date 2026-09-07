@@ -10528,6 +10528,36 @@ function setVH(){
 setSheetH();
 setVH();
 
+/* Native tarafta (Capacitor/Android) durum çubuğu, safe-area eklentisi
+   gibi şeylerin TAM OLARAK NE ZAMAN gerçek viewport boyutunu değiştirdiğini
+   önceden kestirmek yerine, tarayıcının kendi "gerçek viewport değişti"
+   sinyaline (visualViewport resize) abone oluyoruz. Bu sayede --vh her
+   zaman doğru anda yeniden ölçülüyor, elle setTimeout gecikmesi tahmin
+   etmemize gerek kalmıyor. */
+(function(){
+  let t=null;
+  function relayout(){
+    clearTimeout(t);
+    t=setTimeout(()=>{
+      try{
+        setVH();
+        if(typeof setSheetH==="function") setSheetH();
+        /* NOT: render() burada bilerek çağrılmıyor — bu fonksiyon klavye
+           açılıp kapandığında da tetiklenir, tüm akışı yeniden kurmak
+           (video oynatma durumunu, kaydırma konumunu vs. kaybettirir).
+           .post yüksekliği zaten CSS'te var(--vh) ile hesaplandığından,
+           --vh değişince kart boyutu render'a gerek kalmadan kendiliğinden
+           güncelleniyor. */
+      }catch(e){}
+    },80);
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize", relayout);
+  }
+  window.addEventListener("resize", relayout);
+  window.addEventListener("orientationchange", relayout);
+})();
+
 const pad=n=>String(n).padStart(2,"0");
 // ay kısaltmaları seçili dile göre üretilir
 function monthNames(){

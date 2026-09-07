@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.17</title>
-<script src="klipsy-kamera.js?v=3.3.17"></script>
+<title>Klipsy 3.3.18</title>
+<script src="klipsy-kamera.js?v=3.3.18"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -9262,35 +9262,36 @@ html.native button,html.native .tab{touch-action:manipulation}
 </style>
 
 <style id="upload-indicator">
-/* İçerik paylaşılırken navigasyonun hemen üstünde görünen çubuk */
+/* İçerik paylaşılırken / indirilirken alt durum şeridi */
 #uploadBar{
   position:fixed;
-  left:0.75rem;
-  right:0.75rem;
-  bottom:calc(var(--tab) + var(--sab) + 0.6rem);
+  left:0.7rem;
+  right:0.7rem;
+  bottom:calc(var(--tab) + var(--sab) + 0.55rem);
   z-index:2147483000;
   display:flex;
   align-items:center;
-  gap:0.6rem;
-  padding:0.5rem 0.85rem;
-  border-radius:999px;
-  background:rgba(10,10,14,.92);
-  border:1px solid rgba(255,255,255,.08);
-  box-shadow:0 0.3rem 1rem rgba(0,0,0,.35);
+  gap:0.7rem;
+  padding:0.62rem 0.9rem;
+  border-radius:1.05rem;
+  background:rgba(12,12,16,.96);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 0.4rem 1.4rem rgba(0,0,0,.42);
   opacity:0;
-  transform:translateY(0.4rem);
+  transform:translateY(0.55rem);
   pointer-events:none;
   transition:opacity .18s ease, transform .18s ease;
 }
 #uploadBar.on{
   opacity:1;
   transform:translateY(0);
+  pointer-events:none;
 }
 #uploadBar .uploadBarTrack{
   position:relative;
   flex:none;
-  width:1.6rem;
-  height:1.6rem;
+  width:1.7rem;
+  height:1.7rem;
   border-radius:50%;
   overflow:hidden;
   background:rgba(255,255,255,.12);
@@ -9303,15 +9304,61 @@ html.native button,html.native .tab{touch-action:manipulation}
   border-top-color:#fff;
   animation:uploadSpin .8s linear infinite;
 }
+#uploadBar.hasPct .uploadBarFill{
+  animation:none;
+  border:none;
+  background:conic-gradient(#FF3B6B calc(var(--pct,0)*1%), rgba(255,255,255,.12) 0);
+}
 @keyframes uploadSpin{
   to{ transform:rotate(360deg); }
 }
 #uploadBar .uploadBarLabel{
-  font:600 0.8rem/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  flex:1;
+  min-width:0;
+  font:650 0.8rem/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   color:#fff;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+#uploadBar .uploadBarPct{
+  flex:none;
+  font:700 0.72rem/1 ui-monospace,SFMono-Regular,monospace;
+  color:rgba(255,255,255,.72);
+}
+#uploadBar.ok{ background:#12351c; border-color:rgba(52,199,89,.35); }
+#uploadBar.ok .uploadBarLabel{ color:#d8ffe4; }
+#uploadBar.ok .uploadBarPct{ color:#34C759; }
+[data-theme="light"] #uploadBar{
+  background:rgba(255,255,255,.96);
+  border-color:rgba(0,0,0,.08);
+  box-shadow:0 0.4rem 1.4rem rgba(0,0,0,.12);
+}
+[data-theme="light"] #uploadBar .uploadBarLabel{ color:#111; }
+[data-theme="light"] #uploadBar .uploadBarPct{ color:#666; }
+[data-theme="light"] #uploadBar .uploadBarTrack{ background:rgba(0,0,0,.08); }
+[data-theme="light"] #uploadBar .uploadBarFill{ border-top-color:#111; }
+
+/* Native durum çubuğu boyası — saat/pil her zaman bu şeridin üstünde kalır */
+#sysBarBg{
+  position:fixed;top:0;left:0;right:0;z-index:2147483600;
+  height:var(--sat, env(safe-area-inset-top, 0px));
+  pointer-events:none;background:#08080C;
+}
+html.sb-white #sysBarBg{ background:#FFFFFF; }
+html.sb-black #sysBarBg{ background:#08080C; }
+/* diğer ekranlarda (profil/mesaj/zaman/ayarlar) üst şerit beyaz */
+html.sb-white #timeSheet::before,
+html.sb-white #chats::before,
+html.sb-white #chat::before,
+html.sb-white #settings::before,
+html.sb-white #editProfile::before,
+html.sb-white #notif::before,
+html.sb-white #blockedPanel::before,
+html.sb-white #profile::before,
+html.sb-white #userSearch::before{
+  content:"";position:absolute;top:0;left:0;right:0;
+  height:var(--sat);background:#FFFFFF;z-index:1200;pointer-events:none;
 }
 </style>
 
@@ -12836,6 +12883,7 @@ const overlayOpen=()=>["comments","timeSheet","notif","cam","compose","profile",
 function setTab(el){
   $$(".tab").forEach(t=>t.classList.toggle("on",t===el));
   syncTabbar();
+  if(typeof syncStatusBar==="function") syncStatusBar();
 }
 
 /* Navigasyon çubuğunun rengini AÇIK OLAN EKRANA göre ayarla.
@@ -17097,24 +17145,38 @@ function capStatusBar(){
    hiç girmez (bkz. MainActivity.java'daki edge-to-edge zorlaması
    kaldırıldıktan sonra bu artık güvenli). */
 window.__statusBarLocked = window.__statusBarLocked || false;
+function ensureSysBarBg(){
+  if(document.getElementById('sysBarBg')) return;
+  try{
+    const el=document.createElement('div');
+    el.id='sysBarBg';
+    el.setAttribute('aria-hidden','true');
+    document.body.appendChild(el);
+  }catch(e){}
+}
 async function lockNativeStatusBar(){
-  if(window.__statusBarLocked) return;
-  window.__statusBarLocked = true;
-  document.documentElement.classList.remove('feed-immersive');
   const SB=capStatusBar();
+  document.documentElement.classList.remove('feed-immersive');
+  /* Tam ekran sistem saatini gizler — APK'de kapat. */
+  try{
+    if(document.fullscreenElement || document.webkitFullscreenElement){
+      const ex=document.exitFullscreen||document.webkitExitFullscreen;
+      if(ex) ex.call(document);
+    }
+  }catch(e){}
   if(!SB) return;
+  try{ if(typeof SB.show==="function") await SB.show(); }catch(e){}
+  /* overlay AÇIK: saat web içeriğinin üstünde durur, --sat ile boşluk bırakılır.
+     overlay kapatılınca bazı Android sürümlerinde saat tamamen kayboluyordu. */
   try{
-    if(typeof SB.show==="function") await SB.show();
+    if(typeof SB.setOverlaysWebView==="function") await SB.setOverlaysWebView({overlay:true});
   }catch(e){}
-  try{
-    if(typeof SB.setOverlaysWebView==="function") await SB.setOverlaysWebView({overlay:false});
-  }catch(e){}
+  window.__statusBarLocked = true;
 }
 
 /* Native durum çubuğunun arkaplan rengini VE ikon rengini (saat/pil
    yazısının koyu mu açık mı olacağını) o an açık olan ekrana göre
-   ayarlar. syncStatusBar() zaten bu kararı (hangi ekranda hangi renk)
-   veriyordu — burada sadece bunu native tarafa da uyguluyoruz. */
+   ayarlar. */
 function applyNativeStatusBarColor(color, bgIsLight){
   if(!isNativeApp()) return;
   const SB=capStatusBar();
@@ -17123,37 +17185,61 @@ function applyNativeStatusBarColor(color, bgIsLight){
     if(typeof SB.setBackgroundColor==="function") SB.setBackgroundColor({color});
   }catch(e){}
   try{
-    // arkaplan BEYAZSA ikonlar KOYU (Dark), arkaplan SİYAHSA ikonlar AÇIK (Light)
+    // arkaplan BEYAZSA ikonlar KOYU (DARK), arkaplan SİYAHSA ikonlar AÇIK (LIGHT)
     if(typeof SB.setStyle==="function") SB.setStyle({style: bgIsLight ? "DARK" : "LIGHT"});
   }catch(e){}
 }
+function _activeTabId(){
+  const el=document.querySelector(".tab.on");
+  return el ? el.id : "tabFeed";
+}
 function syncStatusBar(){
   const tc=document.getElementById('__themeColor');
-  const isLight = document.documentElement.getAttribute('data-theme')==='light';
-  // "Akış" ayrı bir #id olarak açılıp kapanmıyor — panel/kamera/gate açık
-  // değilken zaten Akış'tayızdır, bu yüzden aşağıdaki son "else" dalı
-  // Akış'ı temsil ediyor. "cam" = Kamera ekranı.
   const darkScreens=["cam","compose"];
   const onDarkScreen = darkScreens.some(id=>{
     const el=document.getElementById(id);
     return el && el.classList.contains("open");
   });
-  const panelIds=["profile","chats","chat","settings","editProfile","notif","timeSheet","blockedPanel"];
+  const panelIds=["profile","chats","chat","settings","editProfile","notif","timeSheet","blockedPanel","userSearch"];
   const onPanel = panelIds.some(id=>{
     const el=document.getElementById(id);
     return el && el.classList.contains("open");
   });
   const gateEl=document.getElementById('gate');
   const onGate = gateEl && !gateEl.classList.contains('off');
+  const tabId=_activeTabId();
+  const lightTabs=["tabMsg","tabProfile","tabTime"];
+  const onLightTab = lightTabs.includes(tabId);
+  /* Akış + kamera + giriş: siyah. Diğer tüm yerler: beyaz.
+     Saat gizlenmez — ikon rengi arkaplana göre seçilir. */
   let color, bgIsLight;
-  if(onGate || onDarkScreen){ color='#08080C'; bgIsLight=false; }
-  else if(onPanel){ color = isLight ? '#FFFFFF' : '#0A0A0E'; bgIsLight = isLight; }
-  else { color='#08080C'; bgIsLight=false; } // Akış
+  if(onGate || onDarkScreen || (!onPanel && !onLightTab)){
+    color='#08080C'; bgIsLight=false;
+  }else{
+    color='#FFFFFF'; bgIsLight=true;
+  }
   if(tc) tc.setAttribute('content', color);
+  document.documentElement.classList.toggle('sb-white', bgIsLight);
+  document.documentElement.classList.toggle('sb-black', !bgIsLight);
+  ensureSysBarBg();
+  const bar=document.getElementById('sysBarBg');
+  if(bar) bar.style.background = color;
 
-  document.documentElement.style.setProperty('--sat','0px');
+  /* --sat'ı sıfırlama. Sistem saatine yer bırak. */
+  document.documentElement.style.removeProperty('--sat');
   if(isNativeApp()){
-    lockNativeStatusBar();
+    const applySat=()=>{
+      const computed=getComputedStyle(document.documentElement).getPropertyValue('--sat').trim();
+      const n=parseFloat(computed);
+      if(!computed || computed==='0px' || !isFinite(n) || n<12){
+        document.documentElement.style.setProperty('--sat','28px');
+      }
+    };
+    applySat();
+    Promise.resolve(lockNativeStatusBar()).then(()=>{
+      applySat();
+      applyNativeStatusBarColor(color, bgIsLight);
+    }).catch(()=>{});
     applyNativeStatusBarColor(color, bgIsLight);
   }
 }
@@ -17321,6 +17407,11 @@ function renderSettings(){
     t("fullscreen"), t("fullscreen_sub"), !!document.fullscreenElement,
     (on)=>{
       try{
+        if(isNativeApp()){
+          toast(t("fullscreen_sub"));
+          if(typeof syncStatusBar==="function") syncStatusBar();
+          return;
+        }
         if(on){
           const el=document.documentElement;
           const req=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
@@ -19677,6 +19768,7 @@ async function sendMedia(src, tur, sure){
     const icerik  = video ? (blob.type || "video/mp4") : "image/jpeg";
     const path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+uzanti;
 
+    try{ showUploadIndicator(video ? (t("sending")||"Gönderiliyor…") : (t("sending")||"Gönderiliyor…")); }catch(e){}
     const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik});
     if(up.error) throw up.error;
     const {data,error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'media',msg_media:path});
@@ -19693,6 +19785,7 @@ async function sendMedia(src, tur, sure){
     if(!_convId[who]) await loadConversations();
     await syncConvRequest(who);
   }catch(e){ toast(t("err_send_generic")); }
+  finally{ try{ hideUploadIndicator(); }catch(e){} }
 }
 
 /* bir anı gönder */
@@ -19743,28 +19836,9 @@ function lockCommentBars(it){
 }
 
 function setDlHud(msg, pct, done){
-  let el=document.getElementById("dlHud");
-  if(!el){
-    el=document.createElement("div"); el.id="dlHud";
-    el.innerHTML='<div class="dlBar"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/><circle id="dlArc" cx="22" cy="22" r="18" fill="none" stroke="#FF3B6B" stroke-width="3" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113"/></svg></div><div><b id="dlHudT"></b><i id="dlHudS"></i></div>';
-    document.body.appendChild(el);
-  }
-  el.classList.add("on");
-  el.classList.toggle("ok", !!done);
-  const t1=document.getElementById("dlHudT");
-  const t2=document.getElementById("dlHudS");
-  if(t1) t1.textContent = done ? t("dl_done_inapp") : msg;
-  if(t2) t2.textContent = done ? "" : (pct!=null ? (Math.round(pct)+"%") : "");
-  const arc=document.getElementById("dlArc");
-  if(arc){
-    const p=done?100:Math.max(0,Math.min(100,pct||0));
-    arc.setAttribute("stroke-dashoffset", String(113-(113*p/100)));
-    if(done) arc.setAttribute("stroke","#34C759");
-    else arc.setAttribute("stroke","#FF3B6B");
-  }
-  if(done) setTimeout(()=>el.classList.remove("on"), 2200);
+  showUploadIndicator(msg, pct, done);
 }
-function hideDlHud(){ const el=document.getElementById("dlHud"); if(el) el.classList.remove("on"); }
+function hideDlHud(){ hideUploadIndicator(true); }
 function commentsOn(it){ return !it || it.commentsOn!==false; }
 function downloadsOn(it){ return !it || it.downloadsOn!==false; }
 
@@ -19837,6 +19911,37 @@ function blobToBase64(blob){
     r.onerror=bad; r.readAsDataURL(blob);
   });
 }
+function _b64FromBytes(u8){
+  let s="";
+  const step=0x8000;
+  for(let i=0;i<u8.length;i+=step){
+    s += String.fromCharCode.apply(null, u8.subarray(i, i+step));
+  }
+  return btoa(s);
+}
+async function _writeBlobNative(FS, blob, path, directory){
+  const buf=new Uint8Array(await blob.arrayBuffer());
+  /* 3'e bölünen parça — base64 append bozulmasın */
+  const CHUNK=261120;
+  const dir=directory || (FS.Directory && FS.Directory.Cache) || "CACHE";
+  const first=buf.subarray(0, Math.min(CHUNK, buf.length));
+  await FS.writeFile({ path, data:_b64FromBytes(first), directory:dir, recursive:true });
+  if(typeof FS.appendFile==="function"){
+    for(let i=CHUNK;i<buf.length;i+=CHUNK){
+      await FS.appendFile({ path, data:_b64FromBytes(buf.subarray(i, Math.min(buf.length, i+CHUNK))), directory:dir });
+    }
+  }else if(buf.length>CHUNK){
+    await FS.writeFile({ path, data:_b64FromBytes(buf), directory:dir, recursive:true });
+  }
+  let uri=null;
+  try{
+    if(typeof FS.getUri==="function"){
+      const g=await FS.getUri({ path, directory:dir });
+      uri=g && (g.uri||g.fileUri||g.nativeURL);
+    }
+  }catch(e){}
+  return { uri, directory:dir, path };
+}
 async function _saveBlob(blob, name, picker){
   if(!blob) throw new Error("empty blob");
   if(picker){
@@ -19850,27 +19955,44 @@ async function _saveBlob(blob, name, picker){
     const P=(cap.Plugins)||{};
     const FS=P.Filesystem;
     const Share=P.Share;
+    const Media=P.Media;
+    const safeName=String(name||("klipsy-"+Date.now())).replace(/[^a-zA-Z0-9._-]/g,"_");
+    const isVid=/\.mp4$|\.webm$|video\//i.test(safeName+(blob.type||""));
     if(FS && FS.writeFile){
-      const b64=await blobToBase64(blob);
-      const dir=(FS.Directory && FS.Directory.Cache) || "CACHE";
-      const wr=await FS.writeFile({ path:name, data:b64, directory:dir });
-      const uri=wr && (wr.uri||wr.fileURI);
-      if(Share && Share.share && uri){
-        /* ÖNEMLİ: yerel bir dosya paylaşılırken doğru alan "files"
-           (dizi) — "url" alanı web linki içindir. "url" ile yerel
-           dosya yolu vermek Android'de sessizce hiçbir şey yapmıyordu;
-           PWA'da bu kod hiç çalışmadığı (aşağıdaki <a download>
-           yoluna gittiği) için sorun sadece APK'de görünüyordu. */
-        await Share.share({ title:name, files:[uri], dialogTitle:t("dl_wm") });
-        return;
+      const written=await _writeBlobNative(FS, blob, "klipsy/"+safeName, (FS.Directory && FS.Directory.Cache) || "CACHE");
+      const uri=written && written.uri;
+      if(Media && uri){
+        try{
+          if(isVid && typeof Media.saveVideo==="function"){
+            await Media.saveVideo({ path:uri, filePath:uri, album:"Klipsy" });
+            return;
+          }
+          if(!isVid && typeof Media.savePhoto==="function"){
+            await Media.savePhoto({ path:uri, filePath:uri, album:"Klipsy" });
+            return;
+          }
+        }catch(e){ console.warn("media save", e); }
       }
+      if(Share && Share.share && uri){
+        try{
+          await Share.share({ title:safeName, files:[uri], dialogTitle:t("dl_wm") });
+          return;
+        }catch(e){ console.warn("share files", e); }
+      }
+      /* Documents'e ikinci kopya — paylaşım penceresi olmasa da dosya kalsın */
+      try{
+        const docs=(FS.Directory && (FS.Directory.Documents||FS.Directory.DATA)) || "DOCUMENTS";
+        await _writeBlobNative(FS, blob, safeName, docs);
+        return;
+      }catch(e){ console.warn("docs write", e); }
+      if(uri) return;
     }
     if(Share && Share.share){
-      const href=URL.createObjectURL(blob);
-      try{ await Share.share({ title:name, url:href, dialogTitle:t("dl_wm") }); }
-      finally{ setTimeout(()=>URL.revokeObjectURL(href), 8000); }
-      return;
+      try{
+        await Share.share({ title:safeName, text:safeName, dialogTitle:t("dl_wm") });
+      }catch(e){}
     }
+    throw new Error("apk save failed");
   }
   const href=URL.createObjectURL(blob);
   const a=document.createElement("a");
@@ -20991,29 +21113,42 @@ async function makeVideoPoster(videoSrc){
    için yüzde göstermiyoruz; sadece "işlem sürüyor" bilgisini veriyoruz.
    Aynı anda birden fazla paylaşım olabileceğinden sayaç tutulur. */
 let __uploadCount = 0;
+let __uploadHideT = null;
 function __uploadBarEl(){
   let el = document.getElementById('uploadBar');
   if(!el){
     el = document.createElement('div');
     el.id = 'uploadBar';
     el.innerHTML = '<div class="uploadBarTrack"><div class="uploadBarFill"></div></div>'+
-      '<span class="uploadBarLabel"></span>';
+      '<span class="uploadBarLabel"></span><span class="uploadBarPct"></span>';
     document.body.appendChild(el);
   }
   return el;
 }
-function showUploadIndicator(label){
-  __uploadCount++;
+function showUploadIndicator(label, pct, done){
+  if(__uploadHideT){ clearTimeout(__uploadHideT); __uploadHideT=null; }
+  if(!done) __uploadCount = Math.max(1, __uploadCount);
   const el = __uploadBarEl();
   const lab = el.querySelector('.uploadBarLabel');
-  if(lab) lab.textContent = label || "Yükleniyor…";
+  const pv = el.querySelector('.uploadBarPct');
+  if(lab) lab.textContent = done ? (typeof t==="function"?t("dl_ok"):"Kaydedildi") : (label || (typeof t==="function"?t("loading2"):"Yükleniyor…"));
+  const hasPct = pct!=null && isFinite(pct);
+  if(pv) pv.textContent = done ? "" : (hasPct ? (Math.round(pct)+"%") : "");
+  el.style.setProperty('--pct', String(done?100:Math.max(0,Math.min(100, pct||0))));
+  el.classList.toggle('hasPct', !done && hasPct);
+  el.classList.toggle('ok', !!done);
   el.classList.add('on');
+  if(done){
+    __uploadCount = 0;
+    __uploadHideT = setTimeout(()=>{ el.classList.remove('on','ok','hasPct'); }, 1800);
+  }
 }
-function hideUploadIndicator(){
-  __uploadCount = Math.max(0, __uploadCount-1);
+function hideUploadIndicator(force){
+  if(force){ __uploadCount = 0; }
+  else __uploadCount = Math.max(0, __uploadCount-1);
   if(__uploadCount === 0){
     const el = document.getElementById('uploadBar');
-    if(el) el.classList.remove('on');
+    if(el && !el.classList.contains('ok')) el.classList.remove('on','hasPct');
   }
 }
 

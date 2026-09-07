@@ -5657,21 +5657,14 @@ svg{display:block}
 .pill.icon{padding:0;width:1.875rem;justify-content:center}
 .pill.off{color:var(--t3);background:rgba(255,255,255,.08)}
 
-/* ============ akış ============
-   Tek blok. Kart, snap, sağ eylemler, seekbar:
-   önceki v9–v21 yamalarının kazanan hali. */
-#feed{
-  position:absolute;inset:0;z-index:1;
-  overflow-y:auto;overflow-x:hidden;
+/* ============ akış: tam ekran ============ */
+#feed{position:absolute;inset:0;z-index:1;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  scroll-snap-type:y mandatory;
-  overscroll-behavior-y:contain;
-  transition:opacity .2s;
-  padding:calc(var(--sat) + var(--top) + 0.35rem) 0.5rem 0;
+  scroll-snap-type:y proximity;transition:opacity .2s;
+  padding:calc(var(--sat) + var(--top) + 0.35rem) 0.5rem calc(var(--tab) + var(--sab) + 0.5rem);
   box-sizing:border-box;background:#08080C}
 #feed::-webkit-scrollbar{display:none}
 #feed.locked{overflow:hidden}
-
 #ptr{position:absolute;top:0;left:0;right:0;height:0;z-index:20;display:flex;align-items:center;justify-content:center;
   pointer-events:none;overflow:hidden;transition:height .0s}
 #ptr.animating{transition:height .3s var(--ease)}
@@ -5680,33 +5673,34 @@ svg{display:block}
 #ptr.ready .ptrSpin{opacity:1}
 #ptr.spinning .ptrSpin{opacity:1;animation:ptrspin .7s linear infinite}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
+#list{display:flex;flex-direction:column;contain:layout style;gap:0.875rem}
 
-#list{display:flex;flex-direction:column;contain:layout style;gap:0}
-
-.post{
-  --postH: calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem + var(--tab) + var(--sab) + 0.75rem);
-  position:relative;height:var(--postH);min-height:var(--postH);
-  flex:none;scroll-snap-align:start;scroll-snap-stop:always;
+.post{position:relative;height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.85rem);
+  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.85rem);
+  flex:none;scroll-snap-align:start;scroll-snap-stop:normal;
   overflow:hidden;background:#111116;content-visibility:auto;
-  contain-intrinsic-size:auto var(--postH);
+  contain-intrinsic-size:auto calc(var(--vh,100dvh) - 5rem);
   border-radius:1.125rem;border:1px solid rgba(255,255,255,.08);
   box-shadow:0 0.5rem 1.5rem rgba(0,0,0,.35)}
 
-.pmedia{position:absolute;inset:0;width:100%;height:100%;
+.pmedia{position:absolute;inset:0;
+  width:100%;height:100%;
   overflow:hidden;touch-action:pan-y;transition:none;background:#0a0a10}
 .pmedia .pmediaBg{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;
   filter:blur(1.5rem) saturate(1.08) brightness(.45);transform:none;z-index:0;pointer-events:none}
-.pmedia > img,.pmedia > video{width:100%;height:100%;max-width:100%;max-height:100%;
-  object-fit:contain;object-position:center;background:#0a0a10;
+.pmedia img,.pmedia video{width:100%;height:100%;
+  object-fit:cover;object-position:center;
   display:block;position:relative;z-index:1;
-  transform:scale(1.10);transform-origin:center center;
-  transition:transform .28s var(--ease);will-change:transform}
-.pmedia.drag > img,.pmedia.drag > video{transition:none}
+  transform-origin:center center;transition:transform .28s var(--ease);will-change:transform}
+.pmedia.drag img,.pmedia.drag video{transition:none}
+.pshade{display:none!important}
 
+/* kaplama arayüz */
 .plate{position:absolute;inset:0;z-index:3;pointer-events:none;transition:opacity .25s}
 .plate > *{pointer-events:auto}
 .post.bare .plate{opacity:0;pointer-events:none}
 
+/* --- kim: sol üst --- */
 .pauthor{position:absolute;top:0.7rem;left:0.7rem;right:4.5rem;z-index:4;
   display:flex;align-items:center;gap:0.5625rem;
   padding:0;border-radius:0;background:none;max-width:calc(100% - 5.25rem)}
@@ -5714,6 +5708,10 @@ svg{display:block}
   border:0.125rem solid rgba(255,255,255,.92);display:grid;place-items:center;
   font-size:0.8125rem;font-weight:600;color:var(--t2);
   box-shadow:0 0.125rem 0.625rem rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.35)}
+/* CANLI HALKASI KALDIRILDI.
+   Dıştaki turuncu→pembe gradient çember avatarı büyük bir halka gibi
+   gösteriyordu. Artık canlı paylaşımda da avatar sade, sadece ince
+   beyaz çemberiyle durur. */
 .pav.live{border:0.125rem solid rgba(255,255,255,.92);padding:0;background:#22222A center/cover no-repeat}
 .pav.live span{width:100%;height:100%;border-radius:6.1875rem;background:#22222A center/cover no-repeat;
   display:grid;place-items:center;font-size:0.8125rem;font-weight:600;color:var(--t2)}
@@ -5726,61 +5724,74 @@ svg{display:block}
   background:var(--accent);border:1px solid rgba(255,255,255,.28)}
 .ptag i{width:0.25rem;height:0.25rem;border-radius:6.1875rem;background:#fff;animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.ptag.mine{background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.28);font-weight:600}
 .pwhere{margin-top:0.125rem;font-size:0.7188rem;color:rgba(255,255,255,.88);
   text-shadow:0 1px 0.125rem rgba(0,0,0,.45);display:flex;align-items:center;gap:0.3125rem}
 .pwhere svg{flex:none;opacity:.85}
 .pwhere span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+/* --- ne zaman: dönem göstergesi --- */
+/* --- video ses düğmesi --- */
+.soundBtn{position:absolute;z-index:4;right:0.7rem;top:0.7rem;
+  display:flex;align-items:center;gap:0.375rem;height:1.875rem;padding:0 0.75rem;border-radius:6.1875rem;
+  background:rgba(0,0,0,.44);border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(0.875rem);-webkit-backdrop-filter:blur(0.875rem);
+  font-size:0.7188rem;font-weight:600;letter-spacing:-.01em;transition:transform .12s}
+.soundBtn:active{transform:scale(.92)}
+.soundBtn.on{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.34)}
+
+/* --- alt bilgi perdesi: blur yok (video üstünde her kare GPU yer) --- */
 .pveil{position:absolute;left:0;right:0;bottom:0;height:3.25rem;
   z-index:2;pointer-events:none;
-  background:linear-gradient(to top,rgba(0,0,0,.46),rgba(0,0,0,.12) 70%,transparent)}
+  background:linear-gradient(to top,rgba(0,0,0,.46),rgba(0,0,0,.12) 70%,transparent);
+  backdrop-filter:none;-webkit-backdrop-filter:none}
+.post.active .pveil{backdrop-filter:none;-webkit-backdrop-filter:none}
 
-.pbottom{position:absolute;left:0.75rem;right:4.25rem;
-  bottom:calc(var(--tab) + var(--sab) + 0.7rem);
-  z-index:7;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:0.5rem;
-  box-sizing:border-box}
-.ptime{font-size:0.75rem;color:rgba(255,255,255,.72);text-shadow:0 1px 0.5rem rgba(0,0,0,.85);
-  font-variant-numeric:tabular-nums;margin-bottom:0.28rem}
+/* --- ne hissettirdi: alt blok --- */
+.pbottom{position:absolute;left:0;right:0;bottom:0.7rem;
+  z-index:3;padding:0 0.9rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.5rem}
+.ab.abSong{padding:0}
+.ab.abSong.empty{opacity:0;pointer-events:none}
+.abSong .songDisc{width:1.5rem;height:1.5rem;border-radius:6.1875rem;background:#181820 center/cover no-repeat;
+  border:0.0938rem solid rgba(255,255,255,.7);box-shadow:0 0.125rem 0.5rem -0.125rem rgba(0,0,0,.6);position:relative;display:block}
+.abSong .songDisc::after{content:"";position:absolute;top:50%;left:50%;width:0.3125rem;height:0.3125rem;
+  border-radius:6.1875rem;background:rgba(255,255,255,.85);transform:translate(-50%,-50%)}
+.abSong.playing .songDisc{animation:songSpin 3.2s linear infinite}
+@keyframes songSpin{to{transform:rotate(360deg)}}
+.moodtag{display:inline-flex;align-items:center;gap:0.4375rem;height:2.125rem;padding:0 0.9375rem 0 0.75rem;
+  border-radius:6.1875rem;background:rgba(0,0,0,.42);
+  border:1px solid var(--mc,rgba(255,255,255,.3));
+  backdrop-filter:blur(0.875rem);-webkit-backdrop-filter:blur(0.875rem);
+  font-size:0.8438rem;font-weight:600;letter-spacing:-.014em;
+  box-shadow:0 0.25rem 1.25rem -0.5rem var(--mc,transparent), inset 0 1px 0 rgba(255,255,255,.14)}
+.moodtag span.em{font-size:1rem;line-height:1}
 .pnote{font-size:0.875rem;line-height:1.5;letter-spacing:-.014em;max-width:100%;
   color:rgba(255,255,255,.97);text-shadow:0 1px 0.625rem rgba(0,0,0,.85);
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:0}
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ptime{font-size:0.75rem;color:rgba(255,255,255,.72);text-shadow:0 1px 0.5rem rgba(0,0,0,.85);
+  font-variant-numeric:tabular-nums}
 
-.actbar{position:absolute;right:0.65rem;bottom:calc(var(--tab) + var(--sab) + 1.1rem);
-  width:2.75rem;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  gap:0.82rem;z-index:20;pointer-events:auto}
-.actbar .ab{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:0.16rem;width:2.75rem;min-width:2.75rem;padding:0;color:#fff;transition:transform .12s}
-.actbar .ab svg{width:1.75rem;height:1.75rem;flex:none;filter:drop-shadow(0 1px 0.375rem rgba(0,0,0,.85))}
-.actbar .ab:active{transform:scale(.86)}
-.actbar .ab em{font-style:normal;font-size:0.72rem;font-weight:600;letter-spacing:-.016em;line-height:1;
-  text-shadow:0 1px 0.5rem rgba(0,0,0,.85);white-space:nowrap}
-.actbar .ab.liked{color:#FF3040}
-.actbar .ab.liked svg{color:#FF3040;fill:#FF3040;stroke:#FF3040;
-  filter:drop-shadow(0 1px 0.5rem rgba(255,48,64,.55))}
-.actbar .ab.saved{color:#FFC857}
-.actbar .ab.saved svg{fill:currentColor;filter:drop-shadow(0 1px 0.5rem rgba(255,200,87,.5))}
-.actbar .abSong{padding:0}
-.actbar .abSong.empty{opacity:0;pointer-events:none}
-.actbar .abSong .songDisc{width:2rem;height:2rem;border-radius:6.1875rem;background:#181820 center/cover no-repeat;
-  border:0.0938rem solid rgba(255,255,255,.7);box-shadow:0 0.125rem 0.5rem -0.125rem rgba(0,0,0,.6);position:relative;display:block}
-.actbar .abSong .songDisc::after{content:"";position:absolute;top:50%;left:50%;width:0.3125rem;height:0.3125rem;
-  border-radius:6.1875rem;background:rgba(255,255,255,.85);transform:translate(-50%,-50%)}
-.actbar .abSong.playing .songDisc{animation:songSpin 3.2s linear infinite}
-@keyframes songSpin{to{transform:rotate(360deg)}}
-
+/* --- eylem çubuğu: kutusuz, genişliğe yayılmış --- */
+.actbar{display:flex;align-items:center;justify-content:space-between;
+  width:100%;margin-top:0.4375rem}
 .pmore{position:absolute;top:calc(var(--sat) + 3.25rem);right:0.9375rem;z-index:25;
   width:1.875rem;height:2.125rem;border:0;display:grid;place-items:center;padding:0;
   background:transparent;color:#fff;pointer-events:auto;
   filter:drop-shadow(0 1px 0.1875rem rgba(0,0,0,.6));transition:transform .12s}
 .pmore:active{transform:scale(.9)}
 .post.bare .pmore{opacity:0;pointer-events:none}
-
-#reportSheet{z-index:1460}
+#reportSheet{z-index:250}
 #postMenu{z-index:250}
 #songSheet{z-index:250}
+/* sohbet menüsü: sohbet panelinin ÜSTÜNDE olmalı (yoksa açılır ama görünmez) */
 #chatMenu{z-index:1450}
+/* ÖNEMLİ: .shbox varsayılan olarak ekran dışındadır (translateY(102%)).
+   Her sheet için "açılınca yukarı gel" kuralı ayrı yazılmalı. */
 #chatMenu.open .shbox{transform:translateY(0)}
+/* engellenenler paneli: ayarların üstünde açılır */
 #blockedPanel{z-index:1440}
+/* şikayet sayfası sohbetten de çağrılabiliyor — en üstte olmalı */
+#reportSheet{z-index:1460}
 #reportSheet .scrim{background:rgba(0,0,0,.68)}
 #reportSheet.open .shbox{transform:translateY(0)}
 #postMenu.open .shbox{transform:translateY(0)}
@@ -5793,6 +5804,15 @@ svg{display:block}
 #msgMenu.open .shbox{transform:translateY(0)}
 .msg .bub.deleted{opacity:.6;font-style:italic;background:var(--surf1)!important;
   color:var(--t3)!important;border:1px dashed var(--edge)}
+.ab{display:flex;align-items:center;gap:0.375rem;transition:transform .12s;min-width:0}
+.ab svg{width:1.375rem;height:1.375rem;flex:none;filter:drop-shadow(0 1px 0.375rem rgba(0,0,0,.85))}
+.ab:active{transform:scale(.86)}
+.ab em{font-style:normal;font-size:0.7812rem;font-weight:600;letter-spacing:-.016em;
+  text-shadow:0 1px 0.5rem rgba(0,0,0,.85);white-space:nowrap}
+.ab.liked{color:var(--accent)}
+.ab.liked svg{fill:currentColor;filter:drop-shadow(0 1px 0.5rem rgba(255,59,107,.55))}
+.ab.saved{color:#FFC857}
+.ab.saved svg{fill:currentColor;filter:drop-shadow(0 1px 0.5rem rgba(255,200,87,.5))}
 
 .burst{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;z-index:4}
 .burst.go{animation:burst .85s var(--ease)}
@@ -5801,6 +5821,7 @@ svg{display:block}
 .pausemark{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;z-index:4}
 .post.paused.vctrl .pausemark{display:none}
 .soundpop{display:none}
+/* video durunca ortada: ses (üst) + oynat (alt) */
 .vc-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);z-index:9;
   display:none;flex-direction:column;align-items:center;gap:0.875rem;opacity:0;
   transition:opacity .18s ease, transform .18s ease}
@@ -5813,23 +5834,21 @@ svg{display:block}
 .vc-c-mute svg{width:1.375rem;height:1.375rem}
 .vc-c-play{width:4.625rem;height:4.625rem;background:rgba(0,0,0,.32);color:rgba(255,255,255,.95)}
 .vc-c-play svg{width:2.375rem;height:2.375rem;margin-left:0.1875rem;filter:drop-shadow(0 0.125rem 0.5rem rgba(0,0,0,.5))}
-
-.plate > .seekbar{position:absolute;left:0;right:0;
-  bottom:calc(var(--tab) + var(--sab) + 0.18rem);
-  height:1.25rem;z-index:12;display:flex;align-items:flex-end;padding-bottom:0.18rem;
-  cursor:pointer;touch-action:none;pointer-events:auto}
-.plate > .seekbar::before{content:"";position:absolute;left:0;right:0;bottom:0.18rem;height:0.1875rem;
+.seekbar{position:absolute;left:0;right:0;bottom:0;height:1.625rem;z-index:8;
+  display:flex;align-items:flex-end;padding-bottom:0.1875rem;cursor:pointer;touch-action:none}
+.seekbar::before{content:"";position:absolute;left:0;right:0;bottom:0.1875rem;height:0.1875rem;
   background:rgba(255,255,255,.22)}
-.plate > .seekbar .seekfill{position:absolute;left:0;bottom:0.18rem;height:0.1875rem;width:0;
+.seekfill{position:absolute;left:0;bottom:0.1875rem;height:0.1875rem;width:0;
   background:linear-gradient(90deg,#FF3B6B,#7B5BFF);transition:width .1s linear}
-.plate > .seekbar .seekknob{position:absolute;bottom:0.095rem;left:0;width:0.5rem;height:0.5rem;border-radius:6.1875rem;
+.seekknob{position:absolute;bottom:0.0938rem;left:0;width:0.5rem;height:0.5rem;border-radius:6.1875rem;
   background:#fff;transform:translateX(-50%);opacity:0;transition:opacity .15s;
   box-shadow:0 1px 0.25rem rgba(0,0,0,.5)}
-.plate > .seekbar.drag .seekfill{transition:none}
-.plate > .seekbar.drag::before,.plate > .seekbar.drag .seekfill{height:0.3125rem;bottom:0.18rem}
-.plate > .seekbar.drag .seekknob{opacity:1;width:0.875rem;height:0.875rem;bottom:-1px}
+.seekbar.drag .seekfill{transition:none}
+.seekbar.drag::before,.seekbar.drag .seekfill{height:0.3125rem;bottom:0.1875rem}
+.seekbar.drag .seekknob{opacity:1;width:0.875rem;height:0.875rem;bottom:-1px}
 .post.bare .seekbar{opacity:0;pointer-events:none}
 
+/* zaman şeridi (sağ kenar) */
 .railwrap{position:absolute;right:0.1875rem;top:calc(var(--sat) + var(--top) + 2.75rem);
   bottom:calc(var(--tab) + var(--sab) + 9.375rem);width:0.1875rem;z-index:20;pointer-events:none;
   background:rgba(255,255,255,.14);border-radius:6.1875rem;transition:opacity .25s}
@@ -7175,10 +7194,8 @@ video::-webkit-media-controls-overlay-play-button{
   display:none !important;-webkit-appearance:none;opacity:0;pointer-events:none}
 video{background-color:#12121a}
 
-#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;transform-origin:center center}
+#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;transform-origin:center center}
 #cam.camFill video{object-fit:cover}
-/* Android WebView contain boşluğunu beyaza boyar; APK'de cover varsayılan. */
-html.camSession #cam video{object-fit:cover;background:#000}
 #cam.camOlcek #camZoomBar{display:none !important}
 #webCamOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 9.25rem);transform:translateX(-50%);
   z-index:6;display:none;flex-direction:column;align-items:center;gap:0.35rem;width:min(16.5rem,78%);
@@ -7275,16 +7292,12 @@ html.camNativeOn #cam .camStage,
 html.camNativeOn #cam .camWrap,
 html.camNativeOn #cam .camBody,
 html.camNativeOn #cam .cambody,
+html.camNativeOn #cam .camtop,
+html.camNativeOn #cam .cambot,
 html.camNativeOn #cam .camRoot,
 html.camNativeOn #cam #camRoot{
   background:transparent !important;
   background-color:transparent !important;
-}
-/* Alt kontrol şeridi saydam olursa APK'de açık tema beyazı görünür. */
-html.camNativeOn #cam .camtop,
-html.camNativeOn #cam .cambot{
-  background:transparent !important;
-  background-image:none !important;
 }
 
 /* yerelde video etiketi gereksiz */
@@ -7302,17 +7315,7 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:0.4375rem 0.875rem;border-radius:6.1875rem;
   backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
 .cambody{flex:1;position:relative;z-index:1}
-.cambot{position:relative;z-index:2;padding:0 1.25rem calc(var(--sab) + 1.375rem);
-  background:linear-gradient(to top,#000 42%,rgba(0,0,0,.72) 72%,transparent);
-  isolation:isolate}
-html.camNativeOn #cam .cambot,
-html.camSession #cam .cambot,
-[data-theme="light"] #cam .cambot{
-  background:linear-gradient(to top,#000 48%,rgba(0,0,0,.78) 78%,transparent) !important;
-  background-color:transparent !important}
-[data-theme="light"] #cam.open{background:#000}
-[data-theme="light"] #cam .mode{color:rgba(255,255,255,.5)}
-[data-theme="light"] #cam .mode.on{color:#fff}
+.cambot{position:relative;z-index:2;padding:0 1.25rem calc(var(--sab) + 1.375rem)}
 .modes{display:flex;justify-content:center;align-items:center;gap:1.15rem;margin-bottom:1.25rem}
 .mode{font-size:0.8125rem;font-weight:650;letter-spacing:.04em;color:rgba(255,255,255,.42);
   padding:0;border:0;background:none;border-radius:0;box-shadow:none;backdrop-filter:none}
@@ -9093,6 +9096,314 @@ html.native button,html.native .tab{touch-action:manipulation}
 </script>
 
 
+<style id="feed-single-post-nav-fix">
+/* AKIŞ: ekranda tek gönderi + kart navigasyonun başladığı yere kadar */
+#feed{
+  padding-top:calc(var(--sat) + var(--top) + 0.35rem);
+  padding-bottom:0;
+}
+
+#list{
+  gap:0;
+}
+
+.post{
+  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
+  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
+  border-radius:1.125rem;
+}
+
+/* Alt navigasyon kartın üzerinde kalsın */
+.tabbar{
+  z-index:var(--z-tab);
+}
+</style>
+
+
+<style id="feed-v9-post-extends-behind-nav">
+/* V3 baz alınmıştır.
+   Sadece gönderi yüksekliği navigasyon yüksekliği kadar uzatılır.
+   Böylece 2. gönderi ilk ekranda görünmez; navigasyon kartın üstünde kalır. */
+.post{
+  height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+  );
+  min-height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+  );
+  flex:none;
+}
+</style>
+
+
+<style id="feed-v10-final-sizing">
+/* V9 bazlı: gönderiyi çok az daha uzat */
+.post{
+  height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  );
+  min-height:calc(
+    var(--vh,100dvh)
+    - var(--sat)
+    - var(--top)
+    - 0.35rem
+    + var(--tab)
+    + var(--sab)
+    + 0.75rem
+  );
+}
+
+/* Görseli kartın sınırları içinde tut; kenarlardan taşma/kırpılma olmasın */
+.pmedia img,
+.pmedia video{
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:#0a0a10;
+}
+</style>
+
+
+<style id="feed-v12-vertical-actions">
+/* TikTok / Instagram tarzı: ikonlar gönderinin TAM SAĞ kenarında dikey */
+.post .pbottom{
+  left:0;
+  right:0;
+  padding-right:4.25rem;
+  box-sizing:border-box;
+}
+
+.post .actbar{
+  position:absolute;
+  right:0.65rem;
+  bottom:0;
+  width:2.75rem;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  gap:0.85rem;
+  z-index:20;
+}
+
+.post .actbar .ab{
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:0.16rem;
+  width:2.75rem;
+  min-width:2.75rem;
+  padding:0;
+  color:#fff;
+}
+
+.post .actbar .ab svg{
+  width:1.75rem;
+  height:1.75rem;
+  flex:none;
+}
+
+.post .actbar .ab em{
+  font-size:0.72rem;
+  line-height:1;
+}
+
+.post .actbar .abSong .songDisc{
+  width:2rem;
+  height:2rem;
+}
+</style>
+
+
+<style id="feed-v13-actions-and-meta">
+/* Sağdaki dikey eylemler: bloğun sağında ve navigasyondan belirgin biçimde yukarıda */
+.post .actbar{
+  right:0.65rem;
+  bottom:6.2rem;
+  width:2.75rem;
+  gap:0.85rem;
+  z-index:20;
+}
+
+/* İçerik bilgileri sol altta; navigasyonun arkasına düşmesin */
+.post .pbottom{
+  left:0.75rem;
+  right:4.25rem;
+  bottom:0.75rem;
+  padding-right:0;
+  z-index:7;
+}
+
+.post .pbottom .meta,
+.post .pbottom .caption,
+.post .pbottom .desc{
+  max-width:100%;
+}
+</style>
+
+
+<style id="feed-v14-final-layout">
+/* SOL ALT: içerik + paylaşım zamanı, navigasyonun hemen üstünde */
+.post .pbottom{
+  left:0.75rem;
+  right:4.25rem;
+  bottom:calc(var(--tab) + var(--sab) + 0.7rem);
+  padding:0;
+  z-index:7;
+  box-sizing:border-box;
+}
+
+/* SAĞ: eylemler doğrudan .plate/.post koordinat sisteminde.
+   Dikey grup, navigasyonun üzerinde ve bloğun sağ kenarında. */
+.post .actbar{
+  position:absolute;
+  right:0.65rem;
+  bottom:calc(var(--tab) + var(--sab) + 1.1rem);
+  width:2.75rem;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  gap:0.82rem;
+  z-index:20;
+  pointer-events:auto;
+}
+
+.post .actbar .ab{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0.16rem;
+  width:2.75rem;
+  min-width:2.75rem;
+  padding:0;
+  color:#fff;
+}
+
+.post .actbar .ab svg{
+  width:1.75rem;
+  height:1.75rem;
+  flex:none;
+}
+
+.post .actbar .ab em{
+  font-size:0.72rem;
+  line-height:1;
+}
+
+.post .actbar .abSong .songDisc{
+  width:2rem;
+  height:2rem;
+}
+</style>
+
+
+<style id="feed-v15-snap-like">
+/* Her kaydırmada tam bir gönderiye otur */
+#feed{
+  scroll-snap-type:y mandatory;
+  overscroll-behavior-y:contain;
+}
+
+.post{
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+}
+
+/* Beğenilince kalp KIRMIZI */
+.post .actbar .ab.liked{
+  color:#FF3040 !important;
+}
+
+.post .actbar .ab.liked svg{
+  color:#FF3040 !important;
+  fill:#FF3040 !important;
+  stroke:#FF3040 !important;
+  filter:drop-shadow(0 1px 0.5rem rgba(255,48,64,.55));
+}
+</style>
+
+
+<style id="feed-v16-date-above-content">
+.post .pbottom .ptime{
+  margin-bottom:0.28rem;
+}
+.post .pbottom .pnote{
+  margin-top:0;
+}
+</style>
+
+
+<style id="feed-v17-seekbar-under-content">
+/* Video seek barı: içerik/metin alanının hemen altında */
+.post > .plate > .seekbar{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:calc(var(--tab) + var(--sab) + 0.18rem);
+  height:1.25rem;
+  z-index:12;
+  display:flex;
+  align-items:flex-end;
+  padding-bottom:0.18rem;
+  pointer-events:auto;
+}
+
+/* Çubuğun tamamı kart genişliğinde; içerik yazısının altında */
+.post > .plate > .seekbar::before{
+  left:0;
+  right:0;
+  bottom:0.18rem;
+}
+
+.post > .plate > .seekbar .seekfill{
+  bottom:0.18rem;
+}
+
+.post > .plate > .seekbar .seekknob{
+  bottom:0.095rem;
+}
+</style>
+
+
+<style id="feed-v21-media-zoom">
+/* Deneme: içerik görsel/video %10 büyütülür.
+   Merkezden büyüdüğü için sağ ve sol kayıp eşit olur. */
+.post .pmedia{
+  overflow:hidden;
+}
+.post .pmedia > img,
+.post .pmedia > video{
+  transform:scale(1.10);
+  transform-origin:center center;
+}
+.post .pmedia .pmediaBg{
+  transform:none;
+}
+</style>
+
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
@@ -10032,1635 +10343,6 @@ html.native button,html.native .tab{touch-action:manipulation}
 </div>
 
 <script>
-/* ============================================================
-   KLİPSY AKIŞ — temiz mimari (Store / Api / Mode / Card / Viewport / Controller)
-   ============================================================ */
-
-/* ==== feed-store.js ==== */
-/* Klipsy Akış — Store
-   Tek kaynak. Ağ yok, DOM yok. */
-(function (root) {
-  "use strict";
-
-  const PAGE = 30;
-
-  function createFeedStore() {
-    const state = {
-      mode: "community",          // community | friends
-      place: null,                // string | null
-      all: [],                    // süzgeçsiz
-      visible: [],                // ekranda görünen
-      hasMore: true,
-      loading: false,
-      loadingMore: false,
-      useDirectTable: false,
-      path: "",                   // rpc:community | rpc:kipsiz | tablo | tablo-engellendi
-      lastError: ""
-    };
-
-    const listeners = new Set();
-
-    function emit() {
-      listeners.forEach((fn) => {
-        try { fn(snapshot()); } catch (e) {}
-      });
-    }
-
-    function snapshot() {
-      return {
-        mode: state.mode,
-        place: state.place,
-        items: state.visible.slice(),
-        all: state.all.slice(),
-        hasMore: state.hasMore,
-        loading: state.loading,
-        loadingMore: state.loadingMore,
-        useDirectTable: state.useDirectTable,
-        path: state.path,
-        lastError: state.lastError
-      };
-    }
-
-    function applyPlace() {
-      if (!state.place) {
-        state.visible = state.all.slice();
-        return;
-      }
-      const q = String(state.place).toLowerCase();
-      state.visible = state.all.filter((it) =>
-        String(it.where || "").toLowerCase().includes(q)
-      );
-    }
-
-    function dedupe(list) {
-      const seen = new Set();
-      return list.filter((it) => {
-        const k = String(it.id);
-        if (seen.has(k)) return false;
-        seen.add(k);
-        return true;
-      });
-    }
-
-    return {
-      PAGE,
-      get: snapshot,
-      subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
-
-      mode() { return state.mode; },
-      setMode(mode) {
-        if (mode !== "friends" && mode !== "community") return;
-        if (state.mode === mode) return;
-        state.mode = mode;
-        emit();
-      },
-
-      place() { return state.place; },
-      setPlace(place) {
-        state.place = place || null;
-        applyPlace();
-        emit();
-      },
-
-      items() { return state.visible; },
-      all() { return state.all; },
-
-      replace(list) {
-        state.all = dedupe(list || []);
-        applyPlace();
-        emit();
-      },
-
-      append(list) {
-        state.all = dedupe(state.all.concat(list || []));
-        applyPlace();
-        emit();
-      },
-
-      prependPending(list) {
-        state.all = dedupe((list || []).concat(state.all));
-        applyPlace();
-        emit();
-      },
-
-      remove(id) {
-        const k = String(id);
-        state.all = state.all.filter((it) => String(it.id) !== k);
-        applyPlace();
-        emit();
-      },
-
-      patch(id, partial) {
-        const touch = (arr) => {
-          const i = arr.findIndex((x) => String(x.id) === String(id));
-          if (i < 0) return;
-          arr[i] = Object.assign({}, arr[i], partial);
-        };
-        touch(state.all);
-        touch(state.visible);
-        emit();
-      },
-
-      find(id) {
-        return state.all.find((x) => String(x.id) === String(id)) || null;
-      },
-
-      oldestTs() {
-        if (!state.all.length) return null;
-        return state.all.reduce((m, it) => Math.min(m, it.ts || Infinity), Infinity);
-      },
-
-      ids() {
-        return new Set(state.all.map((x) => String(x.id)));
-      },
-
-      resetPaging() {
-        state.hasMore = true;
-        state.useDirectTable = false;
-        state.loading = false;
-        state.loadingMore = false;
-        state.lastError = "";
-      },
-
-      setPaging(partial) {
-        Object.assign(state, partial);
-        emit();
-      },
-
-      setPath(path, err) {
-        state.path = path || "";
-        if (err !== undefined) state.lastError = err || "";
-      }
-    };
-  }
-
-  root.KlipsyFeedStore = { create: createFeedStore, PAGE };
-})(typeof window !== "undefined" ? window : globalThis);
-
-/* ==== feed-api.js ==== */
-/* Klipsy Akış — Repository
-   Sunucu konuşması burada biter. UI bu dosyayı tanımaz. */
-(function (root) {
-  "use strict";
-
-  function isUuid(id) {
-    return typeof id === "string" && id.length >= 32 && id.includes("-");
-  }
-
-  function isLocalPending(it) {
-    if (!it) return false;
-    if (it._pending) return true;
-    const id = String(it.id || "");
-    return id.charAt(0) === "u" && id.length > 8 && !id.includes("-");
-  }
-
-  function mapRow(r, ctx) {
-    const sb = ctx.sb;
-    const me = ctx.me;
-    const t = ctx.t;
-    const moods = ctx.moods || {};
-    const fallbackMood = ctx.fallbackMood;
-
-    if (r.avatar_url && ctx.setAvatar) ctx.setAvatar(r.username, r.avatar_url);
-    if (r.display_name && ctx.setDisplayName) ctx.setDisplayName(r.username, r.display_name);
-
-    const publicUrl = (path) => {
-      if (!path) return null;
-      try { return sb.storage.from("moments").getPublicUrl(path).data.publicUrl; }
-      catch (e) { return null; }
-    };
-
-    return {
-      id: r.id,
-      ts: new Date(r.created_at).getTime(),
-      who: r.username,
-      avatar: r.avatar_url,
-      where: r.place_label || t("no_location"),
-      mood: moods[r.mood] || fallbackMood,
-      note: r.note || "",
-      kind: r.media_kind,
-      mediaPath: r.media_path || null,
-      src: publicUrl(r.media_path),
-      poster: publicUrl(r.poster_path),
-      lat: r.geo_lat != null ? Number(r.geo_lat) : null,
-      lng: r.geo_lng != null ? Number(r.geo_lng) : null,
-      likes: r.like_count,
-      views: r.view_count,
-      cc: r.comment_count,
-      saved: !!r.saved,
-      liked: !!r.liked,
-      display: r.display_name || null,
-      mine: !!(me && r.author_id === me.id),
-      commentsOn: r.comments_on !== false,
-      downloadsOn: r.downloads_on !== false,
-      visibility: r.visibility || "community",
-      comments: [],
-      song: r.song_title
-        ? { title: r.song_title, artist: r.song_artist, art: r.song_art, preview: r.song_preview }
-        : null,
-      author_id: r.author_id || null
-    };
-  }
-
-  function visibilityGuard(list, mode, me) {
-    if (!Array.isArray(list)) return list;
-    const myId = me ? me.id : null;
-    return list.filter((it) => {
-      const mine = it.mine || (myId && it.author_id && it.author_id === myId);
-      if (mine) return true;
-      if (mode === "friends") return true;
-      return (it.visibility || "community") !== "friends";
-    });
-  }
-
-  function createFeedApi(getCtx) {
-    const pageSize = (root.KlipsyFeedStore && root.KlipsyFeedStore.PAGE) || 30;
-
-    async function fetchMomentsPage(beforeTs, limit) {
-      const { sb } = getCtx();
-      if (!sb) return [];
-      try {
-        let q = sb.from("moments")
-          .select("id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility")
-          .eq("is_removed", false)
-          .order("created_at", { ascending: false })
-          .limit(limit || pageSize);
-        if (beforeTs) q = q.lt("created_at", new Date(beforeTs).toISOString());
-        const { data, error } = await q;
-        if (error || !data || !data.length) return [];
-
-        const authorIds = [...new Set(data.map((r) => r.author_id).filter(Boolean))];
-        let profiles = {};
-        if (authorIds.length) {
-          const { data: profs } = await sb
-            .from("profiles")
-            .select("id, username, avatar_url, display_name")
-            .in("id", authorIds);
-          (profs || []).forEach((p) => { profiles[p.id] = p; });
-        }
-        return data.map((r) => {
-          const p = profiles[r.author_id] || {};
-          return Object.assign({}, r, {
-            username: p.username,
-            avatar_url: p.avatar_url,
-            display_name: p.display_name
-          });
-        });
-      } catch (e) {
-        console.warn("moments page:", e);
-        return [];
-      }
-    }
-
-    async function page(opts) {
-      opts = opts || {};
-      const ctx = getCtx();
-      const sb = ctx.sb;
-      if (!sb) return { rows: [], path: "no-sb", error: "no-sb", useDirect: false };
-
-      const limit = opts.limit || pageSize;
-      const beforeTs = opts.beforeTs || null;
-      const mode = opts.mode || "community";
-      const useDirect = !!opts.useDirect;
-
-      if (useDirect) {
-        const raw = await fetchMomentsPage(beforeTs, limit);
-        return { rows: raw, path: "tablo", error: "", useDirect: true };
-      }
-
-      if (!beforeTs) {
-        const first = await sb.rpc("get_feed", { page_size: limit, feed_mode: mode });
-        if (!first.error && Array.isArray(first.data)) {
-          return { rows: first.data, path: "rpc:" + mode, error: "", useDirect: false };
-        }
-
-        const err = (first.error && (first.error.message || first.error.hint)) || "bilinmeyen";
-
-        const bare = await sb.rpc("get_feed", { page_size: limit });
-        if (!bare.error && Array.isArray(bare.data)) {
-          return { rows: bare.data, path: "rpc:kipsiz", error: err, useDirect: false };
-        }
-
-        if (mode === "friends") {
-          return { rows: [], path: "tablo-engellendi", error: err, useDirect: false };
-        }
-
-        const raw = await fetchMomentsPage(null, limit);
-        return { rows: raw, path: "tablo", error: err, useDirect: true };
-      }
-
-      for (const key of ["before_ts", "before_created_at", "cursor"]) {
-        try {
-          const params = { page_size: limit, feed_mode: mode };
-          params[key] = new Date(beforeTs).toISOString();
-          const { data, error } = await sb.rpc("get_feed", params);
-          if (!error && Array.isArray(data)) {
-            if (data.length && opts.excludeIds) {
-              const allDup = data.every((r) => opts.excludeIds.has(r.id));
-              if (allDup) {
-                const raw = await fetchMomentsPage(beforeTs, limit);
-                return { rows: raw, path: "tablo", error: "", useDirect: true };
-              }
-            }
-            return { rows: data, path: "rpc:" + mode, error: "", useDirect: false };
-          }
-        } catch (e) {}
-      }
-
-      const raw = await fetchMomentsPage(beforeTs, limit);
-      return { rows: raw, path: "tablo", error: "", useDirect: true };
-    }
-
-    async function paintLikesSaves(items) {
-      const { sb, me } = getCtx();
-      if (!sb || !me || !items || !items.length) return items;
-      const ids = items.map((x) => x.id).filter(isUuid);
-      if (!ids.length) return items;
-      try {
-        const [lk, sv] = await Promise.all([
-          sb.from("likes").select("moment_id").eq("user_id", me.id).in("moment_id", ids),
-          sb.from("saves").select("moment_id").eq("user_id", me.id).in("moment_id", ids)
-        ]);
-        const likedSet = new Set((lk.data || []).map((x) => x.moment_id));
-        const savedSet = new Set((sv.data || []).map((x) => x.moment_id));
-        items.forEach((it) => {
-          it.liked = likedSet.has(it.id);
-          it.saved = savedSet.has(it.id);
-        });
-      } catch (e) {}
-      return items;
-    }
-
-    async function markView(id) {
-      const { sb } = getCtx();
-      if (!sb || !isUuid(id)) return null;
-      const { error } = await sb.rpc("mark_view", { target: id });
-      if (error) throw error;
-      const { data } = await sb.from("moments").select("view_count").eq("id", id).single();
-      return data && typeof data.view_count === "number" ? data.view_count : null;
-    }
-
-    async function friendsHasNew(sinceIso) {
-      const { sb } = getCtx();
-      if (!sb) return false;
-      const { data, error } = await sb.rpc("friends_has_new", { since: sinceIso });
-      if (error) return false;
-      return !!data;
-    }
-
-    async function friendCount() {
-      const { sb } = getCtx();
-      if (!sb) return 0;
-      const { data } = await sb.rpc("friend_count");
-      return Number(data) || 0;
-    }
-
-    return {
-      isUuid,
-      isLocalPending,
-      mapRow,
-      visibilityGuard,
-      page,
-      fetchMomentsPage,
-      paintLikesSaves,
-      markView,
-      friendsHasNew,
-      friendCount
-    };
-  }
-
-  root.KlipsyFeedApi = { create: createFeedApi, isUuid, isLocalPending, mapRow, visibilityGuard };
-})(typeof window !== "undefined" ? window : globalThis);
-
-/* ==== feed-mode.js ==== */
-/* Klipsy Akış — Kip düğmesi
-   Görünüm: #feedMode, #feedModeIcon, #feedModeText, #ftDot */
-(function (root) {
-  "use strict";
-
-  const ICONS = {
-    friends:
-      '<svg viewBox="0 0 24 24">' +
-      '<path d="M16 19v-1.6a3.2 3.2 0 0 0-3.2-3.2H6.2A3.2 3.2 0 0 0 3 17.4V19"/>' +
-      '<circle cx="9.5" cy="7.6" r="3.2"/>' +
-      '<path d="M21 19v-1.6a3.2 3.2 0 0 0-2.4-3.1"/>' +
-      '<path d="M15.4 4.6a3.2 3.2 0 0 1 0 6.2"/></svg>',
-    community:
-      '<svg viewBox="0 0 24 24">' +
-      '<circle cx="12" cy="12" r="8.4"/>' +
-      '<path d="M3.6 12h16.8"/>' +
-      '<path d="M12 3.6a13 13 0 0 1 0 16.8 13 13 0 0 1 0-16.8z"/></svg>'
-  };
-
-  const KEY = "klipsy_akis_kipi";
-  const SEEN = "klipsy_arkadas_gorulen";
-
-  function createFeedMode(opts) {
-    const t = opts.t;
-    const esc = opts.esc;
-    const store = opts.store;
-    const onChange = opts.onChange;
-    let labelTimer = null;
-    let pollTimer = null;
-
-    function button() { return document.getElementById("feedMode"); }
-    function icon() { return document.getElementById("feedModeIcon"); }
-    function text() { return document.getElementById("feedModeText"); }
-    function dot() { return document.getElementById("ftDot"); }
-
-    function paint() {
-      const btn = button();
-      const ic = icon();
-      if (!btn || !ic) return;
-      const friends = store.mode() === "friends";
-      ic.innerHTML = ICONS[friends ? "friends" : "community"];
-      const tx = text();
-      if (tx) {
-        const metin = t(friends ? "feed_friends" : "feed_community");
-        tx.innerHTML = String(metin).split("").map((h, i) =>
-          '<span class="h" style="transition-delay:' + (i * 26) + 'ms">' +
-          (h === " " ? "&nbsp;" : esc(h)) + "</span>"
-        ).join("");
-      }
-      btn.classList.toggle("friends", friends);
-      btn.setAttribute("aria-label", t(friends ? "feed_friends" : "feed_community"));
-      btn.setAttribute("title", t(friends ? "feed_friends" : "feed_community"));
-    }
-
-    function flashLabel() {
-      const btn = button();
-      if (!btn) return;
-      const letters = btn.querySelectorAll(".mTx .h");
-      letters.forEach((h, i) => { h.style.transitionDelay = (i * 26) + "ms"; });
-      btn.classList.add("acik");
-      clearTimeout(labelTimer);
-      labelTimer = setTimeout(() => {
-        const n = letters.length;
-        letters.forEach((h, i) => { h.style.transitionDelay = ((n - 1 - i) * 18) + "ms"; });
-        btn.classList.remove("acik");
-      }, 1800);
-    }
-
-    function persistSeenFriends() {
-      try { localStorage.setItem(SEEN, new Date().toISOString()); } catch (e) {}
-    }
-
-    async function toggle(next) {
-      const cur = store.mode();
-      if (!next) next = cur === "friends" ? "community" : "friends";
-      if (next === cur) return;
-      store.setMode(next);
-      try { localStorage.setItem(KEY, next); } catch (e) {}
-      paint();
-      try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {}
-      if (next === "friends") {
-        const d = dot();
-        if (d) d.classList.add("hide");
-        persistSeenFriends();
-      }
-      if (typeof onChange === "function") await onChange(next);
-    }
-
-    async function checkFriendsDot() {
-      if (!opts.api || store.mode() === "friends") return;
-      let since = null;
-      try { since = localStorage.getItem(SEEN); } catch (e) {}
-      if (!since) since = new Date(Date.now() - 86400000).toISOString();
-      const has = await opts.api.friendsHasNew(since);
-      const d = dot();
-      if (d) d.classList.toggle("hide", !has);
-    }
-
-    async function boot() {
-      let saved = null;
-      try { saved = localStorage.getItem(KEY); } catch (e) {}
-      if (saved === "friends" || saved === "community") {
-        store.setMode(saved);
-      } else if (opts.api) {
-        try {
-          const n = await opts.api.friendCount();
-          store.setMode(n > 0 ? "friends" : "community");
-        } catch (e) {}
-      }
-      paint();
-
-      const btn = button();
-      if (btn && !btn._bagli) {
-        btn._bagli = true;
-        btn.addEventListener("click", () => {
-          toggle();
-          flashLabel();
-        });
-      }
-
-      setTimeout(flashLabel, 900);
-      setTimeout(checkFriendsDot, 1500);
-      clearInterval(pollTimer);
-      pollTimer = setInterval(checkFriendsDot, 120000);
-    }
-
-    return { paint, flashLabel, toggle, boot, checkFriendsDot, ICONS };
-  }
-
-  root.KlipsyFeedMode = { create: createFeedMode, ICONS, KEY, SEEN };
-})(typeof window !== "undefined" ? window : globalThis);
-
-/* ==== feed-card.js ==== */
-/* Klipsy Akış — Kart
-   Markup ve sınıf adları eski build() ile aynı. İş kuralları deps üzerinden. */
-(function (root) {
-  "use strict";
-
-  const BLANK_POSTER = "data:image/svg+xml;base64," + btoa(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="9" height="16"><rect width="9" height="16" fill="#12121a"/></svg>'
-  );
-
-  function agingFilter(ts) {
-    const min = Math.max(0, (Date.now() - ts) / 60000);
-    const t = Math.min(1, Math.log10(1 + min) / Math.log10(1 + 525600));
-    return "saturate(" + (1 - 0.42 * t).toFixed(3) + ") brightness(" + (1 - 0.14 * t).toFixed(3) + ")";
-  }
-
-  function commCount(it) {
-    if (it.comments && it.comments.length) {
-      return it.comments.reduce((n, c) => n + 1 + (c.replies ? c.replies.length : 0), 0);
-    }
-    return it.cc || 0;
-  }
-
-  function createCardBuilder(deps) {
-    const {
-      t, I, USERS, paintAv, nf, relLong, clockOf, esc,
-      isReal, soundRef, applySound, toast
-    } = deps;
-
-    function soundOn() {
-      return !!(soundRef && soundRef.get && soundRef.get());
-    }
-
-    function build(it, index) {
-      const el = document.createElement("article");
-      el.className = "post";
-      el.dataset.ts = it.ts;
-      el.dataset.id = it.id;
-      el._who = it.who;
-      const fresh = Date.now() - it.ts < 120000;
-
-      const media = document.createElement("div");
-      media.className = "pmedia";
-      let mediaEl;
-      if (it.kind === "video") {
-        mediaEl = document.createElement("video");
-        mediaEl.dataset.src = it.src;
-        mediaEl.loop = true;
-        mediaEl.muted = true;
-        mediaEl.playsInline = true;
-        mediaEl.setAttribute("playsinline", "");
-        mediaEl.preload = "none";
-        mediaEl.poster = it.poster || BLANK_POSTER;
-        mediaEl.controls = false;
-        mediaEl.disablePictureInPicture = true;
-        mediaEl.setAttribute("disableremoteplayback", "");
-        mediaEl.addEventListener("loadeddata", () => {
-          try {
-            if (el.classList.contains("active") && mediaEl.paused && !el.classList.contains("paused")) {
-              mediaEl.muted = el._songAudio ? true : !soundOn();
-              mediaEl.play().catch(() => { mediaEl.muted = true; mediaEl.play().catch(() => {}); });
-            }
-          } catch (e) {}
-        });
-      } else {
-        mediaEl = document.createElement("img");
-        mediaEl.alt = "";
-        mediaEl.decoding = "async";
-        try { mediaEl.fetchPriority = index < 3 ? "high" : "low"; } catch (e) {}
-        mediaEl.loading = index < 3 ? "eager" : "lazy";
-        mediaEl.src = it.src;
-        mediaEl.style.filter = agingFilter(it.ts);
-      }
-      if (it.src) {
-        const bg = document.createElement("img");
-        bg.className = "pmediaBg";
-        bg.alt = "";
-        bg.src = it.poster || it.src;
-        media.appendChild(bg);
-      }
-      media.appendChild(mediaEl);
-
-      let seekbar = null;
-      if (it.kind === "video") {
-        seekbar = document.createElement("div");
-        seekbar.className = "seekbar";
-        seekbar.innerHTML = '<div class="seekfill"></div><div class="seekknob"></div>';
-        const fill = seekbar.querySelector(".seekfill");
-        const knob = seekbar.querySelector(".seekknob");
-        mediaEl.addEventListener("timeupdate", () => {
-          if (!mediaEl.duration || seekbar._drag) return;
-          const p = (mediaEl.currentTime / mediaEl.duration) * 100;
-          fill.style.width = p + "%";
-          knob.style.left = p + "%";
-        });
-        function seekTo(clientX) {
-          const r = seekbar.getBoundingClientRect();
-          let p = (clientX - r.left) / r.width;
-          p = Math.max(0, Math.min(1, p));
-          if (mediaEl.duration) {
-            mediaEl.currentTime = p * mediaEl.duration;
-            fill.style.width = (p * 100) + "%";
-            knob.style.left = (p * 100) + "%";
-          }
-        }
-        seekbar.addEventListener("pointerdown", (e) => {
-          e.stopPropagation();
-          seekbar._drag = true;
-          seekbar.classList.add("drag");
-          seekbar.setPointerCapture(e.pointerId);
-          seekTo(e.clientX);
-        });
-        seekbar.addEventListener("pointermove", (e) => {
-          if (seekbar._drag) { e.stopPropagation(); seekTo(e.clientX); }
-        });
-        seekbar.addEventListener("pointerup", (e) => {
-          if (seekbar._drag) {
-            e.stopPropagation();
-            seekbar._drag = false;
-            seekbar.classList.remove("drag");
-          }
-        });
-        seekbar.addEventListener("pointercancel", () => {
-          seekbar._drag = false;
-          seekbar.classList.remove("drag");
-        });
-      }
-      el.appendChild(media);
-
-      const burst = document.createElement("div"); burst.className = "burst";
-      const pm = document.createElement("div"); pm.className = "pausemark";
-      pm.innerHTML = I.bigplay || "";
-      const soundPop = document.createElement("div"); soundPop.className = "soundpop";
-      el.append(burst, pm, soundPop);
-
-      if (it.kind === "video") {
-        const vctrl = document.createElement("div");
-        vctrl.className = "vc-center";
-        const muteBtn = document.createElement("button");
-        muteBtn.className = "vc-c-btn vc-c-mute";
-        function paintMute() { muteBtn.innerHTML = soundOn() ? I.soundOn : I.soundOff; }
-        paintMute();
-        muteBtn.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          if (soundRef && soundRef.toggle) soundRef.toggle();
-          if (typeof applySound === "function") applySound();
-          paintMute();
-        });
-        const playBtn = document.createElement("button");
-        playBtn.className = "vc-c-btn vc-c-play";
-        playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-        playBtn.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          mediaEl.play().catch(() => {});
-          el.classList.remove("paused", "vctrl");
-        });
-        vctrl.append(muteBtn, playBtn);
-        el.appendChild(vctrl);
-      }
-
-      const plate = document.createElement("div"); plate.className = "plate";
-      const veil = document.createElement("div"); veil.className = "pveil";
-      plate.appendChild(veil);
-
-      const auth = document.createElement("div"); auth.className = "pauthor";
-      const av = document.createElement("div");
-      av.className = "pav" + (fresh ? " live" : "");
-      if (fresh) { av.innerHTML = "<span></span>"; paintAv(av.firstChild, it.who); }
-      else paintAv(av, it.who);
-      if (it.mood && it.mood.c) {
-        av.style.setProperty("--duygu", it.mood.c);
-        av.classList.add("duyguHalka");
-        av.setAttribute("title", it.mood.t || "");
-      }
-      const ident = document.createElement("div"); ident.className = "pident";
-      const line = document.createElement("div"); line.className = "pline";
-      const nm = document.createElement("div"); nm.className = "pname";
-      const uu = USERS[it.who];
-      nm.textContent = (uu && uu.display_name) ? uu.display_name : it.who;
-      line.appendChild(nm);
-      if (fresh) {
-        const tg = document.createElement("span");
-        tg.className = "ptag";
-        tg.innerHTML = "<i></i>CANLI";
-        line.appendChild(tg);
-      }
-      const wh = document.createElement("div"); wh.className = "pwhere";
-      const whSpan = document.createElement("span");
-      whSpan.textContent = it.where || "";
-      wh.appendChild(whSpan);
-      if (it.lat != null && it.lng != null && !isNaN(it.lat) && !isNaN(it.lng)) {
-        wh.style.cursor = "pointer";
-        wh.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          ev.preventDefault();
-          if (deps.openTimeAtMoment) deps.openTimeAtMoment(it);
-        });
-      }
-      ident.append(line, wh);
-      auth.append(av, ident);
-      plate.appendChild(auth);
-
-      const moreBtn = document.createElement("button");
-      moreBtn.className = "pmore";
-      moreBtn.setAttribute("aria-label", t("act_options"));
-      moreBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
-      moreBtn.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        if (deps.openPostMenu) deps.openPostMenu(it);
-      });
-      el.appendChild(moreBtn);
-      if (seekbar) plate.appendChild(seekbar);
-
-      const bot = document.createElement("div"); bot.className = "pbottom";
-      const tmLine = document.createElement("div"); tmLine.className = "ptime";
-      tmLine.textContent = relLong(it.ts) + " · " + clockOf(it.ts);
-      bot.appendChild(tmLine);
-      if (it.note) {
-        const nt = document.createElement("div");
-        nt.className = "pnote";
-        nt.textContent = it.note;
-        bot.appendChild(nt);
-      }
-
-      const bar = document.createElement("div"); bar.className = "actbar";
-      const like = document.createElement("button");
-      like.className = "ab" + (it.liked ? " liked" : "");
-      like.innerHTML = I.heart + "<em>" + nf(it.likes) + "</em>";
-      like.setAttribute("aria-label", t("act_like"));
-      const chat = document.createElement("button");
-      chat.className = "ab";
-      chat.innerHTML = I.chat + "<em>" + nf(commCount(it)) + "</em>";
-      chat.setAttribute("aria-label", "Yorumlar");
-      const eyes = document.createElement("button");
-      eyes.className = "ab";
-      eyes.innerHTML = I.views + "<em>" + nf(it.views) + "</em>";
-      eyes.setAttribute("aria-label", t("views"));
-      const save = document.createElement("button");
-      save.className = "ab" + (it.saved ? " saved" : "");
-      save.innerHTML = I.save;
-      save.setAttribute("aria-label", "Kaydet");
-      const send = document.createElement("button");
-      if (it.song && it.song.preview) {
-        send.className = "ab abSong";
-        send.innerHTML = '<span class="songDisc" style="background-image:url(' + esc(it.song.art) + ')"></span>';
-        send.setAttribute("aria-label", t("song_label") + " " + it.song.title + " — " + it.song.artist);
-      } else {
-        send.className = "ab abSong empty";
-        send.setAttribute("aria-hidden", "true");
-        send.tabIndex = -1;
-      }
-      bar.append(like, chat, eyes, save, send);
-      plate.appendChild(bar);
-      plate.appendChild(bot);
-
-      let songAudio = null;
-      if (it.song && it.song.preview) {
-        songAudio = document.createElement("audio");
-        songAudio.src = it.song.preview;
-        songAudio.preload = "auto";
-        songAudio.loop = true;
-        songAudio.muted = true;
-        el.appendChild(songAudio);
-      }
-      el.appendChild(plate);
-
-      function refreshLike() {
-        like.classList.toggle("liked", it.liked);
-        like.querySelector("em").textContent = nf(it.likes);
-      }
-      function toggleLike(force) {
-        if (force && it.liked) return false;
-        it.liked = !it.liked;
-        it.likes = Math.max(0, (Number(it.likes) || 0) + (it.liked ? 1 : -1));
-        refreshLike();
-        if (deps.onLike) deps.onLike(it);
-        return true;
-      }
-      like.addEventListener("click", () => toggleLike(false));
-      chat.addEventListener("click", () => { if (deps.openComments) deps.openComments(it.id); });
-      send.addEventListener("click", () => {
-        if (!(it.song && it.song.preview)) return;
-        if (songAudio && songAudio.paused) {
-          if (soundRef && soundRef.set) soundRef.set(true);
-          songAudio.muted = false;
-          songAudio.play().catch(() => {});
-          send.classList.add("playing");
-          return;
-        }
-        if (soundRef && soundRef.toggle) soundRef.toggle();
-        if (typeof applySound === "function") applySound();
-        toast(t(soundOn() ? "t_sound_on" : "t_sound_off"));
-      });
-      eyes.addEventListener("click", () => toast(nf(it.views) + " " + t("views_count")));
-      save.addEventListener("click", () => {
-        it.saved = !it.saved;
-        save.classList.toggle("saved", it.saved);
-        toast(t(it.saved ? "t_saved" : "ok_unsaved2"));
-        if (deps.onSave) deps.onSave(it);
-      });
-      av.addEventListener("click", () => { if (deps.openProfile) deps.openProfile(it.who); });
-
-      bindGestures(media, mediaEl, el, it, burst, toggleLike);
-
-      el._sound = function () {};
-      el._sync = function () {
-        refreshLike();
-        save.classList.toggle("saved", it.saved);
-        eyes.querySelector("em").textContent = nf(it.views);
-        chat.querySelector("em").textContent = nf(commCount(it));
-        tmLine.textContent = relLong(it.ts) + " · " + clockOf(it.ts);
-        if (it.kind !== "video") mediaEl.style.filter = agingFilter(it.ts);
-      };
-      el._video = it.kind === "video" ? mediaEl : null;
-      el._songAudio = songAudio;
-      el._songBadge = (it.song && it.song.preview) ? send : null;
-      return el;
-    }
-
-    function bindGestures(media, mediaEl, el, it, burst, toggleLike) {
-      let sc = 1, tx = 0, ty = 0, pts = new Map(), sd = 0, ss = 1, lastTap = 0, drag = false, px = 0, py = 0, ox = 0, oy = 0, tapT = null;
-      function apply(anim) {
-        media.classList.toggle("drag", !anim);
-        mediaEl.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + sc + ")";
-      }
-      media.addEventListener("pointerdown", (e) => {
-        pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-        if (pts.size === 2) {
-          media.setPointerCapture(e.pointerId);
-          const a = [...pts.values()];
-          sd = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
-          ss = sc;
-          media.style.touchAction = "none";
-        } else if (pts.size === 1) {
-          drag = sc > 1; px = e.clientX; py = e.clientY; ox = tx; oy = ty;
-        }
-      });
-      media.addEventListener("pointermove", (e) => {
-        if (!pts.has(e.pointerId)) return;
-        pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-        if (pts.size === 2) {
-          const a = [...pts.values()];
-          const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
-          sc = Math.min(4, Math.max(1, ss * (d / sd)));
-          if (sc === 1) { tx = 0; ty = 0; }
-          apply(false);
-        } else if (drag && sc > 1) {
-          tx = ox + (e.clientX - px); ty = oy + (e.clientY - py); apply(false);
-        }
-      });
-      function endPtr(e) {
-        pts.delete(e.pointerId);
-        if (pts.size === 0) {
-          drag = false;
-          media.style.touchAction = "pan-y";
-          if (sc <= 1.03) { sc = 1; tx = 0; ty = 0; apply(true); }
-        }
-      }
-      media.addEventListener("pointerup", (e) => {
-        const n = Date.now();
-        const wasMulti = pts.size > 1;
-        if (!wasMulti && sc <= 1.03) {
-          if (n - lastTap < 280) {
-            clearTimeout(tapT);
-            if (toggleLike(true)) {
-              burst.innerHTML = I.big || "";
-              burst.classList.remove("go");
-              void burst.offsetWidth;
-              burst.classList.add("go");
-            }
-            lastTap = 0;
-          } else {
-            lastTap = n;
-            clearTimeout(tapT);
-            tapT = setTimeout(() => {
-              if (it.kind === "video" && mediaEl.tagName === "VIDEO") {
-                if (mediaEl.paused) {
-                  mediaEl.play().catch(() => {});
-                  el.classList.remove("paused", "vctrl");
-                } else {
-                  mediaEl.pause();
-                  el.classList.add("paused", "vctrl");
-                }
-              } else {
-                el.classList.toggle("bare");
-              }
-            }, 290);
-          }
-        }
-        endPtr(e);
-      });
-      media.addEventListener("pointercancel", endPtr);
-    }
-
-    return { build, agingFilter, commCount, BLANK_POSTER };
-  }
-
-  root.KlipsyFeedCard = { create: createCardBuilder, agingFilter, commCount, BLANK_POSTER };
-})(typeof window !== "undefined" ? window : globalThis);
-
-/* ==== feed-viewport.js ==== */
-/* Klipsy Akış — Viewport
-   Aktif kare, medya, sonsuz kaydırma, pull-to-refresh. */
-(function (root) {
-  "use strict";
-
-  function createFeedViewport(opts) {
-    const feed = opts.feed;
-    const list = opts.list;
-    const store = opts.store;
-    const soundRef = opts.soundRef;
-    let activeIdx = -1;
-    const seenIds = new Set();
-    let rafPending = false;
-    let resumeAt = 0;
-    const RESUME = opts.resumeMs || 400;
-
-    function posts() {
-      return list.querySelectorAll(".post");
-    }
-
-    function soundOn() {
-      return !!(soundRef && soundRef.get && soundRef.get());
-    }
-
-    function currentIndex() {
-      const els = posts();
-      if (!els.length) return 0;
-      const mid = feed.scrollTop + feed.clientHeight * 0.38;
-      let best = 0, bestDist = Infinity;
-      for (let i = 0; i < els.length; i++) {
-        const top = els[i].offsetTop;
-        const h = els[i].offsetHeight || 1;
-        const d = Math.abs(top + h * 0.5 - mid);
-        if (d < bestDist) { bestDist = d; best = i; }
-      }
-      return best;
-    }
-
-    function bindVideo(v, on) {
-      if (!v) return;
-      const url = v.dataset.src;
-      if (on) {
-        if (url && v.getAttribute("src") !== url) {
-          v.src = url;
-          v.preload = "metadata";
-        }
-      } else {
-        try { v.pause(); } catch (e) {}
-        if (v.getAttribute("src")) {
-          try { v.removeAttribute("src"); v.load(); } catch (e) {}
-        }
-      }
-    }
-
-    function blocked() {
-      return typeof opts.anyBlockerOpen === "function" && opts.anyBlockerOpen();
-    }
-
-    function playActive(p) {
-      if (!p) return;
-      if (p._video) {
-        bindVideo(p._video, true);
-        if (p._video.paused && !p.classList.contains("paused")) {
-          p._video.muted = p._songAudio ? true : !soundOn();
-          p._video.play().catch(() => {
-            p._video.muted = true;
-            p._video.play().catch(() => {});
-          });
-        }
-      }
-      if (p._songAudio && p._songAudio.paused) {
-        p._songAudio.muted = !soundOn();
-        p._songAudio.play().catch(() => {
-          p._songAudio.muted = true;
-          p._songAudio.play().catch(() => {});
-        });
-      }
-    }
-
-    function syncActive(force) {
-      const idx = currentIndex();
-      const els = posts();
-      const lock = blocked();
-
-      if (force || idx !== activeIdx) {
-        activeIdx = idx;
-        els.forEach((p, i) => {
-          if (lock) {
-            p.classList.toggle("active", i === idx);
-            if (i !== idx) p.classList.remove("bare", "paused", "vctrl");
-            return;
-          }
-          if (p._video) {
-            if (i === idx || i === idx + 1) {
-              bindVideo(p._video, true);
-              if (i === idx) {
-                p._video.muted = p._songAudio ? true : !soundOn();
-                p._video.play().catch(() => {
-                  p._video.muted = true;
-                  p._video.play().catch(() => {});
-                });
-              } else {
-                try { p._video.pause(); } catch (e) {}
-                p._video.muted = true;
-              }
-            } else {
-              bindVideo(p._video, false);
-            }
-          }
-          if (p._songAudio) {
-            if (i === idx) {
-              p._songAudio.muted = !soundOn();
-              p._songAudio.currentTime = 0;
-              p._songAudio.play().catch(() => {
-                p._songAudio.muted = true;
-                p._songAudio.play().catch(() => {});
-              });
-              if (p._songBadge) p._songBadge.classList.toggle("playing", soundOn());
-            } else {
-              try { p._songAudio.pause(); } catch (e) {}
-              p._songAudio.muted = true;
-              if (p._songBadge) p._songBadge.classList.remove("playing");
-            }
-          }
-          p.classList.toggle("active", i === idx);
-          if (i !== idx) p.classList.remove("bare", "paused", "vctrl");
-        });
-      }
-
-      if (!lock && els[idx]) playActive(els[idx]);
-
-      const items = store.items();
-      const seenIt = items[idx];
-      if (seenIt && !seenIds.has(seenIt.id)) {
-        seenIds.add(seenIt.id);
-        seenIt.views = (Number(seenIt.views) || 0) + 1;
-        if (opts.onView) {
-          Promise.resolve(opts.onView(seenIt)).then((real) => {
-            if (typeof real === "number") {
-              seenIt.views = real;
-              const n2 = posts()[idx];
-              if (n2 && n2._sync) n2._sync();
-            }
-          }).catch(() => {});
-        }
-        const node = posts()[idx];
-        if (node && node._sync) node._sync();
-      }
-
-      const dot = document.getElementById("railDot");
-      if (dot) {
-        const max = Math.max(1, items.length);
-        const pct = Math.min(1, idx / max);
-        dot.style.top = "calc(" + (pct * 100) + "% - " + (pct * 30) + "px)";
-      }
-      return activeIdx;
-    }
-
-    function pauseFeedMedia() {
-      posts().forEach((p) => {
-        if (p._video) { try { p._video.pause(); } catch (e) {} p._video.muted = true; }
-        if (p._songAudio) { try { p._songAudio.pause(); } catch (e) {} p._songAudio.muted = true; }
-        if (p._songBadge) p._songBadge.classList.remove("playing");
-      });
-    }
-
-    function resumeFeedMedia() {
-      playActive(posts()[activeIdx]);
-    }
-
-    function applySound() {
-      const els = posts();
-      els.forEach((p, i) => {
-        if (p._sound) p._sound();
-        if (p._video) p._video.muted = p._songAudio ? true : !(soundOn() && i === activeIdx);
-        if (p._songAudio) {
-          p._songAudio.muted = !(soundOn() && i === activeIdx);
-          if (p._songBadge) p._songBadge.classList.toggle("playing", soundOn() && i === activeIdx);
-        }
-      });
-      if (blocked()) return;
-      const cur = els[activeIdx];
-      if (cur && cur._video && soundOn() && !cur._songAudio) {
-        cur._video.muted = false;
-        cur._video.play().catch(() => {});
-      }
-      if (cur && cur._songAudio && soundOn()) {
-        cur._songAudio.muted = false;
-        cur._songAudio.play().catch(() => {});
-      }
-    }
-
-    function paintNames() {
-      posts().forEach((el) => {
-        const nmeEl = el.querySelector(".pname");
-        if (nmeEl && el._who && opts.USERS) {
-          const uu = opts.USERS[el._who];
-          nmeEl.textContent = (uu && uu.display_name) ? uu.display_name : el._who;
-        }
-      });
-    }
-
-    function renderList(cardBuild) {
-      const items = store.items();
-      list.innerHTML = "";
-      if (!items.length) {
-        const e = document.createElement("div");
-        e.className = "endcap";
-        e.innerHTML = "<b>" + opts.t("tunnel_empty") + "</b><span>" + opts.t("first_moment_hint") + "</span>";
-        list.appendChild(e);
-        return;
-      }
-      const f = document.createDocumentFragment();
-      items.forEach((it, i) => f.appendChild(cardBuild(it, i)));
-      const cap = document.createElement("div");
-      cap.className = "endcap";
-      cap.innerHTML = "<b>" + opts.t("tunnel_start") + "</b><span>" + opts.dateOf(items[items.length - 1].ts) + "</span>";
-      f.appendChild(cap);
-      list.appendChild(f);
-    }
-
-    function bindScroll() {
-      feed.addEventListener("scroll", () => {
-        resumeAt = Date.now() + RESUME;
-        if (!rafPending) {
-          rafPending = true;
-          requestAnimationFrame(() => {
-            rafPending = false;
-            syncActive();
-          });
-        }
-        try {
-          const els = posts();
-          const idx = Math.round(feed.scrollTop / (feed.clientHeight || 1));
-          if (els.length && idx >= els.length - 4 && opts.onNearEnd) opts.onNearEnd();
-        } catch (e) {}
-      }, { passive: true });
-    }
-
-    function bindPullToRefresh() {
-      const ptr = document.getElementById("ptr");
-      if (!ptr) return;
-      let startY = 0, pulling = false, dist = 0, refreshing = false;
-      const MAX = 90, TRIG = 64;
-      feed.addEventListener("touchstart", (e) => {
-        if (refreshing) return;
-        if (feed.scrollTop <= 0 && e.touches.length === 1) {
-          startY = e.touches[0].clientY;
-          pulling = true;
-          dist = 0;
-          ptr.classList.remove("animating");
-        } else pulling = false;
-      }, { passive: true });
-      feed.addEventListener("touchmove", (e) => {
-        if (!pulling || refreshing) return;
-        dist = e.touches[0].clientY - startY;
-        if (dist > 0 && feed.scrollTop <= 0) {
-          const h = Math.min(MAX, dist * 0.5);
-          ptr.style.height = h + "px";
-          ptr.classList.toggle("ready", h >= TRIG);
-        } else {
-          ptr.style.height = "0px";
-        }
-      }, { passive: true });
-      feed.addEventListener("touchend", async () => {
-        if (!pulling || refreshing) { pulling = false; return; }
-        pulling = false;
-        const h = parseFloat(ptr.style.height) || 0;
-        ptr.classList.add("animating");
-        if (h >= TRIG) {
-          refreshing = true;
-          ptr.style.height = "52px";
-          ptr.classList.remove("ready");
-          ptr.classList.add("spinning");
-          try { if (opts.onRefresh) await opts.onRefresh(); } catch (e) {}
-          feed.scrollTo({ top: 0, behavior: "auto" });
-          setTimeout(() => {
-            ptr.style.height = "0px";
-            ptr.classList.remove("spinning");
-            refreshing = false;
-            if (opts.toast) opts.toast(opts.t("t_refreshed"));
-          }, 500);
-        } else {
-          ptr.style.height = "0px";
-          ptr.classList.remove("ready");
-        }
-      });
-    }
-
-    function goToPost(id, sonra) {
-      const el = list.querySelector('[data-id="' + id + '"]');
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        if (typeof sonra === "function") setTimeout(() => sonra(id), 500);
-        return true;
-      }
-      if (typeof opts.onMissingPost === "function") return opts.onMissingPost(id);
-      return false;
-    }
-
-    function resetActive() { activeIdx = -1; }
-
-    function getActive() { return activeIdx; }
-
-    return {
-      currentIndex,
-      syncActive,
-      pauseFeedMedia,
-      resumeFeedMedia,
-      applySound,
-      paintNames,
-      renderList,
-      bindScroll,
-      bindPullToRefresh,
-      goToPost,
-      resetActive,
-      getActive,
-      bindVideo
-    };
-  }
-
-  root.KlipsyFeedViewport = { create: createFeedViewport };
-})(typeof window !== "undefined" ? window : globalThis);
-
-/* ==== feed-controller.js ==== */
-/* Klipsy Akış — Controller
-   Use-case'ler: ilk yükleme, devam, kip, yer, birleştirme. */
-(function (root) {
-  "use strict";
-
-  function mergePending(pendingKeep, pendingNow, serverItems, me, ME) {
-    const pendingAll = [];
-    const pendSeen = new Set();
-    [...(pendingKeep || []), ...(pendingNow || [])].forEach((p) => {
-      const k = String(p.id);
-      if (pendSeen.has(k)) return;
-      pendSeen.add(k);
-      pendingAll.push(p);
-    });
-    const serverIds = new Set(serverItems.map((x) => x.id));
-    return pendingAll.filter((p) => {
-      if (serverIds.has(p.id)) return false;
-      if (p.mine || (me && p.who === ME)) {
-        const near = serverItems.some((s) => s.mine && Math.abs((s.ts || 0) - (p.ts || 0)) < 120000);
-        if (near) return false;
-      }
-      return true;
-    });
-  }
-
-  function createFeedController(opts) {
-    const store = opts.store;
-    const api = opts.api;
-    const getCtx = opts.getCtx;
-    const viewport = opts.viewport;
-    const card = opts.card;
-    const modeUi = opts.modeUi;
-
-    function ctx() { return getCtx(); }
-
-    function mapAll(rows) {
-      const c = ctx();
-      return (rows || []).map((r) => api.mapRow(r, {
-        sb: c.sb,
-        me: c.me,
-        t: c.t,
-        moods: c.moods,
-        fallbackMood: c.fallbackMood,
-        setAvatar: c.setAvatar,
-        setDisplayName: c.setDisplayName
-      }));
-    }
-
-    function paint() {
-      viewport.renderList(card.build);
-      if (typeof opts.afterPaint === "function") opts.afterPaint();
-    }
-
-    async function loadFeed(flags) {
-      flags = flags || {};
-      const snap = store.get();
-      if (snap.loading && !flags.force) return;
-      const c = ctx();
-      if (!c.sb) return;
-
-      if (flags.force) store.resetPaging();
-      store.setPaging({ loading: true });
-
-      try {
-        const pendingKeep = store.items().filter(api.isLocalPending);
-        const res = await api.page({
-          limit: store.PAGE,
-          mode: store.mode(),
-          useDirect: store.get().useDirectTable
-        });
-        store.setPath(res.path, res.error);
-        if (res.useDirect) store.setPaging({ useDirectTable: true });
-
-        const serverItems = mapAll(res.rows);
-        const pendingNow = store.items().filter(api.isLocalPending);
-        const stillPending = mergePending(pendingKeep, pendingNow, serverItems, c.me, c.ME);
-        let merged = api.visibilityGuard(stillPending.concat(serverItems), store.mode(), c.me);
-
-        store.setPaging({ hasMore: serverItems.length >= store.PAGE });
-        store.replace(merged);
-        paint();
-        viewport.resetActive();
-        viewport.syncActive(true);
-
-        const yeniSurum = res.rows && res.rows.length
-          ? Object.prototype.hasOwnProperty.call(res.rows[0], "liked")
-          : true;
-        if (yeniSurum) viewport.paintNames();
-        else if (opts.fetchDisplayNames) opts.fetchDisplayNames().catch(() => {});
-
-        api.paintLikesSaves(store.items()).then(() => {
-          document.querySelectorAll("#list .post").forEach((el) => { if (el._sync) el._sync(); });
-        });
-
-        if (opts.onLoaded) opts.onLoaded(store.items());
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        store.setPaging({ loading: false });
-      }
-    }
-
-    async function loadMore() {
-      const snap = store.get();
-      if (snap.loadingMore || snap.loading || !snap.hasMore) return;
-      if (!snap.all.length && !snap.items.length) return;
-
-      const oldest = store.oldestTs();
-      if (!oldest || !isFinite(oldest)) return;
-
-      store.setPaging({ loadingMore: true });
-      try {
-        const c = ctx();
-        const have = store.ids();
-        const res = await api.page({
-          beforeTs: oldest,
-          limit: store.PAGE,
-          mode: store.mode(),
-          useDirect: snap.useDirectTable,
-          excludeIds: have
-        });
-        if (res.useDirect) store.setPaging({ useDirectTable: true });
-
-        let more = mapAll(res.rows).filter((it) =>
-          !have.has(String(it.id)) && (it.ts || 0) < oldest - 100
-        );
-
-        if (more.length < Math.max(3, Math.floor(store.PAGE / 4))) {
-          if (!store.get().useDirectTable) {
-            store.setPaging({ useDirectTable: true });
-            const extra = await api.fetchMomentsPage(oldest, store.PAGE);
-            const extraMapped = mapAll(extra).filter((it) =>
-              !have.has(String(it.id)) && (it.ts || 0) < oldest - 100
-            );
-            if (extraMapped.length) more = more.concat(extraMapped);
-          }
-          if (more.length < 3) store.setPaging({ hasMore: false });
-        }
-
-        if (!more.length) {
-          if (store.get().useDirectTable) store.setPaging({ hasMore: false });
-          return;
-        }
-
-        more = api.visibilityGuard(more, store.mode(), c.me);
-        const prevId = (store.items()[Math.max(0, viewport.getActive())] || {}).id || null;
-        store.append(more);
-        paint();
-        requestAnimationFrame(() => {
-          if (prevId) {
-            const el = document.querySelector('#list .post[data-id="' + CSS.escape(String(prevId)) + '"]');
-            if (el) el.scrollIntoView({ block: "start" });
-          }
-          viewport.syncActive(true);
-        });
-        viewport.paintNames();
-        api.paintLikesSaves(more).then(() => {
-          document.querySelectorAll("#list .post").forEach((el) => { if (el._sync) el._sync(); });
-        });
-      } catch (e) {
-        console.warn("loadMoreFeed:", e);
-      } finally {
-        store.setPaging({ loadingMore: false });
-      }
-    }
-
-    async function switchMode(next) {
-      await modeUi.toggle(next);
-    }
-
-    async function onModeChanged() {
-      store.resetPaging();
-      store.replace([]);
-      paint();
-      const f = document.getElementById("feed");
-      if (f) f.scrollTop = 0;
-      await loadFeed();
-      const path = store.get().path || "";
-      const kip = store.mode();
-      if (path.indexOf("rpc:") === 0 && path !== "rpc:kipsiz") {
-        if (opts.toast) opts.toast(opts.t(kip === "friends" ? "feed_switched_friends" : "feed_switched_community"));
-      } else {
-        if (opts.toast) opts.toast(opts.t("feed_mode_unsupported"));
-        console.warn("[Klipsy] akış yolu:", path, store.get().lastError || "");
-      }
-    }
-
-    function setPlace(place) {
-      store.setPlace(place);
-      paint();
-      viewport.resetActive();
-      viewport.syncActive(true);
-    }
-
-    return {
-      loadFeed,
-      loadMore,
-      switchMode,
-      onModeChanged,
-      setPlace,
-      paint,
-      mergePending
-    };
-  }
-
-  root.KlipsyFeedController = { create: createFeedController, mergePending };
-})(typeof window !== "undefined" ? window : globalThis);
-
-/* ==== feed-bridge.js ==== */
-/* Klipsy Akış — Bridge
-   Yeni katmanı eski global isimlere bağlar.
-   __startApp içinde, $ / feed / list / t / I hazır olduktan sonra:
-
-      KlipsyFeed.attach({ ...deps });
-
-   Çağrı sonrası loadFeed, render, syncActive, akisKipiKur aynı yerde durur. */
-(function (root) {
-  "use strict";
-
-  function attach(deps) {
-    if (root.__klipsyFeed) return root.__klipsyFeed;
-
-    const store = root.KlipsyFeedStore.create();
-    const api = root.KlipsyFeedApi.create(() => ({
-      sb: root.__sb,
-      me: root.__me
-    }));
-
-    const soundRef = {
-      get() { return typeof deps.soundOnGet === "function" ? !!deps.soundOnGet() : !!deps.soundOn; },
-      set(v) {
-        if (typeof deps.soundOnSet === "function") deps.soundOnSet(!!v);
-        else deps.soundOn = !!v;
-      },
-      toggle() {
-        const n = !this.get();
-        this.set(n);
-        return n;
-      }
-    };
-
-    const viewport = root.KlipsyFeedViewport.create({
-      feed: deps.feed,
-      list: deps.list,
-      store,
-      soundRef,
-      t: deps.t,
-      toast: deps.toast,
-      dateOf: deps.dateOf,
-      USERS: deps.USERS,
-      anyBlockerOpen: deps.anyBlockerOpen,
-      onNearEnd() { if (root.__klipsyFeed) root.__klipsyFeed.loadMore(); },
-      onRefresh() { return root.__klipsyFeed.loadFeed({ force: true }); },
-      onView(it) { return api.markView(it.id); },
-      onMissingPost(id) {
-        try {
-          if (typeof deps.zamanAnGoster === "function") {
-            deps.zamanAnGoster({ id });
-            return true;
-          }
-        } catch (e) {}
-        return false;
-      }
-    });
-
-    const card = root.KlipsyFeedCard.create({
-      t: deps.t,
-      I: deps.I,
-      USERS: deps.USERS,
-      paintAv: deps.paintAv,
-      nf: deps.nf,
-      relLong: deps.relLong,
-      clockOf: deps.clockOf,
-      esc: deps.esc,
-      isReal: api.isUuid,
-      soundRef,
-      applySound() { viewport.applySound(); },
-      toast: deps.toast,
-      openComments: deps.openComments,
-      openPostMenu: deps.openPostMenu,
-      openProfile: deps.openProfile,
-      openTimeAtMoment: deps.openTimeAtMoment,
-      onLike: deps.onLike,
-      onSave: deps.onSave
-    });
-
-    let controller;
-
-    const modeUi = root.KlipsyFeedMode.create({
-      t: deps.t,
-      esc: deps.esc,
-      store,
-      api,
-      async onChange() {
-        if (controller) await controller.onModeChanged();
-      }
-    });
-
-    controller = root.KlipsyFeedController.create({
-      store,
-      api,
-      viewport,
-      card,
-      modeUi,
-      t: deps.t,
-      toast: deps.toast,
-      fetchDisplayNames: deps.fetchDisplayNames,
-      onLoaded: deps.onLoaded,
-      afterPaint: deps.afterPaint,
-      getCtx() {
-        return {
-          sb: root.__sb,
-          me: root.__me,
-          ME: deps.ME,
-          t: deps.t,
-          moods: deps.MOOD_BY_KEY,
-          fallbackMood: deps.fallbackMood,
-          setAvatar: deps.setRealAvatar,
-          setDisplayName: deps.setDisplayName
-        };
-      }
-    });
-
-    viewport.bindScroll();
-    viewport.bindPullToRefresh();
-
-    const facade = {
-      store,
-      api,
-      viewport,
-      card,
-      modeUi,
-      controller,
-      loadFeed: (o) => controller.loadFeed(o),
-      loadMore: () => controller.loadMore(),
-      render: () => controller.paint(),
-      syncActive: (f) => viewport.syncActive(f),
-      akisKipi: () => store.mode(),
-      akisKipiKur: () => modeUi.boot(),
-      akisKipiDegistir: (k) => modeUi.toggle(k),
-      goToPost: (id, fn) => viewport.goToPost(id, fn),
-      pauseFeedMedia: () => viewport.pauseFeedMedia(),
-      resumeFeedMedia: () => viewport.resumeFeedMedia(),
-      applySound: () => viewport.applySound(),
-      paintFeedNames: () => viewport.paintNames(),
-      items: () => store.items(),
-      allItems: () => store.all(),
-      setPlace: (p) => controller.setPlace(p)
-    };
-
-    root.__klipsyFeed = facade;
-
-    /* Eski çağrı noktaları kırılmasın */
-    root.loadFeed = facade.loadFeed;
-    root.loadMoreFeed = facade.loadMore;
-    root.akisKipi = facade.akisKipi;
-    root.akisKipiKur = facade.akisKipiKur;
-    root.akisKipiKurBaslat = facade.akisKipiKur;
-    root.akisKipiDegistir = facade.akisKipiDegistir;
-    root.goToPost = facade.goToPost;
-
-    return facade;
-  }
-
-  root.KlipsyFeed = { attach };
-})(typeof window !== "undefined" ? window : globalThis);
-
-</script>
-
-<script>
 window.__APP_STARTED=false;
 
 /* ============================================================
@@ -11785,7 +10467,54 @@ const feed=$("#feed"), list=$("#list");
 let _savedCache=null; // kaydedilenler önbelleği (kalıcı)
 const ME=(window.__me&&window.__me.username)?window.__me.username:"sen";
 
-/* pull-to-refresh: KlipsyFeed Viewport */
+// --- aşağı çekince yenile (pull-to-refresh) ---
+(function(){
+  const ptr=$("#ptr"); if(!ptr) return;
+  let startY=0, pulling=false, dist=0, refreshing=false;
+  const MAX=90, TRIG=64;
+  feed.addEventListener("touchstart",e=>{
+    if(refreshing) return;
+    // sadece en üstteyken ve tek parmakla
+    if(feed.scrollTop<=0 && e.touches.length===1){
+      startY=e.touches[0].clientY; pulling=true; dist=0;
+      ptr.classList.remove("animating");
+    }else pulling=false;
+  },{passive:true});
+  feed.addEventListener("touchmove",e=>{
+    if(!pulling||refreshing) return;
+    dist=e.touches[0].clientY-startY;
+    if(dist>0 && feed.scrollTop<=0){
+      const h=Math.min(MAX, dist*0.5);
+      ptr.style.height=h+"px";
+      ptr.classList.toggle("ready", h>=TRIG);
+    }else{ ptr.style.height="0px"; }
+  },{passive:true});
+  feed.addEventListener("touchend",async ()=>{
+    if(!pulling||refreshing){ pulling=false; return; }
+    pulling=false;
+    const h=parseFloat(ptr.style.height)||0;
+    ptr.classList.add("animating");
+    if(h>=TRIG){
+      // yenile
+      refreshing=true;
+      ptr.style.height="52px";
+      ptr.classList.remove("ready"); ptr.classList.add("spinning");
+      try{ _geoCache=null; }catch(e){} // harita geo önbelleğini de tazele
+      try{ await loadFeed({force:true}); }catch(e){}
+      // en üste dön
+      feed.scrollTo({top:0,behavior:"auto"});
+      setTimeout(()=>{
+        ptr.style.height="0px";
+        ptr.classList.remove("spinning");
+        refreshing=false;
+        toast(t("t_refreshed"));
+      },500);
+    }else{
+      ptr.style.height="0px";
+      ptr.classList.remove("ready");
+    }
+  });
+})();
 
 function setSheetH(){
   document.documentElement.style.setProperty("--sheetH",
@@ -12036,40 +10765,544 @@ const commCount=it=>it.comments.length?it.comments.reduce((n,c)=>n+1+c.replies.l
 // gerçek Supabase kaydı mı (UUID) yoksa yerel geçici mi?
 const isReal=id=>typeof id==="string" && id.length>=32 && id.includes("-");
 
-/* Akış gövdesi KlipsyFeed katmanında. Yerel diziler uyum için senkron tutulur. */
-const FEED_PAGE = (window.KlipsyFeedStore && window.KlipsyFeedStore.PAGE) || 30;
+// Supabase akışını çek ve items'a doldur
+/* SINIRSIZ AKIŞ
+   Toplam üst sınır YOK. Her istekte FEED_PAGE kadar gelir;
+   aşağı kaydırdıkça bir sonraki sayfa sunucudan eklenir.
+   get_feed before_ts desteklemezse moments tablosuna düşülür. */
+const FEED_PAGE = 30;
+let _feedLoading=false;
+let _feedHasMore=true;
+let _feedLoadMoreBusy=false;
+let _feedUseDirect=false; // get_feed sayfalama yoksa doğrudan tablo
 
-function feedSyncLocals(){
-  const F = window.__klipsyFeed;
-  if(!F) return;
-  items = F.items();
-  allItems = F.allItems();
+function _mapFeedRow(r, me, sb){
+  if(r.avatar_url) setRealAvatar(r.username, r.avatar_url);
+  if(r.display_name) setDisplayName(r.username, r.display_name);
+  return {
+    id:r.id, ts:new Date(r.created_at).getTime(),
+    who:r.username, avatar:r.avatar_url,
+    where:r.place_label||t("no_location"),
+    mood:MOOD_BY_KEY[r.mood]||MOODS[7],
+    note:r.note||"",
+    kind:r.media_kind,
+    mediaPath:r.media_path||null,
+    src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
+    poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
+    lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
+    lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
+    likes:r.like_count, views:r.view_count, cc:r.comment_count,
+    saved: !!r.saved, liked: !!r.liked,
+    display: r.display_name || null,
+    mine: me && r.author_id===me.id,
+    commentsOn: r.comments_on!==false,
+    downloadsOn: r.downloads_on!==false,
+    visibility: r.visibility || 'community',
+    comments:[],
+    song: r.song_title ? {title:r.song_title, artist:r.song_artist, art:r.song_art, preview:r.song_preview} : null
+  };
 }
-function feedPrependLocal(it){
-  const F = window.__klipsyFeed;
-  if(F){ F.store.prependPending([it]); feedSyncLocals(); }
-  else {
-    items.unshift(it);
-    if(Array.isArray(allItems)) allItems.unshift(it);
-    else allItems = items.slice();
+
+function _isLocalPending(it){
+  if(!it) return false;
+  if(it._pending) return true;
+  const id = String(it.id||"");
+  return id.charAt(0)==="u" && id.length>8 && !id.includes("-");
+}
+
+/* moments tablosundan sayfa — get_feed sayfalama desteklemezse yedek.
+   created_at < beforeTs ile keyset; toplam sınır yok. */
+async function _fetchMomentsPage(beforeTs, limit){
+  const sb=window.__sb; if(!sb) return [];
+  try{
+    let q = sb.from('moments')
+      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility')
+      .eq('is_removed', false)
+      .order('created_at', { ascending:false })
+      .limit(limit || FEED_PAGE);
+    if(beforeTs){
+      q = q.lt('created_at', new Date(beforeTs).toISOString());
+    }
+    const { data, error } = await q;
+    if(error || !data || !data.length) return [];
+
+    const authorIds = [...new Set(data.map(r=>r.author_id).filter(Boolean))];
+    let byAuthor = {};
+    if(authorIds.length){
+      const { data:profs } = await sb.from('profiles')
+        .select('id, username, display_name, avatar_url')
+        .in('id', authorIds);
+      (profs||[]).forEach(p=>{ byAuthor[p.id]=p; });
+    }
+
+    return data.map(r=>{
+      const p = byAuthor[r.author_id] || {};
+      return {
+        id:r.id, created_at:r.created_at, author_id:r.author_id,
+        username:p.username||"", avatar_url:p.avatar_url||null,
+        display_name:p.display_name||null,
+        place_label:r.place_label, mood:r.mood, note:r.note,
+        media_kind:r.media_kind, media_path:r.media_path, poster_path:r.poster_path,
+        geo_lat:r.geo_lat, geo_lng:r.geo_lng,
+        like_count:r.like_count, view_count:r.view_count, comment_count:r.comment_count,
+        song_title:r.song_title, song_artist:r.song_artist,
+        song_art:r.song_art, song_preview:r.song_preview,
+        comments_on:r.comments_on, downloads_on:r.downloads_on,
+        visibility:r.visibility||'community',
+        saved:false, liked:false
+      };
+    });
+  }catch(e){
+    console.warn('moments page:', e);
+    return [];
   }
 }
-function feedRemoveLocal(id){
-  const F = window.__klipsyFeed;
-  if(F){ F.store.remove(id); feedSyncLocals(); }
-  else {
-    items = (items||[]).filter(x=>x.id!==id);
-    allItems = (allItems||[]).filter(x=>x.id!==id);
+
+/* Bir sayfa getir: önce get_feed, olmazsa moments. */
+/* ═══ AKIŞ SEKMELERİ ═══
+   Arkadaşlar: karşılıklı takipleşenler. Topluluk: herkes.
+   Seçim hatırlanır; ilk açılışta arkadaşı olmayan kullanıcı
+   Topluluk sekmesiyle karşılaşır — boş ekran görmesin. */
+let _akisKipi = "community";
+
+function akisKipi(){ return _akisKipi; }
+
+/* Yazıyı kısa süre gösterip kapat.
+   Kullanıcı hangi akışa geçtiğini görür, sonra ekran temizlenir. */
+let _akisYaziZaman = null;
+function akisYaziGoster(){
+  const btn = document.getElementById("feedMode");
+  if(!btn) return;
+
+  /* Açılışta harfler soldan sağa; kapanışta sağdan sola.
+     Ters sıra kapanışı daha doğal gösteriyor. */
+  const harfler = btn.querySelectorAll(".mTx .h");
+  harfler.forEach((h, i)=>{ h.style.transitionDelay = (i * 26) + "ms"; });
+
+  btn.classList.add("acik");
+  clearTimeout(_akisYaziZaman);
+
+  _akisYaziZaman = setTimeout(()=>{
+    const n = harfler.length;
+    harfler.forEach((h, i)=>{ h.style.transitionDelay = ((n - 1 - i) * 18) + "ms"; });
+    btn.classList.remove("acik");
+  }, 1800);
+}
+
+/* Akış kipi ikonları — aynı ölçüde çizildi, yan yana dengeli. */
+const AKIS_IKON = {
+  /* İki kişi silueti: arkadaşlar */
+  friends:
+    '<svg viewBox="0 0 24 24">'+
+    '<path d="M16 19v-1.6a3.2 3.2 0 0 0-3.2-3.2H6.2A3.2 3.2 0 0 0 3 17.4V19"/>'+
+    '<circle cx="9.5" cy="7.6" r="3.2"/>'+
+    '<path d="M21 19v-1.6a3.2 3.2 0 0 0-2.4-3.1"/>'+
+    '<path d="M15.4 4.6a3.2 3.2 0 0 1 0 6.2"/></svg>',
+
+  /* Küre: topluluk */
+  community:
+    '<svg viewBox="0 0 24 24">'+
+    '<circle cx="12" cy="12" r="8.4"/>'+
+    '<path d="M3.6 12h16.8"/>'+
+    '<path d="M12 3.6a13 13 0 0 1 0 16.8 13 13 0 0 1 0-16.8z"/></svg>',
+};
+
+/* Düğmenin ikonunu ve görünümünü kipe göre ayarla. */
+function akisSekmeCiz(){
+  const btn = document.getElementById("feedMode");
+  const ic  = document.getElementById("feedModeIcon");
+  if(!btn || !ic) return;
+
+  const arkadas = (_akisKipi === "friends");
+  ic.innerHTML = AKIS_IKON[arkadas ? "friends" : "community"];
+
+  /* Yazı da ŞU ANKİ akışı söyler — ikonla aynı şeyi.
+     Harf harf açılabilmesi için her harf ayrı bir kutuya konur. */
+  const tx = document.getElementById("feedModeText");
+  if(tx){
+    const metin = t(arkadas ? "feed_friends" : "feed_community");
+    tx.innerHTML = String(metin).split("").map((h, i)=>
+      '<span class="h" style="transition-delay:' + (i * 26) + 'ms">' +
+      (h === " " ? "&nbsp;" : esc(h)) + '</span>'
+    ).join("");
+  }
+
+  btn.classList.toggle("friends", arkadas);
+
+  /* Erişilebilirlik: ikon tek başına ne olduğunu söylemiyor. */
+  btn.setAttribute("aria-label", t(arkadas ? "feed_friends" : "feed_community"));
+  btn.setAttribute("title",      t(arkadas ? "feed_friends" : "feed_community"));
+}
+
+async function akisKipiDegistir(kip){
+  /* Kip verilmezse diğerine geçilir — tek düğme böyle çalışıyor. */
+  if(!kip) kip = (_akisKipi === "friends") ? "community" : "friends";
+  if(kip === _akisKipi) return;
+  _akisKipi = kip;
+  try{ localStorage.setItem("klipsy_akis_kipi", kip); }catch(e){}
+  akisSekmeCiz();
+  try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+
+  /* Arkadaşlar sekmesine geçince yeni an noktası söner. */
+  if(kip === "friends"){
+    const d = document.getElementById("ftDot");
+    if(d) d.classList.add("hide");
+    try{ localStorage.setItem("klipsy_arkadas_gorulen", new Date().toISOString()); }catch(e){}
+  }
+
+  /* Akış baştan yüklenir. */
+  _feedHasMore = true;
+  _feedUseDirect = false;
+  items = [];
+  render();
+  const f = document.getElementById("feed");
+  if(f) f.scrollTop = 0;
+  await loadFeed();
+  activeIdx = -1;
+  syncActive();
+
+  /* HANGİ AKIŞTA OLDUĞUNU SÖYLE.
+     İkon tek başına yeterince açık değil; kısa bir bildirim
+     kullanıcıyı yönlendiriyor. */
+  const yol = window.__akisYol || "?";
+
+  if(yol.indexOf("rpc:") === 0 && yol !== "rpc:kipsiz"){
+    toast(t(kip === "friends" ? "feed_switched_friends" : "feed_switched_community"));
+  }else{
+    /* Sunucuya ulaşılamadı: sessizce geçme, sebebi söyle. */
+    toast(t("feed_mode_unsupported"));
+    console.warn("[Klipsy] akış yolu:", yol, window.__akisHata || "");
   }
 }
 
-function akisKipi(){ return window.__klipsyFeed ? window.__klipsyFeed.akisKipi() : "community"; }
-async function akisKipiKur(){ if(window.__klipsyFeed) return window.__klipsyFeed.akisKipiKur(); }
-async function akisKipiDegistir(kip){ if(window.__klipsyFeed) return window.__klipsyFeed.akisKipiDegistir(kip); }
-async function loadFeed(opts){ if(window.__klipsyFeed) return window.__klipsyFeed.loadFeed(opts); }
-async function loadMoreFeed(){ if(window.__klipsyFeed) return window.__klipsyFeed.loadMore(); }
-function paintFeedNames(){ if(window.__klipsyFeed) window.__klipsyFeed.paintFeedNames(); }
+/* Arkadaşlarda yeni an var mı — sekmede küçük nokta. */
+async function arkadasYeniDenetle(){
+  try{
+    const sb = window.__sb;
+    if(!sb || _akisKipi === "friends") return;
 
+    let gorulen = null;
+    try{ gorulen = localStorage.getItem("klipsy_arkadas_gorulen"); }catch(e){}
+    if(!gorulen){
+      gorulen = new Date(Date.now() - 24*60*60*1000).toISOString();
+    }
+
+    const { data, error } = await sb.rpc('friends_has_new', { since: gorulen });
+    if(error) return;
+
+    const d = document.getElementById("ftDot");
+    if(d) d.classList.toggle("hide", !data);
+  }catch(e){}
+}
+
+/* İlk açılışta varsayılan sekmeyi seç. */
+async function akisKipiKur(){
+  let kayitli = null;
+  try{ kayitli = localStorage.getItem("klipsy_akis_kipi"); }catch(e){}
+
+  if(kayitli === "friends" || kayitli === "community"){
+    _akisKipi = kayitli;
+  }else{
+    /* Kayıt yoksa: arkadaşı olan Arkadaşlar'la, olmayan
+       Topluluk'la başlar. */
+    try{
+      const sb = window.__sb;
+      if(sb){
+        const { data } = await sb.rpc('friend_count');
+        _akisKipi = (Number(data) > 0) ? "friends" : "community";
+      }
+    }catch(e){}
+  }
+
+  akisSekmeCiz();
+
+  const btn = document.getElementById("feedMode");
+  if(btn && !btn._bagli){
+    btn._bagli = true;
+    btn.addEventListener("click", ()=>{
+      akisKipiDegistir();
+      akisYaziGoster();
+    });
+  }
+
+  /* İlk açılışta bir kez gösterilir: kullanıcı hangi akışta
+     başladığını bilsin. */
+  setTimeout(akisYaziGoster, 900);
+
+  setTimeout(arkadasYeniDenetle, 1500);
+  setInterval(arkadasYeniDenetle, 120000);
+}
+
+async function _fetchFeedPage(opts){
+  opts = opts || {};
+  const sb=window.__sb; if(!sb) return [];
+  const limit = opts.limit || FEED_PAGE;
+  const beforeTs = opts.beforeTs || null;
+
+  // Doğrudan tabloya geçilmişse orada kal
+  if(_feedUseDirect){
+    return _fetchMomentsPage(beforeTs, limit);
+  }
+
+  // 1) get_feed — sayfalama parametrelerini dene
+  if(!beforeTs){
+    const { data, error } = await sb.rpc('get_feed',
+      { page_size: limit, feed_mode: akisKipi() });
+
+    if(!error && Array.isArray(data)){
+      window.__akisYol = "rpc:" + akisKipi();
+      return data;
+    }
+
+    /* KİP DESTEKLENMİYORSA SESSİZCE GEÇME.
+       Doğrudan tabloya düşünce herkes görünüyor — Arkadaşlar
+       kipi çalışmıyor ama kullanıcı sebebini bilmiyordu. */
+    window.__akisHata = (error && (error.message || error.hint)) || "bilinmeyen";
+    console.warn("[Klipsy] get_feed kip destekli değil:", window.__akisHata);
+
+    /* Kipsiz bir kez daha dene — eski sunucuda çalışsın. */
+    const y = await sb.rpc('get_feed', { page_size: limit });
+    if(!y.error && Array.isArray(y.data)){
+      window.__akisYol = "rpc:kipsiz";
+      if(akisKipi() === "friends"){
+        toast(t("feed_mode_unsupported"));
+      }
+      return y.data;
+    }
+
+    /* ARKADAŞLAR KİPİNDE TABLOYA DÜŞÜLMEZ.
+       Doğrudan tabloda arkadaş süzgeci yok — herkes görünüyor ve
+       kullanıcı Arkadaşlar sandığı yerde Topluluk'u izliyor.
+       Yanlış içerik göstermektense boş göstermek doğru. */
+    if(akisKipi() === "friends"){
+      window.__akisYol = "tablo-engellendi";
+      return [];
+    }
+
+    window.__akisYol = "tablo";
+    _feedUseDirect = true;
+    return _fetchMomentsPage(null, limit);
+  }
+
+  // Eski sayfa: before_ts / before_created_at dene
+  for(const key of ['before_ts', 'before_created_at', 'cursor']){
+    try{
+      const params = { page_size: limit, feed_mode: akisKipi() };
+      params[key] = new Date(beforeTs).toISOString();
+      const { data, error } = await sb.rpc('get_feed', params);
+      if(!error && Array.isArray(data)){
+        // Aynı kayıtlar tekrar geliyorsa (param yok sayılmış) → tabloya geç
+        if(data.length && opts.excludeIds){
+          const allDup = data.every(r => opts.excludeIds.has(r.id));
+          if(allDup){ _feedUseDirect = true; return _fetchMomentsPage(beforeTs, limit); }
+        }
+        return data;
+      }
+    }catch(e){}
+  }
+
+  // get_feed sayfalama yok → moments ile devam (sınırsız)
+  _feedUseDirect = true;
+  return _fetchMomentsPage(beforeTs, limit);
+}
+
+function _applyVisibilityGuard(list){
+  try{
+    if(!Array.isArray(list)) return list;
+    const me = window.__me;
+    const myId = me ? me.id : null;
+    const kip = (typeof akisKipi==="function") ? akisKipi() : "community";
+    return list.filter(it=>{
+      /* _mapFeedRow çıktısında author_id yok; sahiplik "mine" ile gelir.
+         _fetchMomentsPage çıktısında author_id var — ikisini de destekle. */
+      const mine = it.mine || (myId && it.author_id && it.author_id===myId);
+      if(mine) return true;                 // kendi anlarım her akışta görünür
+      const vis = it.visibility || "community";
+      if(kip === "friends") return true;    // arkadaşlar akışını sunucu sınırlar
+      /* Topluluk akışı: 'friends' işaretli başkalarının anları görünmez. */
+      return vis !== "friends";
+    });
+  }catch(e){ return list; }
+}
+
+function _applyPlaceFilter(){
+  if(typeof feedPlace!=="undefined" && feedPlace){
+    const q=feedPlace.toLowerCase();
+    items = allItems.filter(it => String(it.where||"").toLowerCase().includes(q));
+  }else{
+    items = allItems.slice();
+  }
+}
+
+function _paintLikesSaves(me, listItems){
+  const sb=window.__sb;
+  if(!sb||!me||!listItems||!listItems.length) return;
+  const ids=listItems.map(x=>x.id).filter(id=>isReal(id));
+  if(!ids.length) return;
+  Promise.all([
+    sb.from('likes').select('moment_id').eq('user_id',me.id).in('moment_id',ids),
+    sb.from('saves').select('moment_id').eq('user_id',me.id).in('moment_id',ids)
+  ]).then(([lk,sv])=>{
+    const likedSet=new Set((lk.data||[]).map(x=>x.moment_id));
+    const savedSet=new Set((sv.data||[]).map(x=>x.moment_id));
+    listItems.forEach(it=>{ it.liked=likedSet.has(it.id); it.saved=savedSet.has(it.id); });
+    list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
+  }).catch(()=>{});
+}
+
+async function loadFeed(opts){
+  opts = opts || {};
+  const sb=window.__sb; if(!sb) return;
+  if(_feedLoading && !opts.force) return;
+  _feedLoading=true;
+  if(opts.force){ _feedHasMore=true; _feedUseDirect=false; }
+  try{
+    // Yerel / henüz sunucuya yazılmamış anları koru
+    const pendingKeep = (items||[]).filter(_isLocalPending);
+
+    const data = await _fetchFeedPage({ limit: FEED_PAGE });
+    const me=window.__me;
+    const serverItems = (data||[]).map(r=>_mapFeedRow(r, me, sb));
+    // Dolu sayfa geldiyse devamı vardır; az geldiyse bitti olabilir
+    _feedHasMore = serverItems.length >= FEED_PAGE;
+
+    // İstek sürerken paylaşılan anları da koru
+    const pendingNow = (items||[]).filter(_isLocalPending);
+    const pendingAll = [];
+    const pendSeen = new Set();
+    [...pendingKeep, ...pendingNow].forEach(p=>{
+      const k=String(p.id); if(pendSeen.has(k)) return; pendSeen.add(k); pendingAll.push(p);
+    });
+
+    const serverIds = new Set(serverItems.map(x=>x.id));
+    const stillPending = pendingAll.filter(p=>{
+      if(serverIds.has(p.id)) return false;
+      if(p.mine || (me && p.who===ME)){
+        const near = serverItems.some(s=> s.mine && Math.abs((s.ts||0)-(p.ts||0)) < 120000);
+        if(near) return false;
+      }
+      return true;
+    });
+
+    const merged = [...stillPending, ...serverItems];
+    const seen = new Set();
+    allItems = merged.filter(it=>{
+      const k = String(it.id);
+      if(seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+    /* GÖRÜNÜRLÜK GÜVENCESİ (istemci tarafı).
+       Asıl filtre sunucudaki get_feed RPC'sinde olmalı; RPC henüz
+       visibility'yi bilmiyorsa 'friends' anlar topluluk akışında
+       sızabiliyor. Burada, Topluluk akışında bana ait olmayan
+       'friends' anları gizleyerek geçici koruma sağlanır. */
+    allItems = _applyVisibilityGuard(allItems);
+    _applyPlaceFilter();
+
+    render(); activeIdx=-1; syncActive();
+
+    const yeniSurum = (data && data.length)
+      ? Object.prototype.hasOwnProperty.call(data[0], 'liked')
+      : true;
+
+    if(yeniSurum){
+      if(typeof paintFeedNames==="function") paintFeedNames();
+    }else{
+      console.warn('get_feed eski sürüm — yedek yol kullanılıyor');
+      fetchDisplayNames().catch(()=>{});
+      _paintLikesSaves(me, items);
+    }
+
+    setTimeout(()=>{ try{ backfillPosters(items.filter(x=>x.mine)); }catch(e){} }, 1500);
+    _paintLikesSaves(me, items);
+  }catch(e){ console.warn(e); }
+  finally{ _feedLoading=false; }
+}
+
+/* Aşağı kaydırınca daha eski anlar — toplam sınır yok */
+async function loadMoreFeed(){
+  if(_feedLoadMoreBusy || _feedLoading || !_feedHasMore) return;
+  if(!allItems.length && !items.length) return;
+
+  const pool = allItems.length ? allItems : items;
+  const oldest = pool.reduce((m,it)=> Math.min(m, it.ts||Infinity), Infinity);
+  if(!isFinite(oldest)) return;
+
+  _feedLoadMoreBusy=true;
+  try{
+    const sb=window.__sb; if(!sb) return;
+    const me=window.__me;
+    const have = new Set(pool.map(x=>String(x.id)));
+
+    const data = await _fetchFeedPage({
+      beforeTs: oldest,
+      limit: FEED_PAGE,
+      excludeIds: have
+    });
+
+    const more = (data||[])
+      .map(r=>_mapFeedRow(r, me, sb))
+      .filter(it => !have.has(String(it.id)) && (it.ts||0) < oldest - 100);
+
+    if(more.length < Math.max(3, Math.floor(FEED_PAGE/4))){
+      // Az geldi: bir kez daha dene (direkt tablo), yine azsa bitti
+      if(!_feedUseDirect){
+        _feedUseDirect = true;
+        const extra = await _fetchMomentsPage(oldest, FEED_PAGE);
+        const extraMapped = (extra||[])
+          .map(r=>_mapFeedRow(r, me, sb))
+          .filter(it => !have.has(String(it.id)) && (it.ts||0) < oldest - 100);
+        if(extraMapped.length) more.push(...extraMapped);
+      }
+      if(more.length < 3) _feedHasMore = false;
+    }
+
+    if(!more.length){
+      if(_feedUseDirect) _feedHasMore = false;
+      return;
+    }
+
+    // Kaydırma konumunu koru
+    const prevIdx = Math.max(0, activeIdx);
+    const prevId = (items[prevIdx] && items[prevIdx].id) || null;
+
+    allItems = allItems.concat(more);
+    // id tekrarı temizle
+    const seen2 = new Set();
+    allItems = allItems.filter(it=>{
+      const k=String(it.id); if(seen2.has(k)) return false; seen2.add(k); return true;
+    });
+    allItems = _applyVisibilityGuard(allItems);
+    _applyPlaceFilter();
+    render();
+
+    requestAnimationFrame(()=>{
+      try{
+        if(prevId){
+          const el = list.querySelector('.post[data-id="'+CSS.escape(String(prevId))+'"]');
+          if(el){ el.scrollIntoView({block:"start"}); }
+        }
+        syncActive();
+      }catch(e){}
+    });
+
+    if(typeof paintFeedNames==="function") paintFeedNames();
+    _paintLikesSaves(me, more);
+  }catch(e){ console.warn('loadMoreFeed:', e); }
+  finally{ _feedLoadMoreBusy=false; }
+}
+
+// akışta görünen isimleri (ad soyad) tazele
+function paintFeedNames(){
+  list.querySelectorAll(".post").forEach(el=>{
+    const nmeEl=el.querySelector(".pname");
+    if(nmeEl && el._who){
+      const uu=USERS[el._who];
+      nmeEl.textContent=(uu&&uu.display_name)?uu.display_name:el._who;
+    }
+  });
+}
 
 /* İsim bilgisini yerel kayda yaz.
    get_feed artık display_name döndürdüğü için isimler anında hazır olur. */
@@ -12490,26 +11723,461 @@ function era(ts){
   if(s<31536000){const m=Math.max(1,Math.floor(s/2592000));return m+" "+t("t_month");}
   const y=Math.max(1,Math.floor(s/31536000));return y+" "+t("t_year");
 }
+/* geçmişe gittikçe kare solar */
 function agingFilter(ts){
-  return window.KlipsyFeedCard.agingFilter(ts);
+  const min=Math.max(0,(Date.now()-ts)/60000);
+  const t=Math.min(1,Math.log10(1+min)/Math.log10(1+525600));
+  return "saturate("+(1-.42*t).toFixed(3)+") brightness("+(1-.14*t).toFixed(3)+")";
 }
 
+// Kapağı olmayan videolar için koyu yer tutucu.
+// Verilmezse Android, videonun üstüne kendi dev oynat ikonunu çiziyor.
+const BLANK_POSTER = "data:image/svg+xml;base64," + btoa(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="9" height="16"><rect width="9" height="16" fill="#12121a"/></svg>'
+);
+
+let _buildIndex=0;   // kaçıncı kart çiziliyor (öncelik için)
 function build(it){
-  if(window.__klipsyFeed) return window.__klipsyFeed.card.build(it, 0);
   const el=document.createElement("article");
-  el.className="post"; el.dataset.id=it.id;
+  el.className="post";el.dataset.ts=it.ts;el.dataset.id=it.id;el._who=it.who;
+  const fresh=Date.now()-it.ts<120000;
+
+  const media=document.createElement("div");media.className="pmedia";
+  let mediaEl;
+  if(it.kind==="video"){
+    mediaEl=document.createElement("video");
+    mediaEl.dataset.src=it.src;
+    mediaEl.loop=true;mediaEl.muted=true;mediaEl.playsInline=true;
+    mediaEl.setAttribute("playsinline","");mediaEl.preload="none";
+    // Yerel oynat ikonunu bastır: kapak varsa onu, yoksa koyu yer tutucuyu koy.
+    mediaEl.poster = it.poster || BLANK_POSTER;
+    mediaEl.controls=false; mediaEl.disablePictureInPicture=true;
+    mediaEl.setAttribute("disableremoteplayback","");
+
+    /* Video verisi hazır olunca oynatmayı dene.
+       Kart oluşturulduğunda dosya henüz inmemiş olabiliyor; o anda
+       yapılan oynatma denemesi başarısız oluyor ve video ilk karesinde
+       kalıyordu. */
+    mediaEl.addEventListener("loadeddata", ()=>{
+      try{
+        if(el.classList.contains("active") && mediaEl.paused &&
+           !el.classList.contains("paused")){
+          mediaEl.muted = el._songAudio ? true : !soundOn;
+          mediaEl.play().catch(()=>{
+            mediaEl.muted = true;
+            mediaEl.play().catch(()=>{});
+          });
+        }
+      }catch(e){}
+    }, { once:false });
+  }else{
+    mediaEl=document.createElement("img");
+    mediaEl.alt="";mediaEl.decoding="async";
+    // ilk kartlar yüksek öncelikli indirilsin (ekran hemen dolsun)
+    try{ mediaEl.fetchPriority = (_buildIndex<3) ? "high" : "low"; }catch(e){}
+    mediaEl.loading = (_buildIndex<3) ? "eager" : "lazy";
+    mediaEl.src=it.src;
+  }
+  if(it.kind!=="video") mediaEl.style.filter=agingFilter(it.ts);
+  if(it.src){
+    const bg=document.createElement("img");
+    bg.className="pmediaBg"; bg.alt=""; bg.src=it.poster||it.src;
+    media.appendChild(bg);
+  }
+  media.appendChild(mediaEl);
+  // video ilerleme + sarma çubuğu
+  let seekbar=null;
+  if(it.kind==="video"){
+    seekbar=document.createElement("div");seekbar.className="seekbar";
+    seekbar.innerHTML='<div class="seekfill"></div><div class="seekknob"></div>';
+    media.appendChild(seekbar);
+    const fill=seekbar.querySelector(".seekfill");
+    const knob=seekbar.querySelector(".seekknob");
+    mediaEl.addEventListener("timeupdate",()=>{
+      if(!mediaEl.duration||seekbar._drag) return;
+      const p=(mediaEl.currentTime/mediaEl.duration)*100;
+      fill.style.width=p+"%";knob.style.left=p+"%";
+    });
+    function seekTo(clientX){
+      const r=seekbar.getBoundingClientRect();
+      let p=(clientX-r.left)/r.width;p=Math.max(0,Math.min(1,p));
+      if(mediaEl.duration){mediaEl.currentTime=p*mediaEl.duration;
+        fill.style.width=(p*100)+"%";knob.style.left=(p*100)+"%";}
+    }
+    seekbar.addEventListener("pointerdown",e=>{
+      e.stopPropagation();seekbar._drag=true;seekbar.classList.add("drag");
+      seekbar.setPointerCapture(e.pointerId);seekTo(e.clientX);
+    });
+    seekbar.addEventListener("pointermove",e=>{
+      if(seekbar._drag){e.stopPropagation();seekTo(e.clientX);}
+    });
+    seekbar.addEventListener("pointerup",e=>{
+      if(seekbar._drag){e.stopPropagation();seekbar._drag=false;seekbar.classList.remove("drag");}
+    });
+    seekbar.addEventListener("pointercancel",()=>{seekbar._drag=false;seekbar.classList.remove("drag");});
+  }
+  /* üst karartı kaldırıldı */
+  el.appendChild(media);
+
+  const burst=document.createElement("div");burst.className="burst";
+  const pm=document.createElement("div");pm.className="pausemark";pm.innerHTML=I.bigplay;
+  const soundPop=document.createElement("div");soundPop.className="soundpop";
+  el.append(burst,pm,soundPop);
+
+  // video durunca ortada: üstte ses, altında oynat ikonu
+  let vctrl=null;
+  if(it.kind==="video"){
+    vctrl=document.createElement("div");vctrl.className="vc-center";
+    const muteBtn=document.createElement("button");muteBtn.className="vc-c-btn vc-c-mute";
+    function paintMute(){ muteBtn.innerHTML=(soundOn?I.soundOn:I.soundOff); }
+    paintMute();
+    muteBtn.addEventListener("click",ev=>{
+      ev.stopPropagation();
+      soundOn=!soundOn;
+      applySound();
+      paintMute();
+    });
+    const playBtn=document.createElement("button");playBtn.className="vc-c-btn vc-c-play";
+    playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    playBtn.addEventListener("click",ev=>{
+      ev.stopPropagation();
+      mediaEl.play().catch(()=>{});
+      el.classList.remove("paused");el.classList.remove("vctrl");
+    });
+    vctrl.append(muteBtn,playBtn);
+    el.appendChild(vctrl);
+  }
+
+  const plate=document.createElement("div");plate.className="plate";
+
+  const veil=document.createElement("div");veil.className="pveil";
+  plate.appendChild(veil);
+
+  let sndBtn=null;
+  /* ses düğmesi kaldırıldı — videoda tek dokunma ile ses açılıp kapanıyor */
+
+  /* --- kim: sol üst --- */
+  const auth=document.createElement("div");auth.className="pauthor";
+  const av=document.createElement("div");av.className="pav"+(fresh?" live":"");
+  if(fresh){av.innerHTML="<span></span>";paintAv(av.firstChild,it.who);}
+  else paintAv(av,it.who);
+
+  /* DUYGU HALKASI — anın duygusu avatarın çevresinde renk olarak.
+     Alt köşedeki etiketin yerini aldı. */
+  if(it.mood && it.mood.c){
+    av.style.setProperty("--duygu", it.mood.c);
+    av.classList.add("duyguHalka");
+    av.setAttribute("title", it.mood.t || "");
+  }
+  const ident=document.createElement("div");ident.className="pident";
+  const line=document.createElement("div");line.className="pline";
+  const nm=document.createElement("div");nm.className="pname";
+  const uu=USERS[it.who];
+  nm.textContent=(uu&&uu.display_name)?uu.display_name:it.who;
+  line.appendChild(nm);
+  /* CANLI etiketi ad satırında — özgün yeri burası.
+     SEN etiketi kaldırıldı: kendi anımı gördüğümü zaten biliyorum. */
+  if(fresh){
+    const tg=document.createElement("span");
+    tg.className="ptag";
+    tg.innerHTML='<i></i>CANLI';
+    line.appendChild(tg);
+  }
+  const wh=document.createElement("div");wh.className="pwhere";
+  const whSpan=document.createElement("span");
+  whSpan.textContent=it.where||"";
+  wh.appendChild(whSpan);
+  if(it.lat!=null && it.lng!=null && !isNaN(it.lat) && !isNaN(it.lng)){
+    wh.style.cursor="pointer";
+    wh.addEventListener("click",ev=>{
+      ev.stopPropagation();
+      ev.preventDefault();
+      openTimeAtMoment(it);
+    });
+  }
+  ident.append(line,wh);
+  auth.append(av,ident);
+  plate.appendChild(auth);
+
+  /* sağ üstte seçenekler menüsü — herkes için: Paylaş (+ başkasınınsa Şikayet et) */
+  {
+    const moreBtn=document.createElement("button");moreBtn.className="pmore";
+    moreBtn.setAttribute("aria-label",t("act_options"));
+    moreBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
+    moreBtn.addEventListener("click",ev=>{ ev.stopPropagation(); openPostMenu(it); });
+    el.appendChild(moreBtn);
+  }
+
+  /* Video ilerleme çubuğu artık görüntünün en altında değil,
+     içerik/metin alanının hemen altında olacak. */
+  if(seekbar) plate.appendChild(seekbar);
+
+  /* --- ne hissettirdi + not + eylemler --- */
+  const bot=document.createElement("div");bot.className="pbottom";
+
+  /* Duygu etiketi kaldırıldı — artık avatarın halkasında.
+     Etiket alt köşede yer kaplıyordu; halka hem daha az yer alıyor
+     hem de anın kimliğiyle bütünleşiyor. */
+  /* Tarih/saat, gönderi metninin (yorum/açıklama) ÜSTÜNDE */
+  const tmLine=document.createElement("div");tmLine.className="ptime";
+  tmLine.textContent=relLong(it.ts)+" · "+clockOf(it.ts);
+  bot.appendChild(tmLine);
+
+  if(it.note){
+    const nt=document.createElement("div");nt.className="pnote";nt.textContent=it.note;
+    bot.appendChild(nt);
+  }
+
+  const bar=document.createElement("div");bar.className="actbar";
+  const like=document.createElement("button");
+  like.className="ab"+(it.liked?" liked":"");
+  like.innerHTML=I.heart+"<em>"+nf(it.likes)+"</em>";
+  like.setAttribute("aria-label",t("act_like"));
+  const chat=document.createElement("button");
+  chat.className="ab";
+  chat.innerHTML=I.chat+"<em>"+nf(commCount(it))+"</em>";
+  chat.setAttribute("aria-label","Yorumlar");
+  const eyes=document.createElement("button");
+  eyes.className="ab";
+  eyes.innerHTML=I.views+"<em>"+nf(it.views)+"</em>";
+  eyes.setAttribute("aria-label",t("views"));
+  const save=document.createElement("button");
+  save.className="ab"+(it.saved?" saved":"");
+  save.innerHTML=I.save;
+  save.setAttribute("aria-label","Kaydet");
+  const send=document.createElement("button");
+  if(it.song && it.song.preview){
+    send.className="ab abSong";
+    send.innerHTML='<span class="songDisc" style="background-image:url('+esc(it.song.art)+')"></span>';
+    send.setAttribute("aria-label",t("song_label")+" "+it.song.title+" — "+it.song.artist);
+  }else{
+    send.className="ab abSong empty";
+    send.setAttribute("aria-hidden","true");send.tabIndex=-1;
+  }
+  bar.append(like,chat,eyes,save,send);
+  /* Eylem çubuğu pbottom'un içinde OLMAMALI.
+     pbottom yalnızca sol alttaki içerik/metin alanıdır.
+     Barı doğrudan plate'e alıyoruz; böylece right/bottom koordinatları
+     gönderi bloğuna göre hesaplanır ve ikonlar kaymaz. */
+  plate.appendChild(bar);
+  plate.appendChild(bot);
+
+  // --- eklenmiş şarkı (varsa): arkaplanda önizleme sesi, baştan döngülü ---
+  let songAudio=null;
+  if(it.song && it.song.preview){
+    songAudio=document.createElement("audio");
+    songAudio.src=it.song.preview;songAudio.preload="auto";songAudio.loop=true;songAudio.muted=true;
+    el.appendChild(songAudio);
+  }
+
+  el.appendChild(plate);
+
+  /* --- etkileşim --- */
+  function refreshLike(){
+    like.classList.toggle("liked",it.liked);
+    like.querySelector("em").textContent=nf(it.likes);
+  }
+  function toggleLike(force){
+    if(force&&it.liked) return false;
+    it.liked=!it.liked;
+    // sayaç eksiye düşemez
+    it.likes = Math.max(0, (Number(it.likes)||0) + (it.liked ? 1 : -1));
+    refreshLike();
+    // Supabase'e yaz (gerçek kayıtsa)
+    if(isReal(it.id) && window.__sb && window.__me){
+      const sb=window.__sb, uid=window.__me.id;
+      if(it.liked){
+        sb.from('likes').insert({moment_id:it.id, user_id:uid}).then(({error})=>{
+          if(error && !/duplicate/i.test(error.message)) {
+            it.liked=false; it.likes=Math.max(0,(Number(it.likes)||0)-1); refreshLike();
+            toast(t("err_like_add")+" "+error.message);
+          }
+        });
+      }else{
+        sb.from('likes').delete().eq('moment_id',it.id).eq('user_id',uid).then(({error})=>{
+          if(error) toast(t("err_like_del")+" "+error.message);
+        });
+      }
+
+      /* Sunucudaki GERÇEK sayacı geri oku.
+         Yerel sayım yanlış başlamışsa (ör. an listede yokken 0 kabul
+         edilmişse) burada düzelir. */
+      setTimeout(()=>{
+        sb.from('moments').select('like_count').eq('id', it.id).single()
+          .then(({data:d})=>{
+            if(d && d.like_count != null && d.like_count !== it.likes){
+              it.likes = d.like_count;
+              refreshLike();
+            }
+          }).catch(()=>{});
+      }, 700);
+    }
+    return true;
+  }
+  like.addEventListener("click",()=>toggleLike(false));
+  chat.addEventListener("click",()=>openComments(it.id));
+  send.addEventListener("click",()=>{
+    if(!(it.song&&it.song.preview)) return;
+    if(songAudio && songAudio.paused){
+      soundOn=true;
+      songAudio.muted=false;
+      songAudio.play().catch(()=>{});
+      send.classList.add("playing");
+      return;
+    }
+    soundOn=!soundOn;
+    applySound();
+    toast(t(soundOn?"t_sound_on":"t_sound_off"));
+  });
+  eyes.addEventListener("click",()=>toast(nf(it.views)+" "+t("views_count")));
+  save.addEventListener("click",()=>{
+    it.saved=!it.saved;
+    save.classList.toggle("saved",it.saved);
+    toast(t(it.saved?"t_saved":"ok_unsaved2"));
+    if(isReal(it.id) && window.__sb && window.__me){
+      const sb=window.__sb, uid=window.__me.id;
+      if(it.saved) sb.from('saves').insert({moment_id:it.id, user_id:uid}).then(()=>{});
+      else sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',uid).then(()=>{});
+    }
+    /* Önbelleği SIFIRLAMA — sadece değişen anı ekle/çıkar.
+       Önceden her kaydetme işleminde liste bütünüyle yeniden indiriliyordu;
+       gereksiz veri kullanımıydı. */
+    if(Array.isArray(_savedCache)){
+      if(it.saved){
+        if(!_savedCache.some(x=>x.id===it.id)){
+          _savedCache.unshift({
+            id:it.id, who:it.who, kind:it.kind, src:it.src, poster:it.poster||null,
+            mood:it.mood, note:it.note, where:it.where,
+            ts:it.ts, likes:it.likes, views:it.views, cc:it.cc,
+            song:it.song||null, saved:true
+          });
+        }
+      }else{
+        _savedCache = _savedCache.filter(x=>x.id!==it.id);
+      }
+    }
+    if($("#profile").classList.contains("open")) renderProfile();
+  });
+  av.addEventListener("click",()=>openProfile(it.who));
+
+  let sc=1,tx=0,ty=0,pts=new Map(),sd=0,ss=1,lastTap=0,drag=false,px=0,py=0,ox=0,oy=0,tapT=null;
+  function apply(anim){
+    media.classList.toggle("drag",!anim);
+    mediaEl.style.transform="translate("+tx+"px,"+ty+"px) scale("+sc+")";
+  }
+  media.addEventListener("pointerdown",e=>{
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===2){
+      media.setPointerCapture(e.pointerId);
+      const a=[...pts.values()];
+      sd=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);ss=sc;
+      media.style.touchAction="none";
+    }else if(pts.size===1){
+      drag=sc>1;px=e.clientX;py=e.clientY;ox=tx;oy=ty;
+    }
+  });
+  media.addEventListener("pointermove",e=>{
+    if(!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===2){
+      const a=[...pts.values()];
+      const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+      sc=Math.min(4,Math.max(1,ss*(d/sd)));
+      if(sc===1){tx=0;ty=0;}
+      apply(false);
+    }else if(drag&&sc>1){
+      tx=ox+(e.clientX-px);ty=oy+(e.clientY-py);apply(false);
+    }
+  });
+  function endPtr(e){
+    pts.delete(e.pointerId);
+    if(pts.size===0){
+      drag=false;
+      media.style.touchAction="pan-y";
+      if(sc<=1.03){sc=1;tx=0;ty=0;apply(true);}
+    }
+  }
+  media.addEventListener("pointerup",e=>{
+    const n=Date.now();
+    const wasMulti=pts.size>1;
+    if(!wasMulti&&sc<=1.03){
+      if(n-lastTap<280){
+        clearTimeout(tapT);
+        if(toggleLike(true)){
+          burst.innerHTML=I.big;
+          burst.classList.remove("go");void burst.offsetWidth;burst.classList.add("go");
+        }
+        lastTap=0;
+      }else{
+        lastTap=n;
+        clearTimeout(tapT);
+        tapT=setTimeout(()=>{
+          if(it.kind==="video"&&mediaEl.tagName==="VIDEO"){
+            // Instagram 2026: tek dokunma videoyu durdurur/başlatır + kontrolleri gösterir
+            if(mediaEl.paused){
+              mediaEl.play().catch(()=>{});
+              el.classList.remove("paused");
+              el.classList.remove("vctrl");
+            }else{
+              mediaEl.pause();
+              el.classList.add("paused");
+              el.classList.add("vctrl");
+            }
+          }else{
+            el.classList.toggle("bare");
+          }
+        },290);
+      }
+    }
+    endPtr(e);
+  });
+  media.addEventListener("pointercancel",endPtr);
+
+  function paintSound(){
+    if(!sndBtn) return;
+    sndBtn.classList.toggle("on",soundOn);
+    sndBtn.innerHTML=(soundOn?I.soundOn+"<span>"+t("sound_on2")+"</span>":I.soundOff+"<span>"+t("sound_turn_on")+"</span>");
+  }
+  if(sndBtn){
+    paintSound();
+    sndBtn.addEventListener("click",()=>{
+      soundOn=!soundOn;
+      applySound();
+      toast(t(soundOn?"t_sound_on":"t_sound_off"));
+    });
+  }
+
+  el._sound=paintSound;
+  el._sync=()=>{
+    refreshLike();
+    save.classList.toggle("saved",it.saved);
+    eyes.querySelector("em").textContent=nf(it.views);
+    chat.querySelector("em").textContent=nf(commCount(it));
+    tmLine.textContent=relLong(it.ts)+" · "+clockOf(it.ts);
+    if(it.kind!=="video") mediaEl.style.filter=agingFilter(it.ts);
+  };
+  el._video=(it.kind==="video")?mediaEl:null;
+  el._songAudio=songAudio;
+  el._songBadge=(it.song&&it.song.preview)?send:null;
   return el;
 }
 
 function render(){
-  if(window.__klipsyFeed){
-    window.__klipsyFeed.render();
-    feedSyncLocals();
+  list.innerHTML="";
+  if(!items.length){
+    const e=document.createElement("div");e.className="endcap";
+    e.innerHTML='<b>'+t("tunnel_empty")+'</b><span>'+t("first_moment_hint")+'</span>';
+    list.appendChild(e);
     return;
   }
-  list.innerHTML="";
+  const f=document.createDocumentFragment();
+  _buildIndex=0;
+  items.forEach(it=>{ f.appendChild(build(it)); _buildIndex++; });
+  const cap=document.createElement("div");cap.className="endcap";
+  cap.innerHTML='<b>'+t("tunnel_start")+'</b><span>'+dateOf(items[items.length-1].ts)+'</span>';
+  f.appendChild(cap);
+  list.appendChild(f);
 }
-
 
 /* Dil değişince arayüzü yeniden çiz.
    ÖNEMLİ: Bu fonksiyon render/items/AY ile AYNI kapsamda olmalı,
@@ -12547,20 +12215,245 @@ window.__onLangChange = function(){
 
 /* ---------- aktif kare takibi ---------- */
 let activeIdx=0;
-let soundOn=true;
 function currentIndex(){
-  return window.__klipsyFeed ? window.__klipsyFeed.viewport.currentIndex() : 0;
+  const posts=list.querySelectorAll(".post");
+  if(!posts.length) return 0;
+  const mid = feed.scrollTop + feed.clientHeight * 0.38;
+  let best=0, bestDist=Infinity;
+  for(let i=0;i<posts.length;i++){
+    const top = posts[i].offsetTop;
+    const h = posts[i].offsetHeight || 1;
+    const c = top + h * 0.5;
+    const d = Math.abs(c - mid);
+    if(d < bestDist){ bestDist=d; best=i; }
+  }
+  return best;
 }
-function syncActive(force){
-  if(!window.__klipsyFeed) return 0;
-  activeIdx = window.__klipsyFeed.syncActive(force);
-  return activeIdx;
+let curEra="";
+let soundOn=true;
+const seenIds=new Set();
+function bindFeedVideo(v, on){
+  if(!v) return;
+  const url=v.dataset.src;
+  if(on){
+    if(url && v.getAttribute('src')!==url){ v.src=url; v.preload='metadata'; }
+  }else{
+    try{ v.pause(); }catch(e){}
+    if(v.getAttribute('src')){ try{ v.removeAttribute('src'); v.load(); }catch(e){} }
+  }
 }
-function pauseFeedMedia(){ if(window.__klipsyFeed) window.__klipsyFeed.pauseFeedMedia(); }
-function resumeFeedMedia(){ if(window.__klipsyFeed) window.__klipsyFeed.resumeFeedMedia(); }
-function applySound(){ if(window.__klipsyFeed) window.__klipsyFeed.applySound(); }
+function syncActive(){
+  const idx=currentIndex();
+  const posts=list.querySelectorAll(".post");
+  const blocked = (typeof anyBlockerOpen==="function") && anyBlockerOpen();
+  if(idx!==activeIdx){
+    activeIdx=idx;
+    if(blocked){ posts.forEach((p,i)=>{ p.classList.toggle("active",i===idx); if(i!==idx) p.classList.remove("bare","paused","vctrl"); }); }
+    else posts.forEach((p,i)=>{
+      if(p._video){
+        if(i===idx || i===idx+1){
+          bindFeedVideo(p._video, true);
+          if(i===idx){
+            p._video.muted = p._songAudio ? true : !soundOn;
+            p._video.play().catch(()=>{p._video.muted=true;p._video.play().catch(()=>{});});
+          }else { try{p._video.pause()}catch(e){} p._video.muted=true; }
+        }else{
+          bindFeedVideo(p._video, false);
+        }
+      }
+      if(p._songAudio){
+        if(i===idx){
+          p._songAudio.muted=!soundOn;
+          p._songAudio.currentTime=0;
+          p._songAudio.play().catch(()=>{p._songAudio.muted=true;p._songAudio.play().catch(()=>{});});
+          if(p._songBadge) p._songBadge.classList.toggle("playing", soundOn);
+        }else{
+          try{p._songAudio.pause()}catch(e){}
+          p._songAudio.muted=true;
+          if(p._songBadge) p._songBadge.classList.remove("playing");
+        }
+      }
+      p.classList.toggle("active",i===idx);
+      if(i!==idx) p.classList.remove("bare","paused","vctrl");
+    });
+  }
+
+  /* SIRA DEĞİŞMESE DE OYNAT.
+     Oynatma yalnızca sıra değiştiğinde tetikleniyordu. Açılıştaki ilk
+     an ya da sonradan yüklenen bir video için sıra aynı kaldığı için
+     hiç çalışmıyor, video ilk karesinde donuk kalıyordu.
+     Burada etkin anın videosu duruyorsa başlatılır. */
+  if(!blocked && posts[idx]){
+    const p = posts[idx];
+    if(p._video) bindFeedVideo(p._video, true);
+    if(p._video && p._video.paused && !p.classList.contains("paused")){
+      p._video.muted = p._songAudio ? true : !soundOn;
+      p._video.play().catch(()=>{
+        p._video.muted = true;
+        p._video.play().catch(()=>{});
+      });
+    }
+    if(p._songAudio && p._songAudio.paused){
+      p._songAudio.muted = !soundOn;
+      p._songAudio.play().catch(()=>{
+        p._songAudio.muted = true;
+        p._songAudio.play().catch(()=>{});
+      });
+    }
+  }
+  const seenIt=items[idx];
+  if(seenIt&&!seenIds.has(seenIt.id)){
+    seenIds.add(seenIt.id);
+    seenIt.views++;
+    if(window.__sb && isReal(seenIt.id)){
+      /* Görüntülenme kaydı.
+         Hata SESSİZCE yutulmamalı — bu yüzden sayacın neden
+         artmadığı uzun süre görünmedi. Artık kayıtlara yazılıyor
+         ve gerçek sayaç geri okunuyor. */
+      window.__sb.rpc('mark_view',{target:seenIt.id})
+        .then(({error})=>{
+          if(error){ console.warn('[Klipsy] görüntülenme:', error.message, error); return; }
+          // sunucudaki gerçek değeri al
+          window.__sb.from('moments').select('view_count').eq('id',seenIt.id).single()
+            .then(({data:d})=>{
+              if(d && typeof d.view_count === 'number'){
+                seenIt.views = d.view_count;
+                const n2=list.querySelectorAll(".post")[idx];
+                if(n2 && n2._sync) n2._sync();
+              }
+            }).catch(()=>{});
+        })
+        .catch(e=>console.warn('[Klipsy] görüntülenme çağrısı:', e));
+    }
+    const node=list.querySelectorAll(".post")[idx];
+    if(node&&node._sync) node._sync();
+  }
+  const dot=$("#railDot");
+  const max=Math.max(1,items.length);
+  const pct=Math.min(1,idx/max);
+  dot.style.top="calc("+(pct*100)+"% - "+(pct*30)+"px)";
+}
+feed.addEventListener("scroll",()=>{
+  resumeAt=Date.now()+RESUME;
+  if(!rafPending){rafPending=true;requestAnimationFrame(()=>{rafPending=false;syncActive();});}
+  // son 4 karta yaklaşınca sonraki sayfayı sunucudan çek (sınırsız)
+  try{
+    const posts=list.querySelectorAll(".post");
+    const idx=Math.round(feed.scrollTop/(feed.clientHeight||1));
+    if(posts.length && idx >= posts.length - 4){
+      if(typeof loadMoreFeed==="function") loadMoreFeed();
+    }
+  }catch(e){}
+},{passive:true});
+let rafPending=false;
+
+// akıştan çıkınca tüm sesleri/videoları durdur
+function pauseAllAppMedia(){
+  try{ pauseFeedMedia(); }catch(e){}
+  try{ if(typeof apSarkiDurdur==="function") apSarkiDurdur(); }catch(e){}
+  try{ if(typeof arcStopSong==="function") arcStopSong(); }catch(e){}
+  try{ if(typeof cpStopPreview==="function") cpStopPreview(); }catch(e){}
+  try{ if(typeof stopSheetPreview==="function") stopSheetPreview(); }catch(e){}
+  document.querySelectorAll("audio, video").forEach(m=>{
+    if(m.id==="camVideo") return;
+    try{ m.pause(); }catch(e){}
+    try{ if(m.tagName==="AUDIO") m.muted=true; }catch(e){}
+  });
+}
+function pauseFeedMedia(){
+  list.querySelectorAll(".post").forEach(p=>{
+    if(p._video){ try{p._video.pause()}catch(e){} p._video.muted=true; }
+    if(p._songAudio){ try{p._songAudio.pause()}catch(e){} p._songAudio.muted=true; }
+    if(p._songBadge) p._songBadge.classList.remove("playing");
+  });
+}
+// akışa dönünce aktif kartı yeniden başlat
+function resumeFeedMedia(){
+  const posts=list.querySelectorAll(".post");
+  const p=posts[activeIdx];
+  if(!p) return;
+  if(p._songAudio){
+    p._songAudio.muted=!soundOn;
+    p._songAudio.play().catch(()=>{p._songAudio.muted=true;p._songAudio.play().catch(()=>{});});
+    if(p._songBadge) p._songBadge.classList.toggle("playing", soundOn);
+  }
+  if(p._video){
+    p._video.muted = p._songAudio ? true : !soundOn;
+    p._video.play().catch(()=>{p._video.muted=true;p._video.play().catch(()=>{});});
+  }
+}
+
+let _feedAudioUnlock=false;
+function unlockFeedAudio(){
+  if(_feedAudioUnlock) return;
+  _feedAudioUnlock=true;
+  try{
+    const posts=list.querySelectorAll(".post");
+    const p=posts[activeIdx]||posts[0];
+    if(p && p._songAudio && soundOn){
+      p._songAudio.muted=false;
+      p._songAudio.play().catch(()=>{});
+      if(p._songBadge) p._songBadge.classList.add("playing");
+    }
+  }catch(e){}
+}
+document.addEventListener("pointerdown", unlockFeedAudio, {passive:true});
+
+function applySound(){
+  const posts=list.querySelectorAll(".post");
+  posts.forEach((p,i)=>{
+    if(p._sound) p._sound();
+    if(p._video) p._video.muted = p._songAudio ? true : !(soundOn&&i===activeIdx);
+    if(p._songAudio){
+      p._songAudio.muted=!(soundOn&&i===activeIdx);
+      if(p._songBadge) p._songBadge.classList.toggle("playing", soundOn&&i===activeIdx);
+    }
+  });
+  const cur=list.querySelectorAll(".post")[activeIdx];
+  const blocked = (typeof anyBlockerOpen==="function") && anyBlockerOpen();
+  if(blocked) return;
+  if(cur&&cur._video&&soundOn&&!cur._songAudio){
+    cur._video.muted=false;
+    cur._video.play().catch(()=>{});
+  }
+  if(cur&&cur._songAudio&&soundOn){
+    cur._songAudio.muted=false;
+    cur._songAudio.play().catch(()=>{});
+  }
+}
+
+// uygulama arka plana atılınca / sekme değişince sesi sustur
+document.addEventListener("visibilitychange",()=>{
+  document.documentElement.classList.toggle("bgQuiet", document.hidden);
+  if(document.hidden){
+    if(typeof pauseAllAppMedia==="function") pauseAllAppMedia();
+  }else{
+    if(typeof anyBlockerOpen==="function" && !anyBlockerOpen() && typeof resumeFeedMedia==="function"){
+      resumeFeedMedia();
+    }
+  }
+});
+
+/* Bir ana git.
+   ÖNEMLİ: An akışta yüklü değilse eskiden hiçbir şey olmuyordu —
+   bildirime dokunulunca ekran öylece kalıyordu. Akış yalnızca son
+   20 anı tutuyor; daha eski bir an için bu her zaman böyleydi.
+   Artık yüklü değilse an sunucudan çekilip görüntüleyicide açılır. */
 function goToPost(id, sonra){
-  if(window.__klipsyFeed) return window.__klipsyFeed.goToPost(id, sonra);
+  const el = list.querySelector('[data-id="'+id+'"]');
+  if(el){
+    el.scrollIntoView({behavior:"smooth",block:"start"});
+    if(typeof sonra === "function") setTimeout(()=>sonra(id), 500);
+    return true;
+  }
+
+  // akışta yok: görüntüleyicide aç
+  try{
+    if(typeof zamanAnGoster === "function"){
+      zamanAnGoster({ id: id });
+      return true;
+    }
+  }catch(e){}
   return false;
 }
 
@@ -12759,10 +12652,7 @@ async function loadComments(id){
   let it = byId(id);
   if(!it && window.__tekAn && window.__tekAn.id === id){
     it = window.__tekAn;
-    if(Array.isArray(items) && !items.some(m=>m && m.id===id)){
-      if(window.__klipsyFeed){ window.__klipsyFeed.store.append([it]); feedSyncLocals(); }
-      else items.push(it);
-    }
+    if(Array.isArray(items) && !items.some(m=>m && m.id===id)) items.push(it);
   }
   if(!it) return;
   if(!isReal(id) || !window.__sb) return;
@@ -14116,12 +14006,6 @@ function closeFeedPlace(){
 
 // filtreyi uygula: eşleşmeyen kartları gizle
 function applyFeedPlaceFilter(){
-  if(window.__klipsyFeed){
-    window.__klipsyFeed.setPlace(feedPlace);
-    feedSyncLocals();
-    activeIdx=-1; syncActive();
-    return;
-  }
   if(!feedPlace){
     items = allItems.slice();
   }else{
@@ -14129,6 +14013,7 @@ function applyFeedPlaceFilter(){
     items = allItems.filter(it => String(it.where||"").toLowerCase().includes(q));
   }
   render(); activeIdx=-1; syncActive();
+  if(typeof paintFeedNames==="function") paintFeedNames();
 }
 
 /* ===== AYNI YER, FARKLI ZAMAN =====
@@ -16463,9 +16348,8 @@ async function loadMyMoments(){
     }));
 
     if(document.getElementById("profile").classList.contains("open") && profName===ME){
-      const pane=document.getElementById("arcPane");
-      if(pane){ pane.innerHTML=""; renderMine(pane); }
-      else renderProfile({soft:true});
+      const pane=document.getElementById("arcPane") || document.querySelector("#profBody .arcPane");
+      if(pane){ pane.innerHTML=""; if(typeof renderMine==="function") renderMine(pane); }
     }
   }catch(e){ console.warn('kendi anlarım:', e); }
 }
@@ -17041,14 +16925,14 @@ async function openProfile(name){
   statAvatarlari(name);
   const pdata=await loadProfileData(name);
   if(pdata && profName===name){
-    if(!patchProfStats(pdata) ) renderProfile({soft:true});
+    if(typeof patchProfStats!=="function" || !patchProfStats(pdata)) renderProfile();
   }
   if(name!==ME && window.__sb && window.__me){
     const uid=await idOfUsername(name);
     if(uid){
       const {data}=await window.__sb.rpc('is_following',{target:uid});
-      if(data===true && !following.has(name)){ following.add(name); if(profName===name) patchFollowBtn(true); }
-      else if(data===false && following.has(name)){ following.delete(name); if(profName===name) patchFollowBtn(false); }
+      if(data===true && !following.has(name)){ following.add(name); if(profName===name && !patchFollowBtn(true)) renderProfile(); }
+      else if(data===false && following.has(name)){ following.delete(name); if(profName===name && !patchFollowBtn(false)) renderProfile(); }
     }
   }
 }
@@ -17304,16 +17188,15 @@ function capStatusBar(){
     return (P && P.StatusBar) || (window.StatusBar) || null;
   }catch(e){ return null; }
 }
-/* Tam ekran YOK — orijinal davranış.
-   Sistem çubuğu görünür, WebView onun ALTINDAN başlar. */
-window.__statusBarLocked = false;
+/* Tam ekran YOK.
+   Sistem çubuğu görünür, WebView onun ALTINDAN başlar.
+   hide yok, overlay kapalı, --sat 0 (çünkü boşluk zaten sistemde). */
+window.__statusBarLocked = window.__statusBarLocked || false;
 async function lockNativeStatusBar(){
+  if(window.__statusBarLocked) return;
+  window.__statusBarLocked = true;
   document.documentElement.style.setProperty('--sat','0px');
   document.documentElement.classList.remove('feed-immersive');
-  try{
-    const ex=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;
-    if(document.fullscreenElement && ex) ex.call(document);
-  }catch(e){}
   const SB=capStatusBar();
   if(!SB) return;
   try{
@@ -17513,10 +17396,6 @@ function renderSettings(){
     t("fullscreen"), t("fullscreen_sub"), !!document.fullscreenElement,
     (on)=>{
       try{
-        if(isNativeApp()){
-          lockNativeStatusBar();
-          return;
-        }
         if(on){
           const el=document.documentElement;
           const req=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
@@ -17796,35 +17675,25 @@ function patchProfStats(pdata){
   if(!st) return false;
   const own=profName===ME;
   const u=own?meUser:(pdata||userOf(profName));
-  const moments=own?(meUser.moments||myMoments().length):((u&&u.moments)||0);
+  const moments=own?(meUser.moments|| (typeof myMoments==="function"?myMoments().length:0)):((u&&u.moments)||0);
   const fw=own?(meUser.followers||0):((u&&u.followers)||0);
   const fo=own?(meUser.follows||0):((u&&u.follows)||0);
   const bs=st.querySelectorAll(".stat b");
   if(bs[0]) bs[0].textContent=nf(moments);
   if(bs[1]) bs[1].textContent=nf(fw);
   if(bs[2]) bs[2].textContent=nf(fo);
-  const h3=document.querySelector("#profBody .heroCard h3, #profBody h3");
-  const disp=(u&&u.display_name)?u.display_name:profName;
-  if(h3 && disp) h3.textContent=disp;
   return true;
 }
 function patchFollowBtn(on){
-  const b=document.querySelector("#profBody .followBtn, #profBody button.pFollow");
-  if(!b){ renderProfile({soft:true}); return; }
+  const b=document.querySelector("#profBody .pFollow, #profBody button.follow, #profBody .profActs button");
+  if(!b) return false;
   b.classList.toggle("on", !!on);
+  return true;
 }
 
-function renderProfile(opts){
-  opts=opts||{};
+function renderProfile(){
   if(typeof syncStatusBar==="function") syncStatusBar();
   const own=profName===ME;
-  if(opts.soft){
-    const box=$("#profBody");
-    if(box && box.querySelector(".hero") && box.dataset.for===String(profName||"")){
-      patchProfStats();
-      return;
-    }
-  }
   /* Başkasının profilinde kendi başlık çubuğumuzu gizliyoruz;
      yeni tasarımda geri ve seçenekler düğmeleri zaten görselin üstünde. */
   try{
@@ -17838,7 +17707,6 @@ function renderProfile(opts){
   const u=own?meUser:userOf(profName);
   $("#profTitle").textContent=profName;
   const box=$("#profBody");box.innerHTML="";
-  box.dataset.for=String(profName||"");
 
   /* başlık kartı */
   const hero=document.createElement("div");hero.className="hero";
@@ -18428,7 +18296,8 @@ $("#cfYes").addEventListener("click",async ()=>{
        Önceden yalnızca akıştan siliniyordu; profil kendi önbelleğini
        kullandığı için an ekranda kalmaya devam ediyor, ancak çıkıp
        girince kayboluyordu. */
-    feedRemoveLocal(target.id);
+    const i = items.findIndex(x=>x.id===target.id);
+    if(i>=0) items.splice(i,1);
 
     if(Array.isArray(_myMoments)){
       const j = _myMoments.findIndex(x=>x.id===target.id);
@@ -20033,7 +19902,7 @@ async function uploadWithProgress(bucket, path, blob, contentType, onPct){
         try{ data=JSON.parse(xhr.responseText||"{}"); }catch(_){ data={Key:path}; }
         ok({ data:data, error:null });
       }else{
-        bad(new Error("upload "+xhr.status+" "+String(xhr.responseText||"").slice(0,80)));
+        bad(new Error("upload "+xhr.status));
       }
     };
     xhr.send(blob);
@@ -20126,7 +19995,7 @@ async function _saveBlob(blob, name, picker){
     const FS=P.Filesystem;
     const Share=P.Share;
     if(!FS || !FS.writeFile){
-      throw new Error("Filesystem plugin yok — npm i @capacitor/filesystem && npx cap sync");
+      throw new Error("Filesystem plugin yok");
     }
     const b64=await blobToBase64(blob);
     const dirs=[];
@@ -20153,7 +20022,6 @@ async function _saveBlob(blob, name, picker){
     }
     if(!uri) throw lastErr || new Error("native write failed");
     if(Share && Share.share){
-      /* Android Share `url` ile blob:/http bekler; yerel dosya `files` ister. */
       try{
         await Share.share({ title:name, files:[uri], dialogTitle:t("dl_wm") });
         return;
@@ -20162,7 +20030,6 @@ async function _saveBlob(blob, name, picker){
         catch(_){ console.warn("Share", e); }
       }
     }
-    toast(name);
     return;
   }
   const href=URL.createObjectURL(blob);
@@ -21286,7 +21153,9 @@ async function post(src,kind,mood,where,note,extra){
   const local={id:tmpId,ts:Date.now(),who:ME,
     where:where||t("no_location"),mood:mood||(MOOD_BY_KEY.sakin||MOODS[7]||null),note:note||"",kind,src,
     likes:0,views:0,saved:false,liked:false,mine:true,comments:[],_pending:true,song:song};
-  feedPrependLocal(local);
+  items.unshift(local);
+  if(Array.isArray(allItems)) allItems.unshift(local);
+  else allItems = items.slice();
   render();
   requestAnimationFrame(()=>{feed.scrollTop=0;activeIdx=-1;syncActive();resumeAt=Date.now()+RESUME*2;});
   if(!sb||!me){ toast(t("err_offline_local")); return; }
@@ -21315,7 +21184,8 @@ async function post(src,kind,mood,where,note,extra){
       console.warn("[Klipsy] medya hazırlanamadı:", blob ? blob.size : "yok");
       hideDlHud();
       toast(t("rec_failed"));
-      feedRemoveLocal(tmpId);
+      items = items.filter(x=>x.id !== tmpId);
+      allItems = (allItems||[]).filter(x=>x.id !== tmpId);
       render();
       return;
     }
@@ -21386,7 +21256,6 @@ async function post(src,kind,mood,where,note,extra){
       comments_on: !(extra && extra.commentsOn===false),
       downloads_on: !(extra && extra.downloadsOn===false)
     };
-    setDlHud(hudMsg, 98);
     const ins = await sb.from('moments').insert(row).select('id, created_at').single();
     if(ins.error) throw ins.error;
 
@@ -22961,80 +22830,7 @@ setTimeout(()=>{ try{ requestNativePermissions(); }catch(e){} }, 1500);
 // bekleyen taslak varsa gönder (uygulama açılır açılmaz)
 setTimeout(()=>{ try{ flushDrafts(true); paintDraftDot(); }catch(e){} }, 2500);
 
-
-function bootKlipsyFeed(){
-  if(window.__klipsyFeed || !window.KlipsyFeed) return window.__klipsyFeed;
-  return window.KlipsyFeed.attach({
-    feed, list, t, I, USERS, ME,
-    toast, nf, relLong, clockOf, dateOf, esc,
-    paintAv, setRealAvatar, setDisplayName,
-    openComments, openPostMenu, openProfile,
-    openTimeAtMoment: typeof openTimeAtMoment==="function" ? openTimeAtMoment : null,
-    anyBlockerOpen: typeof anyBlockerOpen==="function" ? anyBlockerOpen : null,
-    zamanAnGoster: typeof zamanAnGoster==="function" ? zamanAnGoster : null,
-    MOOD_BY_KEY, fallbackMood: (typeof MOODS!=="undefined" && MOODS[7]) ? MOODS[7] : null,
-    soundOnGet(){ return soundOn; },
-    soundOnSet(v){ soundOn = !!v; },
-    fetchDisplayNames: typeof fetchDisplayNames==="function" ? fetchDisplayNames : null,
-    afterPaint(){ feedSyncLocals(); },
-    onLoaded(listItems){
-      feedSyncLocals();
-      setTimeout(()=>{ try{ backfillPosters((listItems||[]).filter(x=>x.mine)); }catch(e){} }, 1500);
-    },
-    onLike(it){
-      if(!isReal(it.id) || !window.__sb || !window.__me) return;
-      const sb=window.__sb, uid=window.__me.id;
-      if(it.liked){
-        sb.from('likes').insert({moment_id:it.id, user_id:uid}).then(({error})=>{
-          if(error && !/duplicate/i.test(error.message||"")){
-            it.liked=false; it.likes=Math.max(0,(Number(it.likes)||0)-1);
-            list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
-            toast(t("err_like_add")+" "+error.message);
-          }
-        });
-      }else{
-        sb.from('likes').delete().eq('moment_id',it.id).eq('user_id',uid).then(({error})=>{
-          if(error) toast(t("err_like_del")+" "+error.message);
-        });
-      }
-      setTimeout(()=>{
-        sb.from('moments').select('like_count').eq('id', it.id).single()
-          .then(({data:d})=>{
-            if(d && d.like_count != null){
-              it.likes = d.like_count;
-              list.querySelectorAll(".post").forEach(el=>{ if(el._sync) el._sync(); });
-            }
-          }).catch(()=>{});
-      }, 700);
-    },
-    onSave(it){
-      if(isReal(it.id) && window.__sb && window.__me){
-        const sb=window.__sb, uid=window.__me.id;
-        if(it.saved) sb.from('saves').insert({moment_id:it.id, user_id:uid}).then(()=>{});
-        else sb.from('saves').delete().eq('moment_id',it.id).eq('user_id',uid).then(()=>{});
-      }
-      if(Array.isArray(_savedCache)){
-        if(it.saved){
-          if(!_savedCache.some(x=>x.id===it.id)){
-            _savedCache.unshift({
-              id:it.id, who:it.who, kind:it.kind, src:it.src, poster:it.poster||null,
-              mood:it.mood, note:it.note, where:it.where,
-              ts:it.ts, likes:it.likes, views:it.views, cc:it.cc,
-              song:it.song||null, saved:true
-            });
-          }
-        }else{
-          _savedCache = _savedCache.filter(x=>x.id!==it.id);
-        }
-      }
-      const prof=document.getElementById("profile");
-      if(prof && prof.classList.contains("open") && typeof renderProfile==="function") renderProfile();
-    }
-  });
-}
-
 try{ loadNotifs(); }catch(e){}
-bootKlipsyFeed();
 loadFeed().finally(()=>{
   // akış geldikten sonra, sırayla ve boş zamanda
   const rest = () => {

@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.21</title>
+<title>Klipsy 3.3.22</title>
 <script src="klipsy-kamera.js?v=3.3.18"></script>
 <script>
 /* ============================================================
@@ -17181,7 +17181,7 @@ function applyNativeStatusBarColor(color, bgIsLight){
   const cap=window.Capacitor;
   const P=(cap && cap.Plugins) || {};
   const SB=capStatusBar();
-  const iconStyle = bgIsLight ? "DARK" : "LIGHT";
+  const iconStyle = "LIGHT"; /* siyah bar: saat/pil beyaz */
   /* Android 15+ StatusBar.setBackgroundColor çoğu telefonda no-op.
      Sende yüklü SafeArea eklentisi bar rengini boyayabiliyor. */
   try{
@@ -17192,14 +17192,14 @@ function applyNativeStatusBarColor(color, bgIsLight){
           config:{
             customColorsForSystemBars:true,
             statusBarColor:color,
-            statusBarContent: bgIsLight ? "dark" : "light",
+            statusBarContent: "light",
             navigationBarColor:"#08080C",
             navigationBarContent:"light"
           }
         });
       }
       if(typeof SA.setSystemBarsStyle==="function"){
-        SA.setSystemBarsStyle({ style: bgIsLight ? "LIGHT" : "DARK", type:"STATUS_BAR" });
+        SA.setSystemBarsStyle({ style:"DARK", type:"STATUS_BAR" });
       }
     }
   }catch(e){}
@@ -19983,16 +19983,16 @@ async function saveToDevice(blob, name, picker, httpUrl){
   const http=(httpUrl && /^https?:/i.test(httpUrl)) ? httpUrl : null;
   let err=null;
 
-  if(Media){
-    try{
-      if(video && Media.saveVideo && http){ await Media.saveVideo({ path:http, fileName:file }); return; }
-      if(!video && Media.savePhoto && http && !blob){ await Media.savePhoto({ path:http, fileName:file }); return; }
-    }catch(e){ err=e; }
-  }
-
   let uri=null;
   if(FS && FS.writeFile && blob){
     try{ uri=await _writeCacheFile(FS, blob, file); }
+    catch(e){ err=e; }
+  }
+  /* Capacitor Share tek dosyada url ister; files[] birçok telefonda sessiz düşer. */
+  if(Share && Share.share && uri){
+    try{ await Share.share({ title:file, url:uri, dialogTitle:t("dl_wm") }); return; }
+    catch(e){ err=e; }
+    try{ await Share.share({ title:file, files:[uri], dialogTitle:t("dl_wm") }); return; }
     catch(e){ err=e; }
   }
   if(Media && uri){
@@ -20000,10 +20000,6 @@ async function saveToDevice(blob, name, picker, httpUrl){
       if(video && Media.saveVideo){ await Media.saveVideo({ path:uri, filePath:uri, fileName:file }); return; }
       if(!video && Media.savePhoto){ await Media.savePhoto({ path:uri, filePath:uri, fileName:file }); return; }
     }catch(e){ err=e; }
-  }
-  if(Share && Share.share && uri){
-    try{ await Share.share({ title:file, files:[uri], dialogTitle:t("dl_wm") }); return; }
-    catch(e){ err=e; }
   }
   if(Share && Share.share && http){
     try{ await Share.share({ title:file, url:http, dialogTitle:t("dl_wm") }); return; }

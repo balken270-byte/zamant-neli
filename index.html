@@ -17304,15 +17304,10 @@ function capStatusBar(){
     return (P && P.StatusBar) || (window.StatusBar) || null;
   }catch(e){ return null; }
 }
-/* Tam ekran YOK.
-   Sistem çubuğu görünür, WebView onun ALTINDAN başlar.
-   hide yok, overlay kapalı, --sat 0 (çünkü boşluk zaten sistemde). */
-window.__statusBarLocked = window.__statusBarLocked || false;
+/* Tam ekran YOK. Sistem çubuğu durur, uygulama onun altından başlar. */
 async function lockNativeStatusBar(){
-  if(window.__statusBarLocked) return;
-  window.__statusBarLocked = true;
-  document.documentElement.style.setProperty('--sat','0px');
   document.documentElement.classList.remove('feed-immersive');
+  document.documentElement.style.setProperty('--sat','0px');
   const SB=capStatusBar();
   if(!SB) return;
   try{
@@ -17321,6 +17316,12 @@ async function lockNativeStatusBar(){
   try{
     if(typeof SB.setOverlaysWebView==="function"){
       await SB.setOverlaysWebView({overlay:false});
+    }
+  }catch(e){}
+  try{
+    if(typeof SB.setBackgroundColor==="function"){
+      const isLight = document.documentElement.getAttribute('data-theme')==='light';
+      await SB.setBackgroundColor({ color: isLight ? '#FFFFFF' : '#08080C' });
     }
   }catch(e){}
 }

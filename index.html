@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.19</title>
+<title>Klipsy 3.3.20</title>
 <script src="klipsy-kamera.js?v=3.3.18"></script>
 <script>
 /* ============================================================
@@ -17178,14 +17178,43 @@ async function lockNativeStatusBar(){
    ayarlar. */
 function applyNativeStatusBarColor(color, bgIsLight){
   if(!isNativeApp()) return;
+  const cap=window.Capacitor;
+  const P=(cap && cap.Plugins) || {};
   const SB=capStatusBar();
+  const iconStyle = bgIsLight ? "DARK" : "LIGHT";
+  /* Android 15+ StatusBar.setBackgroundColor çoğu telefonda no-op.
+     Sende yüklü SafeArea eklentisi bar rengini boyayabiliyor. */
+  try{
+    const SA=P.SafeArea;
+    if(SA){
+      if(typeof SA.enable==="function"){
+        SA.enable({
+          config:{
+            customColorsForSystemBars:true,
+            statusBarColor:color,
+            statusBarContent: bgIsLight ? "dark" : "light",
+            navigationBarColor:"#08080C",
+            navigationBarContent:"light"
+          }
+        });
+      }
+      if(typeof SA.setSystemBarsStyle==="function"){
+        SA.setSystemBarsStyle({ style: bgIsLight ? "LIGHT" : "DARK", type:"STATUS_BAR" });
+      }
+    }
+  }catch(e){}
+  try{
+    const Sys=P.SystemBars || (window.Capacitor && window.Capacitor.SystemBars);
+    if(Sys && typeof Sys.setStyle==="function"){
+      Sys.setStyle({ style: iconStyle });
+    }
+  }catch(e){}
   if(!SB) return;
   try{
     if(typeof SB.setBackgroundColor==="function") SB.setBackgroundColor({color});
   }catch(e){}
   try{
-    // arkaplan BEYAZSA ikonlar KOYU (DARK), arkaplan SİYAHSA ikonlar AÇIK (LIGHT)
-    if(typeof SB.setStyle==="function") SB.setStyle({style: bgIsLight ? "DARK" : "LIGHT"});
+    if(typeof SB.setStyle==="function") SB.setStyle({style: iconStyle});
   }catch(e){}
 }
 function _activeTabId(){
@@ -17224,11 +17253,16 @@ function syncStatusBar(){
   const bar=document.getElementById('sysBarBg');
   if(bar) bar.style.background = color;
 
-  /* overlay kapalı: sistem çubuğu webview dışında. Extra --sat akışı kaydırır. */
+  /* Akış kaymasın: --sat'a ekstra piksel ekleme.
+     Bar rengini SafeArea + StatusBar ile boya (Android 15 beyaz bar). */
   if(isNativeApp()){
     document.documentElement.style.setProperty('--sat','0px');
     const barEl=document.getElementById('sysBarBg');
-    if(barEl) barEl.style.height='0px';
+    if(barEl){ barEl.style.height='0px'; barEl.style.background=color; }
+    try{
+      document.documentElement.style.background=color;
+      if(document.body) document.body.style.background=color;
+    }catch(e){}
     Promise.resolve(lockNativeStatusBar()).then(()=>{
       applyNativeStatusBarColor(color, bgIsLight);
     }).catch(()=>{});
@@ -19903,96 +19937,78 @@ function blobToBase64(blob){
     r.onerror=bad; r.readAsDataURL(blob);
   });
 }
-function _b64FromBytes(u8){
-  let s="";
-  const step=0x8000;
-  for(let i=0;i<u8.length;i+=step){
-    s += String.fromCharCode.apply(null, u8.subarray(i, i+step));
-  }
-  return btoa(s);
+
+/* ═══ İNDİRME — tek yol
+   Web: <a download>
+   APK: 1) Media.savePhoto/Video (https veya cache uri)
+        2) Filesystem CACHE + Share.files  (Share yalnızca Cache'i paylaşır)
+        3) Share.url (https)
+   Documents/Data'ya yazmak Android Share FileProvider'da çalışmaz. */
+function _nativePlugins(){
+  const cap=window.Capacitor;
+  const native=!!(cap && cap.isNativePlatform && cap.isNativePlatform());
+  const P=(cap && cap.Plugins) || {};
+  return { native, FS:P.Filesystem, Share:P.Share, Media:P.Media };
 }
-async function _writeBlobNative(FS, blob, path, directory){
-  const buf=new Uint8Array(await blob.arrayBuffer());
-  /* 3'e bölünen parça — base64 append bozulmasın */
-  const CHUNK=261120;
-  const dir=directory || (FS.Directory && FS.Directory.Cache) || "CACHE";
-  const first=buf.subarray(0, Math.min(CHUNK, buf.length));
-  await FS.writeFile({ path, data:_b64FromBytes(first), directory:dir, recursive:true });
-  if(typeof FS.appendFile==="function"){
-    for(let i=CHUNK;i<buf.length;i+=CHUNK){
-      await FS.appendFile({ path, data:_b64FromBytes(buf.subarray(i, Math.min(buf.length, i+CHUNK))), directory:dir });
-    }
-  }else if(buf.length>CHUNK){
-    await FS.writeFile({ path, data:_b64FromBytes(buf), directory:dir, recursive:true });
-  }
+async function _writeCacheFile(FS, blob, path){
+  const dir=(FS.Directory && FS.Directory.Cache) || "CACHE";
+  const b64=await blobToBase64(blob);
+  await FS.writeFile({ path, data:b64, directory:dir, recursive:true });
   let uri=null;
   try{
-    if(typeof FS.getUri==="function"){
-      const g=await FS.getUri({ path, directory:dir });
-      uri=g && (g.uri||g.fileUri||g.nativeURL);
-    }
+    const g=await FS.getUri({ path, directory:dir });
+    uri=g && (g.uri||g.fileUri);
   }catch(e){}
-  return { uri, directory:dir, path };
+  return uri;
 }
-async function _saveBlob(blob, name, picker, sourceUrl){
-  if(!blob) throw new Error("empty blob");
-  if(picker){
-    const wr=await picker.createWritable();
-    await wr.write(blob); await wr.close();
-    return;
-  }
-  const cap=window.Capacitor;
-  const native=cap && cap.isNativePlatform && cap.isNativePlatform();
-  if(native){
-    const P=(cap.Plugins)||{};
-    const FS=P.Filesystem;
-    const Share=P.Share;
-    const Media=P.Media;
-    const Browser=P.Browser;
-    const safeName=String(name||("klipsy-"+Date.now())).replace(/[^a-zA-Z0-9._-]/g,"_");
-    const isVid=/\.(mp4|webm)$/i.test(safeName) || /video\//i.test(blob.type||"");
-    let lastErr=null, uri=null;
-    const dirs = FS && FS.Directory
-      ? [FS.Directory.Cache||"CACHE", FS.Directory.Data||"DATA", FS.Directory.Documents||"DOCUMENTS"]
-      : ["CACHE","DATA"];
-    if(FS && FS.writeFile){
-      for(const dir of dirs){
-        try{
-          const written=await _writeBlobNative(FS, blob, "Download/"+safeName, dir);
-          uri = written && written.uri;
-          if(!uri && FS.getUri){
-            try{ const g=await FS.getUri({path:"Download/"+safeName, directory:dir}); uri=g&&g.uri; }catch(e){}
-          }
-          if(Media && uri){
-            try{
-              if(isVid && Media.saveVideo){ await Media.saveVideo({path:uri, filePath:uri, album:"Klipsy"}); return; }
-              if(!isVid && Media.savePhoto){ await Media.savePhoto({path:uri, filePath:uri, album:"Klipsy"}); return; }
-            }catch(e){ lastErr=e; }
-          }
-          if(Share && Share.share && uri){
-            try{
-              await Share.share({ title:safeName, files:[uri], dialogTitle:t("dl_wm") });
-              return;
-            }catch(e){ lastErr=e; }
-          }
-          if(uri) return;
-        }catch(e){ lastErr=e; }
-      }
-    }
-    const httpUrl = (sourceUrl && /^https?:/i.test(sourceUrl)) ? sourceUrl : null;
-    if(Share && Share.share && httpUrl){
-      try{ await Share.share({ title:safeName, url:httpUrl, dialogTitle:t("dl_wm") }); return; }catch(e){ lastErr=e; }
-    }
-    if(Browser && Browser.open && httpUrl){
-      try{ await Browser.open({ url:httpUrl }); return; }catch(e){ lastErr=e; }
-    }
-    throw (lastErr || new Error("apk save failed"));
-  }
+function _webDownload(blob, name){
   const href=URL.createObjectURL(blob);
   const a=document.createElement("a");
   a.href=href; a.download=name; a.rel="noopener";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(href), 8000);
+}
+async function saveToDevice(blob, name, picker, httpUrl){
+  if(picker){
+    const wr=await picker.createWritable();
+    await wr.write(blob); await wr.close();
+    return;
+  }
+  const {native, FS, Share, Media}=_nativePlugins();
+  if(!native){ _webDownload(blob, name); return; }
+
+  const file=String(name||("klipsy-"+Date.now())).replace(/[^a-zA-Z0-9._-]/g,"_");
+  const video=/\.(mp4|webm)$/i.test(file) || /video\//i.test((blob&&blob.type)||"");
+  const http=(httpUrl && /^https?:/i.test(httpUrl)) ? httpUrl : null;
+  let err=null;
+
+  if(Media){
+    try{
+      if(video && Media.saveVideo && http){ await Media.saveVideo({ path:http, fileName:file }); return; }
+      if(!video && Media.savePhoto && http && !blob){ await Media.savePhoto({ path:http, fileName:file }); return; }
+    }catch(e){ err=e; }
+  }
+
+  let uri=null;
+  if(FS && FS.writeFile && blob){
+    try{ uri=await _writeCacheFile(FS, blob, file); }
+    catch(e){ err=e; }
+  }
+  if(Media && uri){
+    try{
+      if(video && Media.saveVideo){ await Media.saveVideo({ path:uri, filePath:uri, fileName:file }); return; }
+      if(!video && Media.savePhoto){ await Media.savePhoto({ path:uri, filePath:uri, fileName:file }); return; }
+    }catch(e){ err=e; }
+  }
+  if(Share && Share.share && uri){
+    try{ await Share.share({ title:file, files:[uri], dialogTitle:t("dl_wm") }); return; }
+    catch(e){ err=e; }
+  }
+  if(Share && Share.share && http){
+    try{ await Share.share({ title:file, url:http, dialogTitle:t("dl_wm") }); return; }
+    catch(e){ err=e; }
+  }
+  throw err || new Error("apk save failed");
 }
 async function loadMomentBlob(it){
   const sb=window.__sb;
@@ -20000,7 +20016,6 @@ async function loadMomentBlob(it){
   if(sb && path){
     const {data,error}=await sb.storage.from("moments").download(path);
     if(!error && data) return data;
-    console.warn("storage.download", error);
   }
   const url=it.src||it.poster;
   if(!url) throw new Error("no url");
@@ -20022,24 +20037,27 @@ async function _dlImageWm(it, picker, name){
   paintWm(ctx,c.width,c.height,it.who||ME,null);
   const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.92));
   if(!blob) throw new Error('blob');
-  await _saveBlob(blob, name||('klipsy-'+(it.id||Date.now()).toString().slice(0,8)+'.jpg'), picker, it.src||it.poster);
+  await saveToDevice(blob, name||('klipsy.jpg'), picker, null);
 }
-async function _fetchMediaBlob(url){
-  const r=await fetch(url, {mode:"cors", cache:"no-store"});
-  if(!r.ok) throw new Error("fetch "+r.status);
-  return await r.blob();
-}
-
 async function _dlVideoWm(it, picker, name){
   setDlHud(t("dl_fetch"), 8);
+  const {native, Media}=_nativePlugins();
+  if(native && Media && Media.saveVideo && it.src && /^https?:/i.test(it.src) && !picker){
+    try{ await Media.saveVideo({ path:it.src, fileName:name }); return; }catch(e){}
+  }
   let raw=null;
-  try{ raw=await loadMomentBlob(it); }catch(e){ console.warn("video fetch", e); }
-  if(!raw && it.src){ try{ raw=await _fetchMediaBlob(it.src); }catch(e2){} }
+  try{ raw=await loadMomentBlob(it); }catch(e){}
+  if(!raw && it.src){
+    try{
+      const r=await fetch(it.src,{mode:"cors", cache:"no-store"});
+      if(r.ok) raw=await r.blob();
+    }catch(e){}
+  }
   if(!raw || !raw.size) throw new Error("video blob yok");
   setDlHud(t("dl_fetch"), 90);
   const ext=(raw.type&&raw.type.indexOf("webm")>=0)?"webm":"mp4";
   const fname=name ? name.replace(/\.[a-z0-9]+$/i,"."+ext) : ("klipsy-"+(it.id||Date.now()).toString().slice(0,8)+"."+ext);
-  await _saveBlob(raw, fname, picker, it.src);
+  await saveToDevice(raw, fname, picker, it.src);
 }
 
 async function toggleMomentFlag(it, field, val){

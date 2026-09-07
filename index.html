@@ -17202,15 +17202,16 @@ async function lockNativeStatusBar(){
   }catch(e){}
   try{
     if(typeof SB.setOverlaysWebView==="function"){
-      /* overlay AÇIK: sistem çubuğu içeriğin ÜSTÜNDE durur, WebView
-         boyu değişmez. hide/show yok → titreme yok.
-         Akış fotoğrafı kenara kadar gider; başlık --sat ile aşağıda kalır. */
-      await SB.setOverlaysWebView({overlay:true});
+      /* TAM EKRAN KAPALI: durum çubuğu kendi alanını ayırıyor,
+         WebView (ve dolayısıyla tüm içerik) onun ALTINDAN başlıyor.
+         Böylece hiçbir öğe durum çubuğuyla çakışmıyor, --sat/safe-area
+         hesaplarına da gerek kalmıyor. */
+      await SB.setOverlaysWebView({overlay:false});
     }
   }catch(e){}
   try{
     if(typeof SB.setBackgroundColor==="function"){
-      await SB.setBackgroundColor({color:'#00000000'});
+      await SB.setBackgroundColor({color:'#000000'});
     }
   }catch(e){}
 }

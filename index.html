@@ -9261,6 +9261,60 @@ html.native button,html.native .tab{touch-action:manipulation}
 }
 </style>
 
+<style id="upload-indicator">
+/* İçerik paylaşılırken navigasyonun hemen üstünde görünen çubuk */
+#uploadBar{
+  position:fixed;
+  left:0.75rem;
+  right:0.75rem;
+  bottom:calc(var(--tab) + var(--sab) + 0.6rem);
+  z-index:2147483000;
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  padding:0.5rem 0.85rem;
+  border-radius:999px;
+  background:rgba(10,10,14,.92);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 0.3rem 1rem rgba(0,0,0,.35);
+  opacity:0;
+  transform:translateY(0.4rem);
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+}
+#uploadBar.on{
+  opacity:1;
+  transform:translateY(0);
+}
+#uploadBar .uploadBarTrack{
+  position:relative;
+  flex:none;
+  width:1.6rem;
+  height:1.6rem;
+  border-radius:50%;
+  overflow:hidden;
+  background:rgba(255,255,255,.12);
+}
+#uploadBar .uploadBarFill{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:0.16rem solid transparent;
+  border-top-color:#fff;
+  animation:uploadSpin .8s linear infinite;
+}
+@keyframes uploadSpin{
+  to{ transform:rotate(360deg); }
+}
+#uploadBar .uploadBarLabel{
+  font:600 0.8rem/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+</style>
+
 </head>
 <body>
 <div id="gate" style="background:#08080C;background-image:radial-gradient(600px 420px at 15% 0%,rgba(255,59,107,.28),transparent 60%),radial-gradient(560px 460px at 95% 25%,rgba(123,91,255,.26),transparent 62%),radial-gradient(500px 420px at 0% 85%,rgba(30,136,199,.2),transparent 60%)">
@@ -13323,10 +13377,6 @@ function addCARTOVectorLayer(){
   return _mapTileLayer;
 }
 
-function refreshMapTheme(){
-  if(_map) addCARTOVectorLayer();
-}
-
 /* ===== HARİTA KÜTÜPHANELERİ =====
    Vektör harita = MapLibre GL (WebGL). Leaflet sadece pin/kontrol iskeleti.
    Gecikmenin nedeni: kütüphaneler Zaman sekmesi açılınca indiriliyordu.
@@ -17042,23 +17092,47 @@ function capStatusBar(){
     return (P && P.StatusBar) || (window.StatusBar) || null;
   }catch(e){ return null; }
 }
-/* TAM İMMERSİF: durum çubuğu tamamen gizli.
-   Saat, wifi, pil ikonları hiç görünmez; WebView tüm ekranı kaplar. */
+/* DURUM ÇUBUĞU GÖRÜNÜR: saat/wifi/pil ikonları gösterilir.
+   overlay KAPALI — sistem kendi alanını ayırır, içerik onun altına
+   hiç girmez (bkz. MainActivity.java'daki edge-to-edge zorlaması
+   kaldırıldıktan sonra bu artık güvenli). */
 window.__statusBarLocked = window.__statusBarLocked || false;
 async function lockNativeStatusBar(){
   if(window.__statusBarLocked) return;
   window.__statusBarLocked = true;
-  document.documentElement.style.setProperty('--sat','0px');
   document.documentElement.classList.remove('feed-immersive');
   const SB=capStatusBar();
   if(!SB) return;
   try{
-    if(typeof SB.hide==="function") await SB.hide();
+    if(typeof SB.show==="function") await SB.show();
+  }catch(e){}
+  try{
+    if(typeof SB.setOverlaysWebView==="function") await SB.setOverlaysWebView({overlay:false});
+  }catch(e){}
+}
+
+/* Native durum çubuğunun arkaplan rengini VE ikon rengini (saat/pil
+   yazısının koyu mu açık mı olacağını) o an açık olan ekrana göre
+   ayarlar. syncStatusBar() zaten bu kararı (hangi ekranda hangi renk)
+   veriyordu — burada sadece bunu native tarafa da uyguluyoruz. */
+function applyNativeStatusBarColor(color, bgIsLight){
+  if(!isNativeApp()) return;
+  const SB=capStatusBar();
+  if(!SB) return;
+  try{
+    if(typeof SB.setBackgroundColor==="function") SB.setBackgroundColor({color});
+  }catch(e){}
+  try{
+    // arkaplan BEYAZSA ikonlar KOYU (Dark), arkaplan SİYAHSA ikonlar AÇIK (Light)
+    if(typeof SB.setStyle==="function") SB.setStyle({style: bgIsLight ? "DARK" : "LIGHT"});
   }catch(e){}
 }
 function syncStatusBar(){
   const tc=document.getElementById('__themeColor');
   const isLight = document.documentElement.getAttribute('data-theme')==='light';
+  // "Akış" ayrı bir #id olarak açılıp kapanmıyor — panel/kamera/gate açık
+  // değilken zaten Akış'tayızdır, bu yüzden aşağıdaki son "else" dalı
+  // Akış'ı temsil ediyor. "cam" = Kamera ekranı.
   const darkScreens=["cam","compose"];
   const onDarkScreen = darkScreens.some(id=>{
     const el=document.getElementById(id);
@@ -17071,14 +17145,17 @@ function syncStatusBar(){
   });
   const gateEl=document.getElementById('gate');
   const onGate = gateEl && !gateEl.classList.contains('off');
-  let color;
-  if(onGate || onDarkScreen) color='#08080C';
-  else if(onPanel) color = isLight ? '#FFFFFF' : '#0A0A0E';
-  else color='#08080C';
+  let color, bgIsLight;
+  if(onGate || onDarkScreen){ color='#08080C'; bgIsLight=false; }
+  else if(onPanel){ color = isLight ? '#FFFFFF' : '#0A0A0E'; bgIsLight = isLight; }
+  else { color='#08080C'; bgIsLight=false; } // Akış
   if(tc) tc.setAttribute('content', color);
 
   document.documentElement.style.setProperty('--sat','0px');
-  if(isNativeApp()) lockNativeStatusBar();
+  if(isNativeApp()){
+    lockNativeStatusBar();
+    applyNativeStatusBarColor(color, bgIsLight);
+  }
 }
 
 window.syncStatusBar = syncStatusBar;  // modül kapsamından da erişilebilsin
@@ -19741,7 +19818,8 @@ async function downloadWatermarked(it){
   }catch(e){
     console.warn("dl",e);
     hideDlHud();
-    toast(t("dl_fail"));
+    const sebep = String((e && (e.message || e.error_description)) || e || "").slice(0,100);
+    toast(t("dl_fail") + (sebep ? (" — " + sebep) : ""));
   }
 }
 function momentStoragePath(it){
@@ -19778,7 +19856,12 @@ async function _saveBlob(blob, name, picker){
       const wr=await FS.writeFile({ path:name, data:b64, directory:dir });
       const uri=wr && (wr.uri||wr.fileURI);
       if(Share && Share.share && uri){
-        await Share.share({ title:name, url:uri, dialogTitle:t("dl_wm") });
+        /* ÖNEMLİ: yerel bir dosya paylaşılırken doğru alan "files"
+           (dizi) — "url" alanı web linki içindir. "url" ile yerel
+           dosya yolu vermek Android'de sessizce hiçbir şey yapmıyordu;
+           PWA'da bu kod hiç çalışmadığı (aşağıdaki <a download>
+           yoluna gittiği) için sorun sadece APK'de görünüyordu. */
+        await Share.share({ title:name, files:[uri], dialogTitle:t("dl_wm") });
         return;
       }
     }
@@ -20902,6 +20985,38 @@ async function makeVideoPoster(videoSrc){
   });
 }
 
+/* ALT YÜKLEME GÖSTERGESİ — içerik paylaşılırken (post() çalışırken)
+   navigasyonun hemen üstünde görünen ince, belirsiz-ilerlemeli bir
+   çubuk. Supabase'in upload() metodu bayt bazlı ilerleme vermediği
+   için yüzde göstermiyoruz; sadece "işlem sürüyor" bilgisini veriyoruz.
+   Aynı anda birden fazla paylaşım olabileceğinden sayaç tutulur. */
+let __uploadCount = 0;
+function __uploadBarEl(){
+  let el = document.getElementById('uploadBar');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'uploadBar';
+    el.innerHTML = '<div class="uploadBarTrack"><div class="uploadBarFill"></div></div>'+
+      '<span class="uploadBarLabel"></span>';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function showUploadIndicator(label){
+  __uploadCount++;
+  const el = __uploadBarEl();
+  const lab = el.querySelector('.uploadBarLabel');
+  if(lab) lab.textContent = label || "Yükleniyor…";
+  el.classList.add('on');
+}
+function hideUploadIndicator(){
+  __uploadCount = Math.max(0, __uploadCount-1);
+  if(__uploadCount === 0){
+    const el = document.getElementById('uploadBar');
+    if(el) el.classList.remove('on');
+  }
+}
+
 async function post(src,kind,mood,where,note,extra){
   const sb=window.__sb, me=window.__me;
   const song=(extra&&extra.song)?extra.song:null;
@@ -20920,6 +21035,7 @@ async function post(src,kind,mood,where,note,extra){
 
   if(!sb||!me){ toast(t("err_offline_local")); return; }
 
+  showUploadIndicator(kind==="video" ? "Video yükleniyor…" : "Fotoğraf yükleniyor…");
   try{
     // 1) medyayı depoya yükle
     /* MEDYAYI HAZIRLA — video için blob ŞART.
@@ -21084,6 +21200,8 @@ async function post(src,kind,mood,where,note,extra){
       k.textContent = "PAYLAŞIM BAŞARISIZ\n" + (sebep || "(sebep yok)") +
                       "\n\n(dokunarak kapat)";
     }catch(x){}
+  }finally{
+    hideUploadIndicator();
   }
 }
 

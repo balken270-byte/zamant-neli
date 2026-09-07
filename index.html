@@ -9096,80 +9096,49 @@ html.native button,html.native .tab{touch-action:manipulation}
 </script>
 
 
-<style id="feed-single-post-nav-fix">
-/* AKIŞ: ekranda tek gönderi + kart navigasyonun başladığı yere kadar */
+<style id="feed-layout-consolidated">
+/* ================================================================
+   AKIŞ (FEED) DÜZENİ — birleştirilmiş, tek kural seti.
+   Önceden burada "v9, v10, v12, v13, v14, v15, v16, v17, v21" diye
+   üst üste eklenmiş 10 ayrı <style> bloğu vardı; her biri bir
+   öncekinin bazı değerlerini geçersiz kılıyordu (aynı seçici için
+   birden fazla, birbiriyle çelişen tanım). Sadece en son geçerli
+   olan (kazanan) değerler burada tutulmuştur.
+   YENİ BİR FEED DEĞİŞİKLİĞİ GEREKTİĞİNDE: yeni bir yama bloğu
+   EKLEMEK yerine ilgili kuralı doğrudan burada güncelle. Bir kural
+   birden fazla yerde tanımlıysa hangisinin geçerli olduğunu anlamak
+   günler alabiliyor — tam da bu yüzden bu birleştirme yapıldı.
+   ================================================================ */
+
 #feed{
   padding-top:calc(var(--sat) + var(--top) + 0.35rem);
   padding-bottom:0;
+  scroll-snap-type:y mandatory;
+  overscroll-behavior-y:contain;
 }
 
 #list{
   gap:0;
 }
 
+/* Kart, navigasyonun biraz arkasına kadar uzar (0.75rem pay) — böylece
+   kaydırma tam oturduğunda bir sonraki gönderi görünmez; navigasyon
+   çubuğu her zaman kartın üstünde kalır. */
 .post{
-  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
-  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
+  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem + var(--tab) + var(--sab) + 0.75rem);
+  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem + var(--tab) + var(--sab) + 0.75rem);
   border-radius:1.125rem;
+  flex:none;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
 }
 
 /* Alt navigasyon kartın üzerinde kalsın */
 .tabbar{
   z-index:var(--z-tab);
 }
-</style>
 
-
-<style id="feed-v9-post-extends-behind-nav">
-/* V3 baz alınmıştır.
-   Sadece gönderi yüksekliği navigasyon yüksekliği kadar uzatılır.
-   Böylece 2. gönderi ilk ekranda görünmez; navigasyon kartın üstünde kalır. */
-.post{
-  height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-  );
-  min-height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-  );
-  flex:none;
-}
-</style>
-
-
-<style id="feed-v10-final-sizing">
-/* V9 bazlı: gönderiyi çok az daha uzat */
-.post{
-  height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-    + 0.75rem
-  );
-  min-height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-    + 0.75rem
-  );
-}
-
-/* Görseli kartın sınırları içinde tut; kenarlardan taşma/kırpılma olmasın */
+/* Görsel/video: kart sınırları içinde, kenardan taşma/kırpılma yok */
 .pmedia img,
 .pmedia video{
   width:100%;
@@ -9180,90 +9149,21 @@ html.native button,html.native .tab{touch-action:manipulation}
   object-position:center;
   background:#0a0a10;
 }
-</style>
 
-
-<style id="feed-v12-vertical-actions">
-/* TikTok / Instagram tarzı: ikonlar gönderinin TAM SAĞ kenarında dikey */
-.post .pbottom{
-  left:0;
-  right:0;
-  padding-right:4.25rem;
-  box-sizing:border-box;
+/* İçerik görsel/video'yu %10 büyüt (merkezden, sağ/sol kaybı eşit) */
+.post .pmedia{
+  overflow:hidden;
+}
+.post .pmedia > img,
+.post .pmedia > video{
+  transform:scale(1.10);
+  transform-origin:center center;
+}
+.post .pmedia .pmediaBg{
+  transform:none;
 }
 
-.post .actbar{
-  position:absolute;
-  right:0.65rem;
-  bottom:0;
-  width:2.75rem;
-  margin:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-end;
-  gap:0.85rem;
-  z-index:20;
-}
-
-.post .actbar .ab{
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:0.16rem;
-  width:2.75rem;
-  min-width:2.75rem;
-  padding:0;
-  color:#fff;
-}
-
-.post .actbar .ab svg{
-  width:1.75rem;
-  height:1.75rem;
-  flex:none;
-}
-
-.post .actbar .ab em{
-  font-size:0.72rem;
-  line-height:1;
-}
-
-.post .actbar .abSong .songDisc{
-  width:2rem;
-  height:2rem;
-}
-</style>
-
-
-<style id="feed-v13-actions-and-meta">
-/* Sağdaki dikey eylemler: bloğun sağında ve navigasyondan belirgin biçimde yukarıda */
-.post .actbar{
-  right:0.65rem;
-  bottom:6.2rem;
-  width:2.75rem;
-  gap:0.85rem;
-  z-index:20;
-}
-
-/* İçerik bilgileri sol altta; navigasyonun arkasına düşmesin */
-.post .pbottom{
-  left:0.75rem;
-  right:4.25rem;
-  bottom:0.75rem;
-  padding-right:0;
-  z-index:7;
-}
-
-.post .pbottom .meta,
-.post .pbottom .caption,
-.post .pbottom .desc{
-  max-width:100%;
-}
-</style>
-
-
-<style id="feed-v14-final-layout">
-/* SOL ALT: içerik + paylaşım zamanı, navigasyonun hemen üstünde */
+/* SOL ALT: içerik metni + paylaşım zamanı, navigasyonun hemen üstünde */
 .post .pbottom{
   left:0.75rem;
   right:4.25rem;
@@ -9272,9 +9172,19 @@ html.native button,html.native .tab{touch-action:manipulation}
   z-index:7;
   box-sizing:border-box;
 }
+.post .pbottom .meta,
+.post .pbottom .caption,
+.post .pbottom .desc{
+  max-width:100%;
+}
+.post .pbottom .ptime{
+  margin-bottom:0.28rem;
+}
+.post .pbottom .pnote{
+  margin-top:0;
+}
 
-/* SAĞ: eylemler doğrudan .plate/.post koordinat sisteminde.
-   Dikey grup, navigasyonun üzerinde ve bloğun sağ kenarında. */
+/* SAĞ: dikey eylem ikonları (beğeni/yorum/paylaş), navigasyonun üzerinde */
 .post .actbar{
   position:absolute;
   right:0.65rem;
@@ -9289,7 +9199,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   z-index:20;
   pointer-events:auto;
 }
-
 .post .actbar .ab{
   display:flex;
   flex-direction:column;
@@ -9301,62 +9210,31 @@ html.native button,html.native .tab{touch-action:manipulation}
   padding:0;
   color:#fff;
 }
-
 .post .actbar .ab svg{
   width:1.75rem;
   height:1.75rem;
   flex:none;
 }
-
 .post .actbar .ab em{
   font-size:0.72rem;
   line-height:1;
 }
-
 .post .actbar .abSong .songDisc{
   width:2rem;
   height:2rem;
-}
-</style>
-
-
-<style id="feed-v15-snap-like">
-/* Her kaydırmada tam bir gönderiye otur */
-#feed{
-  scroll-snap-type:y mandatory;
-  overscroll-behavior-y:contain;
-}
-
-.post{
-  scroll-snap-align:start;
-  scroll-snap-stop:always;
 }
 
 /* Beğenilince kalp KIRMIZI */
 .post .actbar .ab.liked{
   color:#FF3040 !important;
 }
-
 .post .actbar .ab.liked svg{
   color:#FF3040 !important;
   fill:#FF3040 !important;
   stroke:#FF3040 !important;
   filter:drop-shadow(0 1px 0.5rem rgba(255,48,64,.55));
 }
-</style>
 
-
-<style id="feed-v16-date-above-content">
-.post .pbottom .ptime{
-  margin-bottom:0.28rem;
-}
-.post .pbottom .pnote{
-  margin-top:0;
-}
-</style>
-
-
-<style id="feed-v17-seekbar-under-content">
 /* Video seek barı: içerik/metin alanının hemen altında */
 .post > .plate > .seekbar{
   position:absolute;
@@ -9370,37 +9248,16 @@ html.native button,html.native .tab{touch-action:manipulation}
   padding-bottom:0.18rem;
   pointer-events:auto;
 }
-
-/* Çubuğun tamamı kart genişliğinde; içerik yazısının altında */
 .post > .plate > .seekbar::before{
   left:0;
   right:0;
   bottom:0.18rem;
 }
-
 .post > .plate > .seekbar .seekfill{
   bottom:0.18rem;
 }
-
 .post > .plate > .seekbar .seekknob{
   bottom:0.095rem;
-}
-</style>
-
-
-<style id="feed-v21-media-zoom">
-/* Deneme: içerik görsel/video %10 büyütülür.
-   Merkezden büyüdüğü için sağ ve sol kayıp eşit olur. */
-.post .pmedia{
-  overflow:hidden;
-}
-.post .pmedia > img,
-.post .pmedia > video{
-  transform:scale(1.10);
-  transform-origin:center center;
-}
-.post .pmedia .pmediaBg{
-  transform:none;
 }
 </style>
 
@@ -16347,10 +16204,7 @@ async function loadMyMoments(){
                             art:r.song_art, preview:r.song_preview} : null
     }));
 
-    if(document.getElementById("profile").classList.contains("open") && profName===ME){
-      const pane=document.getElementById("arcPane") || document.querySelector("#profBody .arcPane");
-      if(pane){ pane.innerHTML=""; if(typeof renderMine==="function") renderMine(pane); }
-    }
+    if(document.getElementById("profile").classList.contains("open")) renderProfile();
   }catch(e){ console.warn('kendi anlarım:', e); }
 }
 
@@ -16910,29 +16764,29 @@ async function openProfile(name){
     closeMainPanels();
   }
 
-  const ayniKisi = zatenAcik && profName===name;
   profName=name;
-  if(!ayniKisi) renderProfile();
+  renderProfile();
   if(!zatenAcik) open("profile");
   else{
+    // içerik değişti: en üste dön
     const body=$("#profBody");
-    if(body && !ayniKisi) body.scrollTop=0;
+    if(body) body.scrollTop=0;
   }
   if(name===ME){
     loadMyMoments();
     try{ loadNotifs(); }catch(e){}
   }
-  statAvatarlari(name);
+  statAvatarlari(name);                   // sayaç kartlarına minik görseller
+  // gerçek profil verisini çek (an/takipçi/takip sayıları)
   const pdata=await loadProfileData(name);
-  if(pdata && profName===name){
-    if(typeof patchProfStats!=="function" || !patchProfStats(pdata)) renderProfile();
-  }
+  if(pdata && profName===name) renderProfile();
+  // gerçek takip durumunu çek
   if(name!==ME && window.__sb && window.__me){
     const uid=await idOfUsername(name);
     if(uid){
       const {data}=await window.__sb.rpc('is_following',{target:uid});
-      if(data===true && !following.has(name)){ following.add(name); if(profName===name && !patchFollowBtn(true)) renderProfile(); }
-      else if(data===false && following.has(name)){ following.delete(name); if(profName===name && !patchFollowBtn(false)) renderProfile(); }
+      if(data===true && !following.has(name)){ following.add(name); if(profName===name) renderProfile(); }
+      else if(data===false && following.has(name)){ following.delete(name); if(profName===name) renderProfile(); }
     }
   }
 }
@@ -17188,9 +17042,8 @@ function capStatusBar(){
     return (P && P.StatusBar) || (window.StatusBar) || null;
   }catch(e){ return null; }
 }
-/* Tam ekran YOK.
-   Sistem çubuğu görünür, WebView onun ALTINDAN başlar.
-   hide yok, overlay kapalı, --sat 0 (çünkü boşluk zaten sistemde). */
+/* TAM İMMERSİF: durum çubuğu tamamen gizli.
+   Saat, wifi, pil ikonları hiç görünmez; WebView tüm ekranı kaplar. */
 window.__statusBarLocked = window.__statusBarLocked || false;
 async function lockNativeStatusBar(){
   if(window.__statusBarLocked) return;
@@ -17200,12 +17053,7 @@ async function lockNativeStatusBar(){
   const SB=capStatusBar();
   if(!SB) return;
   try{
-    if(typeof SB.show==="function") await SB.show();
-  }catch(e){}
-  try{
-    if(typeof SB.setOverlaysWebView==="function"){
-      await SB.setOverlaysWebView({overlay:false});
-    }
+    if(typeof SB.hide==="function") await SB.hide();
   }catch(e){}
 }
 function syncStatusBar(){
@@ -17669,27 +17517,6 @@ function applyGalleryDensity(grid, count){
 }
 
 let _profActsRow = null;   // takip/mesaj satırı — en sona eklenir
-
-function patchProfStats(pdata){
-  const st=document.querySelector("#profBody .profstats");
-  if(!st) return false;
-  const own=profName===ME;
-  const u=own?meUser:(pdata||userOf(profName));
-  const moments=own?(meUser.moments|| (typeof myMoments==="function"?myMoments().length:0)):((u&&u.moments)||0);
-  const fw=own?(meUser.followers||0):((u&&u.followers)||0);
-  const fo=own?(meUser.follows||0):((u&&u.follows)||0);
-  const bs=st.querySelectorAll(".stat b");
-  if(bs[0]) bs[0].textContent=nf(moments);
-  if(bs[1]) bs[1].textContent=nf(fw);
-  if(bs[2]) bs[2].textContent=nf(fo);
-  return true;
-}
-function patchFollowBtn(on){
-  const b=document.querySelector("#profBody .pFollow, #profBody button.follow, #profBody .profActs button");
-  if(!b) return false;
-  b.classList.toggle("on", !!on);
-  return true;
-}
 
 function renderProfile(){
   if(typeof syncStatusBar==="function") syncStatusBar();
@@ -19773,11 +19600,8 @@ async function sendMedia(src, tur, sure){
     const icerik  = video ? (blob.type || "video/mp4") : "image/jpeg";
     const path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+uzanti;
 
-    const hudMsg=video?t("loading_video"):t("loading_photo","Fotoğraf yükleniyor…");
-    setDlHud(hudMsg, 4);
-    const up=await uploadWithProgress('moments', path, blob, icerik, (p)=>setDlHud(hudMsg, p));
+    const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik});
     if(up.error) throw up.error;
-    hideDlHud();
     const {data,error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'media',msg_media:path});
     if(error){
       localMsg._failed=true;
@@ -19864,52 +19688,6 @@ function setDlHud(msg, pct, done){
   if(done) setTimeout(()=>el.classList.remove("on"), 2200);
 }
 function hideDlHud(){ const el=document.getElementById("dlHud"); if(el) el.classList.remove("on"); }
-
-async function uploadWithProgress(bucket, path, blob, contentType, onPct){
-  const sb=window.__sb;
-  if(!sb) throw new Error("no sb");
-  const report=(p)=>{ try{ if(onPct) onPct(Math.max(0,Math.min(99,p))); }catch(_){} };
-  report(2);
-  let token=null, base=null;
-  try{
-    const ses=await sb.auth.getSession();
-    token=ses && ses.data && ses.data.session && ses.data.session.access_token;
-  }catch(_){}
-  try{ base=sb.storageUrl || (sb.supabaseUrl && (sb.supabaseUrl+"/storage/v1")); }catch(_){}
-  if(!base || !token || typeof XMLHttpRequest==="undefined"){
-    const up=await sb.storage.from(bucket).upload(path, blob, { contentType: contentType, upsert:false });
-    if(up.error) throw up.error;
-    report(99);
-    return up;
-  }
-  const url=String(base).replace(/\/$/,"")+"/object/"+bucket+"/"+path.split("/").map(encodeURIComponent).join("/");
-  const up=await new Promise((ok,bad)=>{
-    const xhr=new XMLHttpRequest();
-    xhr.open("POST", url);
-    xhr.setRequestHeader("Authorization", "Bearer "+token);
-    xhr.setRequestHeader("apikey", token);
-    xhr.setRequestHeader("Content-Type", contentType||blob.type||"application/octet-stream");
-    xhr.setRequestHeader("x-upsert", "false");
-    xhr.upload.onprogress=(ev)=>{
-      if(ev && ev.lengthComputable && ev.total){
-        report(4 + Math.round((ev.loaded/ev.total)*90));
-      }
-    };
-    xhr.onerror=()=>bad(new Error("network"));
-    xhr.onload=()=>{
-      if(xhr.status>=200 && xhr.status<300){
-        let data=null;
-        try{ data=JSON.parse(xhr.responseText||"{}"); }catch(_){ data={Key:path}; }
-        ok({ data:data, error:null });
-      }else{
-        bad(new Error("upload "+xhr.status));
-      }
-    };
-    xhr.send(blob);
-  });
-  report(99);
-  return up;
-}
 function commentsOn(it){ return !it || it.commentsOn!==false; }
 function downloadsOn(it){ return !it || it.downloadsOn!==false; }
 
@@ -19994,43 +19772,22 @@ async function _saveBlob(blob, name, picker){
     const P=(cap.Plugins)||{};
     const FS=P.Filesystem;
     const Share=P.Share;
-    if(!FS || !FS.writeFile){
-      throw new Error("Filesystem plugin yok");
-    }
-    const b64=await blobToBase64(blob);
-    const dirs=[];
-    if(FS.Directory){
-      if(FS.Directory.Documents) dirs.push(FS.Directory.Documents);
-      if(FS.Directory.External) dirs.push(FS.Directory.External);
-      if(FS.Directory.Data) dirs.push(FS.Directory.Data);
-      if(FS.Directory.Cache) dirs.push(FS.Directory.Cache);
-    }
-    dirs.push("DOCUMENTS","CACHE");
-    let uri=null, lastErr=null;
-    const path="klipsy/"+name;
-    for(const directory of dirs){
-      try{
-        try{ await FS.mkdir({ path:"klipsy", directory, recursive:true }); }catch(_){}
-        const wr=await FS.writeFile({ path, data:b64, directory, recursive:true });
-        uri=(wr && (wr.uri||wr.fileURI)) || null;
-        if(!uri && FS.getUri){
-          const g=await FS.getUri({ path, directory });
-          uri=g && (g.uri||g.fileURI);
-        }
-        if(uri) break;
-      }catch(e){ lastErr=e; }
-    }
-    if(!uri) throw lastErr || new Error("native write failed");
-    if(Share && Share.share){
-      try{
-        await Share.share({ title:name, files:[uri], dialogTitle:t("dl_wm") });
+    if(FS && FS.writeFile){
+      const b64=await blobToBase64(blob);
+      const dir=(FS.Directory && FS.Directory.Cache) || "CACHE";
+      const wr=await FS.writeFile({ path:name, data:b64, directory:dir });
+      const uri=wr && (wr.uri||wr.fileURI);
+      if(Share && Share.share && uri){
+        await Share.share({ title:name, url:uri, dialogTitle:t("dl_wm") });
         return;
-      }catch(e){
-        try{ await Share.share({ title:name, url:uri, dialogTitle:t("dl_wm") }); return; }
-        catch(_){ console.warn("Share", e); }
       }
     }
-    return;
+    if(Share && Share.share){
+      const href=URL.createObjectURL(blob);
+      try{ await Share.share({ title:name, url:href, dialogTitle:t("dl_wm") }); }
+      finally{ setTimeout(()=>URL.revokeObjectURL(href), 8000); }
+      return;
+    }
   }
   const href=URL.createObjectURL(blob);
   const a=document.createElement("a");
@@ -21158,10 +20915,10 @@ async function post(src,kind,mood,where,note,extra){
   else allItems = items.slice();
   render();
   requestAnimationFrame(()=>{feed.scrollTop=0;activeIdx=-1;syncActive();resumeAt=Date.now()+RESUME*2;});
-  if(!sb||!me){ toast(t("err_offline_local")); return; }
+  // NOT: "yükleniyor" bildirimi kaldırıldı — içerik zaten anında akışta görünüyor,
+  // yükleme arka planda tamamlanıyor. Sadece sonuç bildiriliyor.
 
-  const hudMsg = kind==="video" ? t("loading_video") : t("loading_photo","Fotoğraf yükleniyor…");
-  setDlHud(hudMsg, 3);
+  if(!sb||!me){ toast(t("err_offline_local")); return; }
 
   try{
     // 1) medyayı depoya yükle
@@ -21182,17 +20939,19 @@ async function post(src,kind,mood,where,note,extra){
 
     if(!blob || blob.size < 1024){
       console.warn("[Klipsy] medya hazırlanamadı:", blob ? blob.size : "yok");
-      hideDlHud();
       toast(t("rec_failed"));
       items = items.filter(x=>x.id !== tmpId);
       allItems = (allItems||[]).filter(x=>x.id !== tmpId);
       render();
       return;
     }
-    setDlHud(hudMsg, 8);
+    // Gerçek tür ve uzantı (mp4 mi webm mi) kaydın kendisinden alınır
     const mt = mediaTipi(blob, kind);
     const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
-    const up = await uploadWithProgress('moments', path, blob, mt.tip, (p)=>setDlHud(hudMsg, p));
+    const up = await sb.storage.from('moments').upload(path, blob, {
+      contentType: mt.tip,
+      upsert:false
+    });
     if(up.error) throw up.error;
 
     // 1b) video ise kapak resmi üret ve yükle (ızgarada video yerine bu gösterilecek)
@@ -21203,8 +20962,9 @@ async function post(src,kind,mood,where,note,extra){
         const posterBlob = (extra && extra.cover) ? extra.cover : await makeVideoPoster(src);
         if(posterBlob){
           posterPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_p.jpg";
-          setDlHud(hudMsg, 91);
-          const pu = await uploadWithProgress('moments', posterPath, posterBlob, "image/jpeg", (p)=>setDlHud(hudMsg, 90+p*0.04));
+          const pu = await sb.storage.from('moments').upload(posterPath, posterBlob, {
+            contentType:"image/jpeg", upsert:false
+          });
           if(pu.error) posterPath=null;
         }
       }catch(e){ posterPath=null; }
@@ -21220,8 +20980,9 @@ async function post(src,kind,mood,where,note,extra){
         const tb = await makeThumb(thumbKaynak, 128);
         if(tb){
           thumbPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_t.jpg";
-          setDlHud(hudMsg, 95);
-          const tu = await uploadWithProgress('moments', thumbPath, tb, "image/jpeg", (p)=>setDlHud(hudMsg, 94+p*0.03));
+          const tu = await sb.storage.from('moments').upload(thumbPath, tb, {
+            contentType:"image/jpeg", upsert:false
+          });
           if(tu.error) thumbPath = null;
         }
       }
@@ -21282,10 +21043,8 @@ async function post(src,kind,mood,where,note,extra){
 
     render(); activeIdx=-1; syncActive();
     requestAnimationFrame(()=>{ try{ feed.scrollTop=0; syncActive(); }catch(e){} });
-    setDlHud(kind==="video"?t("ok_video_in_feed"):t("ok_photo_in_feed"), 100, true);
     toast(kind==="video"?t("ok_video_in_feed"):t("ok_photo_in_feed"));
   }catch(e){
-    hideDlHud();
     // Yükleme başarısız (internet yok, sunucu hatası vs.)
     // An KAYBOLMAZ: taslak olarak cihaza kaydedilir, bağlantı gelince gönderilir.
     local._failed=true;

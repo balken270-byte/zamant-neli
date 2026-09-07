@@ -19899,8 +19899,11 @@ async function sendMedia(src, tur, sure){
     const icerik  = video ? (blob.type || "video/mp4") : "image/jpeg";
     const path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+uzanti;
 
-    const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik});
+    const hudMsg=video?t("loading_video"):t("loading_photo","Fotoğraf yükleniyor…");
+    setDlHud(hudMsg, 4);
+    const up=await uploadWithProgress('moments', path, blob, icerik, (p)=>setDlHud(hudMsg, p));
     if(up.error) throw up.error;
+    hideDlHud();
     const {data,error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'media',msg_media:path});
     if(error){
       localMsg._failed=true;
@@ -19987,6 +19990,52 @@ function setDlHud(msg, pct, done){
   if(done) setTimeout(()=>el.classList.remove("on"), 2200);
 }
 function hideDlHud(){ const el=document.getElementById("dlHud"); if(el) el.classList.remove("on"); }
+
+async function uploadWithProgress(bucket, path, blob, contentType, onPct){
+  const sb=window.__sb;
+  if(!sb) throw new Error("no sb");
+  const report=(p)=>{ try{ if(onPct) onPct(Math.max(0,Math.min(99,p))); }catch(_){} };
+  report(2);
+  let token=null, base=null;
+  try{
+    const ses=await sb.auth.getSession();
+    token=ses && ses.data && ses.data.session && ses.data.session.access_token;
+  }catch(_){}
+  try{ base=sb.storageUrl || (sb.supabaseUrl && (sb.supabaseUrl+"/storage/v1")); }catch(_){}
+  if(!base || !token || typeof XMLHttpRequest==="undefined"){
+    const up=await sb.storage.from(bucket).upload(path, blob, { contentType: contentType, upsert:false });
+    if(up.error) throw up.error;
+    report(99);
+    return up;
+  }
+  const url=String(base).replace(/\/$/,"")+"/object/"+bucket+"/"+path.split("/").map(encodeURIComponent).join("/");
+  const up=await new Promise((ok,bad)=>{
+    const xhr=new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.setRequestHeader("Authorization", "Bearer "+token);
+    xhr.setRequestHeader("apikey", token);
+    xhr.setRequestHeader("Content-Type", contentType||blob.type||"application/octet-stream");
+    xhr.setRequestHeader("x-upsert", "false");
+    xhr.upload.onprogress=(ev)=>{
+      if(ev && ev.lengthComputable && ev.total){
+        report(4 + Math.round((ev.loaded/ev.total)*90));
+      }
+    };
+    xhr.onerror=()=>bad(new Error("network"));
+    xhr.onload=()=>{
+      if(xhr.status>=200 && xhr.status<300){
+        let data=null;
+        try{ data=JSON.parse(xhr.responseText||"{}"); }catch(_){ data={Key:path}; }
+        ok({ data:data, error:null });
+      }else{
+        bad(new Error("upload "+xhr.status+" "+String(xhr.responseText||"").slice(0,80)));
+      }
+    };
+    xhr.send(blob);
+  });
+  report(99);
+  return up;
+}
 function commentsOn(it){ return !it || it.commentsOn!==false; }
 function downloadsOn(it){ return !it || it.downloadsOn!==false; }
 
@@ -21235,10 +21284,10 @@ async function post(src,kind,mood,where,note,extra){
   feedPrependLocal(local);
   render();
   requestAnimationFrame(()=>{feed.scrollTop=0;activeIdx=-1;syncActive();resumeAt=Date.now()+RESUME*2;});
-  // NOT: "yükleniyor" bildirimi kaldırıldı — içerik zaten anında akışta görünüyor,
-  // yükleme arka planda tamamlanıyor. Sadece sonuç bildiriliyor.
-
   if(!sb||!me){ toast(t("err_offline_local")); return; }
+
+  const hudMsg = kind==="video" ? t("loading_video") : t("loading_photo","Fotoğraf yükleniyor…");
+  setDlHud(hudMsg, 3);
 
   try{
     // 1) medyayı depoya yükle
@@ -21259,18 +21308,16 @@ async function post(src,kind,mood,where,note,extra){
 
     if(!blob || blob.size < 1024){
       console.warn("[Klipsy] medya hazırlanamadı:", blob ? blob.size : "yok");
+      hideDlHud();
       toast(t("rec_failed"));
       feedRemoveLocal(tmpId);
       render();
       return;
     }
-    // Gerçek tür ve uzantı (mp4 mi webm mi) kaydın kendisinden alınır
+    setDlHud(hudMsg, 8);
     const mt = mediaTipi(blob, kind);
     const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
-    const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: mt.tip,
-      upsert:false
-    });
+    const up = await uploadWithProgress('moments', path, blob, mt.tip, (p)=>setDlHud(hudMsg, p));
     if(up.error) throw up.error;
 
     // 1b) video ise kapak resmi üret ve yükle (ızgarada video yerine bu gösterilecek)
@@ -21281,9 +21328,8 @@ async function post(src,kind,mood,where,note,extra){
         const posterBlob = (extra && extra.cover) ? extra.cover : await makeVideoPoster(src);
         if(posterBlob){
           posterPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_p.jpg";
-          const pu = await sb.storage.from('moments').upload(posterPath, posterBlob, {
-            contentType:"image/jpeg", upsert:false
-          });
+          setDlHud(hudMsg, 91);
+          const pu = await uploadWithProgress('moments', posterPath, posterBlob, "image/jpeg", (p)=>setDlHud(hudMsg, 90+p*0.04));
           if(pu.error) posterPath=null;
         }
       }catch(e){ posterPath=null; }
@@ -21299,9 +21345,8 @@ async function post(src,kind,mood,where,note,extra){
         const tb = await makeThumb(thumbKaynak, 128);
         if(tb){
           thumbPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_t.jpg";
-          const tu = await sb.storage.from('moments').upload(thumbPath, tb, {
-            contentType:"image/jpeg", upsert:false
-          });
+          setDlHud(hudMsg, 95);
+          const tu = await uploadWithProgress('moments', thumbPath, tb, "image/jpeg", (p)=>setDlHud(hudMsg, 94+p*0.03));
           if(tu.error) thumbPath = null;
         }
       }
@@ -21336,6 +21381,7 @@ async function post(src,kind,mood,where,note,extra){
       comments_on: !(extra && extra.commentsOn===false),
       downloads_on: !(extra && extra.downloadsOn===false)
     };
+    setDlHud(hudMsg, 98);
     const ins = await sb.from('moments').insert(row).select('id, created_at').single();
     if(ins.error) throw ins.error;
 
@@ -21362,8 +21408,10 @@ async function post(src,kind,mood,where,note,extra){
 
     render(); activeIdx=-1; syncActive();
     requestAnimationFrame(()=>{ try{ feed.scrollTop=0; syncActive(); }catch(e){} });
+    setDlHud(kind==="video"?t("ok_video_in_feed"):t("ok_photo_in_feed"), 100, true);
     toast(kind==="video"?t("ok_video_in_feed"):t("ok_photo_in_feed"));
   }catch(e){
+    hideDlHud();
     // Yükleme başarısız (internet yok, sunucu hatası vs.)
     // An KAYBOLMAZ: taslak olarak cihaza kaydedilir, bağlantı gelince gönderilir.
     local._failed=true;

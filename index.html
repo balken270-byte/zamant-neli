@@ -17202,10 +17202,19 @@ async function lockNativeStatusBar(){
   }catch(e){}
   try{
     if(typeof SB.setOverlaysWebView==="function"){
-      /* overlay AÇIK: sistem çubuğu içeriğin ÜSTÜNDE durur, WebView
-         boyu değişmez. hide/show yok → titreme yok.
-         Akış fotoğrafı kenara kadar gider; başlık --sat ile aşağıda kalır. */
-      await SB.setOverlaysWebView({overlay:true});
+      /* PLATFORM FARKI:
+         iOS'ta env(safe-area-inset-top) gerçek çentik/durum çubuğu yüksekliğini
+         verir, bu yüzden overlay açık olsa da başlık --sat ile doğru yere iner.
+         Android'de ise Capacitor WebView'i env(safe-area-inset-top) değerini
+         DOLDURMUYOR (her zaman 0 kalıyor). overlay:true verince sistem çubuğu
+         içeriğin üstüne biniyor ama --sat=0 olduğundan başlık onu telafi
+         edemiyor ve profil/kullanıcı adı saatin üstüne çakışıyordu (PWA'da
+         böyle bir sorun yok çünkü tarayıcıda "durum çubuğu" kavramı zaten
+         ayrı bir alan). Bu yüzden Android'de overlay'i KAPALI tutuyoruz:
+         sistem durum çubuğu kendi alanını ayırsın, WebView onun altından
+         başlasın — tıpkı PWA'daki gibi. */
+      const plat = (window.Capacitor && window.Capacitor.getPlatform) ? window.Capacitor.getPlatform() : "";
+      await SB.setOverlaysWebView({overlay: plat!=="android"});
     }
   }catch(e){}
   try{

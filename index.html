@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.18</title>
+<title>Klipsy 3.3.19</title>
 <script src="klipsy-kamera.js?v=3.3.18"></script>
 <script>
 /* ============================================================
@@ -17166,10 +17166,9 @@ async function lockNativeStatusBar(){
   }catch(e){}
   if(!SB) return;
   try{ if(typeof SB.show==="function") await SB.show(); }catch(e){}
-  /* overlay AÇIK: saat web içeriğinin üstünde durur, --sat ile boşluk bırakılır.
-     overlay kapatılınca bazı Android sürümlerinde saat tamamen kayboluyordu. */
+  /* overlay KAPALI: saat sistem şeridinde kalır, akış yukarı kaymaz. */
   try{
-    if(typeof SB.setOverlaysWebView==="function") await SB.setOverlaysWebView({overlay:true});
+    if(typeof SB.setOverlaysWebView==="function") await SB.setOverlaysWebView({overlay:false});
   }catch(e){}
   window.__statusBarLocked = true;
 }
@@ -17225,19 +17224,12 @@ function syncStatusBar(){
   const bar=document.getElementById('sysBarBg');
   if(bar) bar.style.background = color;
 
-  /* --sat'ı sıfırlama. Sistem saatine yer bırak. */
-  document.documentElement.style.removeProperty('--sat');
+  /* overlay kapalı: sistem çubuğu webview dışında. Extra --sat akışı kaydırır. */
   if(isNativeApp()){
-    const applySat=()=>{
-      const computed=getComputedStyle(document.documentElement).getPropertyValue('--sat').trim();
-      const n=parseFloat(computed);
-      if(!computed || computed==='0px' || !isFinite(n) || n<12){
-        document.documentElement.style.setProperty('--sat','28px');
-      }
-    };
-    applySat();
+    document.documentElement.style.setProperty('--sat','0px');
+    const barEl=document.getElementById('sysBarBg');
+    if(barEl) barEl.style.height='0px';
     Promise.resolve(lockNativeStatusBar()).then(()=>{
-      applySat();
       applyNativeStatusBarColor(color, bgIsLight);
     }).catch(()=>{});
     applyNativeStatusBarColor(color, bgIsLight);
@@ -19942,7 +19934,7 @@ async function _writeBlobNative(FS, blob, path, directory){
   }catch(e){}
   return { uri, directory:dir, path };
 }
-async function _saveBlob(blob, name, picker){
+async function _saveBlob(blob, name, picker, sourceUrl){
   if(!blob) throw new Error("empty blob");
   if(picker){
     const wr=await picker.createWritable();
@@ -19956,43 +19948,45 @@ async function _saveBlob(blob, name, picker){
     const FS=P.Filesystem;
     const Share=P.Share;
     const Media=P.Media;
+    const Browser=P.Browser;
     const safeName=String(name||("klipsy-"+Date.now())).replace(/[^a-zA-Z0-9._-]/g,"_");
-    const isVid=/\.mp4$|\.webm$|video\//i.test(safeName+(blob.type||""));
+    const isVid=/\.(mp4|webm)$/i.test(safeName) || /video\//i.test(blob.type||"");
+    let lastErr=null, uri=null;
+    const dirs = FS && FS.Directory
+      ? [FS.Directory.Cache||"CACHE", FS.Directory.Data||"DATA", FS.Directory.Documents||"DOCUMENTS"]
+      : ["CACHE","DATA"];
     if(FS && FS.writeFile){
-      const written=await _writeBlobNative(FS, blob, "klipsy/"+safeName, (FS.Directory && FS.Directory.Cache) || "CACHE");
-      const uri=written && written.uri;
-      if(Media && uri){
+      for(const dir of dirs){
         try{
-          if(isVid && typeof Media.saveVideo==="function"){
-            await Media.saveVideo({ path:uri, filePath:uri, album:"Klipsy" });
-            return;
+          const written=await _writeBlobNative(FS, blob, "Download/"+safeName, dir);
+          uri = written && written.uri;
+          if(!uri && FS.getUri){
+            try{ const g=await FS.getUri({path:"Download/"+safeName, directory:dir}); uri=g&&g.uri; }catch(e){}
           }
-          if(!isVid && typeof Media.savePhoto==="function"){
-            await Media.savePhoto({ path:uri, filePath:uri, album:"Klipsy" });
-            return;
+          if(Media && uri){
+            try{
+              if(isVid && Media.saveVideo){ await Media.saveVideo({path:uri, filePath:uri, album:"Klipsy"}); return; }
+              if(!isVid && Media.savePhoto){ await Media.savePhoto({path:uri, filePath:uri, album:"Klipsy"}); return; }
+            }catch(e){ lastErr=e; }
           }
-        }catch(e){ console.warn("media save", e); }
+          if(Share && Share.share && uri){
+            try{
+              await Share.share({ title:safeName, files:[uri], dialogTitle:t("dl_wm") });
+              return;
+            }catch(e){ lastErr=e; }
+          }
+          if(uri) return;
+        }catch(e){ lastErr=e; }
       }
-      if(Share && Share.share && uri){
-        try{
-          await Share.share({ title:safeName, files:[uri], dialogTitle:t("dl_wm") });
-          return;
-        }catch(e){ console.warn("share files", e); }
-      }
-      /* Documents'e ikinci kopya — paylaşım penceresi olmasa da dosya kalsın */
-      try{
-        const docs=(FS.Directory && (FS.Directory.Documents||FS.Directory.DATA)) || "DOCUMENTS";
-        await _writeBlobNative(FS, blob, safeName, docs);
-        return;
-      }catch(e){ console.warn("docs write", e); }
-      if(uri) return;
     }
-    if(Share && Share.share){
-      try{
-        await Share.share({ title:safeName, text:safeName, dialogTitle:t("dl_wm") });
-      }catch(e){}
+    const httpUrl = (sourceUrl && /^https?:/i.test(sourceUrl)) ? sourceUrl : null;
+    if(Share && Share.share && httpUrl){
+      try{ await Share.share({ title:safeName, url:httpUrl, dialogTitle:t("dl_wm") }); return; }catch(e){ lastErr=e; }
     }
-    throw new Error("apk save failed");
+    if(Browser && Browser.open && httpUrl){
+      try{ await Browser.open({ url:httpUrl }); return; }catch(e){ lastErr=e; }
+    }
+    throw (lastErr || new Error("apk save failed"));
   }
   const href=URL.createObjectURL(blob);
   const a=document.createElement("a");
@@ -20028,7 +20022,7 @@ async function _dlImageWm(it, picker, name){
   paintWm(ctx,c.width,c.height,it.who||ME,null);
   const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.92));
   if(!blob) throw new Error('blob');
-  await _saveBlob(blob, name||('klipsy-'+(it.id||Date.now()).toString().slice(0,8)+'.jpg'), picker);
+  await _saveBlob(blob, name||('klipsy-'+(it.id||Date.now()).toString().slice(0,8)+'.jpg'), picker, it.src||it.poster);
 }
 async function _fetchMediaBlob(url){
   const r=await fetch(url, {mode:"cors", cache:"no-store"});
@@ -20045,7 +20039,7 @@ async function _dlVideoWm(it, picker, name){
   setDlHud(t("dl_fetch"), 90);
   const ext=(raw.type&&raw.type.indexOf("webm")>=0)?"webm":"mp4";
   const fname=name ? name.replace(/\.[a-z0-9]+$/i,"."+ext) : ("klipsy-"+(it.id||Date.now()).toString().slice(0,8)+"."+ext);
-  await _saveBlob(raw, fname, picker);
+  await _saveBlob(raw, fname, picker, it.src);
 }
 
 async function toggleMomentFlag(it, field, val){

@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
-html[data-theme="light"],html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.20</title>
+html[data-theme="light"] body{background:#FFFFFF}</style>
+<title>Klipsy 3.3.21</title>
 <script src="klipsy-kamera.js?v=3.3.18"></script>
 <script>
 /* ============================================================
@@ -17238,14 +17238,8 @@ function syncStatusBar(){
   const tabId=_activeTabId();
   const lightTabs=["tabMsg","tabProfile","tabTime"];
   const onLightTab = lightTabs.includes(tabId);
-  /* Akış + kamera + giriş: siyah. Diğer tüm yerler: beyaz.
-     Saat gizlenmez — ikon rengi arkaplana göre seçilir. */
-  let color, bgIsLight;
-  if(onGate || onDarkScreen || (!onPanel && !onLightTab)){
-    color='#08080C'; bgIsLight=false;
-  }else{
-    color='#FFFFFF'; bgIsLight=true;
-  }
+  /* Üst sistem çubuğu her ekranda siyah, saat görünür (açık ikon). */
+  let color='#08080C', bgIsLight=false;
   if(tc) tc.setAttribute('content', color);
   document.documentElement.classList.toggle('sb-white', bgIsLight);
   document.documentElement.classList.toggle('sb-black', !bgIsLight);
@@ -19976,6 +19970,13 @@ async function saveToDevice(blob, name, picker, httpUrl){
   }
   const {native, FS, Share, Media}=_nativePlugins();
   if(!native){ _webDownload(blob, name); return; }
+
+  try{
+    if(Media && Media.requestPermissions) await Media.requestPermissions();
+  }catch(e){}
+  try{
+    if(FS && FS.requestPermissions) await FS.requestPermissions();
+  }catch(e){}
 
   const file=String(name||("klipsy-"+Date.now())).replace(/[^a-zA-Z0-9._-]/g,"_");
   const video=/\.(mp4|webm)$/i.test(file) || /video\//i.test((blob&&blob.type)||"");
@@ -22831,7 +22832,7 @@ async function bildirimKapat(){
 async function requestNativePermissions(){
   const cap = window.Capacitor;
   if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;   // tarayıcıda değil
-  try{ if(localStorage.getItem('klipsy_perm_asked')==='1') return; }catch(e){}
+  try{ if(localStorage.getItem('klipsy_perm_asked')==='1' && localStorage.getItem('klipsy_perm_media')==='1') return; }catch(e){}
 
   const P = cap.Plugins || {};
   // Kamera + mikrofon
@@ -22846,8 +22847,22 @@ async function requestNativePermissions(){
       await P.Geolocation.requestPermissions();
     }
   }catch(e){}
+  // Galeri / dosya — indirme için
+  try{
+    if(P.Media && P.Media.requestPermissions){
+      await P.Media.requestPermissions();
+    }
+  }catch(e){}
+  try{
+    if(P.Filesystem && P.Filesystem.requestPermissions){
+      await P.Filesystem.requestPermissions();
+    }
+  }catch(e){}
 
-  try{ localStorage.setItem('klipsy_perm_asked','1'); }catch(e){}
+  try{
+    localStorage.setItem('klipsy_perm_asked','1');
+    localStorage.setItem('klipsy_perm_media','1');
+  }catch(e){}
 }
 setTimeout(()=>{ try{ requestNativePermissions(); }catch(e){} }, 1500);
 

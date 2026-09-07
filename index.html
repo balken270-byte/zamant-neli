@@ -9109,8 +9109,8 @@ html.native button,html.native .tab{touch-action:manipulation}
 }
 
 .post{
-  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
-  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - 0.35rem);
+  height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.35rem);
+  min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.35rem);
   border-radius:1.125rem;
 }
 
@@ -9122,53 +9122,18 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 
 <style id="feed-v9-post-extends-behind-nav">
-/* V3 baz alınmıştır.
-   Sadece gönderi yüksekliği navigasyon yüksekliği kadar uzatılır.
-   Böylece 2. gönderi ilk ekranda görünmez; navigasyon kartın üstünde kalır. */
-.post{
-  height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-  );
-  min-height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-  );
-  flex:none;
-}
+/* KALDIRILDI: gönderiyi navigasyonun arkasına kadar uzatan eski hile
+   (--tab ve --sab'ı height'a EKLEYEN sürüm) --vh'nin native tarafta geç
+   netleşmesiyle çakışıp bir sonraki gönderinin navigasyonun oraya
+   sızmasına yol açıyordu. Artık yukarıdaki tek kural (--tab ve --sab
+   height'tan ÇIKARILARAK) kartı tam olarak navigasyonun üstünde,
+   taşmadan bitiriyor; bu blok bilerek boş bırakıldı. */
 </style>
 
 
 <style id="feed-v10-final-sizing">
-/* V9 bazlı: gönderiyi çok az daha uzat */
-.post{
-  height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-    + 0.75rem
-  );
-  min-height:calc(
-    var(--vh,100dvh)
-    - var(--sat)
-    - var(--top)
-    - 0.35rem
-    + var(--tab)
-    + var(--sab)
-    + 0.75rem
-  );
-}
+/* KALDIRILDI: yukarıdaki v9 hilesinin üzerine 0.75rem daha ekleyen sürüm.
+   Aynı sebeple boş bırakıldı — bkz. feed-v9-post-extends-behind-nav. */
 
 /* Görseli kartın sınırları içinde tut; kenarlardan taşma/kırpılma olmasın */
 .pmedia img,

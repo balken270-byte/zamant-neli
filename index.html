@@ -17148,17 +17148,22 @@ async function lockNativeStatusBar(){
    yazısının koyu mu açık mı olacağını) o an açık olan ekrana göre
    ayarlar. syncStatusBar() zaten bu kararı (hangi ekranda hangi renk)
    veriyordu — burada sadece bunu native tarafa da uyguluyoruz. */
-function applyNativeStatusBarColor(color, bgIsLight){
+async function applyNativeStatusBarColor(color, bgIsLight){
   if(!isNativeApp()) return;
   const SB=capStatusBar();
-  if(!SB) return;
+  if(!SB){ __dbg('applyNativeStatusBarColor: SB yok'); return; }
   try{
-    if(typeof SB.setBackgroundColor==="function") SB.setBackgroundColor({color});
-  }catch(e){}
+    __dbg('setBackgroundColor çağrılıyor: ' + color);
+    if(typeof SB.setBackgroundColor==="function") await SB.setBackgroundColor({color});
+    __dbg('setBackgroundColor TAMAMLANDI');
+  }catch(e){ __dbg('setBackgroundColor HATA: ' + (e&&e.message||e)); }
   try{
     // arkaplan BEYAZSA ikonlar KOYU (Dark), arkaplan SİYAHSA ikonlar AÇIK (Light)
-    if(typeof SB.setStyle==="function") SB.setStyle({style: bgIsLight ? "DARK" : "LIGHT"});
-  }catch(e){}
+    const st = bgIsLight ? "DARK" : "LIGHT";
+    __dbg('setStyle çağrılıyor: ' + st);
+    if(typeof SB.setStyle==="function") await SB.setStyle({style: st});
+    __dbg('setStyle TAMAMLANDI');
+  }catch(e){ __dbg('setStyle HATA: ' + (e&&e.message||e)); }
 }
 function syncStatusBar(){
   const tc=document.getElementById('__themeColor');

@@ -17106,7 +17106,7 @@ function __dbg(line){
     if(!box){
       box=document.createElement('div');
       box.id='__klipsyDbg';
-      box.style.cssText='position:fixed;left:4px;right:4px;top:4px;z-index:2147483647;'+
+      box.style.cssText='position:fixed;left:4px;right:4px;bottom:4px;z-index:2147483647;'+
         'background:#000;color:#0f0;font:10px monospace;padding:6px 28px 6px 6px;border-radius:6px;'+
         'white-space:pre-wrap;opacity:.95;max-height:45vh;overflow:auto';
       const closeBtn=document.createElement('button');
@@ -17188,6 +17188,15 @@ function syncStatusBar(){
   else if(onPanel){ color = isLight ? '#FFFFFF' : '#0A0A0E'; bgIsLight = isLight; }
   else { color='#08080C'; bgIsLight=false; } // Akış
   if(tc) tc.setAttribute('content', color);
+
+  if(isNativeApp()){
+    const acikPaneller = panelIds.filter(id=>{
+      const el=document.getElementById(id);
+      return el && el.classList.contains("open");
+    });
+    __dbg('syncStatusBar → isLight='+isLight+' onGate='+!!onGate+' onDarkScreen='+onDarkScreen+
+      ' onPanel='+onPanel+' açıkPaneller=['+acikPaneller.join(',')+'] → color='+color);
+  }
 
   document.documentElement.style.setProperty('--sat','0px');
   if(isNativeApp()){

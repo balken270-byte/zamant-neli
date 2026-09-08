@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.25</title>
+<title>Klipsy 3.3.26</title>
 <script src="klipsy-kamera.js?v=3.3.18"></script>
 <script>
 /* ============================================================
@@ -17184,9 +17184,7 @@ function applyNativeStatusBarColor(color, bgIsLight){
   const cap=window.Capacitor;
   const P=(cap && cap.Plugins) || {};
   const SB=capStatusBar();
-  const iconStyle = "LIGHT"; /* siyah bar: saat/pil beyaz */
-  /* Android 15+ StatusBar.setBackgroundColor çoğu telefonda no-op.
-     Sende yüklü SafeArea eklentisi bar rengini boyayabiliyor. */
+  const iconStyle = bgIsLight ? "DARK" : "LIGHT";
   try{
     const SA=P.SafeArea;
     if(SA){
@@ -17195,14 +17193,14 @@ function applyNativeStatusBarColor(color, bgIsLight){
           config:{
             customColorsForSystemBars:true,
             statusBarColor:color,
-            statusBarContent: "light",
+            statusBarContent: bgIsLight ? "dark" : "light",
             navigationBarColor:"#08080C",
             navigationBarContent:"light"
           }
         });
       }
       if(typeof SA.setSystemBarsStyle==="function"){
-        SA.setSystemBarsStyle({ style:"DARK", type:"STATUS_BAR" });
+        SA.setSystemBarsStyle({ style: bgIsLight ? "LIGHT" : "DARK", type:"STATUS_BAR" });
       }
     }
   }catch(e){}
@@ -17241,8 +17239,14 @@ function syncStatusBar(){
   const tabId=_activeTabId();
   const lightTabs=["tabMsg","tabProfile","tabTime"];
   const onLightTab = lightTabs.includes(tabId);
-  /* Üst sistem çubuğu her ekranda siyah, saat görünür (açık ikon). */
-  let color='#08080C', bgIsLight=false;
+  /* Akış + kamera + giriş: siyah çubuk.
+     Profil / mesaj / zaman / ayarlar: açık çubuk. */
+  let color, bgIsLight;
+  if(onGate || onDarkScreen || (!onPanel && !onLightTab)){
+    color='#08080C'; bgIsLight=false;
+  }else{
+    color='#FFFFFF'; bgIsLight=true;
+  }
   if(tc) tc.setAttribute('content', color);
   document.documentElement.classList.toggle('sb-white', bgIsLight);
   document.documentElement.classList.toggle('sb-black', !bgIsLight);

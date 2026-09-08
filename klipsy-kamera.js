@@ -236,7 +236,7 @@
     const taban = {
       position: yonNative(durum.yon),
       toBack: true,
-      aspectMode: "contain",
+      aspectMode: "cover",
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,
@@ -273,8 +273,15 @@
       ? { g: sonuc.width, y: sonuc.height, x: sonuc.x, y0: sonuc.y }
       : null;
 
-    /* setPreviewSize çağrılmaz: Capgo varsayılanı ekran pikseli.
-       Elle 9:16 kutu altta beyaz boşluk bırakıyordu. */
+    /* Instagram hikâye: dikey 9:16 kutu, start'ta aspectRatio YOK
+       (width ile çakışır). Boyut sonra setPreviewSize. */
+    if (CP().setPreviewSize) {
+      try {
+        const w = Math.max(1, Math.round(window.innerWidth || 360));
+        const h = Math.max(1, Math.round(w * 16 / 9));
+        await CP().setPreviewSize({ x: 0, y: 0, width: w, height: h });
+      } catch (e) {}
+    }
 
     document.documentElement.classList.add("camNativeOn");
   }

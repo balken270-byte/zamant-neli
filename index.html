@@ -23692,6 +23692,23 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
       });
     }catch(e){}
 
+    document.addEventListener("visibilitychange", function(){
+      gecmis.push(new Date().toLocaleTimeString() + " — [SAYFA] visibilitychange -> " + document.visibilityState);
+      if(gecmis.length > 40) gecmis.shift();
+      guncelle();
+    });
+
+    try{
+      const c = window.Capacitor;
+      const cp = c && c.Plugins && c.Plugins.CameraPreview;
+      const bilgi = cp
+        ? ("tip=" + typeof cp + " start_tip=" + typeof cp.start + " anahtarlar=" + Object.keys(cp).join(","))
+        : "CameraPreview yok/undefined";
+      gecmis.push(new Date().toLocaleTimeString() + " — [TANI] Capacitor.Plugins.CameraPreview: " + bilgi);
+    }catch(e){
+      gecmis.push(new Date().toLocaleTimeString() + " — [TANI] hata: " + String(e));
+    }
+
     setInterval(guncelle, 500);
   }
   kur();

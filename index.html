@@ -19996,20 +19996,8 @@ function blobToDataUrl(blob){
 }
 
 function _dlDbg(msg, extra){
-  try{
-    let box=document.getElementById("dlDbg");
-    if(!box){
-      box=document.createElement("div");
-      box.id="dlDbg";
-      box.style.cssText="position:fixed;left:8px;right:8px;bottom:72px;z-index:2147483647;max-height:40vh;overflow:auto;background:#111;color:#7CFF9A;font:12px/1.4 ui-monospace,monospace;padding:10px;border-radius:10px;border:1px solid #3a3;white-space:pre-wrap;pointer-events:auto";
-      box.addEventListener("dblclick",()=>box.remove());
-      (document.body||document.documentElement).appendChild(box);
-    }
-    const line=new Date().toISOString().slice(11,19)+" "+msg+(extra!=null?(" "+String(extra).slice(0,180)):"");
-    box.textContent=(box.textContent?box.textContent+"\n":"")+line;
-    box.scrollTop=box.scrollHeight;
-    console.log("[dl]", msg, extra||"");
-  }catch(e){}
+  // Ekran üstü debug paneli kaldırıldı; sadece konsola yazılıyor.
+  try{ console.log("[dl]", msg, extra||""); }catch(e){}
 }
 
 function _nativePlugins(){

@@ -20038,51 +20038,55 @@ function _webDownload(blob, name){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(href), 8000);
 }
-/* Bazı cihazlarda getAlbums() ilk sırada sistemin salt-okunur klasörlerini
+/* Bazı cihazlarda getAlbums() gerçekten salt-okunur sistem klasörlerini
    (ör. /product/media/wallpaper) döndürebiliyor. Böyle bir identifier'ı
    albumIdentifier olarak Media.savePhoto'ya vermek "EROFS / Copy file not
-   found" hatasına yol açıyor. Bu yüzden sadece gerçek bir Klipsy albümü
-   varsa veya güvenle oluşturabiliyorsak identifier döndürüyoruz; aksi halde
-   null döndürüp plugin'in kendi varsayılan (Pictures/DCIM) konumunu
-   kullanmasına izin veriyoruz.
+   found" hatasına yol açıyor. Ama uygulamanın kendi public media klasörü
+   (ör. /storage/emulated/0/Android/media/<pkg>/Klipsy) tamamen normal ve
+   yazılabilir bir yoldur — bunu reddetmemeliyiz. Bu yüzden sadece bilinen
+   salt-okunur sistem bölümlerinin altındaki yolları eliyoruz.
 */
 function _looksLikeSystemPath(id){
   const s=String(id||"");
-  // Uygulamanın kendi paket adını içermeyen, / ile başlayan ham dosya
-  // yolları (ör. /product/..., /system/..., /vendor/...) güvenilmez kabul
-  // edilir; içerik URI'leri (content://) veya sayısal bucket id'ler geçerlidir.
-  return /^\//.test(s) && !/^content:\/\//i.test(s);
+  return /^\/(product|system|system_ext|vendor|apex|odm|oem)(\/|$)/i.test(s);
+}
+async function _findKlipsyAlbumId(list){
+  const hit=(list||[]).find(a=>/klipsy/i.test(String(a.name||a.title||"")));
+  const id=hit && (hit.identifier||hit.id);
+  return (id && !_looksLikeSystemPath(id)) ? id : null;
 }
 async function _mediaAlbumId(Media){
   if(!Media) return null;
+  let list=[];
   try{
     if(Media.getAlbums){
       const r=await Media.getAlbums();
-      const list=(r && (r.albums||r)) || [];
+      list=(r && (r.albums||r)) || [];
       _dlDbg("albums", list.length);
-      const hit=list.find(a=>/klipsy/i.test(String(a.name||a.title||"")));
-      const id=hit && (hit.identifier||hit.id);
-      if(id && !_looksLikeSystemPath(id)) return id;
-      if(id) _dlDbg("albums skip sistem yolu", id);
     }
   }catch(e){ _dlDbg("getAlbums hata", e && (e.message||e)); }
+  const id=await _findKlipsyAlbumId(list);
+  if(id) return id;
   try{
     if(Media.createAlbum){
       const c=await Media.createAlbum({ name:"Klipsy" });
       _dlDbg("createAlbum", JSON.stringify(c||{}).slice(0,120));
       const cid=c && (c.identifier||c.id);
       if(cid && !_looksLikeSystemPath(cid)) return cid;
-      if(Media.getAlbums){
-        const r2=await Media.getAlbums();
-        const list=(r2 && (r2.albums||r2)) || [];
-        const hit=list.find(a=>/klipsy/i.test(String(a.name||"")));
-        const id2=hit && (hit.identifier||hit.id);
-        if(id2 && !_looksLikeSystemPath(id2)) return id2;
-      }
     }
   }catch(e){ _dlDbg("createAlbum hata", e && (e.message||e)); }
-  /* Güvenli bir Klipsy albümü bulunamadı: albumIdentifier vermeden devam
-     et, plugin varsayılan galeri konumuna kaydetsin. */
+  /* createAlbum identifier döndürmedi (bazı cihazlarda {} döner) ya da
+     "Album already exists" hatası verdi: albüm listesini tazeleyip
+     Klipsy'yi tekrar ara — artık gerçekten oluşmuş olmalı. */
+  try{
+    if(Media.getAlbums){
+      const r2=await Media.getAlbums();
+      const list2=(r2 && (r2.albums||r2)) || [];
+      _dlDbg("albums2", list2.length);
+      const id2=await _findKlipsyAlbumId(list2);
+      if(id2) return id2;
+    }
+  }catch(e){ _dlDbg("getAlbums2 hata", e && (e.message||e)); }
   return null;
 }
 async function saveToDevice(blob, name, picker, httpUrl){

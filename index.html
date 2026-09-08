@@ -5632,7 +5632,7 @@ svg{display:block}
 :focus-visible{outline:0.125rem solid rgba(255,255,255,.7);outline-offset:0.125rem}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
 
-#phone{position:relative;width:100%;height:100%;max-width:26.875rem;margin:0 auto;background:#000;overflow:hidden;isolation:isolate;visibility:hidden}
+#phone{position:relative;width:100%;height:calc(100% - var(--sat,0px));top:var(--sat,0px);max-width:26.875rem;margin:0 auto;background:#000;overflow:hidden;isolation:isolate;visibility:hidden}
 @media (min-width:520px) and (min-height:720px){
   body{background:#050507;display:grid;place-items:center}
   #phone{height:min(57.5rem,94vh);border-radius:2rem;border:1px solid rgba(255,255,255,.10);box-shadow:0 2.5rem 6.25rem -2.5rem #000}
@@ -10498,8 +10498,10 @@ function setSheetH(){
     Math.round(Math.min(window.innerHeight*0.55,500) - 68)+"px");   // bir yorum satırı kadar kısa
 }
 function setVH(){
-  const h=feed.clientHeight||$("#phone").clientHeight||window.innerHeight;
-  document.documentElement.style.setProperty("--vh",h+"px");
+  /* --vh = gorunur alan yuksekligi. ASLA bir elemandan okunmaz:
+     #feed yuksekligi --sat/--top/--tab e bagli, dongusel olur. */
+  const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  document.documentElement.style.setProperty("--vh", Math.round(h)+"px");
 }
 setSheetH();
 setVH();
@@ -23923,5 +23925,6 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   }
 })();
 </script>
+
 </body>
 </html>

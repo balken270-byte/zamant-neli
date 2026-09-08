@@ -53,9 +53,9 @@ public class MainActivity extends BridgeActivity
         // zorunlu edge-to-edge modda tutuyordu (kameradan bağımsız, kalıcı olarak).
         setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
-        Window w = getWindow();
-        w.setStatusBarColor(0xFF08080C);
-        w.setNavigationBarColor(0xFF08080C);
+        // Pencere/cubuk rengi BURADAN ayarlanmaz.
+        // targetSdk 35+ icin setStatusBarColor/setNavigationBarColor no-op.
+        // Renk: CSS #sysBarBg + SafeArea eklentisi.
     }
 
     @Override

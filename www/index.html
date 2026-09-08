@@ -5585,7 +5585,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
   --top:3.25rem; --tab:3.025rem;
   --sheetH:calc(min(55vh,31.25rem) - 4.25rem);   /* uygulama açılınca yeniden hesaplanır */
-  --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
   --z-tab:32; --z-notif:50; --z-time:52; --z-comments:60; --z-cam:70; --z-toast:80;
@@ -9361,7 +9361,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 /* Native durum çubuğu boyası — saat/pil her zaman bu şeridin üstünde kalır */
 #sysBarBg{
   position:fixed;top:0;left:0;right:0;z-index:2147483600;
-  height:var(--sat, env(safe-area-inset-top, 0px));
+  height:var(--sat);
   pointer-events:none;background:#08080C;
 }
 html.sb-white #sysBarBg{ background:#FFFFFF; }
@@ -17164,163 +17164,116 @@ function resolveTheme(t){
 // (Instagram mantığı: akış siyah, profil/mesajlar beyaz temada beyaz)
 function isNativeApp(){
   try{
-    const cap=window.Capacitor;
-    return !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+    const c = window.Capacitor;
+    return !!(c && c.isNativePlatform && c.isNativePlatform());
   }catch(e){ return false; }
 }
-function capStatusBar(){
-  try{
-    const cap=window.Capacitor;
-    const P=cap && (cap.Plugins||{});
-    return (P && P.StatusBar) || (window.StatusBar) || null;
-  }catch(e){ return null; }
+
+const SB_DARK  = '#08080C';
+const SB_LIGHT = '#FFFFFF';
+
+function _safeAreaPlugin(){
+  try{ return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SafeArea) || null; }
+  catch(e){ return null; }
 }
-/* DURUM ÇUBUĞU GÖRÜNÜR: saat/wifi/pil ikonları gösterilir.
-   overlay KAPALI — sistem kendi alanını ayırır, içerik onun altına
-   hiç girmez (bkz. MainActivity.java'daki edge-to-edge zorlaması
-   kaldırıldıktan sonra bu artık güvenli). */
-window.__statusBarLocked = window.__statusBarLocked || false;
+
+let _safeAreaReady = false;
+async function initSafeAreaOnce(){
+  if(_safeAreaReady || !isNativeApp()) return;
+  _safeAreaReady = true;
+  const SA = _safeAreaPlugin();
+  if(!SA || typeof SA.enable !== 'function') return;
+  try{
+    await SA.enable({ config:{
+      customColorsForSystemBars: true,
+      statusBarColor: SB_DARK,
+      statusBarContent: 'light',
+      navigationBarColor: SB_DARK,
+      navigationBarContent: 'light'
+    }});
+  }catch(e){}
+}
+
 function ensureSysBarBg(){
   if(document.getElementById('sysBarBg')) return;
   try{
-    const el=document.createElement('div');
-    el.id='sysBarBg';
+    const el = document.createElement('div');
+    el.id = 'sysBarBg';
     el.setAttribute('aria-hidden','true');
     document.body.appendChild(el);
   }catch(e){}
 }
-async function lockNativeStatusBar(){
-  const SB=capStatusBar();
-  document.documentElement.classList.remove('feed-immersive');
-  /* Tam ekran sistem saatini gizler — APK'de kapat. */
-  try{
-    if(document.fullscreenElement || document.webkitFullscreenElement){
-      const ex=document.exitFullscreen||document.webkitExitFullscreen;
-      if(ex) ex.call(document);
-    }
-  }catch(e){}
-  if(!SB) return;
-  try{ if(typeof SB.show==="function") await SB.show(); }catch(e){}
-  /* overlay KAPALI: saat sistem şeridinde kalır, akış yukarı kaymaz. */
-  try{
-    if(typeof SB.setOverlaysWebView==="function") await SB.setOverlaysWebView({overlay:false});
-  }catch(e){}
-  window.__statusBarLocked = true;
-}
 
-/* Native durum çubuğunun arkaplan rengini VE ikon rengini (saat/pil
-   yazısının koyu mu açık mı olacağını) o an açık olan ekrana göre
-   ayarlar. */
-function applyNativeStatusBarColor(color, bgIsLight){
+let _lastIconStyle = null;
+function setBarIcons(bgIsLight){
   if(!isNativeApp()) return;
-  const cap=window.Capacitor;
-  const P=(cap && cap.Plugins) || {};
-  const SB=capStatusBar();
-  const iconStyle = bgIsLight ? "DARK" : "LIGHT";
+  const want = bgIsLight ? 'DARK' : 'LIGHT';
+  if(want === _lastIconStyle) return;
+  _lastIconStyle = want;
+  const SA = _safeAreaPlugin();
   try{
-    const SA=P.SafeArea;
-    if(SA){
-      if(typeof SA.enable==="function"){
-        SA.enable({
-          config:{
-            customColorsForSystemBars:true,
-            statusBarColor:color,
-            statusBarContent: bgIsLight ? "dark" : "light",
-            navigationBarColor:"#08080C",
-            navigationBarContent:"light"
-          }
-        });
-      }
-      if(typeof SA.setSystemBarsStyle==="function"){
-        SA.setSystemBarsStyle({ style: bgIsLight ? "LIGHT" : "DARK", type:"STATUS_BAR" });
-      }
+    if(SA && typeof SA.setSystemBarsStyle === 'function'){
+      SA.setSystemBarsStyle({ style: want, type: 'STATUS_BAR' });
     }
-  }catch(e){}
-  try{
-    const Sys=P.SystemBars || (window.Capacitor && window.Capacitor.SystemBars);
-    if(Sys && typeof Sys.setStyle==="function"){
-      Sys.setStyle({ style: iconStyle });
-    }
-  }catch(e){}
-  if(!SB) return;
-  try{
-    if(typeof SB.setBackgroundColor==="function") SB.setBackgroundColor({color});
-  }catch(e){}
-  try{
-    if(typeof SB.setStyle==="function") SB.setStyle({style: iconStyle});
   }catch(e){}
 }
+
 function _activeTabId(){
-  const el=document.querySelector(".tab.on");
-  return el ? el.id : "tabFeed";
+  const el = document.querySelector('.tab.on');
+  return el ? el.id : 'tabFeed';
 }
+
 function syncStatusBar(){
-  const tc=document.getElementById('__themeColor');
-  const darkScreens=["cam","compose"];
-  const onDarkScreen = darkScreens.some(id=>{
-    const el=document.getElementById(id);
-    return el && el.classList.contains("open");
+  const onDarkScreen = ['cam','compose'].some(function(id){
+    const el = document.getElementById(id);
+    return el && el.classList.contains('open');
   });
-  const panelIds=["profile","chats","chat","settings","editProfile","notif","timeSheet","blockedPanel","userSearch"];
-  const onPanel = panelIds.some(id=>{
-    const el=document.getElementById(id);
-    return el && el.classList.contains("open");
+  const onPanel = ['profile','chats','chat','settings','editProfile',
+                   'notif','timeSheet','blockedPanel','userSearch'].some(function(id){
+    const el = document.getElementById(id);
+    return el && el.classList.contains('open');
   });
-  const gateEl=document.getElementById('gate');
+  const gateEl = document.getElementById('gate');
   const onGate = gateEl && !gateEl.classList.contains('off');
-  const tabId=_activeTabId();
-  const lightTabs=["tabMsg","tabProfile","tabTime"];
-  const onLightTab = lightTabs.includes(tabId);
-  /* Akış + kamera + giriş: siyah çubuk.
-     Profil / mesaj / zaman / ayarlar: açık çubuk. */
-  let color, bgIsLight;
-  if(onGate || onDarkScreen || (!onPanel && !onLightTab)){
-    color='#08080C'; bgIsLight=false;
-  }else{
-    color='#FFFFFF'; bgIsLight=true;
-  }
-  if(tc) tc.setAttribute('content', color);
-  document.documentElement.classList.toggle('sb-white', bgIsLight);
-  document.documentElement.classList.toggle('sb-black', !bgIsLight);
-  ensureSysBarBg();
-  const bar=document.getElementById('sysBarBg');
-  if(bar) bar.style.background = color;
+  const onLightTab = ['tabMsg','tabProfile','tabTime'].indexOf(_activeTabId()) !== -1;
 
-  /* Akış kaymasın: --sat'a ekstra piksel ekleme.
-     Bar rengini SafeArea + StatusBar ile boya (Android 15 beyaz bar). */
-  if(isNativeApp()){
-    document.documentElement.style.setProperty('--sat','0px');
-    const barEl=document.getElementById('sysBarBg');
-    const camOpen=!!(document.getElementById('cam') && document.getElementById('cam').classList.contains('open'));
-    if(barEl){
-      barEl.style.height = camOpen ? '0px' : barEl.style.height;
-      if(camOpen) barEl.style.display='none';
-      else barEl.style.display='block';
-    }
-    /* html/body'ye inline siyah zemin YAZILMAZ — APK'de CameraPreview
-       webview ARKASINDA çalışır; opak zemin önizlemeyi örter.
-       Kamera kapanınca bu satırlar MUTLAKA geri alınmalı; aksi halde
-       html/body kalıcı olarak transparent kalıp arkadaki katman
-       (veya boşluk) uygulamanın geri kalanında görünmeye devam eder. */
-    try{
-      document.documentElement.style.background = camOpen ? 'transparent' : '';
-      if(document.body) document.body.style.background = camOpen ? 'transparent' : '';
-    }catch(e){}
-    Promise.resolve(lockNativeStatusBar()).then(()=>{
-      applyNativeStatusBarColor(color, bgIsLight);
-    }).catch(()=>{});
-    applyNativeStatusBarColor(color, bgIsLight);
-  }
+  const bgIsLight = !(onGate || onDarkScreen || (!onPanel && !onLightTab));
+  const color = bgIsLight ? SB_LIGHT : SB_DARK;
+
+  const tc = document.getElementById('__themeColor');
+  if(tc) tc.setAttribute('content', color);
+
+  document.documentElement.classList.toggle('sb-white',  bgIsLight);
+  document.documentElement.classList.toggle('sb-black', !bgIsLight);
+
+  ensureSysBarBg();
+
+  const camEl = document.getElementById('cam');
+  const camOpen = !!(camEl && camEl.classList.contains('open'));
+  const bar = document.getElementById('sysBarBg');
+  if(bar) bar.style.display = camOpen ? 'none' : 'block';
+
+  try{
+    document.documentElement.style.background = camOpen ? 'transparent' : '';
+    if(document.body) document.body.style.background = camOpen ? 'transparent' : '';
+  }catch(e){}
+
+  /* --sat'a DOKUNULMUYOR. Burasi kasitli olarak bos. */
+
+  setBarIcons(camOpen ? false : bgIsLight);
 }
 
-window.syncStatusBar = syncStatusBar;  // modül kapsamından da erişilebilsin
+window.syncStatusBar = syncStatusBar;
+
 function applyTheme(t){
-  const resolved=resolveTheme(t);
+  const resolved = resolveTheme(t);
   document.documentElement.setAttribute('data-theme', resolved);
   syncStatusBar();
 }
+
 let _klipsyTheme = getStoredTheme();
 applyTheme(_klipsyTheme);
+initSafeAreaOnce().then(function(){ applyTheme(_klipsyTheme); });
 (function lockPhoneChrome(){
   try{
     document.documentElement.style.setProperty('--app-fs','16px');

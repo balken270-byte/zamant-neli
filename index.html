@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.34</title>
+<title>Klipsy 3.3.36</title>
 <script src="klipsy-kamera.js?v=3.3.34"></script>
 <script>
 /* ============================================================
@@ -9667,7 +9667,7 @@ html.sb-white #userSearch::before{
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.34</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.36</span></div>
   </section>
 </div>
 
@@ -13611,12 +13611,9 @@ async function initMap(){
         }
       }
     }catch(e){}
-    if(!navigator.geolocation) return _lastKnownPos;
-
-    return new Promise(res=>{
-      navigator.geolocation.getCurrentPosition(
-        p=>{
-          // GERÇEK konum — yüksek hassasiyet, taze veri
+    try{
+      const p=await geoKonumAl({enableHighAccuracy:true,timeout:15000});
+      if(p && p.coords){
           _lastKnownPos = {
             lat:p.coords.latitude,
             lng:p.coords.longitude,
@@ -13632,12 +13629,9 @@ async function initMap(){
           if(!_mapUserMoved && _map){
             mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, true);
           }
-          res(_lastKnownPos);
-        },
-        ()=>res(_lastKnownPos),
-        { enableHighAccuracy:true, timeout:12000, maximumAge:30000 }
-      );
-    });
+      }
+    }catch(e){}
+    return _lastKnownPos;
   })();
 
   bindLocBtn();
@@ -15501,15 +15495,35 @@ async function reverseGeocode(la,lo){
   return null;
 }
 
+async function geoKonumAl(opts){
+  opts=opts||{};
+  const cap=window.Capacitor;
+  const native=!!(cap && cap.isNativePlatform && cap.isNativePlatform());
+  const G=cap && cap.Plugins && cap.Plugins.Geolocation;
+  if(native && G && G.getCurrentPosition){
+    try{
+      if(G.requestPermissions) await G.requestPermissions();
+      const p=await G.getCurrentPosition({
+        enableHighAccuracy: opts.enableHighAccuracy!==false,
+        timeout: opts.timeout||15000
+      });
+      if(p && p.coords) return p;
+    }catch(e){ console.warn("geo plugin", e); }
+  }
+  if(!navigator.geolocation) throw Object.assign(new Error("no geo"),{code:2});
+  return await new Promise((ok,bad)=>{
+    navigator.geolocation.getCurrentPosition(ok,bad,{
+      enableHighAccuracy: opts.enableHighAccuracy!==false,
+      timeout: opts.timeout||15000,
+      maximumAge: opts.maximumAge||0
+    });
+  });
+}
 function getLocation(){
   place=null;
   locIcon("spin");
   locState("wait",t("loc_getting"),t("loc_reading"));
-  if(!navigator.geolocation){
-    locIcon("bad");
-    locState("bad","Konum desteklenmiyor",t("loc_nogps"));return;
-  }
-  navigator.geolocation.getCurrentPosition(async pos=>{
+  geoKonumAl({enableHighAccuracy:true,timeout:15000}).then(async pos=>{
     const la=pos.coords.latitude, lo=pos.coords.longitude;
     const acc=Math.round(pos.coords.accuracy||0);
     locState("wait","Konum bulundu",t("resolving"));
@@ -15517,22 +15531,24 @@ function getLocation(){
     place={name:name||(la.toFixed(4)+", "+lo.toFixed(4)), city:_sonSehir||null, la, lo, acc};
     locIcon("pin");
     locState(null,place.name,"±"+acc+" "+t("loc_accuracy"));
-  },err=>{
+  }).catch(err=>{
     locIcon("bad");
     let m=t("loc_failed"),s=t("loc_optional");
-    if(err.code===1){
+    const code=err && err.code;
+    if(code===1){
       m=t("loc_denied_short"); s=t("loc_perm_hint");
-      _locDenied=true;                       // "Yardım" bağlantısı çıksın
+      _locDenied=true;
     }
-    else if(err.code===2){m=t("loc_notfound");s=t("loc_nosignal");}
-    else if(err.code===3){m=t("loc_timeout");s=t("hint_refresh");}
-    if(!window.isSecureContext){m=t("loc_blocked");s=t("err_https");}
+    else if(code===2){m=t("loc_notfound");s=t("loc_nosignal");}
+    else if(code===3){m=t("loc_timeout");s=t("hint_refresh");}
+    if(!window.isSecureContext && !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())){
+      m=t("loc_blocked");s=t("err_https");
+    }
     locState("bad",m,s);
-    // izin reddedildiyse nasıl açılacağını göster
-    if(err.code===1 && typeof openLocationHelp==="function"){
+    if(code===1 && typeof openLocationHelp==="function"){
       setTimeout(()=>openLocationHelp(), 400);
     }
-  },{enableHighAccuracy:true,timeout:12000,maximumAge:30000});
+  });
 }
 $("#cpLocRetry").addEventListener("click",e=>{e.stopPropagation();getLocation();});
 $("#cpLocSw").addEventListener("click",()=>{
@@ -17580,7 +17596,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.34";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.36";
   box.appendChild(ver);
 }
 
@@ -19963,13 +19979,31 @@ function blobToBase64(blob){
     r.onerror=bad; r.readAsDataURL(blob);
   });
 }
+function blobToDataUrl(blob){
+  return new Promise((ok,bad)=>{
+    const r=new FileReader();
+    r.onload=()=>ok(String(r.result||""));
+    r.onerror=bad; r.readAsDataURL(blob);
+  });
+}
 
-/* ═══ İNDİRME — tek yol
-   Web: <a download>
-   APK: 1) Media.savePhoto/Video (https veya cache uri)
-        2) Filesystem CACHE + Share.files  (Share yalnızca Cache'i paylaşır)
-        3) Share.url (https)
-   Documents/Data'ya yazmak Android Share FileProvider'da çalışmaz. */
+function _dlDbg(msg, extra){
+  try{
+    let box=document.getElementById("dlDbg");
+    if(!box){
+      box=document.createElement("div");
+      box.id="dlDbg";
+      box.style.cssText="position:fixed;left:8px;right:8px;bottom:calc(var(--tab,56px) + 8px);z-index:99999;max-height:38vh;overflow:auto;background:rgba(0,0,0,.82);color:#9f9;font:11px/1.35 ui-monospace,monospace;padding:8px;border-radius:10px;white-space:pre-wrap;pointer-events:auto";
+      box.addEventListener("dblclick",()=>box.remove());
+      document.body.appendChild(box);
+    }
+    const line=new Date().toISOString().slice(11,19)+" "+msg+(extra!=null?(" "+String(extra).slice(0,180)):"");
+    box.textContent=(box.textContent?box.textContent+"\n":"")+line;
+    box.scrollTop=box.scrollHeight;
+    console.log("[dl]", msg, extra||"");
+  }catch(e){}
+}
+
 function _nativePlugins(){
   const cap=window.Capacitor;
   const native=!!(cap && cap.isNativePlatform && cap.isNativePlatform());
@@ -19979,12 +20013,14 @@ function _nativePlugins(){
 async function _writeCacheFile(FS, blob, path){
   const dir=(FS.Directory && FS.Directory.Cache) || "CACHE";
   const b64=await blobToBase64(blob);
-  await FS.writeFile({ path, data:b64, directory:dir, recursive:true });
-  let uri=null;
+  _dlDbg("writeFile", path+" b64="+b64.length);
+  const w=await FS.writeFile({ path, data:b64, directory:dir, recursive:true });
+  let uri=(w && (w.uri||w.fileUri)) || null;
   try{
     const g=await FS.getUri({ path, directory:dir });
-    uri=g && (g.uri||g.fileUri);
-  }catch(e){}
+    uri=(g && (g.uri||g.fileUri)) || uri;
+  }catch(e){ _dlDbg("getUri hata", e && e.message); }
+  _dlDbg("cache uri", uri);
   return uri;
 }
 function _webDownload(blob, name){
@@ -19994,48 +20030,102 @@ function _webDownload(blob, name){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(href), 8000);
 }
+async function _mediaAlbumId(Media){
+  if(!Media) return null;
+  try{
+    if(Media.getAlbums){
+      const r=await Media.getAlbums();
+      const list=(r && (r.albums||r)) || [];
+      _dlDbg("albums", list.length);
+      const hit=list.find(a=>/klipsy/i.test(String(a.name||a.title||""))) || list[0];
+      if(hit && (hit.identifier||hit.id)) return hit.identifier||hit.id;
+    }
+  }catch(e){ _dlDbg("getAlbums hata", e && (e.message||e)); }
+  try{
+    if(Media.createAlbum){
+      const c=await Media.createAlbum({ name:"Klipsy" });
+      _dlDbg("createAlbum", JSON.stringify(c||{}).slice(0,120));
+      if(c && (c.identifier||c.id)) return c.identifier||c.id;
+      if(Media.getAlbums){
+        const r2=await Media.getAlbums();
+        const list=(r2 && (r2.albums||r2)) || [];
+        const hit=list.find(a=>/klipsy/i.test(String(a.name||""))) || list[0];
+        if(hit) return hit.identifier||hit.id;
+      }
+    }
+  }catch(e){ _dlDbg("createAlbum hata", e && (e.message||e)); }
+  return null;
+}
 async function saveToDevice(blob, name, picker, httpUrl){
   if(picker){
     const wr=await picker.createWritable();
     await wr.write(blob); await wr.close();
+    _dlDbg("picker ok");
     return;
   }
   const {native, FS, Share, Media}=_nativePlugins();
+  _dlDbg("native="+native+" FS="+!!FS+" Share="+!!Share+" Media="+!!Media+" blob="+(blob&&blob.size));
   if(!native){ _webDownload(blob, name); return; }
 
-  try{
-    if(Media && Media.requestPermissions) await Media.requestPermissions();
-  }catch(e){}
-  try{
-    if(FS && FS.requestPermissions) await FS.requestPermissions();
-  }catch(e){}
+  try{ if(Media && Media.requestPermissions){ const p=await Media.requestPermissions(); _dlDbg("Media.perm", JSON.stringify(p||{})); } }catch(e){ _dlDbg("Media.perm hata", e&&e.message); }
+  try{ if(FS && FS.requestPermissions){ const p=await FS.requestPermissions(); _dlDbg("FS.perm", JSON.stringify(p||{})); } }catch(e){ _dlDbg("FS.perm hata", e&&e.message); }
 
   const file=String(name||("klipsy-"+Date.now())).replace(/[^a-zA-Z0-9._-]/g,"_");
+  const stem=file.replace(/\.[a-z0-9]+$/i,"");
   const video=/\.(mp4|webm)$/i.test(file) || /video\//i.test((blob&&blob.type)||"");
   const http=(httpUrl && /^https?:/i.test(httpUrl)) ? httpUrl : null;
   let err=null;
 
+  /* 1) Resmi Media: path + albumIdentifier, fileName UZANTISIZ */
+  if(Media && (Media.savePhoto || Media.saveVideo)){
+    try{
+      const album=await _mediaAlbumId(Media);
+      let path=null;
+      if(!video){
+        path=await blobToDataUrl(blob);
+        _dlDbg("savePhoto dataURI", (path||"").slice(0,32)+" album="+album);
+        const opt={ path, fileName:stem };
+        if(album) opt.albumIdentifier=album;
+        await Media.savePhoto(opt);
+        _dlDbg("savePhoto OK");
+        return;
+      }
+      if(http && Media.saveVideo){
+        const opt={ path:http, fileName:stem };
+        if(album) opt.albumIdentifier=album;
+        _dlDbg("saveVideo http", http.slice(0,48)+" album="+album);
+        await Media.saveVideo(opt);
+        _dlDbg("saveVideo OK");
+        return;
+      }
+    }catch(e){ err=e; _dlDbg("Media hata", e && (e.message||JSON.stringify(e))); }
+  }
+
   let uri=null;
   if(FS && FS.writeFile && blob){
     try{ uri=await _writeCacheFile(FS, blob, file); }
-    catch(e){ err=e; }
-  }
-  /* Capacitor Share tek dosyada url ister; files[] birçok telefonda sessiz düşer. */
-  if(Share && Share.share && uri){
-    try{ await Share.share({ title:file, url:uri, dialogTitle:t("dl_wm") }); return; }
-    catch(e){ err=e; }
-    try{ await Share.share({ title:file, files:[uri], dialogTitle:t("dl_wm") }); return; }
-    catch(e){ err=e; }
+    catch(e){ err=e; _dlDbg("cache hata", e&&e.message); }
   }
   if(Media && uri){
     try{
-      if(video && Media.saveVideo){ await Media.saveVideo({ path:uri, filePath:uri, fileName:file }); return; }
-      if(!video && Media.savePhoto){ await Media.savePhoto({ path:uri, filePath:uri, fileName:file }); return; }
-    }catch(e){ err=e; }
+      const album=await _mediaAlbumId(Media);
+      const opt={ path:uri, fileName:stem };
+      if(album) opt.albumIdentifier=album;
+      if(video && Media.saveVideo){ await Media.saveVideo(opt); _dlDbg("saveVideo uri OK"); return; }
+      if(!video && Media.savePhoto){ await Media.savePhoto(opt); _dlDbg("savePhoto uri OK"); return; }
+    }catch(e){ err=e; _dlDbg("Media uri hata", e&&e.message); }
+  }
+
+  /* 2) Resmi Share: Cache file:// — files[] sonra url */
+  if(Share && Share.share && uri){
+    try{ await Share.share({ title:file, files:[uri], dialogTitle:t("dl_wm") }); _dlDbg("Share.files OK"); return; }
+    catch(e){ err=e; _dlDbg("Share.files hata", e&&e.message); }
+    try{ await Share.share({ title:file, url:uri, dialogTitle:t("dl_wm") }); _dlDbg("Share.url OK"); return; }
+    catch(e){ err=e; _dlDbg("Share.url hata", e&&e.message); }
   }
   if(Share && Share.share && http){
-    try{ await Share.share({ title:file, url:http, dialogTitle:t("dl_wm") }); return; }
-    catch(e){ err=e; }
+    try{ await Share.share({ title:file, url:http, dialogTitle:t("dl_wm") }); _dlDbg("Share.http OK"); return; }
+    catch(e){ err=e; _dlDbg("Share.http hata", e&&e.message); }
   }
   throw err || new Error("apk save failed");
 }

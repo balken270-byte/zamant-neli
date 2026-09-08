@@ -233,21 +233,9 @@
          aspectMode      'cover' → kenarlar kırpılır, boşluk kalmaz.
          storeToFile     BURADA verilmez; verilirse fotoğraf base64
                          yerine dosya yolu döner. */
-    function onizlemeKutusu() {
-      /* WYSIWYG portrait viewport:
-         Native preview occupies a fixed 9:16 portrait rectangle from the
-         very top of the screen. The HTML top/bottom chrome is layered above
-         it, so no white WebView seam can appear between guessed offsets. */
-      const vw = window.innerWidth || 360;
-      const w = vw;
-      const h = Math.round(w * 16 / 9);
-      return { x: 0, y: 0, width: w, height: h };
-    }
-
     const taban = {
       position: yonNative(durum.yon),
       toBack: true,
-      aspectRatio: "16:9",
       aspectMode: "cover",
       enableVideoMode: true,
       lockAndroidOrientation: true,
@@ -285,11 +273,8 @@
       ? { g: sonuc.width, y: sonuc.height, x: sonuc.x, y0: sonuc.y }
       : null;
 
-    if (CP().setPreviewSize) {
-      try {
-        await CP().setPreviewSize(onizlemeKutusu());
-      } catch (e) {}
-    }
+    /* setPreviewSize çağrılmaz: Capgo varsayılanı ekran pikseli.
+       Elle 9:16 kutu altta beyaz boşluk bırakıyordu. */
 
     document.documentElement.classList.add("camNativeOn");
   }

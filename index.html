@@ -6,8 +6,8 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.26</title>
-<script src="klipsy-kamera.js?v=3.3.18"></script>
+<title>Klipsy 3.3.27</title>
+<script src="klipsy-kamera.js?v=3.3.27"></script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -7295,12 +7295,18 @@ html.camNativeOn #cam .camStage,
 html.camNativeOn #cam .camWrap,
 html.camNativeOn #cam .camBody,
 html.camNativeOn #cam .cambody,
-html.camNativeOn #cam .camtop,
-html.camNativeOn #cam .cambot,
 html.camNativeOn #cam .camRoot,
 html.camNativeOn #cam #camRoot{
   background:transparent !important;
   background-color:transparent !important;
+}
+/* Üst/alt krom PWA'deki gibi koyu kalsın — saydam olursa açık tema
+   altta beyaz şerit + kaybolmuş FOTOĞRAF/VİDEO üretir. */
+html.camNativeOn #cam .camtop{
+  background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent) !important;
+}
+html.camNativeOn #cam .cambot{
+  background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.35),transparent) !important;
 }
 
 /* yerelde video etiketi gereksiz */

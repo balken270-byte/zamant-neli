@@ -6,7 +6,7 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.24</title>
+<title>Klipsy 3.3.25</title>
 <script src="klipsy-kamera.js?v=3.3.18"></script>
 <script>
 /* ============================================================
@@ -20298,6 +20298,13 @@ async function start(kayitSurerken){
 
       if(camPanel) camPanel.classList.remove("waiting");
       document.documentElement.classList.toggle("camNativeOn", Kamera.yerelMi());
+      /* PWA: MediaRecorder için video.srcObject → stream */
+      try{
+        if(!Kamera.yerelMi()){
+          const vv=$("#camVideo");
+          if(vv && vv.srcObject) stream=vv.srcObject;
+        }
+      }catch(e){}
       if(typeof window.__webCamOlcekKur === "function") window.__webCamOlcekKur();
 
       /* Cihazın yakınlık aralığını oku ve kısayolları çiz.
@@ -21963,12 +21970,30 @@ function startRec(){
 /* ═══ KAYIT — KATMAN YOLU ═══
    Sayaç, ilerleme çubuğu ve süre sınırı burada yönetilir;
    asıl kayıt donanımda yapılır. */
+function kameraYerel(){
+  return !!(window.Kamera && typeof Kamera.yerelMi==="function" && Kamera.yerelMi());
+}
 async function kayitBaslatUI(){
+  if(!kameraYerel()){
+    try{
+      const vv=$("#camVideo");
+      if(vv && vv.srcObject) stream=vv.srcObject;
+    }catch(e){}
+    startRec();
+    return;
+  }
   if(!window.Kamera) return;
   const enFazla = 30;                       // saniye
 
   const ok = await Kamera.kayitBaslat({ enFazlaSn: enFazla });
-  if(!ok){ toast(t("err_generic")); return; }
+  if(!ok){
+    try{
+      const vv=$("#camVideo");
+      if(vv && vv.srcObject) stream=vv.srcObject;
+    }catch(e){}
+    if(stream){ startRec(); return; }
+    toast(t("err_generic")); return;
+  }
 
   $("#shutter").classList.add("rec");
   $("#recTime").classList.add("on");
@@ -22105,8 +22130,8 @@ sh.addEventListener("pointerdown",e=>{
   holdT=setTimeout(()=>{
     if(!holding) return;
     setMode("video");
-    if(window.Kamera && !window.__kameraKatmaniKapali){ start().then(()=>kayitBaslatUI()); }
-    else { start().then(startRec); }
+    if(kameraYerel() && !window.__kameraKatmaniKapali){ start().then(()=>kayitBaslatUI()); }
+    else { start().then(()=>{ try{ const vv=$("#camVideo"); if(vv&&vv.srcObject) stream=vv.srcObject; }catch(e){} startRec(); }); }
   },420);
 });
 sh.addEventListener("pointerup", async ()=>{
@@ -22114,7 +22139,7 @@ sh.addEventListener("pointerup", async ()=>{
   holding=false;clearTimeout(holdT);
 
   /* ═══ KAMERA KATMANI YOLU ═══ */
-  if(window.Kamera && !window.__kameraKatmaniKapali){
+  if(kameraYerel() && !window.__kameraKatmaniKapali){
     const d = Kamera.durum();
     if(d.kaydediyor){ await kayitBitirVeAc(); return; }
     if(camMode==="video"){ await kayitBaslatUI(); return; }

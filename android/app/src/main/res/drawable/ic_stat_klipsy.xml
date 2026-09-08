@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  KLİPSY — BİLDİRİM SİMGESİ
+
+  NEDEN AYRI BİR SİMGE
+    Android bildirim simgesini TEK RENK çiziyor: saydam olmayan her
+    piksel beyaza boyanıyor. Uygulama simgesi dolu bir kare olduğu
+    için bildirim çubuğunda kırmızı/beyaz kare olarak görünüyordu.
+    Bu çizimde yalnızca şeklin kendisi dolu, gerisi saydam.
+
+  ŞEKİL
+    Objektif namlusu — kamera merceği. Klipsy'nin kamera-öncelikli
+    kimliğine uygun, tek renkte de okunaklı.
+
+  Dosya: android/app/src/main/res/drawable/ic_stat_klipsy.xml
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#FFFFFF">
+
+  <!-- dış halka -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M12,2.6c-5.19,0 -9.4,4.21 -9.4,9.4s4.21,9.4 9.4,9.4s9.4,-4.21 9.4,-9.4S17.19,2.6 12,2.6zM12,4.4c4.19,0 7.6,3.41 7.6,7.6s-3.41,7.6 -7.6,7.6S4.4,16.19 4.4,12S7.81,4.4 12,4.4z"/>
+
+  <!-- iç mercek -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M12,7.6c-2.43,0 -4.4,1.97 -4.4,4.4s1.97,4.4 4.4,4.4s4.4,-1.97 4.4,-4.4S14.43,7.6 12,7.6z"/>
+
+</vector>

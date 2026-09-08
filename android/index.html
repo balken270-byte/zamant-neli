@@ -1,0 +1,16 @@
+
+<!-- KLIPSY APK SNAP FIX - %90 REDUCED -->
+<style>
+html.native #feed {
+  scroll-padding-top: 0 !important;
+}
+
+html.native #feed .post {
+  scroll-margin-top: calc(
+    var(--sat) * 0.1 +
+    var(--top) * 0.1
+  ) !important;
+  scroll-snap-align: start !important;
+  scroll-snap-stop: always !important;
+}
+</style>

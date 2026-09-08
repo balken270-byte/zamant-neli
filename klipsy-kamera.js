@@ -246,6 +246,9 @@
     if (secenek.kap)   taban.parent    = secenek.kap;
     if (secenek.sinif) taban.className = secenek.sinif;
 
+    try { await CP().stop(); } catch (e) {}
+    await new Promise(function (r) { setTimeout(r, 40); });
+
     const denemeler = [
       Object.assign({}, taban),
       Object.assign({}, taban, { force: true }),

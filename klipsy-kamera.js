@@ -522,9 +522,7 @@
              gerekiyorsa aynı 9:16 oranını uygular.
           */
           const r = await CP().capture({
-            quality: kalite,
-            width: 1080,
-            height: 1920
+            quality: kalite
           });
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);

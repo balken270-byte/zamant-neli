@@ -23626,5 +23626,68 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   }
 })();
 </script>
+
+<script>
+/* ===== KAMERA HATA AYIKLAMA PANELİ (geçici) ===== */
+(function(){
+  function kur(){
+    if(!window.Kamera) return setTimeout(kur, 300);
+
+    const btn = document.createElement("button");
+    btn.textContent = "\uD83D\uDC1E";
+    btn.style.cssText = "position:fixed !important;top:40px !important;left:6px !important;"+
+      "z-index:2147483647 !important;width:38px;height:38px;border-radius:50%;border:0;"+
+      "background:rgba(255,0,80,.95);color:#fff;font-size:18px;line-height:38px;"+
+      "text-align:center;padding:0;box-shadow:0 0 0 2px #fff;";
+    document.body.appendChild(btn);
+
+    const panel = document.createElement("div");
+    panel.style.cssText = "position:fixed !important;top:84px !important;left:6px !important;right:6px !important;"+
+      "z-index:2147483647 !important;max-height:70vh;overflow:auto;background:rgba(0,0,0,.95);"+
+      "color:#7CFFB2;font:11px/1.5 ui-monospace,monospace;padding:10px;border-radius:10px;"+
+      "white-space:pre-wrap;word-break:break-word;display:none;border:2px solid #FF3B6B;";
+    document.body.appendChild(panel);
+
+    let acik = false;
+    btn.onclick = () => { acik = !acik; panel.style.display = acik ? "block" : "none"; guncelle(); };
+
+    function siniflar(){
+      const camFailEl = document.getElementById("camFail");
+      return "waiting=" + document.documentElement.classList.contains("waiting") + "\n" +
+        "camNativeOn=" + document.documentElement.classList.contains("camNativeOn") + "\n" +
+        "camSession=" + document.documentElement.classList.contains("camSession") + "\n" +
+        "camFail.on=" + (camFailEl ? camFailEl.classList.contains("on") : "yok");
+    }
+
+    function guncelle(){
+      if(!acik) return;
+      let d = {};
+      try{ d = Kamera.durum(); }catch(e){ d = { hata: String(e) }; }
+      const camEl = document.getElementById("cam");
+      const camOpen = camEl ? camEl.classList.contains("open") : "yok";
+      panel.textContent =
+        "#cam.open: " + camOpen + "\n" +
+        siniflar() + "\n\n" +
+        "Kamera.durum(): " + JSON.stringify(d, null, 1) + "\n\n" +
+        "--- OLAY GEÇMİŞİ ---\n" + gecmis.join("\n");
+    }
+
+    const gecmis = [];
+    try{
+      Kamera.olay(function(e){
+        const satir = new Date(e.zaman).toLocaleTimeString() + " — " + e.tur +
+          (e.hataTuru ? (" [" + e.hataTuru + "]") : "") +
+          (e.hata && e.hata.message ? (" :: " + e.hata.message) : "");
+        gecmis.push(satir);
+        if(gecmis.length > 40) gecmis.shift();
+        guncelle();
+      });
+    }catch(e){}
+
+    setInterval(guncelle, 500);
+  }
+  kur();
+})();
+</script>
 </body>
 </html>

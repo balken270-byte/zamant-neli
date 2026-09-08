@@ -17298,13 +17298,14 @@ function syncStatusBar(){
       else barEl.style.display='block';
     }
     /* html/body'ye inline siyah zemin YAZILMAZ — APK'de CameraPreview
-       webview ARKASINDA çalışır; opak zemin önizlemeyi örter. */
-    if(camOpen){
-      try{
-        document.documentElement.style.background='transparent';
-        if(document.body) document.body.style.background='transparent';
-      }catch(e){}
-    }
+       webview ARKASINDA çalışır; opak zemin önizlemeyi örter.
+       Kamera kapanınca bu satırlar MUTLAKA geri alınmalı; aksi halde
+       html/body kalıcı olarak transparent kalıp arkadaki katman
+       (veya boşluk) uygulamanın geri kalanında görünmeye devam eder. */
+    try{
+      document.documentElement.style.background = camOpen ? 'transparent' : '';
+      if(document.body) document.body.style.background = camOpen ? 'transparent' : '';
+    }catch(e){}
     Promise.resolve(lockNativeStatusBar()).then(()=>{
       applyNativeStatusBarColor(color, bgIsLight);
     }).catch(()=>{});
@@ -20673,9 +20674,14 @@ function blockGhostTap(ms){
   }catch(e){}
 }
 
-function stopCam(kayitKoru){
+async function stopCam(kayitKoru){
   if(window.Kamera && !kayitKoru){
-    try{ Kamera.durdur(); }catch(e){}
+    /* ÖNEMLİ: Kamera.durdur() içeride sıraya giren ASENKRON bir iş.
+       Beklemeden syncStatusBar() çağrılırsa native kamera katmanı
+       (CameraPreview) henüz kapanmamışken durum çubuğu geri
+       getirilmeye çalışılıyor — bu yarış durumu status bar'ın
+       kalıcı bozuk kalmasına yol açıyordu. Burada bekleniyor. */
+    try{ await Kamera.durdur(); }catch(e){}
     document.documentElement.classList.remove("camNativeOn");
     $("#recTime").classList.remove("on");$("#recProg").classList.remove("on");
     $("#shutter").classList.remove("rec");
@@ -20701,15 +20707,20 @@ function stopCam(kayitKoru){
   // tuval kaydı varsa durdur
   if(typeof tuvalDurdur === "function") tuvalDurdur();
 }
-function closeCam(){
+async function closeCam(){
   try{ if(window.__kameraYakinligiSifirla) window.__kameraYakinligiSifirla(); }catch(e){}
-  stopCam();
+  await stopCam();
   $("#cam").classList.remove("open","zoomOpen");$("#cam").setAttribute("aria-hidden","true");
   document.documentElement.classList.remove("camSession","camNativeOn");
   const zb=document.getElementById("camZoomToggle"); if(zb) zb.classList.remove("on");
   _popHistory("cam");
   if(target!=="dm") setTab($("#tabFeed"));
   if(typeof syncStatusBar==="function") syncStatusBar();
+  /* Güvenlik ağı: bazı cihazlarda native CameraPreview katmanı
+     stop() sözü çözüldükten biraz sonra hâlâ sistem çubuğuyla
+     oynuyor. Kısa gecikmeyle bir kez daha senkronlayıp status bar'ın
+     kalıcı bozuk kalmasını engelliyoruz. */
+  setTimeout(()=>{ if(typeof syncStatusBar==="function") syncStatusBar(); }, 300);
 }
 function setMode(m){camMode=m;$$(".mode").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));}
 $$(".mode").forEach(b=>b.addEventListener("click",()=>{

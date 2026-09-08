@@ -17097,75 +17097,35 @@ function capStatusBar(){
    hiç girmez (bkz. MainActivity.java'daki edge-to-edge zorlaması
    kaldırıldıktan sonra bu artık güvenli). */
 window.__statusBarLocked = window.__statusBarLocked || false;
-/* GEÇİCİ HATA AYIKLAMA KUTUSU — sorun çözülünce bu fonksiyon ve
-   çağrıları kaldırılabilir. Ekranın üstünde, en yüksek z-index'te,
-   kapatma düğmeli, kalıcı bir kutuda adım adım bilgi gösterir. */
-function __dbg(line){
-  try{
-    let box=document.getElementById('__klipsyDbg');
-    if(!box){
-      box=document.createElement('div');
-      box.id='__klipsyDbg';
-      box.style.cssText='position:fixed;left:4px;right:4px;bottom:4px;z-index:2147483647;'+
-        'background:#000;color:#0f0;font:10px monospace;padding:6px 28px 6px 6px;border-radius:6px;'+
-        'white-space:pre-wrap;opacity:.95;max-height:45vh;overflow:auto';
-      const closeBtn=document.createElement('button');
-      closeBtn.textContent='✕';
-      closeBtn.style.cssText='position:absolute;top:2px;right:2px;width:22px;height:22px;'+
-        'background:#333;color:#fff;border:none;border-radius:4px;font:12px monospace;'+
-        'line-height:22px;padding:0;pointer-events:auto';
-      closeBtn.addEventListener('click',function(e){ e.stopPropagation(); box.remove(); });
-      box.appendChild(closeBtn);
-      box.appendChild(document.createElement('div'));
-      document.body.appendChild(box);
-    }
-    const log=box.lastElementChild;
-    log.textContent += (log.textContent?"\n":"") + line;
-  }catch(e){}
-}
-
 async function lockNativeStatusBar(){
   if(window.__statusBarLocked) return;
   window.__statusBarLocked = true;
   document.documentElement.classList.remove('feed-immersive');
-  __dbg('isNativeApp(): ' + isNativeApp());
   const SB=capStatusBar();
-  __dbg('capStatusBar(): ' + (SB ? 'BULUNDU, metodlar: '+Object.keys(SB).join(',') : 'NULL'));
-  if(!SB){ __dbg('SB null olduğu için durduruldu'); return; }
+  if(!SB) return;
   try{
-    __dbg('SB.show tipi: ' + typeof SB.show);
     if(typeof SB.show==="function") await SB.show();
-    __dbg('SB.show() TAMAMLANDI (hata yok)');
-  }catch(e){ __dbg('SB.show() HATA: ' + (e&&e.message||e)); }
+  }catch(e){}
   try{
-    __dbg('SB.setOverlaysWebView tipi: ' + typeof SB.setOverlaysWebView);
     if(typeof SB.setOverlaysWebView==="function") await SB.setOverlaysWebView({overlay:false});
-    __dbg('setOverlaysWebView TAMAMLANDI');
-  }catch(e){ __dbg('setOverlaysWebView HATA: ' + (e&&e.message||e)); }
+  }catch(e){}
 }
 
 /* Native durum çubuğunun arkaplan rengini VE ikon rengini (saat/pil
    yazısının koyu mu açık mı olacağını) o an açık olan ekrana göre
    ayarlar. syncStatusBar() zaten bu kararı (hangi ekranda hangi renk)
    veriyordu — burada sadece bunu native tarafa da uyguluyoruz. */
-async function applyNativeStatusBarColor(color, bgIsLight){
+function applyNativeStatusBarColor(color, bgIsLight){
   if(!isNativeApp()) return;
   const SB=capStatusBar();
-  if(!SB){ __dbg('applyNativeStatusBarColor: SB yok'); return; }
+  if(!SB) return;
   try{
-    __dbg('setBackgroundColor çağrılıyor: ' + color);
-    if(typeof SB.setBackgroundColor==="function") await SB.setBackgroundColor({color});
-    __dbg('setBackgroundColor TAMAMLANDI');
-  }catch(e){ __dbg('setBackgroundColor HATA: ' + (e&&e.message||e)); }
+    if(typeof SB.setBackgroundColor==="function") SB.setBackgroundColor({color});
+  }catch(e){}
   try{
     // arkaplan BEYAZSA ikonlar KOYU (Dark), arkaplan SİYAHSA ikonlar AÇIK (Light)
-    // Capacitor: Style.Dark = AÇIK ikonlar (koyu zemin için),
-    // Style.Light = KOYU ikonlar (açık zemin için). Önceki sürümde bu ters yazılmıştı.
-    const st = bgIsLight ? "LIGHT" : "DARK";
-    __dbg('setStyle çağrılıyor: ' + st);
-    if(typeof SB.setStyle==="function") await SB.setStyle({style: st});
-    __dbg('setStyle TAMAMLANDI');
-  }catch(e){ __dbg('setStyle HATA: ' + (e&&e.message||e)); }
+    if(typeof SB.setStyle==="function") SB.setStyle({style: bgIsLight ? "DARK" : "LIGHT"});
+  }catch(e){}
 }
 function syncStatusBar(){
   const tc=document.getElementById('__themeColor');
@@ -17190,15 +17150,6 @@ function syncStatusBar(){
   else if(onPanel){ color = isLight ? '#FFFFFF' : '#0A0A0E'; bgIsLight = isLight; }
   else { color='#08080C'; bgIsLight=false; } // Akış
   if(tc) tc.setAttribute('content', color);
-
-  if(isNativeApp()){
-    const acikPaneller = panelIds.filter(id=>{
-      const el=document.getElementById(id);
-      return el && el.classList.contains("open");
-    });
-    __dbg('syncStatusBar → isLight='+isLight+' onGate='+!!onGate+' onDarkScreen='+onDarkScreen+
-      ' onPanel='+onPanel+' açıkPaneller=['+acikPaneller.join(',')+'] → color='+color);
-  }
 
   document.documentElement.style.setProperty('--sat','0px');
   if(isNativeApp()){
@@ -19841,7 +19792,6 @@ function paintWm(ctx,w,h,who,tSec){
 }
 
 async function downloadWatermarked(it){
-  __dbg('=== downloadWatermarked ÇAĞRILDI ===');
   if(!it) return;
   if(!it.mine && !downloadsOn(it)){ toast(t("dl_off")); return; }
   const video = it.kind==="video";
@@ -19888,56 +19838,40 @@ function blobToBase64(blob){
   });
 }
 async function _saveBlob(blob, name, picker){
-  __dbg('_saveBlob başladı, blob boyutu: ' + (blob?blob.size:'YOK'));
   if(!blob) throw new Error("empty blob");
   if(picker){
-    __dbg('picker var, File System Access API kullanılıyor');
     const wr=await picker.createWritable();
     await wr.write(blob); await wr.close();
-    __dbg('picker ile kayıt TAMAMLANDI');
     return;
   }
   const cap=window.Capacitor;
   const native=cap && cap.isNativePlatform && cap.isNativePlatform();
-  __dbg('native: ' + native);
   if(native){
     const P=(cap.Plugins)||{};
     const FS=P.Filesystem;
     const Share=P.Share;
-    __dbg('Filesystem plugin: ' + (FS?'VAR':'YOK') + ', Share plugin: ' + (Share?'VAR':'YOK'));
     if(FS && FS.writeFile){
-      __dbg('blob base64\'e çevriliyor...');
       const b64=await blobToBase64(blob);
-      __dbg('base64 hazır, uzunluk: ' + b64.length);
       const dir=(FS.Directory && FS.Directory.Cache) || "CACHE";
       const wr=await FS.writeFile({ path:name, data:b64, directory:dir });
-      __dbg('writeFile TAMAMLANDI, sonuç: ' + JSON.stringify(wr));
       const uri=wr && (wr.uri||wr.fileURI);
-      __dbg('elde edilen uri: ' + uri);
       if(Share && Share.share && uri){
         /* ÖNEMLİ: yerel bir dosya paylaşılırken doğru alan "files"
            (dizi) — "url" alanı web linki içindir. "url" ile yerel
            dosya yolu vermek Android'de sessizce hiçbir şey yapmıyordu;
            PWA'da bu kod hiç çalışmadığı (aşağıdaki <a download>
            yoluna gittiği) için sorun sadece APK'de görünüyordu. */
-        __dbg('Share.share() çağrılıyor (files:[uri])...');
         await Share.share({ title:name, files:[uri], dialogTitle:t("dl_wm") });
-        __dbg('Share.share() TAMAMLANDI (hata yok)');
         return;
       }
-      __dbg('Share atlandı: Share=' + !!Share + ' share_fn=' + !!(Share&&Share.share) + ' uri=' + !!uri);
-    }else{
-      __dbg('FS.writeFile yok, ikinci yola geçiliyor');
     }
     if(Share && Share.share){
       const href=URL.createObjectURL(blob);
-      __dbg('yedek yol: blob URL ile Share.share deneniyor');
-      try{ await Share.share({ title:name, url:href, dialogTitle:t("dl_wm") }); __dbg('yedek Share TAMAMLANDI'); }
+      try{ await Share.share({ title:name, url:href, dialogTitle:t("dl_wm") }); }
       finally{ setTimeout(()=>URL.revokeObjectURL(href), 8000); }
       return;
     }
   }
-  __dbg('native yol atlandı/bitti, <a download> ile deneniyor');
   const href=URL.createObjectURL(blob);
   const a=document.createElement("a");
   a.href=href; a.download=name; a.rel="noopener";
@@ -19945,21 +19879,16 @@ async function _saveBlob(blob, name, picker){
   setTimeout(()=>URL.revokeObjectURL(href), 8000);
 }
 async function loadMomentBlob(it){
-  __dbg('loadMomentBlob başladı');
   const sb=window.__sb;
   const path=momentStoragePath(it);
-  __dbg('storage path: ' + path);
   if(sb && path){
     const {data,error}=await sb.storage.from("moments").download(path);
-    if(!error && data){ __dbg('storage.download BAŞARILI, boyut: ' + data.size); return data; }
+    if(!error && data) return data;
     console.warn("storage.download", error);
-    __dbg('storage.download HATA: ' + (error&&error.message||error));
   }
   const url=it.src||it.poster;
-  __dbg('fetch ile deneniyor: ' + url);
   if(!url) throw new Error("no url");
   const r=await fetch(url, {mode:"cors", cache:"no-store"});
-  __dbg('fetch sonucu status: ' + r.status);
   if(!r.ok) throw new Error("fetch "+r.status);
   return await r.blob();
 }
@@ -23695,6 +23624,94 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
       if(track){ const n=track.children.length; window.__gsJump && window.__gsJump(n-1); }
     }catch(e){}
   }
+})();
+</script>
+
+<script>
+/* ===== KAMERA HATA AYIKLAMA PANELİ (geçici) ===== */
+(function(){
+  function kur(){
+    if(!window.Kamera) return setTimeout(kur, 300);
+
+    const stil = document.createElement("style");
+    stil.textContent =
+      "#klipsyDbgBtn#klipsyDbgBtn,#klipsyDbgPanel#klipsyDbgPanel{"+
+      "visibility:visible !important;pointer-events:auto !important;}";
+    document.head.appendChild(stil);
+
+    const btn = document.createElement("button");
+    btn.id = "klipsyDbgBtn";
+    btn.textContent = "\uD83D\uDC1E";
+    btn.style.cssText = "position:fixed !important;top:40px !important;left:6px !important;"+
+      "z-index:2147483647 !important;width:38px;height:38px;border-radius:50%;border:0;"+
+      "background:rgba(255,0,80,.95);color:#fff;font-size:18px;line-height:38px;"+
+      "text-align:center;padding:0;box-shadow:0 0 0 2px #fff;";
+    document.body.appendChild(btn);
+
+    const panel = document.createElement("div");
+    panel.id = "klipsyDbgPanel";
+    panel.style.cssText = "position:fixed !important;top:84px !important;left:6px !important;right:6px !important;"+
+      "z-index:2147483647 !important;max-height:70vh;overflow:auto;background:rgba(0,0,0,.95);"+
+      "color:#7CFFB2;font:11px/1.5 ui-monospace,monospace;padding:10px;border-radius:10px;"+
+      "white-space:pre-wrap;word-break:break-word;display:none;border:2px solid #FF3B6B;";
+    document.body.appendChild(panel);
+
+    let acik = false;
+    btn.onclick = () => { acik = !acik; panel.style.display = acik ? "block" : "none"; guncelle(); };
+
+    function siniflar(){
+      const camFailEl = document.getElementById("camFail");
+      return "waiting=" + document.documentElement.classList.contains("waiting") + "\n" +
+        "camNativeOn=" + document.documentElement.classList.contains("camNativeOn") + "\n" +
+        "camSession=" + document.documentElement.classList.contains("camSession") + "\n" +
+        "camFail.on=" + (camFailEl ? camFailEl.classList.contains("on") : "yok");
+    }
+
+    function guncelle(){
+      if(!acik) return;
+      let d = {};
+      try{ d = Kamera.durum(); }catch(e){ d = { hata: String(e) }; }
+      const camEl = document.getElementById("cam");
+      const camOpen = camEl ? camEl.classList.contains("open") : "yok";
+      panel.textContent =
+        "#cam.open: " + camOpen + "\n" +
+        siniflar() + "\n\n" +
+        "Kamera.durum(): " + JSON.stringify(d, null, 1) + "\n\n" +
+        "--- OLAY GEÇMİŞİ ---\n" + gecmis.join("\n");
+    }
+
+    const gecmis = [];
+    try{
+      Kamera.olay(function(e){
+        const satir = new Date(e.zaman).toLocaleTimeString() + " — " + e.tur +
+          (e.hataTuru ? (" [" + e.hataTuru + "]") : "") +
+          (e.hata && e.hata.message ? (" :: " + e.hata.message) : "");
+        gecmis.push(satir);
+        if(gecmis.length > 40) gecmis.shift();
+        guncelle();
+      });
+    }catch(e){}
+
+    document.addEventListener("visibilitychange", function(){
+      gecmis.push(new Date().toLocaleTimeString() + " — [SAYFA] visibilitychange -> " + document.visibilityState);
+      if(gecmis.length > 40) gecmis.shift();
+      guncelle();
+    });
+
+    try{
+      const c = window.Capacitor;
+      const cp = c && c.Plugins && c.Plugins.CameraPreview;
+      const bilgi = cp
+        ? ("tip=" + typeof cp + " start_tip=" + typeof cp.start + " anahtarlar=" + Object.keys(cp).join(","))
+        : "CameraPreview yok/undefined";
+      gecmis.push(new Date().toLocaleTimeString() + " — [TANI] Capacitor.Plugins.CameraPreview: " + bilgi);
+    }catch(e){
+      gecmis.push(new Date().toLocaleTimeString() + " — [TANI] hata: " + String(e));
+    }
+
+    setInterval(guncelle, 500);
+  }
+  kur();
 })();
 </script>
 </body>

@@ -236,7 +236,7 @@
     const taban = {
       position: yonNative(durum.yon),
       toBack: true,
-      aspectMode: "cover",
+      aspectMode: "contain",
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,

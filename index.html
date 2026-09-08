@@ -23633,7 +23633,14 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   function kur(){
     if(!window.Kamera) return setTimeout(kur, 300);
 
+    const stil = document.createElement("style");
+    stil.textContent =
+      "#klipsyDbgBtn#klipsyDbgBtn,#klipsyDbgPanel#klipsyDbgPanel{"+
+      "visibility:visible !important;pointer-events:auto !important;}";
+    document.head.appendChild(stil);
+
     const btn = document.createElement("button");
+    btn.id = "klipsyDbgBtn";
     btn.textContent = "\uD83D\uDC1E";
     btn.style.cssText = "position:fixed !important;top:40px !important;left:6px !important;"+
       "z-index:2147483647 !important;width:38px;height:38px;border-radius:50%;border:0;"+
@@ -23642,6 +23649,7 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
     document.body.appendChild(btn);
 
     const panel = document.createElement("div");
+    panel.id = "klipsyDbgPanel";
     panel.style.cssText = "position:fixed !important;top:84px !important;left:6px !important;right:6px !important;"+
       "z-index:2147483647 !important;max-height:70vh;overflow:auto;background:rgba(0,0,0,.95);"+
       "color:#7CFFB2;font:11px/1.5 ui-monospace,monospace;padding:10px;border-radius:10px;"+

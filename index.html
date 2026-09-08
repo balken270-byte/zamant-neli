@@ -17159,7 +17159,9 @@ async function applyNativeStatusBarColor(color, bgIsLight){
   }catch(e){ __dbg('setBackgroundColor HATA: ' + (e&&e.message||e)); }
   try{
     // arkaplan BEYAZSA ikonlar KOYU (Dark), arkaplan SİYAHSA ikonlar AÇIK (Light)
-    const st = bgIsLight ? "DARK" : "LIGHT";
+    // Capacitor: Style.Dark = AÇIK ikonlar (koyu zemin için),
+    // Style.Light = KOYU ikonlar (açık zemin için). Önceki sürümde bu ters yazılmıştı.
+    const st = bgIsLight ? "LIGHT" : "DARK";
     __dbg('setStyle çağrılıyor: ' + st);
     if(typeof SB.setStyle==="function") await SB.setStyle({style: st});
     __dbg('setStyle TAMAMLANDI');

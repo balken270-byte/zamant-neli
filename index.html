@@ -5585,7 +5585,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
   --placeholder:rgba(255,255,255,.35); --avatar-bg:#22222A;
   --top:3.25rem; --tab:3.025rem;
   --sheetH:calc(min(55vh,31.25rem) - 4.25rem);   /* uygulama açılınca yeniden hesaplanır */
-  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px); --sat-root:env(safe-area-inset-top,0px);
   --font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
   --z-tab:32; --z-notif:50; --z-time:52; --z-comments:60; --z-cam:70; --z-toast:80;
@@ -5632,7 +5632,7 @@ svg{display:block}
 :focus-visible{outline:0.125rem solid rgba(255,255,255,.7);outline-offset:0.125rem}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
 
-#phone{position:relative;width:100%;height:calc(100% - var(--sat,0px));top:var(--sat,0px);max-width:26.875rem;margin:0 auto;background:#000;overflow:hidden;isolation:isolate;visibility:hidden}
+#phone{--sat:0px;position:relative;width:100%;height:calc(100% - var(--sat-root,0px));top:var(--sat-root,0px);max-width:26.875rem;margin:0 auto;background:#000;overflow:hidden;isolation:isolate;visibility:hidden}
 @media (min-width:520px) and (min-height:720px){
   body{background:#050507;display:grid;place-items:center}
   #phone{height:min(57.5rem,94vh);border-radius:2rem;border:1px solid rgba(255,255,255,.10);box-shadow:0 2.5rem 6.25rem -2.5rem #000}
@@ -10500,7 +10500,9 @@ function setSheetH(){
 function setVH(){
   /* --vh = gorunur alan yuksekligi. ASLA bir elemandan okunmaz:
      #feed yuksekligi --sat/--top/--tab e bagli, dongusel olur. */
-  const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  var ph = document.getElementById("phone");
+  var h = (ph && ph.clientHeight) ||
+          (window.visualViewport && window.visualViewport.height) || window.innerHeight;
   document.documentElement.style.setProperty("--vh", Math.round(h)+"px");
 }
 setSheetH();

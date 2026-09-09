@@ -5907,7 +5907,8 @@ svg{display:block}
 .cambtn:active{transform:scale(.9)}
 
 /* ============ paneller ============ */
-.panel,.sheet{position:absolute;inset:0;display:none;flex-direction:column}
+.sheet{position:absolute;inset:0;display:none;flex-direction:column}
+.panel{position:fixed;inset:0;display:none;flex-direction:column;--sat:var(--sat-root,0px)}
 /* alt navigasyon çubuğu bu üç ekranda da görünsün diye altta yer bırakıyoruz */
 #profile,#chats,#timeSheet,#userSearch{bottom:calc(var(--tab) + var(--sab))}
 .relBox{padding:0.75rem 1.1rem calc(var(--sab) + 1.1rem)!important;text-align:center}
@@ -6152,7 +6153,7 @@ svg{display:block}
 .placeRow .pl{font-size:0.9062rem;font-weight:600;letter-spacing:-.01em}
 .placeRow .pc{font-size:0.75rem;color:var(--t3);margin-top:1px}
 /* ==== KEŞFET: tam ekran harita + katmanlar (Airbnb tarzı) ==== */
-#timeSheet{z-index:var(--z-time);color:var(--t1)}
+#timeSheet{position:fixed;inset:0;z-index:var(--z-time);color:var(--t1);--sat:var(--sat-root,0px)}
 .explore{position:absolute;inset:0;overflow:hidden}
 /* haritada kullanıcının konumu */
 .userDot{position:relative}
@@ -7171,7 +7172,7 @@ svg{display:block}
 #placePane{padding:0 0.25rem}
 
 /* ============ kamera ============ */
-#cam{position:absolute;inset:0;z-index:var(--z-cam);background:#000;display:none;flex-direction:column}
+#cam{position:fixed;inset:0;z-index:var(--z-cam);background:#000;display:none;flex-direction:column;--sat:var(--sat-root,0px)}
 #cam.open{display:flex;animation:fadeIn .2s ease}
 /* Kamera oturumu: tema ne olursa olsun zemin siyah kalsın (beyaz flaş yok) */
 html.camSession,
@@ -9376,8 +9377,7 @@ html.sb-white #notif::before,
 html.sb-white #blockedPanel::before,
 html.sb-white #profile::before,
 html.sb-white #userSearch::before{
-  content:"";position:absolute;top:0;left:0;right:0;
-  height:var(--sat);background:#FFFFFF;z-index:1200;pointer-events:none;
+  content:none;
 }
 </style>
 
@@ -17255,7 +17255,7 @@ function syncStatusBar(){
   const camEl = document.getElementById('cam');
   const camOpen = !!(camEl && camEl.classList.contains('open'));
   const bar = document.getElementById('sysBarBg');
-  if(bar) bar.style.display = camOpen ? 'none' : 'block';
+  if(bar) bar.style.display = (camOpen || onPanel) ? 'none' : 'block';
 
   try{
     document.documentElement.style.background = camOpen ? 'transparent' : '';
@@ -23927,6 +23927,7 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
   }
 })();
 </script>
+
 
 </body>
 </html>

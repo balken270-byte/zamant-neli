@@ -8,6 +8,10 @@ import android.os.Build;
 import android.graphics.Color;
 import android.view.Window;
 
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginHandle;
@@ -53,6 +57,7 @@ public class MainActivity extends BridgeActivity
         // zorunlu edge-to-edge modda tutuyordu (kameradan bağımsız, kalıcı olarak).
         setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
+        hideSystemBars();
         // Pencere/cubuk rengi BURADAN ayarlanmaz.
         // targetSdk 35+ icin setStatusBarColor/setNavigationBarColor no-op.
         // Renk: CSS #sysBarBg + SafeArea eklentisi.
@@ -81,6 +86,23 @@ public class MainActivity extends BridgeActivity
             if (!(plugin instanceof SocialLoginPlugin)) return;
 
             ((SocialLoginPlugin) plugin).handleGoogleLoginIntent(requestCode, data);
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) hideSystemBars();
+    }
+
+    private void hideSystemBars() {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat c =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (c != null) {
+            c.hide(WindowInsetsCompat.Type.navigationBars());
+            c.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         }
     }
 

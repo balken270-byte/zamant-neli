@@ -8301,7 +8301,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 .shrow.done .go2{background:rgba(95,214,154,.18);border-color:rgba(95,214,154,.4);color:#8FE3B4}
 
 /* ============ paylaşım ekranı ============ */
-#compose{position:absolute;inset:0;z-index:75;background:#000;display:none;flex-direction:column;
+#compose{position:fixed;inset:0;z-index:75;background:#000;display:none;flex-direction:column;--sat:var(--sat-root,0px);
   --mood:#7B5BFF}
 #compose.open{display:flex;animation:fadeIn .22s ease}
 
@@ -12657,7 +12657,29 @@ function close(id){
   if(AUDIO_BLOCKERS.includes(id) && !anyBlockerOpen() && typeof resumeFeedMedia==="function"){
     setTimeout(()=>{ if(!anyBlockerOpen()) resumeFeedMedia(); },80);
   }
+
+  /* DUZELTME: panel geri tusuyla kapatilinca aktif sekme eski panelde
+     kaliyordu. Hem ust serit hem alt cubuk "acik ekran" sanip beyaz
+     takiliyordu. Baska panel kalmadiysa sekme akisa dondurulur. */
+  const _ANA_PANEL=["profile","chats","chat","settings","editProfile",
+                    "notif","timeSheet","blockedPanel","userSearch"];
+  if(_ANA_PANEL.includes(id)){
+    const kalan=_ANA_PANEL.some(x=>{
+      const e=document.getElementById(x);
+      return e && e.classList.contains("open");
+    });
+    if(kalan===false){
+      const tf=document.getElementById("tabFeed");
+      if(tf && !tf.classList.contains("on")){
+        document.querySelectorAll(".tab.on").forEach(x=>x.classList.remove("on"));
+        tf.classList.add("on");
+      }
+    }
+  }
+
   if(typeof syncStatusBar==="function") syncStatusBar();
+  /* open() ikisini de cagiriyordu, close() yalnizca ilkini -> eksikti */
+  if(typeof syncTabbar==="function") syncTabbar();
 }
 $$("[data-close]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.close)));
 document.addEventListener("keydown",e=>{
@@ -15236,12 +15258,17 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
   if(!draft){ toast(t("err_nothing_save")); return; }
   const btn=$("#cpSaveBtn"), ic=$("#cpSaveIcon"), lb=$("#cpSaveLb");
   try{
-    let blobUrl=draft.src, name="klipsy-"+Date.now()+(draft.kind==="video"?".mp4":".jpg");
-    if(draft.blob){ blobUrl=URL.createObjectURL(draft.blob); }
-    const a=document.createElement("a");
-    a.href=blobUrl; a.download=name;
-    document.body.appendChild(a); a.click(); a.remove();
-    if(draft.blob) setTimeout(()=>URL.revokeObjectURL(blobUrl),4000);
+    /* DUZELTME: <a download> Android WebView de calismaz.
+       Uygulamanin kendi saveToDevice() zinciri kullanilir:
+       Media eklentisi -> Filesystem -> Share. */
+    const name="klipsy-"+Date.now()+(draft.kind==="video"?".mp4":".jpg");
+    let blob=draft.blob||null;
+    if(!blob && draft.src){
+      const r=await fetch(draft.src);
+      blob=await r.blob();
+    }
+    if(!blob) throw new Error("kare bulunamadi");
+    await saveToDevice(blob, name, null, /^https?:/i.test(draft.src||"") ? draft.src : null);
     btn.classList.add("on");
     ic.innerHTML='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>';
     lb.textContent="Kaydedildi";
@@ -15251,7 +15278,10 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
       ic.innerHTML='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></svg>';
       lb.textContent="Kaydet";
     },2400);
-  }catch(e){ toast("Kaydedilemedi"); }
+  }catch(e){
+    console.warn("kaydet:", e && (e.message||e));
+    toast("Kaydedilemedi");
+  }
 });
 
 function paintMoodBtn(){
@@ -15995,7 +16025,17 @@ function closeCompose(back){
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#cpMedia").innerHTML="";$("#cpMedia").style.backgroundImage="";
   draft=null;pickedMood=null;
-  if(back) openCam("post"); else setTab($("#tabFeed"));
+  if(back){
+    /* DUZELTME: closeCam() async ama beklenmeden openCompose calisiyordu.
+       Geri basinca eklenti hala onceki durdurmanin ortasindayken
+       baslat() cagriliyor ve onizleme siyah kaliyordu.
+       Once durdurmayi kesinlestir, kisa bir nefes ver, sonra ac. */
+    (async ()=>{
+      try{ if(window.Kamera && Kamera.durdur) await Kamera.durdur(); }catch(e){}
+      await new Promise(r=>setTimeout(r,140));
+      openCam("post");
+    })();
+  } else setTab($("#tabFeed"));
 }
 $("#cpBack").addEventListener("click",()=>closeCompose(true));
 $("#cpShare").addEventListener("click",()=>{
@@ -17409,7 +17449,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.5.1";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.5.4-t";
   ver.style.cursor="pointer";
   ver.addEventListener("click",()=>{
     const b=document.getElementById("dlDbg");
@@ -23015,6 +23055,56 @@ function sohbetleriTazeleGecikmeli(){
   _convTazeleT = setTimeout(()=>{ try{ loadConversations(); }catch(e){} }, 400);
 }
 
+/* ═══ MESAJ EMNIYET AGI ═══
+   Canli mesaj Supabase realtime soketiyle geliyor. Android WebView
+   arka plana atilinca soket kopuyor ve geri donunce her zaman
+   yeniden baglanmiyor; mesaj ancak uygulama yeniden acilinca
+   goruluyordu. Sunucuda tablo icin yayin kapaliysa hic gelmiyor.
+   Burasi sokete guvenmez: on plandayken duzenli, ekrana her
+   donuste hemen tazeler. */
+let _nabizT = null;
+
+function mesajTazele(zorla){
+  try{
+    if(document.hidden && !zorla) return;
+    if(!window.__sb || !window.__me) return;
+    loadConversations();
+    if(chatWho && typeof mesajlariTazele === "function") mesajlariTazele(chatWho);
+  }catch(e){}
+}
+
+function nabziBaslat(){
+  clearInterval(_nabizT);
+  _nabizT = setInterval(()=>{ mesajTazele(false); }, 20000);
+}
+function nabziDurdur(){ clearInterval(_nabizT); _nabizT = null; }
+
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden){ nabziDurdur(); return; }
+  mesajTazele(true);                       // ekrana doner donmez
+  setTimeout(()=>mesajTazele(true), 1200); // soket gec baglanirsa ikinci deneme
+  nabziBaslat();
+});
+
+window.addEventListener("focus", ()=>{ mesajTazele(true); });
+window.addEventListener("online", ()=>{ setTimeout(()=>mesajTazele(true), 600); });
+
+/* Uygulama on plana donunce (Capacitor) */
+try{
+  const App = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if(App && App.addListener){
+    App.addListener("appStateChange", (st)=>{
+      if(st && st.isActive){
+        mesajTazele(true);
+        setTimeout(()=>mesajTazele(true), 1500);
+        nabziBaslat();
+      }else nabziDurdur();
+    });
+  }
+}catch(e){}
+
+nabziBaslat();
+
 /* Açık sohbete SADECE yeni mesajları ekler — tüm geçmişi yeniden
    yüklemez, ekranı da baştan çizmez. */
 async function mesajlariTazele(who){
@@ -23883,5 +23973,143 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 </script>
 
 
+
+<!-- ===== KLIPSY_FLICKER_PANEL (GECICI) ===== -->
+<style>
+#flkBtn{position:fixed;right:6px;bottom:150px;z-index:2147483646;
+  width:44px;height:44px;border-radius:50%;border:2px solid #ff0;
+  background:rgba(0,0,0,.85);color:#ff0;font:700 14px monospace;
+  display:grid;place-items:center}
+#flkBox{position:fixed;left:4px;right:4px;top:6%;bottom:16%;z-index:2147483647;
+  background:rgba(0,0,0,.96);color:#ff0;border:2px solid #ff0;
+  font:10.5px/1.4 monospace;padding:8px;display:none;flex-direction:column}
+#flkBox.on{display:flex}
+#flkOut{flex:1;overflow:auto;white-space:pre-wrap;word-break:break-all}
+#flkBar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+#flkBar button{background:#ff0;color:#000;border:0;border-radius:4px;
+  font:700 10px monospace;padding:5px 7px}
+</style>
+<button id="flkBtn" aria-hidden="true">T</button>
+<div id="flkBox">
+  <div id="flkBar">
+    <button data-f="clear">TEMIZLE</button>
+    <button data-f="arm">KAYDI BASLAT</button>
+    <button data-f="close">KAPAT</button>
+  </div>
+  <div id="flkOut"></div>
+</div>
+<script>
+(function(){
+  var out=document.getElementById("flkOut");
+  var box=document.getElementById("flkBox");
+  var btn=document.getElementById("flkBtn");
+  var L=[], t0=0, kayit=false, obs=null, rafId=0;
+
+  function log(){
+    var dt = kayit ? ("+" + String(Math.round(performance.now()-t0)).padStart(4," ") + "ms ") : "      ";
+    L.push(dt + Array.prototype.join.call(arguments," "));
+    if(L.length>500) L.shift();
+    out.textContent = L.join("\n");
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function tanim(el){
+    if(!el || el.nodeType!==1) return String(el);
+    var s = el.tagName.toLowerCase();
+    if(el.id) s += "#" + el.id;
+    var c = (el.className && el.className.baseVal!==undefined) ? el.className.baseVal : el.className;
+    if(c && typeof c === "string" && c.trim()) s += "." + c.trim().split(/\s+/).slice(0,3).join(".");
+    return s;
+  }
+  function altta(el){
+    try{
+      var r = el.getBoundingClientRect();
+      return r.height>0 && r.bottom > window.innerHeight*0.55;
+    }catch(e){ return false; }
+  }
+
+  function baslat(){
+    L=[]; out.textContent="";
+    kayit=true; t0=performance.now();
+    log("KAYIT BASLADI — simdi PROFIL sekmesine dokun");
+    log("ekran yuksekligi:", window.innerHeight);
+
+    obs = new MutationObserver(function(kl){
+      kl.forEach(function(k){
+        if(k.type==="attributes"){
+          var el=k.target;
+          if(el.nodeType!==1) return;
+          if(el.id==="flkBox"||el.id==="flkOut"||el.id==="flkBtn") return;
+          var yeni = k.attributeName==="class"
+            ? ((el.className && el.className.baseVal!==undefined)?el.className.baseVal:el.className)
+            : (el.getAttribute(k.attributeName)||"");
+          if(k.attributeName==="style" && String(yeni).length>90) yeni=String(yeni).slice(0,90)+"...";
+          log("ATTR", k.attributeName, tanim(el), "->", String(yeni).slice(0,110));
+        }else if(k.type==="childList"){
+          for(var i=0;i<k.addedNodes.length;i++){
+            var a=k.addedNodes[i];
+            if(a.nodeType!==1) continue;
+            if(a.id==="flkBox"||a.id==="flkBtn") continue;
+            log("EKLENDI ", tanim(a), altta(a)?"[ALT YARI]":"");
+          }
+          for(var j=0;j<k.removedNodes.length;j++){
+            var r=k.removedNodes[j];
+            if(r.nodeType!==1) continue;
+            log("SILINDI ", tanim(r));
+          }
+        }
+      });
+    });
+    obs.observe(document.documentElement,{
+      subtree:true, childList:true,
+      attributes:true, attributeFilter:["class","style","hidden","aria-hidden"]
+    });
+
+    /* kare kare: ekranin alt yarisinda gorunen yuksek katmanlar */
+    var onceki="";
+    function tara(){
+      if(!kayit) return;
+      var bulunan=[];
+      var hepsi=document.body.querySelectorAll("*");
+      for(var i=0;i<hepsi.length;i++){
+        var e=hepsi[i];
+        if(e.id==="flkBox"||e.id==="flkBtn"||e.closest("#flkBox")) continue;
+        var st=getComputedStyle(e);
+        if(st.display==="none"||st.visibility==="hidden"||parseFloat(st.opacity)<0.03) continue;
+        var z=parseInt(st.zIndex,10);
+        if(!(z>=40)) continue;
+        var r=e.getBoundingClientRect();
+        if(r.height<20) continue;
+        if(r.bottom < window.innerHeight*0.5) continue;
+        bulunan.push(tanim(e)+"(z"+z+" y"+Math.round(r.top)+".."+Math.round(r.bottom)+")");
+      }
+      var imza=bulunan.join(" | ");
+      if(imza!==onceki){ log("KATMAN  ", imza||"(yok)"); onceki=imza; }
+      rafId=requestAnimationFrame(tara);
+    }
+    rafId=requestAnimationFrame(tara);
+
+    setTimeout(function(){
+      kayit=false;
+      if(obs){ obs.disconnect(); obs=null; }
+      cancelAnimationFrame(rafId);
+      log("KAYIT BITTI (6 sn)");
+    }, 6000);
+  }
+
+  btn.addEventListener("click", function(){ box.classList.toggle("on"); });
+  document.getElementById("flkBar").addEventListener("click", function(e){
+    var a=e.target && e.target.getAttribute && e.target.getAttribute("data-f");
+    if(a==="clear"){ L=[]; out.textContent=""; }
+    if(a==="close"){ box.classList.remove("on"); }
+    if(a==="arm"){ box.classList.remove("on"); baslat(); }
+  });
+
+  log("Titreme sondasi hazir.");
+  log("1) T butonuna bas  2) KAYDI BASLAT  3) hemen PROFIL sekmesine dokun");
+  log("6 saniye kaydeder, sonra T ile acip oku.");
+})();
+</script>
+<!-- ===== /KLIPSY_FLICKER_PANEL ===== -->
 </body>
 </html>

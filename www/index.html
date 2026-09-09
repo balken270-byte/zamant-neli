@@ -6,8 +6,15 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.37</title>
-<script src="klipsy-kamera.js?v=3.3.34"></script>
+<script>
+/* ══════════ TEK SURUM KAYNAGI ══════════
+   Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
+   ayarlar satiri, kamera dosyasi ve service worker onbellegi
+   hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
+window.KLIPSY_SURUM = "3.5.9";
+document.title = "Klipsy " + KLIPSY_SURUM;
+</script>
+<script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5507,7 +5514,9 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
   }
 
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function () {});
+    /* Surum sorgusu: adres degisince tarayici yeni SW yi indirir,
+       sw.js de onbellek adini bu degerden uretir. */
+    navigator.serviceWorker.register('./sw.js?v=' + (window.KLIPSY_SURUM || 'dev')).catch(function () {});
   });
 })();
 </script>
@@ -5693,7 +5702,6 @@ svg{display:block}
   display:block;position:relative;z-index:1;
   transform-origin:center center;transition:transform .28s var(--ease);will-change:transform}
 .pmedia.drag img,.pmedia.drag video{transition:none}
-.pshade{display:none!important}
 
 /* kaplama arayüz */
 .plate{position:absolute;inset:0;z-index:3;pointer-events:none;transition:opacity .25s}
@@ -5730,16 +5738,6 @@ svg{display:block}
 .pwhere svg{flex:none;opacity:.85}
 .pwhere span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* --- ne zaman: dönem göstergesi --- */
-/* --- video ses düğmesi --- */
-.soundBtn{position:absolute;z-index:4;right:0.7rem;top:0.7rem;
-  display:flex;align-items:center;gap:0.375rem;height:1.875rem;padding:0 0.75rem;border-radius:6.1875rem;
-  background:rgba(0,0,0,.44);border:1px solid rgba(255,255,255,.2);
-  backdrop-filter:blur(0.875rem);-webkit-backdrop-filter:blur(0.875rem);
-  font-size:0.7188rem;font-weight:600;letter-spacing:-.01em;transition:transform .12s}
-.soundBtn:active{transform:scale(.92)}
-.soundBtn.on{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.34)}
-
 /* --- alt bilgi perdesi: blur yok (video üstünde her kare GPU yer) --- */
 .pveil{position:absolute;left:0;right:0;bottom:0;height:3.25rem;
   z-index:2;pointer-events:none;
@@ -5758,13 +5756,6 @@ svg{display:block}
   border-radius:6.1875rem;background:rgba(255,255,255,.85);transform:translate(-50%,-50%)}
 .abSong.playing .songDisc{animation:songSpin 3.2s linear infinite}
 @keyframes songSpin{to{transform:rotate(360deg)}}
-.moodtag{display:inline-flex;align-items:center;gap:0.4375rem;height:2.125rem;padding:0 0.9375rem 0 0.75rem;
-  border-radius:6.1875rem;background:rgba(0,0,0,.42);
-  border:1px solid var(--mc,rgba(255,255,255,.3));
-  backdrop-filter:blur(0.875rem);-webkit-backdrop-filter:blur(0.875rem);
-  font-size:0.8438rem;font-weight:600;letter-spacing:-.014em;
-  box-shadow:0 0.25rem 1.25rem -0.5rem var(--mc,transparent), inset 0 1px 0 rgba(255,255,255,.14)}
-.moodtag span.em{font-size:1rem;line-height:1}
 .pnote{font-size:0.875rem;line-height:1.5;letter-spacing:-.014em;max-width:100%;
   color:rgba(255,255,255,.97);text-shadow:0 1px 0.625rem rgba(0,0,0,.85);
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -5947,7 +5938,7 @@ svg{display:block}
   cursor:pointer;-webkit-user-select:none;user-select:none;
   transition:background .15s}
 #userSearch .usRow:active{background:var(--surf2)}
-#userSearch .usAv{width:2.625rem;height:2.625rem;border-radius:99px;flex:none;
+#userSearch .usAv{width:2.625rem;height:2.625rem;border-radius:0.875rem;flex:none;
   background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge)}
 #userSearch .usRow > div:not([class]){flex:1 1 0;min-width:0;overflow:hidden}
@@ -5983,7 +5974,10 @@ svg{display:block}
 .scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;animation:fadeIn .2s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
 .panel{z-index:var(--z-notif);background:var(--panelbg);color:var(--t1);
-  animation:panelIn .28s var(--ease)}
+  animation:panelIn .28s var(--ease);
+  /* fixed katmanda ilk kare titremesini onler */
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  transform:translateZ(0);will-change:transform,opacity}
 /* kaydırma akıcılığı: donanım ivmesi + momentum */
 .profbody,.setbody,.chatlist,.msgs,.cpBody,.exSheetList{
   -webkit-overflow-scrolling:touch;transform:translateZ(0);will-change:scroll-position}
@@ -6014,12 +6008,27 @@ svg{display:block}
   background:var(--surf1);border:1px solid var(--edge-soft)}
 .nrow .nthumb img{width:2.625rem;height:2.625rem;max-width:2.625rem;max-height:2.625rem;
   object-fit:cover;display:block;border-radius:0.6875rem}
-.nrow.unseen{background:linear-gradient(90deg, rgba(255,59,107,.08), transparent 55%)}
-.nrow.unseen::before{content:"";position:absolute;left:0;top:1rem;bottom:1rem;width:0.1875rem;
-  border-radius:0 0.1875rem 0.1875rem 0;background:linear-gradient(180deg,#FF3B6B,#7B5BFF)}
+/* Okunmamis bildirim: kenar cizgisi yok, yalnizca cok hafif zemin. */
+.nrow.unseen{background:var(--surf1)}
+.nrow.unseen .ntext b{font-weight:800}
+
+/* Grup bildirimi: masaya savrulmus kareler (en fazla 3).
+   Yuvarlak yuz yigini yerine uygulamanin kendi dili: anlik kareler. */
+.nav-av.stack{background:none;box-shadow:none;display:block}
+.nav-av.stack .sav{
+  position:absolute;left:0.1875rem;top:0.1875rem;
+  width:2.5rem;height:2.5rem;border-radius:0.8125rem;
+  background:var(--avatar-bg) center/cover no-repeat;
+  border:0.125rem solid var(--panelbg);
+  transform-origin:50% 90%;
+  display:grid;place-items:center;font-size:0.875rem;font-weight:700;color:var(--t2)}
+.nav-av.stack .sav:nth-child(1){transform:rotate(-1deg);z-index:3}
+.nav-av.stack .sav:nth-child(2){transform:rotate(8deg) translateX(0.1875rem);z-index:2}
+.nav-av.stack .sav:nth-child(3){transform:rotate(-11deg) translateX(-0.1875rem);z-index:1}
+.nav-av.stack .nbadge{right:-0.1875rem;bottom:0;z-index:4}
 
 /* avatar + küçük tür rozeti */
-.nav-av{width:2.875rem;height:2.875rem;border-radius:6.1875rem;flex:none;position:relative;
+.nav-av{width:2.875rem;height:2.875rem;border-radius:0.9375rem;flex:none;position:relative;
   background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge);display:grid;place-items:center;
   font-size:0.9375rem;font-weight:600;color:var(--t2)}
@@ -6119,39 +6128,8 @@ svg{display:block}
 
 /* ============ zaman ============ */
 #timeSheet{z-index:var(--z-time);color:var(--t1)}
-.tbox{position:absolute;left:0.5rem;right:0.5rem;bottom:0.5rem;border-radius:1.625rem;overflow:hidden;
-  max-height:80vh;display:flex;flex-direction:column;
-  background:rgba(15,15,21,.93);
-  backdrop-filter:saturate(180%) blur(1.375rem);-webkit-backdrop-filter:saturate(180%) blur(1.375rem);
-  border:1px solid var(--edge-hi);box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 1.5rem 3.75rem -1.5rem #000;
-  padding-bottom:calc(var(--sab) + 0.5rem);transform:translateY(112%);transition:transform .34s var(--ease)}
 #timePane,#placePane{overflow-y:auto;scrollbar-width:none}
 #timePane::-webkit-scrollbar,#placePane::-webkit-scrollbar{display:none}
-.tseg{flex:none}
-.tbox h2,.tbox p,.tseg{flex:none}
-#timeSheet.open .tbox{transform:translateY(0)}
-.tseg{display:flex;gap:0.375rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
-  border-radius:0.875rem;padding:0.25rem;margin:1rem 0}
-.tseg-btn{flex:1;height:2.5rem;border-radius:0.6875rem;border:0;background:transparent;color:var(--t3);
-  font-size:0.875rem;font-weight:600;letter-spacing:-.01em;transition:all .15s}
-.tseg-btn.on{background:rgba(255,255,255,.1);color:var(--t1);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
-.placeSearch{display:flex;align-items:center;gap:0.625rem;background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);border-radius:0.8125rem;padding:0 0.875rem;height:3rem;margin-bottom:0.875rem;color:var(--t3)}
-.placeSearch input{flex:1;background:transparent;border:0;outline:0;color:var(--t1);font-size:0.9062rem;
-  font-family:inherit;letter-spacing:-.01em}
-.placeChips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem}
-.placeChip{padding:0.5rem 0.875rem;border-radius:6.1875rem;background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);color:var(--t2);font-size:0.8125rem;font-weight:500;transition:all .12s}
-.placeChip:active{transform:scale(.95)}
-.placeChip.on{background:linear-gradient(135deg,rgba(255,59,107,.25),rgba(123,91,255,.25));
-  border-color:rgba(255,59,107,.4);color:#fff}
-.placeRow{display:flex;align-items:center;gap:0.75rem;padding:0.8125rem 0.25rem;border-bottom:1px solid rgba(255,255,255,.05);
-  cursor:pointer}
-.placeRow .pin{width:2.25rem;height:2.25rem;border-radius:0.6875rem;flex:none;display:grid;place-items:center;
-  background:rgba(255,59,107,.14);color:var(--accent)}
-.placeRow .pinfo{flex:1;min-width:0}
-.placeRow .pl{font-size:0.9062rem;font-weight:600;letter-spacing:-.01em}
-.placeRow .pc{font-size:0.75rem;color:var(--t3);margin-top:1px}
 /* ==== KEŞFET: tam ekran harita + katmanlar (Airbnb tarzı) ==== */
 #timeSheet{position:fixed;inset:0;z-index:var(--z-time);color:var(--t1);--sat:var(--sat-root,0px)}
 .explore{position:absolute;inset:0;overflow:hidden}
@@ -6492,13 +6470,6 @@ svg{display:block}
 #profile .profbody .profbio .bioText.empty{color:var(--t3);font-style:normal;
   font-weight:400;opacity:.75}
 
-/* bilgi etiketleri: daha ferah, sarmalı */
-.profdet{display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.75rem 0 0.25rem}
-.profdet .dchip{display:inline-flex;align-items:center;gap:0.375rem;height:2.125rem;padding:0 0.8125rem;
-  border-radius:6.1875rem;background:var(--surf1);border:1px solid var(--edge-soft);
-  font-size:0.8125rem;font-weight:600;color:var(--t2);letter-spacing:-.012em}
-.profdet .dchip svg{opacity:.75}
-
 /* açıklama notu */
 .profnote{display:flex;gap:0.5625rem;padding:1rem 0 0.25rem;align-items:flex-start;border:0}
 .profnote p{font-size:0.7812rem;line-height:1.55;color:var(--t3)}
@@ -6520,9 +6491,6 @@ svg{display:block}
 /* bölümler arası nefes */
 #profile .profbody.otherProf .profdetail{margin:1.375rem 0.25rem 0}
 #profile .profbody.otherProf .profnote{margin:1.5rem 0.25rem 0;padding:0}
-
-/* eylem satırı en altta — gövdenin kendi alt dolgusu yeterli */
-#profile .profbody.otherProf .profActs{margin-top:auto;padding:1.375rem 0 0;border:0}
 
 /* ═══ AKIŞ KİPİ DÜĞMESİ ═══
    Başlık çubuğunda, arama ve konum düğmelerinin yanında.
@@ -6710,7 +6678,7 @@ svg{display:block}
   pointer-events:none}
 .inNotif.show{transform:translateY(0);opacity:1;pointer-events:auto}
 .inNotif:active{transform:translateY(0) scale(.98)}
-.inNotif .av{width:2.25rem;height:2.25rem;border-radius:6.1875rem;flex:none;
+.inNotif .av{width:2.25rem;height:2.25rem;border-radius:0.75rem;flex:none;
   background:var(--avatar-bg) center/cover no-repeat}
 .inNotif .tx{flex:1;min-width:0}
 .inNotif .tx b{display:block;font-size:0.8438rem;font-weight:700;letter-spacing:-.02em;
@@ -6809,8 +6777,6 @@ svg{display:block}
   width:120%;height:120%;object-fit:cover;filter:blur(1.625rem) brightness(.55);z-index:0}
 .apMedia img.esas,.apMedia video{position:relative;z-index:1;
   max-width:100%;max-height:100%;object-fit:contain;display:block}
-.apMedia .yukleniyor{width:2rem;height:2rem;border-radius:6.1875rem;
-  border:0.1875rem solid rgba(255,255,255,.2);border-top-color:#fff;animation:apSpin .8s linear infinite}
 @keyframes apSpin{to{transform:rotate(360deg)}}
 
 /* ── eylem satırı ── */
@@ -7002,7 +6968,12 @@ svg{display:block}
    Fotoğraf 4:5 oranında (tam oturur) ama fazlalık kısım kartın
    arkasında kalır — kapak fotoğrafı mantığı. */
 .profCard{position:relative;z-index:6;margin:-1.375rem -0.875rem 0;padding:1.125rem 1rem 0.25rem;
-  background:var(--panelbg);border-radius:1.5rem 1.5rem 0 0}
+  background:var(--panelbg);border-radius:1.5rem 1.5rem 0 0;
+  /* DUZELTME: kart icerigi gelene kadar yer bos ama SABIT kalsin.
+     Yoksa isim ve sayaclar sonradan eklenince altindaki her sey
+     asagi kayiyor, acilista titreme gibi gorunuyordu. */
+  min-height:11.25rem;
+  contain:layout paint}
 
 /* isim + takip */
 .pcNameRow{display:flex;align-items:center;gap:0.75rem}
@@ -7069,7 +7040,7 @@ svg{display:block}
 /* sayaç kartları — örnekteki gibi: üstte görseller, altta sayı ve etiket */
 .profstats.pcStats{display:flex;gap:0.5625rem;width:auto;margin:1rem 0 0;padding:0;
   background:none;border:0;border-radius:0;align-items:stretch}
-.profstats.pcStats .stat{flex:1 1 0;min-width:0;text-align:center;
+.profstats.pcStats .stat{flex:1 1 0;min-width:0;text-align:center;min-height:5.25rem;
   background:var(--surf1);border:1px solid var(--edge-soft);border-radius:1rem;
   padding:0.6875rem 0.625rem 0.75rem;cursor:pointer;transition:transform .12s;
   display:block}
@@ -7097,49 +7068,11 @@ svg{display:block}
 /* bölüm başlıkları */
 .secTitle{font-size:0.6875rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
   color:var(--t3);margin:0 0 0.625rem}
-
-/* eylem satırı — çizgisiz, ferah */
-/* NOT: alt dolgu buraya EKLENMEZ — gövdenin kendi alt dolgusu var,
-   ikisi toplanınca düğmelerin altında kocaman boşluk kalıyordu. */
-.profActs{display:flex;gap:0.75rem;padding:1.375rem 0 0;margin-top:auto;border:0}
-.profActs .pAct{flex:1;height:3.125rem;border-radius:0.9375rem;display:flex;align-items:center;
-  justify-content:center;gap:0.4375rem;font-size:0.9375rem;font-weight:700;font-family:inherit;
-  letter-spacing:-.02em;border:1px solid var(--edge);background:var(--surf1);color:var(--t1);
-  transition:transform .12s}
-.profActs .pAct:active{transform:scale(.97)}
-.profActs .pFollow{border-color:transparent;color:#fff;
-  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
-  box-shadow:0 0.5rem 1.25rem -0.625rem rgba(255,59,107,.9)}
-.profActs .pFollow.on{background:var(--surf2);color:var(--t1);
-  border:1px solid var(--edge);box-shadow:none}
-/* Mesaj: marka mavisi — takip düğmesinden ayrışsın ama uyumlu kalsın */
-.profActs .pMsg{color:#fff;border-color:transparent;
-  background:linear-gradient(135deg,#2E9BFF,#5B6BFF);
-  box-shadow:0 0.5rem 1.25rem -0.625rem rgba(46,155,255,.85)}
-.profActs .pMsg svg{opacity:.95}
-.profActs .pAct svg{width:1.0625rem;height:1.0625rem}
-
-/* takipçi/takip listesinde takip düğmesi */
-.flwBtn{margin-left:auto;flex:none;height:2rem;padding:0 0.875rem;border-radius:6.1875rem;
-  border:0;color:#fff;background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
-  font-size:0.8125rem;font-weight:700;font-family:inherit;letter-spacing:-.014em;
-  transition:transform .12s}
-.flwBtn:active{transform:scale(.94)}
-.flwBtn.on{background:var(--surf2);color:var(--t2);border:1px solid var(--edge-soft)}
 /* iki satırlı isim */
 .shrow .nm.two{display:flex;flex-direction:column;gap:1px;min-width:0}
 .shrow .nm.two b{font-size:0.9062rem;font-weight:600;letter-spacing:-.016em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .shrow .nm.two i{font-style:normal;font-size:0.75rem;color:var(--t3)}
-
-/* sayaçlar — bloksuz */
-.profstats.statsBar{display:flex;align-items:center;padding:1.125rem 0.375rem 0.875rem;
-  margin:0;border:0;background:none}
-.profstats.statsBar .stat{flex:1;text-align:center;padding:0 0.25rem}
-.profstats.statsBar .stat b{display:block;font-size:1.1875rem;font-weight:800;
-  letter-spacing:-.03em;color:var(--t1)}
-.profstats.statsBar .stat span{display:block;font-size:0.7188rem;color:var(--t3);margin-top:0.1875rem}
-.profstats.statsBar .sep{display:none}
 
 /* eylem satırı */
 
@@ -7150,24 +7083,6 @@ svg{display:block}
   font:700 0.6875rem/1.125rem Inter,system-ui,sans-serif;text-align:center;
   border:0.125rem solid #fff;box-shadow:0 0.125rem 0.375rem rgba(0,0,0,.5);z-index:3}
 @keyframes pinbounce{0%,100%{transform:rotate(-45deg) scale(1)}50%{transform:rotate(-45deg) scale(1.25)}}
-.tbox h2{font-size:0.9688rem;font-weight:600;letter-spacing:-.024em;padding:1rem 1.125rem 0.25rem}
-.tbox p{font-size:0.7812rem;color:var(--t3);padding:0 1.125rem 0.625rem;line-height:1.5}
-.trow{display:flex;align-items:center;justify-content:space-between;width:100%;padding:0.875rem 1.125rem;
-  font-size:0.9062rem;font-weight:500;letter-spacing:-.014em;border-top:1px solid var(--edge-soft);transition:background .15s}
-.trow:active{background:rgba(255,255,255,.08)}
-.trow em{font-style:normal;color:var(--t3);font-size:0.7812rem;font-weight:400}
-.trow2{display:flex;align-items:center;gap:0.875rem;width:100%;padding:0.8125rem 1rem;
-  border:0;background:transparent;text-align:left;transition:background .15s;border-radius:0.875rem}
-.trow2:active{background:rgba(255,255,255,.06)}
-.trow2 .ti{width:2.625rem;height:2.625rem;flex:none;border-radius:0.8125rem;display:grid;place-items:center;
-  background:linear-gradient(145deg,rgba(255,59,107,.18),rgba(123,91,255,.18));
-  border:1px solid rgba(255,255,255,.08);color:#fff}
-.trow2 .ti svg{width:1.25rem;height:1.25rem}
-.trow2 .tt{flex:1;min-width:0;display:flex;flex-direction:column}
-.trow2 .tt b{font-size:0.9375rem;font-weight:650;letter-spacing:-.02em;color:var(--t1)}
-.trow2 .tt em{font-style:normal;font-size:0.75rem;color:var(--t3);margin-top:1px;font-weight:400}
-.trow2 .tg{color:var(--t3);display:grid;place-items:center}
-.trow2 .tg svg{width:1.125rem;height:1.125rem}
 #timeRows{padding:0.125rem 0.25rem 0.375rem}
 #placePane{padding:0 0.25rem}
 
@@ -7502,17 +7417,11 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 [dir="rtl"] .pmore{right:auto;left:0.9375rem}
 [dir="rtl"] .exFab{left:auto;right:1rem}
 [dir="rtl"] .exLocBtn{right:auto;left:1rem}
-[dir="rtl"] .heroSet{right:auto;left:0.75rem}
 [dir="rtl"] #arcView .avX{left:auto;right:0.75rem}
 [dir="rtl"] #arcView .avTop{right:auto;left:0.75rem;justify-content:flex-start}
 [dir="rtl"] .msg.me{align-self:flex-start}
 [dir="rtl"] .msg.you{align-self:flex-end}
 [dir="rtl"] .chatTabs #chatTabReq{margin-left:0;margin-right:auto}
-.langSelect{flex:none;height:2.125rem;border-radius:0.5625rem;padding:0 0.625rem;
-  background:var(--surf1);border:1px solid var(--edge-soft);color:var(--t1);
-  font-size:0.8125rem;font-weight:600;font-family:inherit;outline:none;max-width:44%}
-.langSelect option{background:#16161f;color:#fff}
-[data-theme="light"] .langSelect option{background:#fff;color:#111}
 .themeSegBtn.on{background:var(--panelbg);color:var(--t1);box-shadow:0 0.125rem 0.5rem -0.125rem rgba(0,0,0,.3)}
 .setRow.danger .setTxt b{color:var(--err,#FF6B8A)}
 .setLogout{display:flex;align-items:center;justify-content:center;gap:0.5625rem;width:100%;height:3.25rem;
@@ -7527,12 +7436,6 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 
 /* --- profil kartı --- */
 .hero{position:relative;margin:0.75rem 0 1rem;padding:0.125rem 0.125rem 0}
-.heroSet{position:absolute;top:0.75rem;right:0.75rem;z-index:5;width:2.25rem;height:2.25rem;border-radius:6.1875rem;
-  display:grid;place-items:center;background:rgba(0,0,0,.32);color:#fff;border:1px solid rgba(255,255,255,.16);
-  backdrop-filter:blur(0.625rem);-webkit-backdrop-filter:blur(0.625rem);transition:transform .15s,background .15s}
-.heroSet:active{transform:scale(.9);background:rgba(0,0,0,.5)}
-[data-theme="light"] .hero .heroSet{background:rgba(255,255,255,.55);color:#141418;border-color:rgba(20,20,24,.12)}
-[data-theme="light"] .hero .heroSet:active{background:rgba(255,255,255,.8)}
 .heroBg{position:absolute;inset:-40%;z-index:0;background:#1A1A22 center/cover no-repeat;
   filter:blur(2.375rem) saturate(155%) brightness(.62);transform:scale(1.25)}
 .heroTint{position:absolute;inset:0;z-index:1;
@@ -7547,7 +7450,6 @@ html.camNativeOn #cam > .camRoot{z-index:0}
     linear-gradient(rgba(255,255,255,.42), rgba(246,246,249,.92))}
 .heroBg,.heroTint{display:none}
 .heroIn{position:relative;z-index:2;padding:0.875rem 0.875rem 0.75rem}
-.heroTop{display:flex;align-items:center;gap:0.8125rem;min-width:0}
 
 .profav{width:3.875rem;height:3.875rem;border-radius:6.1875rem;flex:none;position:relative;
   background:#22222A center/cover no-repeat;
@@ -7564,20 +7466,6 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .profav .cam svg{width:0.8125rem;height:0.8125rem}
 .profav .cam:active{transform:scale(.9)}
 
-.heroTxt{min-width:0;flex:1}
-.heroTxt h3{font-size:1.1875rem;font-weight:700;letter-spacing:-.032em;color:var(--t1);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.heroTxt .handle{font-size:0.7812rem;color:var(--t3);margin-top:1px;letter-spacing:-.01em}
-.heroTxt .joined{display:inline-flex;align-items:center;margin-top:0.5rem;
-  font-size:0.7188rem;font-weight:500;color:var(--t3);letter-spacing:-.008em}
-.heroTxt .joined svg{width:0.75rem;height:0.75rem;opacity:.75}
-[data-theme="light"] .hero .heroTxt h3{color:var(--t1)}
-[data-theme="light"] .hero .heroTxt .handle{color:var(--t3)}
-[data-theme="light"] .hero .heroTxt .joined{color:var(--t3)}
-[data-theme="light"] .hero .heroTxt h3{color:#141418;text-shadow:none}
-[data-theme="light"] .hero .heroTxt .handle{color:rgba(20,20,24,.55)}
-[data-theme="light"] .hero .heroTxt .joined{color:rgba(20,20,24,.6);text-shadow:none}
-
 .profstats{display:flex;align-items:stretch;width:100%;margin-top:0.8125rem;
   border-radius:0.9375rem;padding:0.5625rem 0.125rem;
   background:var(--surf1);border:1px solid var(--edge-soft)}
@@ -7587,19 +7475,6 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .stat span{display:block;font-size:0.6562rem;color:var(--t3);margin-top:1px;
   letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sep{flex:none;width:1px;align-self:center;height:1.375rem;background:var(--edge)}
-
-.profbtn{width:100%;height:3rem;border-radius:1rem;display:flex;align-items:center;justify-content:center;
-  gap:0.5rem;font-size:0.9062rem;font-weight:600;letter-spacing:-.016em;margin-bottom:0.75rem;
-  background:linear-gradient(145deg,#FF3B6B,#7B5BFF);color:#fff;
-  border:1px solid rgba(255,255,255,.24);box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
-  transition:transform .12s,opacity .18s}
-.profbtn:active{transform:scale(.985)}
-.profbtn.ghost{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.14);
-  box-shadow:none;color:var(--t1)}
-
-.pAct+.pAct::before{content:"";position:absolute;left:0;top:0.9375rem;bottom:0.9375rem;width:1px;background:var(--edge)}
-.pFollow.on{color:#FF6B8A}
-.pMsg{color:var(--t1)}
 
 .profnote{display:flex;gap:0.625rem;padding:0 0.1875rem;margin-bottom:1.375rem}
 .profdetail{margin:0 0.25rem 1.125rem}
@@ -7616,15 +7491,6 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   font-size:0.7812rem;font-weight:500;color:var(--t2);
   letter-spacing:-.006em;white-space:nowrap}
 .pdchip svg{width:0.8125rem;height:0.8125rem;color:var(--t3);flex:none}
-.pdint{display:flex;flex-wrap:nowrap;gap:0.4375rem;margin-bottom:0.625rem;overflow-x:auto;
-  scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:0.125rem}
-.pdint::-webkit-scrollbar{display:none}
-.pdint::-webkit-scrollbar{display:none}
-.pdtag{flex:none;padding:0.3125rem 0.6875rem;border-radius:6.1875rem;font-size:0.75rem;font-weight:500;white-space:nowrap;
-  background:linear-gradient(135deg,rgba(255,59,107,.16),rgba(123,91,255,.16));
-  border:1px solid rgba(255,59,107,.22);color:var(--t1)}
-.pdlink{display:inline-flex;align-items:center;gap:0.4375rem;font-size:0.8125rem;font-weight:500;
-  color:var(--accent);text-decoration:none;letter-spacing:-.01em;word-break:break-all}
 /* cinsiyet seçici */
 .epGender{display:flex;gap:0.5rem;margin-top:0.125rem}
 .epGender button{flex:1;height:2.75rem;border-radius:0.75rem;
@@ -7818,13 +7684,9 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .arcGrid{display:grid;grid-template-columns:repeat(var(--gcols,3),1fr);gap:0.125rem;
   margin:0 -0.875rem;padding:0;
   transition:grid-template-columns .3s var(--ease)}
-.arcVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#12121a}
 /* kaydırırken sadece görünen kartları hesapla (performans) */
 .arc{content-visibility:auto;contain-intrinsic-size:auto 9.375rem;
   contain:layout style paint;background-color:#12121a;background-size:cover;background-position:center}
-.arcPlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
-  width:2.25rem;height:2.25rem;border-radius:6.1875rem;background:rgba(0,0,0,.45);display:grid;place-items:center;
-  backdrop-filter:blur(0.375rem);-webkit-backdrop-filter:blur(0.375rem);pointer-events:none}
 /* ===== akış yer filtresi ===== */
 /* konum filtresi etkinken ikon vurgulanır */
 .topbar #feedPlaceBtn.on{background:linear-gradient(135deg,rgba(255,59,107,.3),rgba(123,91,255,.26));
@@ -7899,8 +7761,6 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 #placeLayers .plHead p{font-size:0.7812rem;color:var(--t3);margin-top:0.1875rem;padding-left:1.4375rem}
 #placeLayers .plList{overflow-y:auto;padding:0 0.75rem;scrollbar-width:none}
 #placeLayers .plList::-webkit-scrollbar{display:none}
-#placeLayers .plGroup{font-size:0.6562rem;font-weight:800;letter-spacing:.09em;
-  color:var(--t3);padding:0.875rem 0.625rem 0.375rem;text-transform:uppercase}
 #placeLayers .plItem{display:flex;align-items:center;gap:0.75rem;width:100%;
   padding:0.5rem 0.625rem;border-radius:0.875rem;background:none;border:0;color:inherit;
   text-align:left;font-family:inherit;transition:background .15s}
@@ -7948,15 +7808,18 @@ html.bgQuiet .saWave i{
 }
 html.native button,html.native .tab{touch-action:manipulation}
 
-.crow2 .avWait,.crow2 .avBadge{position:absolute;right:-0.125rem;bottom:-0.125rem;
-  border:0.1562rem solid var(--panelbg);border-radius:6.1875rem;
-  display:grid;place-items:center}
-.crow2 .avWait{width:1.3125rem;height:1.3125rem;
-  background:var(--panelbg);color:var(--t2);
-  box-shadow:inset 0 0 0 1px var(--edge)}
-.crow2 .avWait svg{width:0.75rem;height:0.75rem}
-.crow2 .avBadge{min-width:1.3125rem;height:1.3125rem;padding:0 0.3125rem;
-  background:var(--accent);color:#fff;font-size:0.6875rem;font-weight:700}
+/* Sohbet satiri rozeti — bildirimlerdeki .nbadge ile ayni yerlesim:
+   avatarin sag alt kosesi, panel rengiyle cevrelenmis daire. */
+.crow2 .avRozet{position:absolute;right:-0.125rem;bottom:-0.125rem;
+  min-width:1.3125rem;height:1.3125rem;padding:0 0.3125rem;
+  border-radius:6.1875rem;border:0.1562rem solid var(--panelbg);
+  display:grid;place-items:center;z-index:3;color:#fff;
+  font-size:0.6875rem;font-weight:700;letter-spacing:-.02em}
+.crow2 .avRozet svg{width:0.6875rem;height:0.6875rem}
+.crow2 .avRozet.engel{background:#FF3B6B}
+.crow2 .avRozet.yeni{background:#3BA7FF}
+.crow2 .avRozet.bekliyor{background:#F5A524}
+.crow2 .avRozet.sessiz{background:#6E6E7C}
 
 /* sohbet durum kartı — iOS Mesajlar tarzı */
 .chatBlockStrip,#chatReqBar{
@@ -8107,14 +7970,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   letter-spacing:-.01em;text-shadow:0 1px 0.375rem rgba(0,0,0,.95);opacity:0;transition:opacity .2s;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .arc:active .tm{opacity:1}
-/* video: sol alt play + izlenme */
-.arc .arcPlay{position:absolute;left:0.375rem;bottom:0.375rem;top:auto;right:auto;transform:none;
-  width:auto;height:1.25rem;border-radius:0;background:none;backdrop-filter:none;
-  display:flex;align-items:center;gap:0.25rem;
-  filter:drop-shadow(0 1px 0.25rem rgba(0,0,0,.95))}
-.arc .arcPlay svg{width:1rem;height:1rem;flex:none}
-.arc .arcPlay em{font-style:normal;font-size:0.75rem;font-weight:700;color:#fff;
-  letter-spacing:-.02em;line-height:1;text-shadow:0 1px 0.3125rem rgba(0,0,0,.95)}
 /* 3 nokta / kaydet — sağ üst */
 .arc .del{position:absolute;top:0.25rem;right:0.25rem;bottom:auto;
   width:1.5rem;height:1.5rem;border-radius:0;
@@ -8159,25 +8014,33 @@ html.native button,html.native .tab{touch-action:manipulation}
 .crow2{display:flex;align-items:center;gap:0.75rem;width:100%;text-align:left;padding:0.6875rem 0.625rem;
   border-radius:1.125rem;transition:background .15s}
 .crow2:active{background:var(--surf1)}
-.crow2 .av{width:3.125rem;height:3.125rem;border-radius:6.1875rem;flex:none;
+.crow2 .av{width:3.125rem;height:3.125rem;border-radius:1.0625rem;flex:none;
   background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge);
   display:grid;place-items:center;font-size:1.0625rem;font-weight:600;color:var(--t2)}
 .crow2 .mid{flex:1;min-width:0}
 .crow2 .top{display:flex;align-items:baseline;gap:0.5rem}
-.crow2 .nm .muteDot{display:inline-flex;width:0.8125rem;height:0.8125rem;margin-left:0.3125rem;
-  color:var(--t3);vertical-align:-1px}
-.crow2 .nm .muteDot svg{width:0.8125rem;height:0.8125rem}
 .crow2 .nm{font-size:0.9062rem;font-weight:600;letter-spacing:-.018em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .crow2 .tm{margin-left:auto;font-size:0.7188rem;color:var(--t3);white-space:nowrap}
-.reqTag{display:inline-flex;align-items:center;gap:0.25rem;font-size:0.6875rem;font-weight:700;
-  height:1.1875rem;padding:0 0.5rem;border-radius:6.1875rem;margin-right:0.375rem;letter-spacing:-.005em}
-.reqTag svg{width:0.625rem;height:0.625rem;flex:none}
-.reqTag.in{background:rgba(255,59,107,.18);color:#FF8AA3;
-  box-shadow:inset 0 0 0 1px rgba(255,59,107,.22)}
-.reqTag.me{background:var(--surf2);color:var(--t3);margin-right:0;
-  box-shadow:inset 0 0 0 1px var(--edge-soft)}
+/* ===== MESAJ ISTEGI SATIRI (sakin, profesyonel duzen) ===== */
+.crow2.req{position:relative;padding-right:0.375rem}
+.crow2.req .av{border-radius:1.0625rem;
+  box-shadow:0 0 0 1px var(--edge), 0 0 0 3px rgba(255,59,107,.13)}
+.crow2.req .reqIcon{position:absolute;right:-0.1875rem;bottom:-0.1875rem;
+  width:1.375rem;height:1.375rem;border-radius:6.1875rem;
+  display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  box-shadow:0 0 0 2.5px var(--panelbg)}
+.crow2.req .reqIcon svg{width:0.6875rem;height:0.6875rem}
+.crow2.req .nm{font-weight:700}
+.crow2.req .pv{color:var(--t3);font-weight:400}
+.crow2.req .tm{color:var(--t3)}
+.crow2.req .chev{flex:none;display:grid;place-items:center;
+  width:1.125rem;height:1.125rem;color:var(--t3);opacity:.55;margin-left:0.125rem}
+.crow2.req .chev svg{width:1.125rem;height:1.125rem}
+.crow2.req:active{background:var(--surf1)}
+
 .chatTabs{display:flex;align-items:center;gap:1.625rem;padding:0.125rem 1.125rem 0;border-bottom:1px solid var(--edge-soft);margin-bottom:0.25rem}
 .chatTabs #chatTabReq{margin-left:auto}
 .chatTab{position:relative;padding:0.75rem 0 0.8125rem;font-size:0.9062rem;font-weight:600;color:var(--t3);
@@ -8185,19 +8048,14 @@ html.native button,html.native .tab{touch-action:manipulation}
 .chatTab.active{color:var(--t1)}
 .chatTab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:0.1562rem;
   border-radius:6.1875rem;background:linear-gradient(90deg,#FF3B6B,#7B5BFF)}
-.chatTabDot{width:0.5rem;height:0.5rem;border-radius:6.1875rem;background:#FF3B6B}
+.chatTabDot{display:inline-grid;place-items:center;min-width:1.125rem;height:1.125rem;
+  padding:0 0.3125rem;margin-left:0.375rem;border-radius:6.1875rem;
+  background:#FF3B6B;color:#fff;font-size:0.6875rem;font-weight:700;
+  font-style:normal;letter-spacing:0;vertical-align:1px}
 .chatTabDot.hide{display:none}
-.reqRow{display:flex;align-items:center;gap:0.75rem;width:100%;text-align:left;padding:0.8125rem 0.75rem;
-  margin-bottom:0.375rem;border-radius:1rem;background:rgba(255,59,107,.08);
-  border:1px solid rgba(255,59,107,.18);transition:background .15s;color:#fff}
-.reqRow:active{background:rgba(255,59,107,.14)}
 .reqIcon{width:2.375rem;height:2.375rem;flex:none;border-radius:6.1875rem;display:grid;place-items:center;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff}
 .reqIcon svg{width:1.125rem;height:1.125rem}
-.reqRowTxt{flex:1;font-size:0.9062rem;font-weight:600;letter-spacing:-.016em}
-.reqCount{min-width:1.375rem;height:1.375rem;padding:0 0.375rem;border-radius:6.1875rem;background:#FF3B6B;color:#fff;
-  font-size:0.75rem;font-weight:700;display:grid;place-items:center}
-.reqRow>svg{color:var(--t3);flex:none}
 @keyframes crIn{from{opacity:0;transform:translateY(0.75rem)}to{opacity:1;transform:none}}
 #chatReqBar.mine{background:#fff}
 [data-theme="dark"] #chatReqBar.mine{background:#2C2C2E}
@@ -8224,12 +8082,10 @@ html.native button,html.native .tab{touch-action:manipulation}
 .crow2.unread .nm{font-weight:700}
 .crow2.unread .pv{color:var(--t1);font-weight:500}
 [data-theme="light"] .crow2.unread .pv{color:#222}
-.crow2 .badge2{min-width:1.25rem;height:1.25rem;padding:0 0.3125rem;border-radius:6.1875rem;
-  background:var(--accent);color:#fff;font-size:0.6875rem;font-weight:700;display:grid;place-items:center}
 
 .chatHead{display:flex;align-items:center;gap:0.6875rem;flex:none;border-bottom:1px solid var(--edge-soft);
   padding:calc(var(--sat) + 0.6875rem) 0.75rem 0.6875rem}
-.chatHead .av{width:2.375rem;height:2.375rem;border-radius:6.1875rem;flex:none;background:#22222A center/cover no-repeat;
+.chatHead .av{width:2.375rem;height:2.375rem;border-radius:0.8125rem;flex:none;background:#22222A center/cover no-repeat;
   border:1px solid var(--edge);display:grid;place-items:center;font-size:0.8125rem;font-weight:600;color:var(--t2)}
 .chatHead .who{flex:1;min-width:0}
 .chatHead h2{font-size:0.9688rem;font-weight:600;letter-spacing:-.024em;
@@ -8418,7 +8274,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   padding:0.625rem 0.375rem 0.625rem 0.625rem;
   border-radius:1rem;transition:background .15s}
 .shrow:active{background:var(--surf1)}
-.shrow .av{width:2.625rem;height:2.625rem;border-radius:6.1875rem;flex:none;background:var(--avatar-bg) center/cover no-repeat;
+.shrow .av{width:2.625rem;height:2.625rem;border-radius:0.875rem;flex:none;background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge);display:grid;place-items:center;font-size:0.9375rem;font-weight:600;color:var(--t2)}
 .shrow .nm{flex:1;min-width:0;font-size:0.9062rem;font-weight:600;letter-spacing:-.018em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -8445,16 +8301,12 @@ html.native button,html.native .tab{touch-action:manipulation}
 #dlHud.on{display:flex}
 #dlHud b{display:block;font-size:0.875rem;font-weight:750;letter-spacing:-.02em;color:var(--t1)}
 #dlHud i{display:block;font-style:normal;font-size:0.75rem;color:var(--t3);margin-top:0.125rem}
-#dlHud .dlBar{flex:none;width:2.75rem;height:2.75rem}
-#dlHud .dlBar svg{width:2.75rem;height:2.75rem;transform:rotate(-90deg)}
-#dlHud .dlBar circle:first-child{stroke:var(--edge)}
 #dlHud.ok b{color:#34C759}
 [data-theme="light"] #dlHud{
   background:#fff;color:#111;border-color:rgba(0,0,0,.08);
   box-shadow:0 0.75rem 1.75rem -0.875rem rgba(0,0,0,.22)}
 [data-theme="light"] #dlHud b{color:#111}
 [data-theme="light"] #dlHud i{color:#8E8E93}
-[data-theme="light"] #dlHud .dlBar circle:first-child{stroke:rgba(0,0,0,.12)}
 [data-theme="dark"] .iosSw{background:#39393D}
 [data-theme="dark"] .iosSw.on{background:#30D158}
 #cpSongRow{background:transparent;border:0;border-top:1px solid rgba(255,255,255,.1);
@@ -8463,7 +8315,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 .shrow.done .go2{background:rgba(95,214,154,.18);border-color:rgba(95,214,154,.4);color:#8FE3B4}
 
 /* ============ paylaşım ekranı ============ */
-#compose{position:absolute;inset:0;z-index:75;background:#000;display:none;flex-direction:column;
+#compose{position:fixed;inset:0;z-index:75;background:#000;display:none;flex-direction:column;--sat:var(--sat-root,0px);
   --mood:#7B5BFF}
 #compose.open{display:flex;animation:fadeIn .22s ease}
 
@@ -8771,27 +8623,9 @@ html.native button,html.native .tab{touch-action:manipulation}
 .cpSongLine.playing .mIc::after{content:"";position:absolute;inset:-0.1875rem;border-radius:0.5625rem;
   border:0.0938rem solid var(--accent);animation:songPulse 1.6s ease-in-out infinite}
 @keyframes songPulse{0%,100%{opacity:.9;transform:scale(1)}50%{opacity:.35;transform:scale(1.08)}}
-
-/* gönder */
-.cpfoot{display:none}
 .cphint{font-size:0.7188rem;color:rgba(255,255,255,.5);text-align:center;transition:opacity .2s;
   text-shadow:0 1px 0.375rem rgba(0,0,0,.7)}
 .cphint.hide{opacity:0}
-.cpshare{height:3.25rem;border-radius:1rem;display:flex;align-items:center;justify-content:center;gap:0.5625rem;
-  background:linear-gradient(135deg, var(--mood), #FF3B6B);color:#fff;
-  border:1px solid rgba(255,255,255,.24);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 0.75rem 1.875rem -0.75rem var(--mood);
-  font-size:0.9688rem;font-weight:600;letter-spacing:-.018em;
-  transition:opacity .2s,transform .12s,background .45s ease,box-shadow .45s ease}
-.cpshare:active{transform:scale(.985)}
-.cpshare:disabled{opacity:.35;pointer-events:none;box-shadow:none}
-
-/* akışta duygu rozeti */
-.moodtag{display:inline-flex;align-items:center;gap:0.3125rem;height:1.5rem;padding:0 0.625rem;border-radius:6.1875rem;
-  background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.24);
-  backdrop-filter:blur(0.625rem);-webkit-backdrop-filter:blur(0.625rem);
-  font-size:0.75rem;font-weight:600;letter-spacing:-.01em;margin-bottom:0.4375rem}
-.moodtag span.em{font-size:0.8125rem;line-height:1}
 
 .toast{position:absolute;z-index:var(--z-toast);left:50%;bottom:calc(var(--tab) + var(--sab) + 1.25rem);
   transform:translate(-50%,0.625rem);background:rgba(28,28,36,.95);border:1px solid var(--edge);
@@ -8828,9 +8662,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   display:flex;flex-direction:column;gap:0.375rem;will-change:transform}
 .gwall .gcol.c1{animation:gdrift1 34s linear infinite}
 .gwall .gcol.c2{animation:gdrift2 44s linear infinite}
-.gwall .gcol.c3{animation:gdrift1 39s linear infinite}
-.gwall .gcol.c4{animation:gdrift2 49s linear infinite}
-.gwall .gcol.c5{animation:gdrift1 30s linear infinite}
 #gate.off .gwall .gcol{animation:none!important;will-change:auto}
 @keyframes gdrift1{from{transform:translateY(0)}to{transform:translateY(-50%)}}
 @keyframes gdrift2{from{transform:translateY(-50%)}to{transform:translateY(0)}}
@@ -8894,12 +8725,6 @@ html.native button,html.native .tab{touch-action:manipulation}
   background:linear-gradient(rgba(8,8,12,.12) 0%, rgba(8,8,12,.22) 40%, rgba(8,8,12,.72) 78%, var(--bg) 100%)}
 #gate.story-auth .gveil{
   background:linear-gradient(rgba(8,8,12,.1) 0%, rgba(8,8,12,.18) 45%, rgba(8,8,12,.55) 100%)}
-
-.gwnext:active{transform:scale(.985)}
-
-.gauth{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;
-  padding:calc(var(--sat) + 1.875rem) 1.625rem calc(var(--sab) + 1.5rem);scrollbar-width:none;position:relative;z-index:2}
-.gauth::-webkit-scrollbar{display:none}
 /* ===== giriş ekranı dil seçici ===== */
 .gLangBtn{position:absolute;top:calc(var(--sat) + 0.875rem);right:0.875rem;z-index:30;
   width:2rem;height:2rem;display:grid;place-items:center;border-radius:6.1875rem;
@@ -8942,19 +8767,12 @@ html.native button,html.native .tab{touch-action:manipulation}
 .gLangSheet .glsList .lflag{width:1.75rem;height:1.75rem;flex:none;border-radius:0.5rem;
   display:grid;place-items:center;font-size:1.125rem;line-height:1;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
-.gLangSheet .glsList .lmark{width:1.875rem;height:1.875rem;flex:none;border-radius:6.1875rem;
-  display:grid;place-items:center;font-size:0.6875rem;font-weight:800;letter-spacing:.04em;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
-  color:rgba(255,255,255,.55);transition:all .2s}
 .gLangSheet .glsList .lname{flex:1;min-width:0;font-size:0.9688rem;letter-spacing:-.016em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gLangSheet .glsList .lcheck{width:1.25rem;height:1.25rem;flex:none;opacity:0;
   color:#FF6B8A;transition:opacity .2s}
 .gLangSheet .glsList button.on{background:rgba(255,255,255,.045)}
 .gLangSheet .glsList button.on .lname{font-weight:600;color:#fff}
-.gLangSheet .glsList button.on .lmark{
-  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);border-color:transparent;color:#fff;
-  box-shadow:0 0.25rem 0.875rem -0.25rem rgba(255,59,107,.7)}
 .gLangSheet .glsList button.on .lcheck{opacity:1}
 
 [data-theme="light"] .gLangSheet .glsScrim{background:rgba(0,0,0,.28)}
@@ -8967,26 +8785,12 @@ html.native button,html.native .tab{touch-action:manipulation}
 [data-theme="light"] .gLangSheet .glsHead p{color:#6b6b76}
 [data-theme="light"] .gLangSheet .glsList button{color:#1a1a22}
 [data-theme="light"] .gLangSheet .glsList button:active{background:rgba(0,0,0,.04)}
-[data-theme="light"] .gLangSheet .glsList .lmark{
-  background:#f3f3f6;border-color:rgba(0,0,0,.08);color:#555}
 [data-theme="light"] .gLangSheet .glsList button.on{background:rgba(255,59,107,.08)}
 [data-theme="light"] .gLangSheet .glsList button.on .lname{color:#111}
 [data-theme="light"] .gLangSheet .glsList .lflag{
   width:1.75rem;height:1.75rem;border-radius:0.5rem;display:grid;place-items:center;
   font-size:1.125rem;line-height:1;background:#f3f3f6;border:1px solid rgba(0,0,0,.06)}
-
-.gbrand{display:flex;flex-direction:column;align-items:center;gap:0.6875rem;margin-bottom:1.875rem}
 @keyframes logoIn{from{opacity:0;transform:scale(.82) translateY(0.5rem)}to{opacity:1;transform:none}}
-.gbrand .glogo{width:3.375rem;height:3.375rem;border-radius:1.0625rem;display:grid;place-items:center;
-  background:linear-gradient(145deg,#FF3B6B,#7B5BFF);
-  box-shadow:0 0.75rem 1.875rem -0.75rem rgba(255,59,107,.65), inset 0 1px 0 rgba(255,255,255,.3)}
-.gbrand h1{font-family:"Space Grotesk",sans-serif;font-size:2.625rem;font-weight:700;letter-spacing:-.03em;
-  background:linear-gradient(135deg,#fff 30%,#FFD9E4 60%,#C9B8FF);-webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;text-shadow:0 0.25rem 1.5rem rgba(255,59,107,.25);
-  filter:drop-shadow(0 0.125rem 0.5rem rgba(0,0,0,.4))}
-.gbrand p{font-size:0.8125rem;color:var(--t2);text-align:center;line-height:1.5;margin-top:-0.125rem;
-  text-shadow:0 1px 0.5rem rgba(0,0,0,.7)}
-.gcard{padding:0}
 .gtabs{display:flex;gap:1.5rem;margin-bottom:1.5rem;justify-content:center}
 .gtabs button{position:relative;height:2.375rem;padding:0 0.125rem;font-size:0.9062rem;font-weight:600;letter-spacing:-.02em;
   color:var(--t3);background:transparent;border:0;transition:color .2s var(--ease);
@@ -9039,9 +8843,6 @@ html.native button,html.native .tab{touch-action:manipulation}
 .gmsg.err{background:rgba(255,59,107,.14);border:1px solid rgba(255,59,107,.3);color:#FFB3C4}
 .gmsg.ok{background:rgba(95,214,154,.14);border:1px solid rgba(95,214,154,.3);color:#A8E6C4}
 .gfoot{margin-top:1.25rem;text-align:center;font-size:0.75rem;color:var(--t3);line-height:1.6}
-.gOr{display:flex;align-items:center;gap:0.75rem;margin:1.125rem 0}
-.gOr::before,.gOr::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}
-.gOr span{font-size:0.75rem;color:var(--t3);font-weight:500}
 .gGoogle{width:100%;height:3.25rem;border-radius:0.875rem;display:flex;align-items:center;justify-content:center;gap:0.6875rem;
   background:#fff;color:#1f1f1f;border:0;font-size:0.9375rem;font-weight:600;letter-spacing:-.01em;
   box-shadow:0 0.375rem 1.125rem -0.5rem rgba(0,0,0,.5);transition:transform .12s,opacity .18s}
@@ -9669,7 +9470,7 @@ html.sb-white #userSearch::before{
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.37</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px" id="gVer"></span></div>
   </section>
 </div>
 
@@ -10451,18 +10252,35 @@ const ME=(window.__me&&window.__me.username)?window.__me.username:"sen";
   const ptr=$("#ptr"); if(!ptr) return;
   let startY=0, pulling=false, dist=0, refreshing=false;
   const MAX=90, TRIG=64;
+  /* DUZELTME: #feed padding-top + scroll-snap yuzunden scrollTop
+     en ustteyken bile 0 olmuyor (57.6px cakiliyor). "En ust" artik
+     padding degerine gore olculuyor. */
+  function ustPadding(){
+    try{ return parseFloat(getComputedStyle(feed).paddingTop) || 0; }
+    catch(e){ return 0; }
+  }
+  function enUstte(){ return feed.scrollTop <= ustPadding() + 4; }
+
   feed.addEventListener("touchstart",e=>{
     if(refreshing) return;
     // sadece en üstteyken ve tek parmakla
-    if(feed.scrollTop<=0 && e.touches.length===1){
+    if(enUstte() && e.touches.length===1){
       startY=e.touches[0].clientY; pulling=true; dist=0;
       ptr.classList.remove("animating");
     }else pulling=false;
   },{passive:true});
   feed.addEventListener("touchmove",e=>{
     if(!pulling||refreshing) return;
-    dist=e.touches[0].clientY-startY;
-    if(dist>0 && feed.scrollTop<=0){
+    const y=e.touches[0].clientY;
+    /* Parmak asagi inerken tarayici once kalan scroll u tuketir.
+       O sirada baslangici sifirla ki cekme mesafesi dogru olsun. */
+    if(feed.scrollTop>2){
+      startY=y; dist=0;
+      ptr.style.height="0px"; ptr.classList.remove("ready");
+      return;
+    }
+    dist=y-startY;
+    if(dist>0){
       const h=Math.min(MAX, dist*0.5);
       ptr.style.height=h+"px";
       ptr.classList.toggle("ready", h>=TRIG);
@@ -11400,7 +11218,39 @@ async function loadNotifs(){
 
     paintDot();
     if($("#notif").classList.contains("open")) renderNotifs();
+    bildirimProfilleriYukle();
   }catch(e){ console.warn(e); }
+}
+
+/* BILDIRIM AKTORLERININ PROFILLERI
+   Bildirimde adi gecen kisi akista yoksa gercek adi ve avatari
+   hic sorulmuyordu; listede ham kullanici adi kaliyordu. */
+async function bildirimProfilleriYukle(){
+  const sb=window.__sb; if(!sb) return;
+  try{
+    const adlar=[];
+    (notifs||[]).forEach(n=>{
+      if(n.who) adlar.push(n.who);
+      if(n.actors) n.actors.forEach(a=>{ if(a) adlar.push(a); });
+    });
+    const eksik=[...new Set(adlar)].filter(ad=>{
+      const u=USERS[ad];
+      return !(u && u.display_name!==undefined) || !REALAV[ad];
+    });
+    if(!eksik.length) return;
+    const r = await sb.from("profiles")
+      .select("username, display_name, avatar_url")
+      .in("username", eksik.slice(0,120));
+    ((r && r.data) || []).forEach(p=>{
+      setDisplayName(p.username, p.display_name || null);
+      if(p.avatar_url) setRealAvatar(p.username, p.avatar_url);
+    });
+    eksik.forEach(ad=>{
+      if(!USERS[ad]) USERS[ad]={name:ad, followers:0, follows:0, moments:0, joined:Date.now()};
+      if(USERS[ad].display_name===undefined) USERS[ad].display_name=null;
+    });
+    if($("#notif").classList.contains("open")) renderNotifs();
+  }catch(e){ console.warn("bildirim profilleri:", e && e.message); }
 }
 // Bildirimi sunucuda okundu işaretle.
 // Önce hazır RPC denenir; yoksa tabloya doğrudan yazılır.
@@ -11570,12 +11420,28 @@ function notifRow(n){
 
   // --- avatar (gerçek profil fotoğrafı) ---
   const av=document.createElement("span");av.className="nav-av";
-  // önce uygulamanın kendi avatar sistemi, olmazsa bildirimle gelen adres
-  let src=null;
-  try{ src = (typeof avSrc==="function" && n.who) ? avSrc(n.who) : null; }catch(e){}
-  if(!src && n.avatar) src=n.avatar;
-  if(src){ av.style.backgroundImage='url("'+src+'")'; }
-  else { av.textContent=(n.who||"?")[0].toUpperCase(); }
+  function _avatarAdresi(kim){
+    let u=null;
+    try{ u = (typeof avSrc==="function" && kim) ? avSrc(kim) : null; }catch(e){}
+    return u;
+  }
+  const aktorler = (n.actors && n.actors.length) ? n.actors : [n.who].filter(Boolean);
+  if(aktorler.length>1){
+    /* Grup bildirimi: en fazla 3 avatar ust uste dizilir */
+    av.classList.add("stack");
+    aktorler.slice(0,3).forEach(kim=>{
+      const p=document.createElement("span"); p.className="sav";
+      const u=_avatarAdresi(kim);
+      if(u) p.style.backgroundImage='url("'+u+'")';
+      else p.textContent=(kim||"?")[0].toUpperCase();
+      av.appendChild(p);
+    });
+  }else{
+    let src=_avatarAdresi(n.who);
+    if(!src && n.avatar) src=n.avatar;
+    if(src){ av.style.backgroundImage='url("'+src+'")'; }
+    else { av.textContent=(n.who||"?")[0].toUpperCase(); }
+  }
 
   // tür rozeti
   const ICONS={
@@ -11594,7 +11460,8 @@ function notifRow(n){
   // --- metin ---
   const tx=document.createElement("span");tx.className="ntext";
   const extra=(n.actors && n.actors.length>1);
-  const strong=document.createElement("b");strong.textContent=n.who||"";
+  const strong=document.createElement("b");
+  strong.textContent = (typeof adiniGoster==="function") ? adiniGoster(n.who) : (n.who||"");
   const rest=document.createElement("span");
   if(extra){
     let verb=" "+t("n_commented_g");
@@ -12804,7 +12671,29 @@ function close(id){
   if(AUDIO_BLOCKERS.includes(id) && !anyBlockerOpen() && typeof resumeFeedMedia==="function"){
     setTimeout(()=>{ if(!anyBlockerOpen()) resumeFeedMedia(); },80);
   }
+
+  /* DUZELTME: panel geri tusuyla kapatilinca aktif sekme eski panelde
+     kaliyordu. Hem ust serit hem alt cubuk "acik ekran" sanip beyaz
+     takiliyordu. Baska panel kalmadiysa sekme akisa dondurulur. */
+  const _ANA_PANEL=["profile","chats","chat","settings","editProfile",
+                    "notif","timeSheet","blockedPanel","userSearch"];
+  if(_ANA_PANEL.includes(id)){
+    const kalan=_ANA_PANEL.some(x=>{
+      const e=document.getElementById(x);
+      return e && e.classList.contains("open");
+    });
+    if(kalan===false){
+      const tf=document.getElementById("tabFeed");
+      if(tf && !tf.classList.contains("on")){
+        document.querySelectorAll(".tab.on").forEach(x=>x.classList.remove("on"));
+        tf.classList.add("on");
+      }
+    }
+  }
+
   if(typeof syncStatusBar==="function") syncStatusBar();
+  /* open() ikisini de cagiriyordu, close() yalnizca ilkini -> eksikti */
+  if(typeof syncTabbar==="function") syncTabbar();
 }
 $$("[data-close]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.close)));
 document.addEventListener("keydown",e=>{
@@ -15383,12 +15272,17 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
   if(!draft){ toast(t("err_nothing_save")); return; }
   const btn=$("#cpSaveBtn"), ic=$("#cpSaveIcon"), lb=$("#cpSaveLb");
   try{
-    let blobUrl=draft.src, name="klipsy-"+Date.now()+(draft.kind==="video"?".mp4":".jpg");
-    if(draft.blob){ blobUrl=URL.createObjectURL(draft.blob); }
-    const a=document.createElement("a");
-    a.href=blobUrl; a.download=name;
-    document.body.appendChild(a); a.click(); a.remove();
-    if(draft.blob) setTimeout(()=>URL.revokeObjectURL(blobUrl),4000);
+    /* DUZELTME: <a download> Android WebView de calismaz.
+       Uygulamanin kendi saveToDevice() zinciri kullanilir:
+       Media eklentisi -> Filesystem -> Share. */
+    const name="klipsy-"+Date.now()+(draft.kind==="video"?".mp4":".jpg");
+    let blob=draft.blob||null;
+    if(!blob && draft.src){
+      const r=await fetch(draft.src);
+      blob=await r.blob();
+    }
+    if(!blob) throw new Error("kare bulunamadi");
+    await saveToDevice(blob, name, null, /^https?:/i.test(draft.src||"") ? draft.src : null);
     btn.classList.add("on");
     ic.innerHTML='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.4 17.5 4 12.2"/></svg>';
     lb.textContent="Kaydedildi";
@@ -15398,7 +15292,10 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
       ic.innerHTML='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></svg>';
       lb.textContent="Kaydet";
     },2400);
-  }catch(e){ toast("Kaydedilemedi"); }
+  }catch(e){
+    console.warn("kaydet:", e && (e.message||e));
+    toast("Kaydedilemedi");
+  }
 });
 
 function paintMoodBtn(){
@@ -16142,7 +16039,17 @@ function closeCompose(back){
   if(typeof syncStatusBar==="function") syncStatusBar();
   $("#cpMedia").innerHTML="";$("#cpMedia").style.backgroundImage="";
   draft=null;pickedMood=null;
-  if(back) openCam("post"); else setTab($("#tabFeed"));
+  if(back){
+    /* DUZELTME: closeCam() async ama beklenmeden openCompose calisiyordu.
+       Geri basinca eklenti hala onceki durdurmanin ortasindayken
+       baslat() cagriliyor ve onizleme siyah kaliyordu.
+       Once durdurmayi kesinlestir, kisa bir nefes ver, sonra ac. */
+    (async ()=>{
+      try{ if(window.Kamera && Kamera.durdur) await Kamera.durdur(); }catch(e){}
+      await new Promise(r=>setTimeout(r,140));
+      openCam("post");
+    })();
+  } else setTab($("#tabFeed"));
 }
 $("#cpBack").addEventListener("click",()=>closeCompose(true));
 $("#cpShare").addEventListener("click",()=>{
@@ -16874,6 +16781,13 @@ function yigiKoy(sira, adresler){
       y = document.createElement("span"); y.className = "statAvs";
       k.insertBefore(y, k.firstChild);
     }
+    /* DUZELTME: bu fonksiyon kisa araliklarla tekrar tekrar cagriliyordu.
+       Her seferinde innerHTML sifirlanip <i> elemanlari bastan kuruluyor,
+       profil acilisinda gorunur bir titreme olusuyordu.
+       Icerik aynysa hicbir sey yapma. */
+    const imza = (adresler && adresler.length) ? adresler.slice(0,3).join("|") : "";
+    if(y.dataset.imza === imza) return;
+    y.dataset.imza = imza;
     y.innerHTML = "";
     if(!adresler || !adresler.length) return;
     adresler.slice(0,3).forEach(src=>{
@@ -17249,19 +17163,30 @@ function syncStatusBar(){
   const tc = document.getElementById('__themeColor');
   if(tc) tc.setAttribute('content', color);
 
-  document.documentElement.classList.toggle('sb-white',  bgIsLight);
-  document.documentElement.classList.toggle('sb-black', !bgIsLight);
+  /* DUZELTME: bu fonksiyon cok sik cagriliyor. Ayni degerleri tekrar
+     yazmak WebView de kok elemanin stilini yeniden hesaplatiyor ve
+     APK de gorunur titremeye yol aciyordu (PWA de bu katman yok, o
+     yuzden orada sorun cikmiyordu). Artik yalnizca DEGISEN yazilir. */
+  const kok = document.documentElement;
+  if(kok.classList.contains('sb-white') !== bgIsLight){
+    kok.classList.toggle('sb-white',  bgIsLight);
+    kok.classList.toggle('sb-black', !bgIsLight);
+  }
 
   ensureSysBarBg();
 
   const camEl = document.getElementById('cam');
   const camOpen = !!(camEl && camEl.classList.contains('open'));
   const bar = document.getElementById('sysBarBg');
-  if(bar) bar.style.display = (camOpen || onPanel) ? 'none' : 'block';
+  const gorunum = (camOpen || onPanel) ? 'none' : 'block';
+  if(bar && bar.style.display !== gorunum) bar.style.display = gorunum;
 
   try{
-    document.documentElement.style.background = camOpen ? 'transparent' : '';
-    if(document.body) document.body.style.background = camOpen ? 'transparent' : '';
+    const zemin = camOpen ? 'transparent' : '';
+    if(kok.style.background !== zemin) kok.style.background = zemin;
+    if(document.body && document.body.style.background !== zemin){
+      document.body.style.background = zemin;
+    }
   }catch(e){}
 
   /* --sat'a DOKUNULMUYOR. Burasi kasitli olarak bos. */
@@ -17556,7 +17481,8 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.37";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy "+KLIPSY_SURUM;
+  try{ const gv=document.getElementById("gVer"); if(gv) gv.textContent="Klipsy "+KLIPSY_SURUM; }catch(e){}
   ver.style.cursor="pointer";
   ver.addEventListener("click",()=>{
     const b=document.getElementById("dlDbg");
@@ -17722,6 +17648,36 @@ let _profActsRow = null;   // takip/mesaj satırı — en sona eklenir
 
 function renderProfile(){
   if(typeof syncStatusBar==="function") syncStatusBar();
+
+  /* ══════════ TEKRAR CIZIMI ENGELLE ══════════
+     openProfile() bu fonksiyonu ARKA ARKAYA UC KEZ cagiriyordu:
+       1) hemen, elde ne varsa
+       2) loadProfileData() donunce
+       3) is_following donunce
+     Her cagri box.innerHTML="" yapip her seyi sifirdan kuruyor;
+     profil acilisinda gorunur bir titreme olusuyordu.
+     Ciktiyi etkileyen verilerin imzasi ayni ise DOM a hic dokunma. */
+  try{
+    const _k = document.getElementById("profBody");
+    const _u = (profName===ME ? meUser : userOf(profName)) || {};
+    const _imza = [
+      profName, (profName===ME ? 1 : 0),
+      _u.moments, _u.followers, _u.follows,
+      (_u.bio||""), (_u.avatar_url||""),
+      (typeof REALAV!=="undefined" ? (REALAV[profName]||"") : ""),
+      (typeof following!=="undefined" && following.has(profName) ? 1 : 0)
+    ].join("~");
+    if(_k && _k.children.length && _k.dataset.imza === _imza) return;
+    if(_k) _k.dataset.imza = _imza;
+    /* Yeniden cizim sart oldugunda kaydirma konumu korunur,
+       yoksa liste her tazelemede basa firliyordu. */
+    const _sc = document.querySelector("#profile .profbody");
+    if(_sc && _sc.scrollTop > 0){
+      const _y = _sc.scrollTop;
+      requestAnimationFrame(()=>{ try{ _sc.scrollTop = _y; }catch(e){} });
+    }
+  }catch(e){}
+
   const own=profName===ME;
   /* Başkasının profilinde kendi başlık çubuğumuzu gizliyoruz;
      yeni tasarımda geri ve seçenekler düğmeleri zaten görselin üstünde. */
@@ -18388,8 +18344,17 @@ function sortChats(){
   });
 }
 function unreadTotal(){ return chats.reduce((n,c)=>n+c.unread,0); }
+/* Bana gelen, henuz karar verilmemis mesaj istekleri */
+function reqTotal(){
+  try{
+    return chats.filter(c=> c.requestState==="pending" &&
+      !(window.__me && c.requesterId===window.__me.id)).length;
+  }catch(e){ return 0; }
+}
 function paintDmDot(){
-  const d=$("#dmDot"),n=unreadTotal();
+  const d=$("#dmDot"); if(!d) return;
+  /* Istek de sayilir: kullanicinin ekrana girip kontrol etmesi gerekmesin */
+  const n=unreadTotal()+reqTotal();
   d.textContent=n>99?"99+":n;d.classList.toggle("hide",n===0);
 }
 function preview(c){
@@ -18420,7 +18385,10 @@ function renderChats(){
   const anaListe = chats.filter(c=>!(c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id)));
 
   const dot=$("#chatTabDot");
-  if(dot) dot.classList.toggle("hide", istekler.length===0);
+  if(dot){
+    dot.textContent = istekler.length ? (istekler.length>9 ? "9+" : String(istekler.length)) : "";
+    dot.classList.toggle("hide", istekler.length===0);
+  }
 
   listeyiEsitle(mainBox, anaListe, false, t("no_msgs")+"<br>"+t("no_msgs_hint"));
   listeyiEsitle(reqBox,  istekler, true,  t("no_requests"));
@@ -18498,12 +18466,8 @@ function buildChatRow(c, isRequestRow){
   const top=document.createElement("div");top.className="top";
   const nm=document.createElement("span");nm.className="nm";
   nm.textContent = (typeof adiniGoster === "function") ? adiniGoster(c.who) : c.who;
-  // sessize alınmışsa küçük bir çan göstergesi
-  if(typeof _sessizSohbetler !== "undefined" && _sessizSohbetler.has(c.who)){
-    const s=document.createElement("span"); s.className="muteDot";
-    s.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6 8c0 7-3 9-3 9h13"/><path d="m3 3 18 18"/></svg>';
-    nm.appendChild(s);
-  }
+  /* Durum ikonlari isimden alinip AVATARIN kosesine tasindi
+     (bildirimlerdeki rozet dili ile ayni). */
   const tm=document.createElement("span");tm.className="tm";
   const l=lastOf(c);tm.textContent=l?chatDate(l.ts):"";
   top.append(nm,tm);
@@ -18512,7 +18476,8 @@ function buildChatRow(c, isRequestRow){
   const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
   if(isRequestRow){
     // istek listesinde mesaj içeriği ASLA gösterilmez
-    pv.innerHTML = '<span class="reqTag in">'+t("msg_request2")+'</span> '+t("open_decide")+'';
+    b.classList.add("req");
+    pv.textContent = t("open_decide");
   }else{
     // Gönderdiğim istekte de gerçek mesaj görünür; bekleme durumu sağda gösterilir.
     pv.textContent=preview(c);
@@ -18520,19 +18485,52 @@ function buildChatRow(c, isRequestRow){
   mid.append(top,pv);
   b.append(av,mid);
 
-  // Gösterge AVATARIN KÖŞESİNE binir → sağ uç boş kalır, saatler tam hizalanır.
-  if(isPending && iAmRequester && !isRequestRow){
-    const wt=document.createElement("span");
-    wt.className="avWait";
-    wt.title=t("req_sent2");
-    wt.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>';
-    av.appendChild(wt);
-  }else if(c.unread && !isRequestRow){
-    const bd=document.createElement("span");
-    bd.className="avBadge";
-    bd.textContent = c.unread>9 ? "9+" : c.unread;
-    av.appendChild(bd);
+  /* AVATAR ROZETI — bildirimlerdeki dille ayni: tek rozet, sag alt kose.
+     Her durumun kendi rengi var:
+       engel   kirmizi   mesajlasma kapali
+       yeni    mavi      okunmamis mesaj
+       bekliyor sari     gonderdigin istek yanit bekliyor
+       sessiz  gri       bildirimi kapatilmis  */
+  const ROZET_IKON={
+    engel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="m6 6 12 12"/></svg>',
+    bekliyor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>',
+    sessiz:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6 8c0 7-3 9-3 9h13"/><path d="m3 3 18 18"/></svg>'
+  };
+
+  if(!isRequestRow){
+    let tur=null, engelli=false, sessizMi=false;
+    try{
+      const bs=_blockCache[c.who];
+      engelli = _engellenenAdlar.has(c.who) || !!(bs && (bs.byMe || bs.me));
+      sessizMi = (typeof _sessizSohbetler!=="undefined") && _sessizSohbetler.has(c.who);
+    }catch(e){}
+
+    if(engelli)                        tur="engel";
+    else if(c.unread)                  tur="yeni";
+    else if(isPending && iAmRequester) tur="bekliyor";
+    else if(sessizMi)                  tur="sessiz";
+
+    if(tur){
+      const rz=document.createElement("span");
+      rz.className="avRozet "+tur;
+      if(tur==="yeni") rz.textContent = c.unread>9 ? "9+" : c.unread;
+      else             rz.innerHTML   = ROZET_IKON[tur];
+      if(tur==="bekliyor") rz.title=t("req_sent2");
+      av.appendChild(rz);
+    }
   }
+
+  if(isRequestRow){
+    const rb=document.createElement("span");
+    rb.className="reqIcon";
+    rb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3 7 9 6 9-6"/></svg>';
+    av.appendChild(rb);
+    const ch=document.createElement("span");
+    ch.className="chev";
+    ch.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+    b.appendChild(ch);
+  }
+
   b.addEventListener("click",()=>openChat(c.who));
   // sohbete uzun bas → sil
   let clpT=null, cmoved=false;
@@ -18575,6 +18573,10 @@ async function loadConversations(){
     if(error){ console.warn('convos:',error.message); return; }
     chats=(data||[]).map(r=>{
       _convId[r.other_username]=r.conv_id;
+      /* DUZELTME: sohbet listesindeki gercek avatari kaydet.
+         Yoksa avSrc() varsayilan SVG uretir ve resim gorunmez. */
+      if(r.other_avatar) setRealAvatar(r.other_username, r.other_avatar);
+      if(r.other_display_name) setDisplayName(r.other_username, r.other_display_name);
       return {
         who:r.other_username, avatar:r.other_avatar,
         convId:r.conv_id, unread:r.unread||0,
@@ -18585,10 +18587,63 @@ async function loadConversations(){
     });
     paintDmDot();
     if($("#chats").classList.contains("open")) renderChats();
+    sohbetProfilleriYukle();
+    engellenenleriYukle();
     sessizleriYukle();
     temizlikleriYukle();
   }catch(e){ console.warn(e); }
 }
+/* SOHBET LISTESI PROFILLERI
+   fetchDisplayNames() sadece AKISTA gorunen kullanicilari cekiyor.
+   Sohbet ettigin kisinin akista gonderisi yoksa adi ve avatari
+   hic sorulmuyordu; listede ham kullanici adi ve varsayilan
+   avatar kaliyordu. Burada eksik olanlari toplu ceker. */
+/* Engelledigim kullanici adlari — liste rozeti icin tek sorguda alinir */
+const _engellenenAdlar = new Set();
+async function engellenenleriYukle(){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  try{
+    const r1 = await sb.from("blocks").select("blocked_id").eq("blocker_id", me.id);
+    const ids = ((r1 && r1.data) || []).map(x=>x.blocked_id);
+    _engellenenAdlar.clear();
+    if(!ids.length) return;
+    const r2 = await sb.from("profiles").select("username").in("id", ids);
+    ((r2 && r2.data) || []).forEach(p=>{ if(p.username) _engellenenAdlar.add(p.username); });
+    if($("#chats").classList.contains("open") && typeof renderChats==="function") renderChats();
+  }catch(e){ console.warn("engellenenler:", e && e.message); }
+}
+
+async function sohbetProfilleriYukle(){
+  const sb=window.__sb; if(!sb) return;
+  try{
+    const adlar=[...new Set(chats.map(c=>c.who))].filter(Boolean);
+    const eksik=adlar.filter(n=>{
+      const u=USERS[n];
+      const adYok = !(u && u.display_name!==undefined);
+      const avYok = !REALAV[n];
+      return adYok || avYok;
+    });
+    if(!eksik.length) return;
+    const r = await sb.from("profiles")
+      .select("username, display_name, avatar_url")
+      .in("username", eksik);
+    const veri = (r && r.data) || [];
+    veri.forEach(p=>{
+      if(p.display_name) setDisplayName(p.username, p.display_name);
+      else setDisplayName(p.username, null);
+      if(p.avatar_url) setRealAvatar(p.username, p.avatar_url);
+    });
+    /* Gelmeyenleri isaretle ki her acilista tekrar sorulmasin */
+    eksik.forEach(n=>{
+      if(!USERS[n]) USERS[n]={name:n, followers:0, follows:0, moments:0, joined:Date.now()};
+      if(USERS[n].display_name===undefined) USERS[n].display_name=null;
+    });
+    if($("#chats").classList.contains("open")) renderChats();
+    if(typeof paintAllAvatars==="function") paintAllAvatars();
+  }catch(e){ console.warn("sohbet profilleri:", e && e.message); }
+}
+
 function openChats(){
   if($("#profile").classList.contains("open")) close("profile");
   if($("#timeSheet").classList.contains("open")) close("timeSheet");
@@ -23002,7 +23057,7 @@ setTimeout(()=>{ try{ requestNativePermissions(); }catch(e){} }, 1500);
 setTimeout(()=>{
   try{
     if(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()){
-      _dlDbg("panel hazır","İndir dene veya Ayarlar › Klipsy 3.3.37");
+      _dlDbg("panel hazır","İndir dene veya Ayarlar › Klipsy "+KLIPSY_SURUM);
     }
   }catch(e){}
 }, 2200);
@@ -23062,6 +23117,56 @@ function sohbetleriTazeleGecikmeli(){
   clearTimeout(_convTazeleT);
   _convTazeleT = setTimeout(()=>{ try{ loadConversations(); }catch(e){} }, 400);
 }
+
+/* ═══ MESAJ EMNIYET AGI ═══
+   Canli mesaj Supabase realtime soketiyle geliyor. Android WebView
+   arka plana atilinca soket kopuyor ve geri donunce her zaman
+   yeniden baglanmiyor; mesaj ancak uygulama yeniden acilinca
+   goruluyordu. Sunucuda tablo icin yayin kapaliysa hic gelmiyor.
+   Burasi sokete guvenmez: on plandayken duzenli, ekrana her
+   donuste hemen tazeler. */
+let _nabizT = null;
+
+function mesajTazele(zorla){
+  try{
+    if(document.hidden && !zorla) return;
+    if(!window.__sb || !window.__me) return;
+    loadConversations();
+    if(chatWho && typeof mesajlariTazele === "function") mesajlariTazele(chatWho);
+  }catch(e){}
+}
+
+function nabziBaslat(){
+  clearInterval(_nabizT);
+  _nabizT = setInterval(()=>{ mesajTazele(false); }, 20000);
+}
+function nabziDurdur(){ clearInterval(_nabizT); _nabizT = null; }
+
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden){ nabziDurdur(); return; }
+  mesajTazele(true);                       // ekrana doner donmez
+  setTimeout(()=>mesajTazele(true), 1200); // soket gec baglanirsa ikinci deneme
+  nabziBaslat();
+});
+
+window.addEventListener("focus", ()=>{ mesajTazele(true); });
+window.addEventListener("online", ()=>{ setTimeout(()=>mesajTazele(true), 600); });
+
+/* Uygulama on plana donunce (Capacitor) */
+try{
+  const App = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if(App && App.addListener){
+    App.addListener("appStateChange", (st)=>{
+      if(st && st.isActive){
+        mesajTazele(true);
+        setTimeout(()=>mesajTazele(true), 1500);
+        nabziBaslat();
+      }else nabziDurdur();
+    });
+  }
+}catch(e){}
+
+nabziBaslat();
 
 /* Açık sohbete SADECE yeni mesajları ekler — tüm geçmişi yeniden
    yüklemez, ekranı da baştan çizmez. */

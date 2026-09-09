@@ -280,9 +280,14 @@
        (width ile çakışır). Boyut sonra setPreviewSize. */
     if (CP().setPreviewSize) {
       try {
-        const w = Math.max(1, Math.round(window.innerWidth || 360));
-        const h = Math.max(1, Math.round(w * 16 / 9));
-        await CP().setPreviewSize({ x: 0, y: 0, width: w, height: h });
+        /* 9:16 orani korunur; sadece kenar bosluklari kapatilir.
+           Onizleme yatayda ortalanir, tasan kisim kirpilir. */
+        const vw = Math.ceil(window.innerWidth || 360);
+        const vh = Math.ceil((window.visualViewport && window.visualViewport.height) || window.innerHeight);
+        let w = vw + 2, h = Math.round(w * 16 / 9);
+        if (h < vh + 2) { h = vh + 2; w = Math.round(h * 9 / 16); }
+        const x = Math.round((vw - w) / 2);
+        await CP().setPreviewSize({ x: x, y: -1, width: w, height: h });
       } catch (e) {}
     }
 

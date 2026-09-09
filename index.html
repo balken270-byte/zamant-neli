@@ -7299,8 +7299,8 @@ html.camNativeOn #cam{
 }
 html.camNativeOn #cam::after{
   content:"";
-  position:absolute;left:0;right:0;bottom:0;
-  height:calc(100% - (100vw * 16 / 9));
+  position:absolute;left:-1px;right:-1px;bottom:-1px;
+  height:calc(100% - (100vw * 16 / 9) + 1px);
   background:#000;
   z-index:1;pointer-events:none;
 }

@@ -11,3 +11,10 @@ android/.gradle/
 android/.kotlin/
 www/
 supabase/.temp/
+node_modules/
+android/build/
+android/app/build/
+android/.gradle/
+android/.kotlin/
+www/
+supabase/.temp/

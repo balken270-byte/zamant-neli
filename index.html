@@ -6,8 +6,15 @@
 <meta name="theme-color" id="__themeColor" content="#08080C">
 <style>html,body{margin:0;background:#08080C}
 html[data-theme="light"] body{background:#FFFFFF}</style>
-<title>Klipsy 3.3.37</title>
-<script src="klipsy-kamera.js?v=3.5.1"></script>
+<script>
+/* ══════════ TEK SURUM KAYNAGI ══════════
+   Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
+   ayarlar satiri, kamera dosyasi ve service worker onbellegi
+   hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
+window.KLIPSY_SURUM = "3.5.6";
+document.title = "Klipsy " + KLIPSY_SURUM;
+</script>
+<script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
 <script>
 /* ============================================================
    KLİPSY — ÇOK DİLLİ DESTEK (i18n)
@@ -5507,7 +5514,9 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
   }
 
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function () {});
+    /* Surum sorgusu: adres degisince tarayici yeni SW yi indirir,
+       sw.js de onbellek adini bu degerden uretir. */
+    navigator.serviceWorker.register('./sw.js?v=' + (window.KLIPSY_SURUM || 'dev')).catch(function () {});
   });
 })();
 </script>
@@ -9456,7 +9465,7 @@ html.sb-white #userSearch::before{
   </section>
 
   <section class="gscreen" id="gAuth" style="display:none">
-    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px">Klipsy 3.3.37</span></div>
+    <div class="gfoot" style="position:absolute;bottom:1rem;left:0;right:0;text-align:center"><span style="opacity:.5;font-size:11px" id="gVer"></span></div>
   </section>
 </div>
 
@@ -17456,7 +17465,8 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.5.5";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy "+KLIPSY_SURUM;
+  try{ const gv=document.getElementById("gVer"); if(gv) gv.textContent="Klipsy "+KLIPSY_SURUM; }catch(e){}
   ver.style.cursor="pointer";
   ver.addEventListener("click",()=>{
     const b=document.getElementById("dlDbg");
@@ -23001,7 +23011,7 @@ setTimeout(()=>{ try{ requestNativePermissions(); }catch(e){} }, 1500);
 setTimeout(()=>{
   try{
     if(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()){
-      _dlDbg("panel hazır","İndir dene veya Ayarlar › Klipsy 3.3.37");
+      _dlDbg("panel hazır","İndir dene veya Ayarlar › Klipsy "+KLIPSY_SURUM);
     }
   }catch(e){}
 }, 2200);

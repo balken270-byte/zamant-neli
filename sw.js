@@ -5,7 +5,14 @@
 // eski sürümde takılma olmaz. Sadece ikon/manifest önbelleğe alınır.
 // ============================================================
 
-const CACHE = 'klipsy-v2';
+/* Surum, kayit adresindeki ?v= parametresinden okunur.
+   index.html icindeki KLIPSY_SURUM tek kaynaktir; burada
+   ayrica surum yazmaya gerek yoktur. */
+const SURUM = (function(){
+  try{ return new URL(self.location.href).searchParams.get('v') || 'dev'; }
+  catch(e){ return 'dev'; }
+})();
+const CACHE = 'klipsy-' + SURUM;
 const ASSETS = ['./icon.png', './manifest.json'];
 
 self.addEventListener('install', (e) => {

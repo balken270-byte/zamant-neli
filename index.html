@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.5.9";
+window.KLIPSY_SURUM = "3.6.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      d_tab:"Taslak",
+      d_desc:"Paylaşmayı beklettiğin kareler. Konum ve saat bilgisi çekildiği andan korunur.",
+      d_none:"Taslak yok",
+      d_hint:"Bir kare çektikten sonra “Sonra” diyerek buraya alabilirsin.",
+      d_send:"Paylaş",
+      d_sending:"Gönderiliyor…",
+      d_del:"Sil",
+      d_video:"VİDEO",
+      d_later:"Sonra",
+      d_later_aria:"Sonra paylaş",
+      d_kept:"Taslaklara alındı",
       draft_sending:"Taslaklar gönderiliyor…",
       draft_saved:"Bağlantı yok — taslak olarak kaydedildi",
       song_no_preview:"Bu şarkının önizlemesi yok",
@@ -708,6 +719,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      d_tab:"Drafts",
+      d_desc:"Moments you chose to post later. Place and time stay as they were when shot.",
+      d_none:"No drafts",
+      d_hint:"After shooting, tap “Later” to keep it here.",
+      d_send:"Post",
+      d_sending:"Posting…",
+      d_del:"Delete",
+      d_video:"VIDEO",
+      d_later:"Later",
+      d_later_aria:"Post later",
+      d_kept:"Kept as draft",
       draft_sending:"Sending drafts…",
       draft_saved:"No connection — saved as a draft",
       song_no_preview:"No preview for this song",
@@ -1248,6 +1270,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      d_tab:"Borradores",
+      d_desc:"Momentos que dejaste para después. El lugar y la hora se guardan tal como al capturarlos.",
+      d_none:"Sin borradores",
+      d_hint:"Tras capturar, toca “Después” para guardarlo aquí.",
+      d_send:"Publicar",
+      d_sending:"Publicando…",
+      d_del:"Eliminar",
+      d_video:"VÍDEO",
+      d_later:"Después",
+      d_later_aria:"Publicar después",
+      d_kept:"Guardado como borrador",
       draft_sending:"Enviando borradores…",
       draft_saved:"Sin conexión — guardado como borrador",
       song_no_preview:"Sin vista previa para esta canción",
@@ -1785,6 +1818,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      d_tab:"المسودات",
+      d_desc:"لحظات أجّلت نشرها. يُحفظ المكان والوقت كما كانا عند التقاطها.",
+      d_none:"لا مسودات",
+      d_hint:"بعد الالتقاط اضغط «لاحقًا» لحفظها هنا.",
+      d_send:"نشر",
+      d_sending:"جارٍ النشر…",
+      d_del:"حذف",
+      d_video:"فيديو",
+      d_later:"لاحقًا",
+      d_later_aria:"النشر لاحقًا",
+      d_kept:"حُفظت كمسودة",
       draft_sending:"جارٍ إرسال المسودات…",
       draft_saved:"لا يوجد اتصال — حُفظ كمسودة",
       song_no_preview:"لا توجد معاينة لهذه الأغنية",
@@ -2322,6 +2366,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      d_tab:"Brouillons",
+      d_desc:"Moments que tu as gardés pour plus tard. Le lieu et l’heure restent ceux de la prise.",
+      d_none:"Aucun brouillon",
+      d_hint:"Après la prise, touche « Plus tard » pour le garder ici.",
+      d_send:"Publier",
+      d_sending:"Publication…",
+      d_del:"Supprimer",
+      d_video:"VIDÉO",
+      d_later:"Plus tard",
+      d_later_aria:"Publier plus tard",
+      d_kept:"Gardé en brouillon",
       draft_sending:"Envoi des brouillons…",
       draft_saved:"Pas de connexion — enregistré en brouillon",
       song_no_preview:"Pas d'aperçu pour ce morceau",
@@ -2859,6 +2914,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      d_tab:"Entwürfe",
+      d_desc:"Momente, die du später posten willst. Ort und Zeit bleiben wie bei der Aufnahme.",
+      d_none:"Keine Entwürfe",
+      d_hint:"Tippe nach der Aufnahme auf „Später“, um ihn hier zu behalten.",
+      d_send:"Posten",
+      d_sending:"Wird gepostet…",
+      d_del:"Löschen",
+      d_video:"VIDEO",
+      d_later:"Später",
+      d_later_aria:"Später posten",
+      d_kept:"Als Entwurf gespeichert",
       draft_sending:"Entwürfe werden gesendet…",
       draft_saved:"Keine Verbindung — als Entwurf gespeichert",
       song_no_preview:"Keine Vorschau für diesen Song",
@@ -3396,6 +3462,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      d_tab:"Черновики",
+      d_desc:"Моменты, отложенные на потом. Место и время сохраняются с момента съёмки.",
+      d_none:"Черновиков нет",
+      d_hint:"После съёмки нажми «Позже», чтобы сохранить сюда.",
+      d_send:"Опубликовать",
+      d_sending:"Публикация…",
+      d_del:"Удалить",
+      d_video:"ВИДЕО",
+      d_later:"Позже",
+      d_later_aria:"Опубликовать позже",
+      d_kept:"Сохранено в черновики",
       draft_sending:"Отправка черновиков…",
       draft_saved:"Нет связи — сохранено в черновиках",
       song_no_preview:"Нет превью для этой песни",
@@ -3933,6 +4010,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      d_tab:"Rascunhos",
+      d_desc:"Momentos que deixaste para depois. Local e hora ficam como no momento da captura.",
+      d_none:"Sem rascunhos",
+      d_hint:"Depois de capturar, toca em “Depois” para guardar aqui.",
+      d_send:"Publicar",
+      d_sending:"A publicar…",
+      d_del:"Eliminar",
+      d_video:"VÍDEO",
+      d_later:"Depois",
+      d_later_aria:"Publicar depois",
+      d_kept:"Guardado nos rascunhos",
       draft_sending:"Enviando rascunhos…",
       draft_saved:"Sem conexão — salvo como rascunho",
       song_no_preview:"Sem prévia para esta música",
@@ -4470,6 +4558,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      d_tab:"ड्राफ़्ट",
+      d_desc:"वे पल जिन्हें आपने बाद में साझा करने के लिए रखा। जगह और समय वैसे ही रहते हैं।",
+      d_none:"कोई ड्राफ़्ट नहीं",
+      d_hint:"कैप्चर के बाद “बाद में” दबाकर इसे यहाँ रखें।",
+      d_send:"साझा करें",
+      d_sending:"भेजा जा रहा है…",
+      d_del:"हटाएँ",
+      d_video:"वीडियो",
+      d_later:"बाद में",
+      d_later_aria:"बाद में साझा करें",
+      d_kept:"ड्राफ़्ट में रखा गया",
       draft_sending:"ड्राफ़्ट भेजे जा रहे हैं…",
       draft_saved:"कनेक्शन नहीं — ड्राफ़्ट में सहेजा",
       song_no_preview:"इस गाने का पूर्वावलोकन नहीं",
@@ -5007,6 +5106,17 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      d_tab:"Draf",
+      d_desc:"Momen yang kamu simpan untuk nanti. Lokasi dan waktu tetap seperti saat diambil.",
+      d_none:"Belum ada draf",
+      d_hint:"Setelah memotret, ketuk “Nanti” untuk menyimpannya di sini.",
+      d_send:"Bagikan",
+      d_sending:"Mengirim…",
+      d_del:"Hapus",
+      d_video:"VIDEO",
+      d_later:"Nanti",
+      d_later_aria:"Bagikan nanti",
+      d_kept:"Disimpan ke draf",
       draft_sending:"Mengirim draf…",
       draft_saved:"Tanpa koneksi — disimpan sebagai draf",
       song_no_preview:"Tidak ada pratinjau lagu ini",
@@ -5877,6 +5987,10 @@ svg{display:block}
 .tabbar.away{opacity:0;transform:translateY(100%);pointer-events:none}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.1875rem;
   color:rgba(255,255,255,.55);position:relative;transition:color .16s,transform .12s;padding-top:0.125rem}
+/* Bekleyen taslak isareti — alt cubuk Profil sekmesi */
+.tab .draftDot{position:absolute;top:0.1875rem;right:calc(50% - 1.125rem);
+  width:0.5rem;height:0.5rem;border-radius:6.1875rem;background:#F5A524;
+  box-shadow:0 0 0 0.125rem var(--panelbg)}
 .tab span{font-size:0.5625rem;font-weight:500;letter-spacing:-.008em;text-shadow:0 1px 0.375rem rgba(0,0,0,.7)}
 .tab svg{filter:drop-shadow(0 1px 0.3125rem rgba(0,0,0,.6))}
 .tab.on{color:#fff}
@@ -7331,7 +7445,11 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 /* ============ profil ============ */
 #profile{z-index:var(--z-notif)}
 #notif{z-index:54}
-#settings,#editProfile,#blockedPanel{z-index:55}
+#settings,#editProfile{z-index:55}
+/* DUZELTME: engel listesi AYARLARIN ICINDEN aciliyor. Ayni katmanda
+   olunca ayarlar ustunu ortuyor, panel ancak ayarlar kapatilinca
+   goruluyordu. Bir kademe ustte durmali. */
+#blockedPanel{z-index:57}
 .profbody{flex:1;overflow-y:auto;padding:0 0.875rem calc(var(--sab) + 1.75rem);scrollbar-width:none}
 .setbody{flex:1;overflow-y:auto;padding:0.5rem 1rem calc(var(--sab) + 1.75rem);scrollbar-width:none}
 .setbody::-webkit-scrollbar{display:none}
@@ -7642,7 +7760,33 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .profnote .ic{flex:none;color:var(--t3);margin-top:1px}
 .profnote p{font-size:0.7812rem;line-height:1.55;color:var(--t3);letter-spacing:-.01em}
 
-/* arşiv sekmeleri: Anılarım | Kaydedilenler */
+/* ═══ TASLAK LISTESI ═══ */
+.draftList{display:flex;flex-direction:column;gap:0.625rem;padding:0.25rem 0 0.5rem}
+.draftRow{display:flex;align-items:center;gap:0.75rem;padding:0.5rem;
+  background:var(--surf1);border:1px solid var(--edge-soft);border-radius:1rem}
+.draftRow .dThumb{position:relative;flex:none;width:3.5rem;height:3.5rem;
+  border-radius:0.75rem;background:var(--avatar-bg) center/cover no-repeat;
+  border:1px solid var(--edge-soft);overflow:hidden}
+.draftRow .dVid{position:absolute;left:0.25rem;bottom:0.25rem;
+  font-size:0.5rem;font-weight:800;letter-spacing:.04em;
+  background:rgba(0,0,0,.6);color:#fff;padding:0.0625rem 0.25rem;border-radius:0.25rem;
+  letter-spacing:.04em}
+.draftRow .dMid{flex:1;min-width:0}
+.draftRow .dWhen{font-size:0.8125rem;font-weight:700;letter-spacing:-.015em;color:var(--t1)}
+.draftRow .dWhere{font-size:0.75rem;color:var(--t3);margin-top:0.0625rem;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draftRow .dNote{font-size:0.75rem;color:var(--t2);margin-top:0.125rem;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draftRow .dActs{flex:none;display:flex;align-items:center;gap:0.375rem}
+.draftRow .dSend{height:2rem;padding:0 0.75rem;border:0;border-radius:6.1875rem;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  font-size:0.75rem;font-weight:700;letter-spacing:-.01em}
+.draftRow .dSend:disabled{opacity:.6}
+.draftRow .dDel{width:2rem;height:2rem;flex:none;border:1px solid var(--edge-soft);
+  border-radius:6.1875rem;background:none;color:var(--t3);display:grid;place-items:center}
+.draftRow .dDel svg{width:0.9375rem;height:0.9375rem}
+
+/* arşiv sekmeleri: Anılarım | Kaydedilenler | Taslak */
 /* ═══ ARŞİV BÖLÜMÜ ═══ */
 .arcHead{display:flex;align-items:center;gap:0.625rem;margin:1.625rem 0.125rem 0.75rem;
   padding-top:1.25rem;border-top:1px solid var(--edge-soft)}
@@ -7660,6 +7804,12 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   border-radius:0.6875rem;background:var(--panelbg);
   box-shadow:0 0.125rem 0.5rem -0.125rem rgba(0,0,0,.35);
   transition:transform .26s var(--ease)}
+.arcSeg .arcInd{width:33.333% !important}
+.arcTab .arcSay{margin-left:0.3125rem;font-style:normal;font-weight:800;
+  font-size:0.625rem;min-width:1.0625rem;height:1.0625rem;padding:0 0.3125rem;
+  border-radius:6.1875rem;background:#F5A524;color:#1A1206;
+  display:none;place-items:center;vertical-align:0.0625rem}
+.arcTab .arcSay.on{display:inline-grid}
 .arcTab{position:relative;z-index:1;flex:1;background:none;border:0;
   height:2.25rem;display:flex;align-items:center;justify-content:center;gap:0.4375rem;
   font-family:inherit;font-size:0.8438rem;font-weight:700;letter-spacing:-.018em;
@@ -10091,6 +10241,10 @@ html.sb-white #userSearch::before{
         <span class="sLb" data-i18n="share_settings">Ayarlar</span>
       </button>
       <span class="cpSideSep"></span>
+      <button class="cpSideBtn" id="cpLater" aria-label="Sonra paylaş" data-i18n-aria="d_later_aria">
+        <span class="sIc"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.4 2"/></svg></span>
+        <span class="sLb" data-i18n="d_later">Sonra</span>
+      </button>
       <button class="cpSideBtn cpSendBtn" id="cpShare" aria-label="Akışa gönder" data-i18n-aria="send_feed">
         <span class="sIc sSend">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -16052,6 +16206,52 @@ function closeCompose(back){
   } else setTab($("#tabFeed"));
 }
 $("#cpBack").addEventListener("click",()=>closeCompose(true));
+/* ══════════ SONRA PAYLAS ══════════
+   Kare simdi cekilir, istenen zaman gonderilir. Konum, saat, duygu,
+   sarki ve gizlilik ayari CEKILDIGI ANDAKI haliyle saklanir.
+   Guvenlik: bulundugun yerde hemen paylasmak istemeyen kullanici
+   iceriden cikinca gonderebilir, bilgiler yine dogru kalir. */
+$("#cpLater").addEventListener("click", async ()=>{
+  if(!draft) return;
+  const btn=$("#cpLater");
+  if(btn.disabled) return;
+  btn.disabled=true;
+  try{
+    const where = place
+      ? (shareLoc ? place.name : (place.city || sadeceSehir(place.name)))
+      : null;
+    const ok = await saveDraft({
+      kind: draft.kind,
+      blob: draft.blob || (draft.src ? await (await fetch(draft.src)).blob() : null),
+      note: cpNote.value.trim(),
+      mood: pickedMood ? (pickedMood.key || pickedMood.t) : null,
+      where: where,
+      song: pickedSong || null,
+      ts: draft.ts || Date.now(),
+      extra: {
+        shareLoc: shareLoc && !!place,
+        la: place ? place.la : null,
+        lo: place ? place.lo : null,
+        durationMs: draft.durationMs || null,
+        cover: pickedCover || null,
+        visibility: _shareVis || "community",
+        commentsOn: _shareCommentsOn !== false
+      }
+    });
+    if(ok){
+      toast(t("d_kept"));
+      closeCompose(false);
+    }else{
+      btn.disabled=false;
+      toast(t("draft_fail"));
+    }
+  }catch(e){
+    console.warn("sonra paylas:", e && (e.message||e));
+    btn.disabled=false;
+    toast(t("draft_fail"));
+  }
+});
+
 $("#cpShare").addEventListener("click",()=>{
   if(!draft) return;
   /* KONUM PAYLAŞIMI KAPALIYKEN
@@ -17990,7 +18190,8 @@ function renderProfile(){
   tabs.innerHTML=
     '<span class="arcInd"></span>'+
     '<button class="arcTab on" data-arc="mine">'+t("my_moments2")+'</button>'+
-    '<button class="arcTab" data-arc="saved">'+t("saved2")+'</button>';
+    '<button class="arcTab" data-arc="saved">'+t("saved2")+'</button>'+
+    '<button class="arcTab" data-arc="draft">'+t("d_tab")+'<em class="arcSay" id="arcDraftSay"></em></button>';
   box.appendChild(tabs);
 
   const pane=document.createElement("div");pane.className="arcPane";
@@ -18000,9 +18201,13 @@ function renderProfile(){
   const ind = tabs.querySelector(".arcInd");
   function showArc(which){
     arcTabBtns.forEach(b=>b.classList.toggle("on", b.dataset.arc===which));
-    if(ind) ind.style.transform = (which==="saved") ? "translateX(100%)" : "translateX(0)";
+    if(ind){
+      const sira = which==="saved" ? 1 : (which==="draft" ? 2 : 0);
+      ind.style.transform = "translateX(" + (sira*100) + "%)";
+    }
     pane.innerHTML="";
     if(which==="saved"){ renderSaved(pane); }
+    else if(which==="draft"){ renderDrafts(pane); }
     else { renderMine(pane); }
   }
   arcTabBtns.forEach(b=>b.addEventListener("click",()=>showArc(b.dataset.arc)));
@@ -18013,6 +18218,97 @@ function renderProfile(){
 
 // hangi sekme açıktı (panel yeniden çizilince korunsun)
 let _arcTab="mine";
+
+/* ══════════ TASLAKLAR ══════════
+   Cekilen kare hemen paylasilmak zorunda degil. Konum, saat, duygu,
+   sarki ve gizlilik ayari cekildigi ANDA saklanir; kullanici istedigi
+   zaman gonderir. Internet yokken otomatik dusen taslaklar da burada.  */
+function renderDrafts(box){
+  const sub=document.createElement("div");sub.className="arcSub";
+  sub.textContent=t("d_desc");
+  box.appendChild(sub);
+
+  const list=readDrafts();
+  if(!list.length){
+    const e=document.createElement("div");e.className="arcEmpty";
+    e.innerHTML='<b>'+t("d_none")+'</b><span>'+t("d_hint")+'</span>';
+    box.appendChild(e);
+    return;
+  }
+
+  const grid=document.createElement("div");grid.className="draftList";
+  list.slice().reverse().forEach(d=>{
+    const kart=document.createElement("div");kart.className="draftRow";
+
+    const on=document.createElement("div");on.className="dThumb";
+    if(d.data) on.style.backgroundImage='url("'+d.data+'")';
+    if(d.kind==="video"){
+      const v=document.createElement("span");v.className="dVid";v.textContent=t("d_video");
+      on.appendChild(v);
+    }
+    kart.appendChild(on);
+
+    const orta=document.createElement("div");orta.className="dMid";
+    const ust=document.createElement("div");ust.className="dWhen";
+    ust.textContent=(typeof zamanKisa==="function") ? zamanKisa(d.ts) : new Date(d.ts).toLocaleString();
+    orta.appendChild(ust);
+    if(d.where){
+      const y=document.createElement("div");y.className="dWhere";y.textContent=d.where;
+      orta.appendChild(y);
+    }
+    if(d.note){
+      const nt=document.createElement("div");nt.className="dNote";nt.textContent=d.note;
+      orta.appendChild(nt);
+    }
+    kart.appendChild(orta);
+
+    const sag=document.createElement("div");sag.className="dActs";
+
+    const gonder=document.createElement("button");
+    gonder.className="dSend";gonder.textContent=t("d_send");
+    gonder.addEventListener("click", async ()=>{
+      if(gonder.disabled) return;
+      gonder.disabled=true; gonder.textContent=t("d_sending");
+      let ok=false;
+      try{ ok = await sendDraft(d); }catch(e){}
+      if(ok){
+        const kalan=readDrafts().filter(x=>x.id!==d.id);
+        writeDrafts(kalan); paintDraftDot();
+        toast(t("draft_sent"));
+        try{ if(typeof loadFeed==="function") loadFeed(); }catch(e){}
+        try{ if(typeof loadMyMoments==="function") loadMyMoments(); }catch(e){}
+        renderProfileArsiv();
+      }else{
+        gonder.disabled=false; gonder.textContent=t("d_send");
+        toast(t("draft_fail"));
+      }
+    });
+    sag.appendChild(gonder);
+
+    const sil=document.createElement("button");
+    sil.className="dDel";sil.setAttribute("aria-label",t("d_del"));
+    sil.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 11.4A1.6 1.6 0 0 0 8.9 20h6.2a1.6 1.6 0 0 0 1.6-1.6L17.5 7"/></svg>';
+    sil.addEventListener("click", ()=>{
+      const kalan=readDrafts().filter(x=>x.id!==d.id);
+      writeDrafts(kalan); paintDraftDot();
+      renderProfileArsiv();
+    });
+    sag.appendChild(sil);
+
+    kart.appendChild(sag);
+    grid.appendChild(kart);
+  });
+  box.appendChild(grid);
+}
+
+/* Arsiv panelini tazele (taslak silinince/gonderilince) */
+function renderProfileArsiv(){
+  try{
+    const btn=document.querySelector('.arcTab[data-arc="draft"]');
+    if(btn) btn.click();
+    paintDraftDot();
+  }catch(e){}
+}
 
 // --- Anılarım ızgarası ---
 function renderMine(box){
@@ -21696,10 +21992,21 @@ async function flushDrafts(silent){
 // Bekleyen taslak varsa profil sekmesinde küçük bir işaret göster
 function paintDraftDot(){
   const n = readDrafts().length;
-  const el = document.getElementById("draftDot");
-  if(el) el.style.display = n ? "" : "none";
-  const cnt = document.getElementById("draftCount");
-  if(cnt) cnt.textContent = n;
+  /* Arsivdeki Taslak sekmesinin sayaci */
+  try{
+    const say=document.getElementById("arcDraftSay");
+    if(say){ say.textContent = n>9 ? "9+" : n; say.classList.toggle("on", n>0); }
+  }catch(e){}
+  /* Alt cubuktaki Profil sekmesinde kucuk isaret */
+  try{
+    const tp=document.getElementById("tabProfile");
+    if(tp){
+      let d=tp.querySelector(".draftDot");
+      if(n>0){
+        if(!d){ d=document.createElement("em"); d.className="draftDot"; tp.appendChild(d); }
+      }else if(d) d.remove();
+    }
+  }catch(e){}
 }
 
 // bağlantı gelince otomatik gönder

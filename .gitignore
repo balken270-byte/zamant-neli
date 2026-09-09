@@ -4,3 +4,10 @@ android/keystore.properties
 klipsy-inceleme.zip
 klipsy-apk-proje.zip
 android-native-debug.zip
+node_modules/
+android/build/
+android/app/build/
+android/.gradle/
+android/.kotlin/
+www/
+supabase/.temp/

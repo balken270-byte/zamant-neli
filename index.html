@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.5.7";
+window.KLIPSY_SURUM = "3.5.9";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -17163,19 +17163,30 @@ function syncStatusBar(){
   const tc = document.getElementById('__themeColor');
   if(tc) tc.setAttribute('content', color);
 
-  document.documentElement.classList.toggle('sb-white',  bgIsLight);
-  document.documentElement.classList.toggle('sb-black', !bgIsLight);
+  /* DUZELTME: bu fonksiyon cok sik cagriliyor. Ayni degerleri tekrar
+     yazmak WebView de kok elemanin stilini yeniden hesaplatiyor ve
+     APK de gorunur titremeye yol aciyordu (PWA de bu katman yok, o
+     yuzden orada sorun cikmiyordu). Artik yalnizca DEGISEN yazilir. */
+  const kok = document.documentElement;
+  if(kok.classList.contains('sb-white') !== bgIsLight){
+    kok.classList.toggle('sb-white',  bgIsLight);
+    kok.classList.toggle('sb-black', !bgIsLight);
+  }
 
   ensureSysBarBg();
 
   const camEl = document.getElementById('cam');
   const camOpen = !!(camEl && camEl.classList.contains('open'));
   const bar = document.getElementById('sysBarBg');
-  if(bar) bar.style.display = (camOpen || onPanel) ? 'none' : 'block';
+  const gorunum = (camOpen || onPanel) ? 'none' : 'block';
+  if(bar && bar.style.display !== gorunum) bar.style.display = gorunum;
 
   try{
-    document.documentElement.style.background = camOpen ? 'transparent' : '';
-    if(document.body) document.body.style.background = camOpen ? 'transparent' : '';
+    const zemin = camOpen ? 'transparent' : '';
+    if(kok.style.background !== zemin) kok.style.background = zemin;
+    if(document.body && document.body.style.background !== zemin){
+      document.body.style.background = zemin;
+    }
   }catch(e){}
 
   /* --sat'a DOKUNULMUYOR. Burasi kasitli olarak bos. */
@@ -17637,6 +17648,36 @@ let _profActsRow = null;   // takip/mesaj satırı — en sona eklenir
 
 function renderProfile(){
   if(typeof syncStatusBar==="function") syncStatusBar();
+
+  /* ══════════ TEKRAR CIZIMI ENGELLE ══════════
+     openProfile() bu fonksiyonu ARKA ARKAYA UC KEZ cagiriyordu:
+       1) hemen, elde ne varsa
+       2) loadProfileData() donunce
+       3) is_following donunce
+     Her cagri box.innerHTML="" yapip her seyi sifirdan kuruyor;
+     profil acilisinda gorunur bir titreme olusuyordu.
+     Ciktiyi etkileyen verilerin imzasi ayni ise DOM a hic dokunma. */
+  try{
+    const _k = document.getElementById("profBody");
+    const _u = (profName===ME ? meUser : userOf(profName)) || {};
+    const _imza = [
+      profName, (profName===ME ? 1 : 0),
+      _u.moments, _u.followers, _u.follows,
+      (_u.bio||""), (_u.avatar_url||""),
+      (typeof REALAV!=="undefined" ? (REALAV[profName]||"") : ""),
+      (typeof following!=="undefined" && following.has(profName) ? 1 : 0)
+    ].join("~");
+    if(_k && _k.children.length && _k.dataset.imza === _imza) return;
+    if(_k) _k.dataset.imza = _imza;
+    /* Yeniden cizim sart oldugunda kaydirma konumu korunur,
+       yoksa liste her tazelemede basa firliyordu. */
+    const _sc = document.querySelector("#profile .profbody");
+    if(_sc && _sc.scrollTop > 0){
+      const _y = _sc.scrollTop;
+      requestAnimationFrame(()=>{ try{ _sc.scrollTop = _y; }catch(e){} });
+    }
+  }catch(e){}
+
   const own=profName===ME;
   /* Başkasının profilinde kendi başlık çubuğumuzu gizliyoruz;
      yeni tasarımda geri ve seçenekler düğmeleri zaten görselin üstünde. */

@@ -5947,7 +5947,7 @@ svg{display:block}
   cursor:pointer;-webkit-user-select:none;user-select:none;
   transition:background .15s}
 #userSearch .usRow:active{background:var(--surf2)}
-#userSearch .usAv{width:2.625rem;height:2.625rem;border-radius:99px;flex:none;
+#userSearch .usAv{width:2.625rem;height:2.625rem;border-radius:0.875rem;flex:none;
   background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge)}
 #userSearch .usRow > div:not([class]){flex:1 1 0;min-width:0;overflow:hidden}
@@ -5983,7 +5983,10 @@ svg{display:block}
 .scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;animation:fadeIn .2s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
 .panel{z-index:var(--z-notif);background:var(--panelbg);color:var(--t1);
-  animation:panelIn .28s var(--ease)}
+  animation:panelIn .28s var(--ease);
+  /* fixed katmanda ilk kare titremesini onler */
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  transform:translateZ(0);will-change:transform,opacity}
 /* kaydırma akıcılığı: donanım ivmesi + momentum */
 .profbody,.setbody,.chatlist,.msgs,.cpBody,.exSheetList{
   -webkit-overflow-scrolling:touch;transform:translateZ(0);will-change:scroll-position}
@@ -6014,12 +6017,27 @@ svg{display:block}
   background:var(--surf1);border:1px solid var(--edge-soft)}
 .nrow .nthumb img{width:2.625rem;height:2.625rem;max-width:2.625rem;max-height:2.625rem;
   object-fit:cover;display:block;border-radius:0.6875rem}
-.nrow.unseen{background:linear-gradient(90deg, rgba(255,59,107,.08), transparent 55%)}
-.nrow.unseen::before{content:"";position:absolute;left:0;top:1rem;bottom:1rem;width:0.1875rem;
-  border-radius:0 0.1875rem 0.1875rem 0;background:linear-gradient(180deg,#FF3B6B,#7B5BFF)}
+/* Okunmamis bildirim: kenar cizgisi yok, yalnizca cok hafif zemin. */
+.nrow.unseen{background:var(--surf1)}
+.nrow.unseen .ntext b{font-weight:800}
+
+/* Grup bildirimi: masaya savrulmus kareler (en fazla 3).
+   Yuvarlak yuz yigini yerine uygulamanin kendi dili: anlik kareler. */
+.nav-av.stack{background:none;box-shadow:none;display:block}
+.nav-av.stack .sav{
+  position:absolute;left:0.1875rem;top:0.1875rem;
+  width:2.5rem;height:2.5rem;border-radius:0.8125rem;
+  background:var(--avatar-bg) center/cover no-repeat;
+  border:0.125rem solid var(--panelbg);
+  transform-origin:50% 90%;
+  display:grid;place-items:center;font-size:0.875rem;font-weight:700;color:var(--t2)}
+.nav-av.stack .sav:nth-child(1){transform:rotate(-1deg);z-index:3}
+.nav-av.stack .sav:nth-child(2){transform:rotate(8deg) translateX(0.1875rem);z-index:2}
+.nav-av.stack .sav:nth-child(3){transform:rotate(-11deg) translateX(-0.1875rem);z-index:1}
+.nav-av.stack .nbadge{right:-0.1875rem;bottom:0;z-index:4}
 
 /* avatar + küçük tür rozeti */
-.nav-av{width:2.875rem;height:2.875rem;border-radius:6.1875rem;flex:none;position:relative;
+.nav-av{width:2.875rem;height:2.875rem;border-radius:0.9375rem;flex:none;position:relative;
   background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge);display:grid;place-items:center;
   font-size:0.9375rem;font-weight:600;color:var(--t2)}
@@ -6710,7 +6728,7 @@ svg{display:block}
   pointer-events:none}
 .inNotif.show{transform:translateY(0);opacity:1;pointer-events:auto}
 .inNotif:active{transform:translateY(0) scale(.98)}
-.inNotif .av{width:2.25rem;height:2.25rem;border-radius:6.1875rem;flex:none;
+.inNotif .av{width:2.25rem;height:2.25rem;border-radius:0.75rem;flex:none;
   background:var(--avatar-bg) center/cover no-repeat}
 .inNotif .tx{flex:1;min-width:0}
 .inNotif .tx b{display:block;font-size:0.8438rem;font-weight:700;letter-spacing:-.02em;
@@ -7948,15 +7966,18 @@ html.bgQuiet .saWave i{
 }
 html.native button,html.native .tab{touch-action:manipulation}
 
-.crow2 .avWait,.crow2 .avBadge{position:absolute;right:-0.125rem;bottom:-0.125rem;
-  border:0.1562rem solid var(--panelbg);border-radius:6.1875rem;
-  display:grid;place-items:center}
-.crow2 .avWait{width:1.3125rem;height:1.3125rem;
-  background:var(--panelbg);color:var(--t2);
-  box-shadow:inset 0 0 0 1px var(--edge)}
-.crow2 .avWait svg{width:0.75rem;height:0.75rem}
-.crow2 .avBadge{min-width:1.3125rem;height:1.3125rem;padding:0 0.3125rem;
-  background:var(--accent);color:#fff;font-size:0.6875rem;font-weight:700}
+/* Sohbet satiri rozeti — bildirimlerdeki .nbadge ile ayni yerlesim:
+   avatarin sag alt kosesi, panel rengiyle cevrelenmis daire. */
+.crow2 .avRozet{position:absolute;right:-0.125rem;bottom:-0.125rem;
+  min-width:1.3125rem;height:1.3125rem;padding:0 0.3125rem;
+  border-radius:6.1875rem;border:0.1562rem solid var(--panelbg);
+  display:grid;place-items:center;z-index:3;color:#fff;
+  font-size:0.6875rem;font-weight:700;letter-spacing:-.02em}
+.crow2 .avRozet svg{width:0.6875rem;height:0.6875rem}
+.crow2 .avRozet.engel{background:#FF3B6B}
+.crow2 .avRozet.yeni{background:#3BA7FF}
+.crow2 .avRozet.bekliyor{background:#F5A524}
+.crow2 .avRozet.sessiz{background:#6E6E7C}
 
 /* sohbet durum kartı — iOS Mesajlar tarzı */
 .chatBlockStrip,#chatReqBar{
@@ -8159,7 +8180,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 .crow2{display:flex;align-items:center;gap:0.75rem;width:100%;text-align:left;padding:0.6875rem 0.625rem;
   border-radius:1.125rem;transition:background .15s}
 .crow2:active{background:var(--surf1)}
-.crow2 .av{width:3.125rem;height:3.125rem;border-radius:6.1875rem;flex:none;
+.crow2 .av{width:3.125rem;height:3.125rem;border-radius:1.0625rem;flex:none;
   background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge);
   display:grid;place-items:center;font-size:1.0625rem;font-weight:600;color:var(--t2)}
@@ -8178,6 +8199,24 @@ html.native button,html.native .tab{touch-action:manipulation}
   box-shadow:inset 0 0 0 1px rgba(255,59,107,.22)}
 .reqTag.me{background:var(--surf2);color:var(--t3);margin-right:0;
   box-shadow:inset 0 0 0 1px var(--edge-soft)}
+/* ===== MESAJ ISTEGI SATIRI (sakin, profesyonel duzen) ===== */
+.crow2.req{position:relative;padding-right:0.375rem}
+.crow2.req .av{border-radius:1.0625rem;
+  box-shadow:0 0 0 1px var(--edge), 0 0 0 3px rgba(255,59,107,.13)}
+.crow2.req .reqIcon{position:absolute;right:-0.1875rem;bottom:-0.1875rem;
+  width:1.375rem;height:1.375rem;border-radius:6.1875rem;
+  display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  box-shadow:0 0 0 2.5px var(--panelbg)}
+.crow2.req .reqIcon svg{width:0.6875rem;height:0.6875rem}
+.crow2.req .nm{font-weight:700}
+.crow2.req .pv{color:var(--t3);font-weight:400}
+.crow2.req .tm{color:var(--t3)}
+.crow2.req .chev{flex:none;display:grid;place-items:center;
+  width:1.125rem;height:1.125rem;color:var(--t3);opacity:.55;margin-left:0.125rem}
+.crow2.req .chev svg{width:1.125rem;height:1.125rem}
+.crow2.req:active{background:var(--surf1)}
+
 .chatTabs{display:flex;align-items:center;gap:1.625rem;padding:0.125rem 1.125rem 0;border-bottom:1px solid var(--edge-soft);margin-bottom:0.25rem}
 .chatTabs #chatTabReq{margin-left:auto}
 .chatTab{position:relative;padding:0.75rem 0 0.8125rem;font-size:0.9062rem;font-weight:600;color:var(--t3);
@@ -8185,7 +8224,10 @@ html.native button,html.native .tab{touch-action:manipulation}
 .chatTab.active{color:var(--t1)}
 .chatTab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:0.1562rem;
   border-radius:6.1875rem;background:linear-gradient(90deg,#FF3B6B,#7B5BFF)}
-.chatTabDot{width:0.5rem;height:0.5rem;border-radius:6.1875rem;background:#FF3B6B}
+.chatTabDot{display:inline-grid;place-items:center;min-width:1.125rem;height:1.125rem;
+  padding:0 0.3125rem;margin-left:0.375rem;border-radius:6.1875rem;
+  background:#FF3B6B;color:#fff;font-size:0.6875rem;font-weight:700;
+  font-style:normal;letter-spacing:0;vertical-align:1px}
 .chatTabDot.hide{display:none}
 .reqRow{display:flex;align-items:center;gap:0.75rem;width:100%;text-align:left;padding:0.8125rem 0.75rem;
   margin-bottom:0.375rem;border-radius:1rem;background:rgba(255,59,107,.08);
@@ -8229,7 +8271,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 .chatHead{display:flex;align-items:center;gap:0.6875rem;flex:none;border-bottom:1px solid var(--edge-soft);
   padding:calc(var(--sat) + 0.6875rem) 0.75rem 0.6875rem}
-.chatHead .av{width:2.375rem;height:2.375rem;border-radius:6.1875rem;flex:none;background:#22222A center/cover no-repeat;
+.chatHead .av{width:2.375rem;height:2.375rem;border-radius:0.8125rem;flex:none;background:#22222A center/cover no-repeat;
   border:1px solid var(--edge);display:grid;place-items:center;font-size:0.8125rem;font-weight:600;color:var(--t2)}
 .chatHead .who{flex:1;min-width:0}
 .chatHead h2{font-size:0.9688rem;font-weight:600;letter-spacing:-.024em;
@@ -8418,7 +8460,7 @@ html.native button,html.native .tab{touch-action:manipulation}
   padding:0.625rem 0.375rem 0.625rem 0.625rem;
   border-radius:1rem;transition:background .15s}
 .shrow:active{background:var(--surf1)}
-.shrow .av{width:2.625rem;height:2.625rem;border-radius:6.1875rem;flex:none;background:var(--avatar-bg) center/cover no-repeat;
+.shrow .av{width:2.625rem;height:2.625rem;border-radius:0.875rem;flex:none;background:var(--avatar-bg) center/cover no-repeat;
   box-shadow:0 0 0 1px var(--edge);display:grid;place-items:center;font-size:0.9375rem;font-weight:600;color:var(--t2)}
 .shrow .nm{flex:1;min-width:0;font-size:0.9062rem;font-weight:600;letter-spacing:-.018em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -10451,18 +10493,35 @@ const ME=(window.__me&&window.__me.username)?window.__me.username:"sen";
   const ptr=$("#ptr"); if(!ptr) return;
   let startY=0, pulling=false, dist=0, refreshing=false;
   const MAX=90, TRIG=64;
+  /* DUZELTME: #feed padding-top + scroll-snap yuzunden scrollTop
+     en ustteyken bile 0 olmuyor (57.6px cakiliyor). "En ust" artik
+     padding degerine gore olculuyor. */
+  function ustPadding(){
+    try{ return parseFloat(getComputedStyle(feed).paddingTop) || 0; }
+    catch(e){ return 0; }
+  }
+  function enUstte(){ return feed.scrollTop <= ustPadding() + 4; }
+
   feed.addEventListener("touchstart",e=>{
     if(refreshing) return;
     // sadece en üstteyken ve tek parmakla
-    if(feed.scrollTop<=0 && e.touches.length===1){
+    if(enUstte() && e.touches.length===1){
       startY=e.touches[0].clientY; pulling=true; dist=0;
       ptr.classList.remove("animating");
     }else pulling=false;
   },{passive:true});
   feed.addEventListener("touchmove",e=>{
     if(!pulling||refreshing) return;
-    dist=e.touches[0].clientY-startY;
-    if(dist>0 && feed.scrollTop<=0){
+    const y=e.touches[0].clientY;
+    /* Parmak asagi inerken tarayici once kalan scroll u tuketir.
+       O sirada baslangici sifirla ki cekme mesafesi dogru olsun. */
+    if(feed.scrollTop>2){
+      startY=y; dist=0;
+      ptr.style.height="0px"; ptr.classList.remove("ready");
+      return;
+    }
+    dist=y-startY;
+    if(dist>0){
       const h=Math.min(MAX, dist*0.5);
       ptr.style.height=h+"px";
       ptr.classList.toggle("ready", h>=TRIG);
@@ -11400,7 +11459,39 @@ async function loadNotifs(){
 
     paintDot();
     if($("#notif").classList.contains("open")) renderNotifs();
+    bildirimProfilleriYukle();
   }catch(e){ console.warn(e); }
+}
+
+/* BILDIRIM AKTORLERININ PROFILLERI
+   Bildirimde adi gecen kisi akista yoksa gercek adi ve avatari
+   hic sorulmuyordu; listede ham kullanici adi kaliyordu. */
+async function bildirimProfilleriYukle(){
+  const sb=window.__sb; if(!sb) return;
+  try{
+    const adlar=[];
+    (notifs||[]).forEach(n=>{
+      if(n.who) adlar.push(n.who);
+      if(n.actors) n.actors.forEach(a=>{ if(a) adlar.push(a); });
+    });
+    const eksik=[...new Set(adlar)].filter(ad=>{
+      const u=USERS[ad];
+      return !(u && u.display_name!==undefined) || !REALAV[ad];
+    });
+    if(!eksik.length) return;
+    const r = await sb.from("profiles")
+      .select("username, display_name, avatar_url")
+      .in("username", eksik.slice(0,120));
+    ((r && r.data) || []).forEach(p=>{
+      setDisplayName(p.username, p.display_name || null);
+      if(p.avatar_url) setRealAvatar(p.username, p.avatar_url);
+    });
+    eksik.forEach(ad=>{
+      if(!USERS[ad]) USERS[ad]={name:ad, followers:0, follows:0, moments:0, joined:Date.now()};
+      if(USERS[ad].display_name===undefined) USERS[ad].display_name=null;
+    });
+    if($("#notif").classList.contains("open")) renderNotifs();
+  }catch(e){ console.warn("bildirim profilleri:", e && e.message); }
 }
 // Bildirimi sunucuda okundu işaretle.
 // Önce hazır RPC denenir; yoksa tabloya doğrudan yazılır.
@@ -11570,12 +11661,28 @@ function notifRow(n){
 
   // --- avatar (gerçek profil fotoğrafı) ---
   const av=document.createElement("span");av.className="nav-av";
-  // önce uygulamanın kendi avatar sistemi, olmazsa bildirimle gelen adres
-  let src=null;
-  try{ src = (typeof avSrc==="function" && n.who) ? avSrc(n.who) : null; }catch(e){}
-  if(!src && n.avatar) src=n.avatar;
-  if(src){ av.style.backgroundImage='url("'+src+'")'; }
-  else { av.textContent=(n.who||"?")[0].toUpperCase(); }
+  function _avatarAdresi(kim){
+    let u=null;
+    try{ u = (typeof avSrc==="function" && kim) ? avSrc(kim) : null; }catch(e){}
+    return u;
+  }
+  const aktorler = (n.actors && n.actors.length) ? n.actors : [n.who].filter(Boolean);
+  if(aktorler.length>1){
+    /* Grup bildirimi: en fazla 3 avatar ust uste dizilir */
+    av.classList.add("stack");
+    aktorler.slice(0,3).forEach(kim=>{
+      const p=document.createElement("span"); p.className="sav";
+      const u=_avatarAdresi(kim);
+      if(u) p.style.backgroundImage='url("'+u+'")';
+      else p.textContent=(kim||"?")[0].toUpperCase();
+      av.appendChild(p);
+    });
+  }else{
+    let src=_avatarAdresi(n.who);
+    if(!src && n.avatar) src=n.avatar;
+    if(src){ av.style.backgroundImage='url("'+src+'")'; }
+    else { av.textContent=(n.who||"?")[0].toUpperCase(); }
+  }
 
   // tür rozeti
   const ICONS={
@@ -11594,7 +11701,8 @@ function notifRow(n){
   // --- metin ---
   const tx=document.createElement("span");tx.className="ntext";
   const extra=(n.actors && n.actors.length>1);
-  const strong=document.createElement("b");strong.textContent=n.who||"";
+  const strong=document.createElement("b");
+  strong.textContent = (typeof adiniGoster==="function") ? adiniGoster(n.who) : (n.who||"");
   const rest=document.createElement("span");
   if(extra){
     let verb=" "+t("n_commented_g");
@@ -17556,7 +17664,7 @@ function renderSettings(){
   out.addEventListener("click",()=>{ if(window.__logout) window.__logout(); });
   box.appendChild(out);
 
-  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.3.37";
+  const ver=document.createElement("div");ver.className="setVer";ver.textContent="Klipsy 3.4.6";
   ver.style.cursor="pointer";
   ver.addEventListener("click",()=>{
     const b=document.getElementById("dlDbg");
@@ -18388,8 +18496,17 @@ function sortChats(){
   });
 }
 function unreadTotal(){ return chats.reduce((n,c)=>n+c.unread,0); }
+/* Bana gelen, henuz karar verilmemis mesaj istekleri */
+function reqTotal(){
+  try{
+    return chats.filter(c=> c.requestState==="pending" &&
+      !(window.__me && c.requesterId===window.__me.id)).length;
+  }catch(e){ return 0; }
+}
 function paintDmDot(){
-  const d=$("#dmDot"),n=unreadTotal();
+  const d=$("#dmDot"); if(!d) return;
+  /* Istek de sayilir: kullanicinin ekrana girip kontrol etmesi gerekmesin */
+  const n=unreadTotal()+reqTotal();
   d.textContent=n>99?"99+":n;d.classList.toggle("hide",n===0);
 }
 function preview(c){
@@ -18420,7 +18537,10 @@ function renderChats(){
   const anaListe = chats.filter(c=>!(c.requestState==='pending' && !(window.__me && c.requesterId===window.__me.id)));
 
   const dot=$("#chatTabDot");
-  if(dot) dot.classList.toggle("hide", istekler.length===0);
+  if(dot){
+    dot.textContent = istekler.length ? (istekler.length>9 ? "9+" : String(istekler.length)) : "";
+    dot.classList.toggle("hide", istekler.length===0);
+  }
 
   listeyiEsitle(mainBox, anaListe, false, t("no_msgs")+"<br>"+t("no_msgs_hint"));
   listeyiEsitle(reqBox,  istekler, true,  t("no_requests"));
@@ -18498,12 +18618,8 @@ function buildChatRow(c, isRequestRow){
   const top=document.createElement("div");top.className="top";
   const nm=document.createElement("span");nm.className="nm";
   nm.textContent = (typeof adiniGoster === "function") ? adiniGoster(c.who) : c.who;
-  // sessize alınmışsa küçük bir çan göstergesi
-  if(typeof _sessizSohbetler !== "undefined" && _sessizSohbetler.has(c.who)){
-    const s=document.createElement("span"); s.className="muteDot";
-    s.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6 8c0 7-3 9-3 9h13"/><path d="m3 3 18 18"/></svg>';
-    nm.appendChild(s);
-  }
+  /* Durum ikonlari isimden alinip AVATARIN kosesine tasindi
+     (bildirimlerdeki rozet dili ile ayni). */
   const tm=document.createElement("span");tm.className="tm";
   const l=lastOf(c);tm.textContent=l?chatDate(l.ts):"";
   top.append(nm,tm);
@@ -18512,7 +18628,8 @@ function buildChatRow(c, isRequestRow){
   const iAmRequester = isPending && window.__me && c.requesterId===window.__me.id;
   if(isRequestRow){
     // istek listesinde mesaj içeriği ASLA gösterilmez
-    pv.innerHTML = '<span class="reqTag in">'+t("msg_request2")+'</span> '+t("open_decide")+'';
+    b.classList.add("req");
+    pv.textContent = t("open_decide");
   }else{
     // Gönderdiğim istekte de gerçek mesaj görünür; bekleme durumu sağda gösterilir.
     pv.textContent=preview(c);
@@ -18520,19 +18637,52 @@ function buildChatRow(c, isRequestRow){
   mid.append(top,pv);
   b.append(av,mid);
 
-  // Gösterge AVATARIN KÖŞESİNE binir → sağ uç boş kalır, saatler tam hizalanır.
-  if(isPending && iAmRequester && !isRequestRow){
-    const wt=document.createElement("span");
-    wt.className="avWait";
-    wt.title=t("req_sent2");
-    wt.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>';
-    av.appendChild(wt);
-  }else if(c.unread && !isRequestRow){
-    const bd=document.createElement("span");
-    bd.className="avBadge";
-    bd.textContent = c.unread>9 ? "9+" : c.unread;
-    av.appendChild(bd);
+  /* AVATAR ROZETI — bildirimlerdeki dille ayni: tek rozet, sag alt kose.
+     Her durumun kendi rengi var:
+       engel   kirmizi   mesajlasma kapali
+       yeni    mavi      okunmamis mesaj
+       bekliyor sari     gonderdigin istek yanit bekliyor
+       sessiz  gri       bildirimi kapatilmis  */
+  const ROZET_IKON={
+    engel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="m6 6 12 12"/></svg>',
+    bekliyor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4V12l3.2 1.9"/></svg>',
+    sessiz:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6 8c0 7-3 9-3 9h13"/><path d="m3 3 18 18"/></svg>'
+  };
+
+  if(!isRequestRow){
+    let tur=null, engelli=false, sessizMi=false;
+    try{
+      const bs=_blockCache[c.who];
+      engelli = _engellenenAdlar.has(c.who) || !!(bs && (bs.byMe || bs.me));
+      sessizMi = (typeof _sessizSohbetler!=="undefined") && _sessizSohbetler.has(c.who);
+    }catch(e){}
+
+    if(engelli)                        tur="engel";
+    else if(c.unread)                  tur="yeni";
+    else if(isPending && iAmRequester) tur="bekliyor";
+    else if(sessizMi)                  tur="sessiz";
+
+    if(tur){
+      const rz=document.createElement("span");
+      rz.className="avRozet "+tur;
+      if(tur==="yeni") rz.textContent = c.unread>9 ? "9+" : c.unread;
+      else             rz.innerHTML   = ROZET_IKON[tur];
+      if(tur==="bekliyor") rz.title=t("req_sent2");
+      av.appendChild(rz);
+    }
   }
+
+  if(isRequestRow){
+    const rb=document.createElement("span");
+    rb.className="reqIcon";
+    rb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3 7 9 6 9-6"/></svg>';
+    av.appendChild(rb);
+    const ch=document.createElement("span");
+    ch.className="chev";
+    ch.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+    b.appendChild(ch);
+  }
+
   b.addEventListener("click",()=>openChat(c.who));
   // sohbete uzun bas → sil
   let clpT=null, cmoved=false;
@@ -18575,6 +18725,10 @@ async function loadConversations(){
     if(error){ console.warn('convos:',error.message); return; }
     chats=(data||[]).map(r=>{
       _convId[r.other_username]=r.conv_id;
+      /* DUZELTME: sohbet listesindeki gercek avatari kaydet.
+         Yoksa avSrc() varsayilan SVG uretir ve resim gorunmez. */
+      if(r.other_avatar) setRealAvatar(r.other_username, r.other_avatar);
+      if(r.other_display_name) setDisplayName(r.other_username, r.other_display_name);
       return {
         who:r.other_username, avatar:r.other_avatar,
         convId:r.conv_id, unread:r.unread||0,
@@ -18585,10 +18739,63 @@ async function loadConversations(){
     });
     paintDmDot();
     if($("#chats").classList.contains("open")) renderChats();
+    sohbetProfilleriYukle();
+    engellenenleriYukle();
     sessizleriYukle();
     temizlikleriYukle();
   }catch(e){ console.warn(e); }
 }
+/* SOHBET LISTESI PROFILLERI
+   fetchDisplayNames() sadece AKISTA gorunen kullanicilari cekiyor.
+   Sohbet ettigin kisinin akista gonderisi yoksa adi ve avatari
+   hic sorulmuyordu; listede ham kullanici adi ve varsayilan
+   avatar kaliyordu. Burada eksik olanlari toplu ceker. */
+/* Engelledigim kullanici adlari — liste rozeti icin tek sorguda alinir */
+const _engellenenAdlar = new Set();
+async function engellenenleriYukle(){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me) return;
+  try{
+    const r1 = await sb.from("blocks").select("blocked_id").eq("blocker_id", me.id);
+    const ids = ((r1 && r1.data) || []).map(x=>x.blocked_id);
+    _engellenenAdlar.clear();
+    if(!ids.length) return;
+    const r2 = await sb.from("profiles").select("username").in("id", ids);
+    ((r2 && r2.data) || []).forEach(p=>{ if(p.username) _engellenenAdlar.add(p.username); });
+    if($("#chats").classList.contains("open") && typeof renderChats==="function") renderChats();
+  }catch(e){ console.warn("engellenenler:", e && e.message); }
+}
+
+async function sohbetProfilleriYukle(){
+  const sb=window.__sb; if(!sb) return;
+  try{
+    const adlar=[...new Set(chats.map(c=>c.who))].filter(Boolean);
+    const eksik=adlar.filter(n=>{
+      const u=USERS[n];
+      const adYok = !(u && u.display_name!==undefined);
+      const avYok = !REALAV[n];
+      return adYok || avYok;
+    });
+    if(!eksik.length) return;
+    const r = await sb.from("profiles")
+      .select("username, display_name, avatar_url")
+      .in("username", eksik);
+    const veri = (r && r.data) || [];
+    veri.forEach(p=>{
+      if(p.display_name) setDisplayName(p.username, p.display_name);
+      else setDisplayName(p.username, null);
+      if(p.avatar_url) setRealAvatar(p.username, p.avatar_url);
+    });
+    /* Gelmeyenleri isaretle ki her acilista tekrar sorulmasin */
+    eksik.forEach(n=>{
+      if(!USERS[n]) USERS[n]={name:n, followers:0, follows:0, moments:0, joined:Date.now()};
+      if(USERS[n].display_name===undefined) USERS[n].display_name=null;
+    });
+    if($("#chats").classList.contains("open")) renderChats();
+    if(typeof paintAllAvatars==="function") paintAllAvatars();
+  }catch(e){ console.warn("sohbet profilleri:", e && e.message); }
+}
+
 function openChats(){
   if($("#profile").classList.contains("open")) close("profile");
   if($("#timeSheet").classList.contains("open")) close("timeSheet");

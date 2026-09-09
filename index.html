@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.5.6";
+window.KLIPSY_SURUM = "3.5.7";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -6968,7 +6968,12 @@ svg{display:block}
    Fotoğraf 4:5 oranında (tam oturur) ama fazlalık kısım kartın
    arkasında kalır — kapak fotoğrafı mantığı. */
 .profCard{position:relative;z-index:6;margin:-1.375rem -0.875rem 0;padding:1.125rem 1rem 0.25rem;
-  background:var(--panelbg);border-radius:1.5rem 1.5rem 0 0}
+  background:var(--panelbg);border-radius:1.5rem 1.5rem 0 0;
+  /* DUZELTME: kart icerigi gelene kadar yer bos ama SABIT kalsin.
+     Yoksa isim ve sayaclar sonradan eklenince altindaki her sey
+     asagi kayiyor, acilista titreme gibi gorunuyordu. */
+  min-height:11.25rem;
+  contain:layout paint}
 
 /* isim + takip */
 .pcNameRow{display:flex;align-items:center;gap:0.75rem}
@@ -7035,7 +7040,7 @@ svg{display:block}
 /* sayaç kartları — örnekteki gibi: üstte görseller, altta sayı ve etiket */
 .profstats.pcStats{display:flex;gap:0.5625rem;width:auto;margin:1rem 0 0;padding:0;
   background:none;border:0;border-radius:0;align-items:stretch}
-.profstats.pcStats .stat{flex:1 1 0;min-width:0;text-align:center;
+.profstats.pcStats .stat{flex:1 1 0;min-width:0;text-align:center;min-height:5.25rem;
   background:var(--surf1);border:1px solid var(--edge-soft);border-radius:1rem;
   padding:0.6875rem 0.625rem 0.75rem;cursor:pointer;transition:transform .12s;
   display:block}

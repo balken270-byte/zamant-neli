@@ -516,7 +516,9 @@
             x.translate(c.width, 0);
             x.scale(-1, 1);
             x.drawImage(im, 0, 0);
-            coz(c.toDataURL("image/jpeg", 0.92));
+            /* Ara tur: zincirde bir kayip daha birikmesin diye 0.92 degil
+             0.97. Nihai sikistirma index.html icindeki son adimda. */
+          coz(c.toDataURL("image/jpeg", 0.97));
           } catch (e) { coz(veriAdresi); }
         };
         im.onerror = function () { coz(veriAdresi); };

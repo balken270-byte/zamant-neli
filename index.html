@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.7.6";
+window.KLIPSY_SURUM = "3.8.0";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -21675,12 +21675,36 @@ $("#camClose").addEventListener("click",closeCam);
               else { const n=sw/oran; sy+=(sh-n)/2; sh=n; }
             }
           }
-          const k=Math.min(1,1920/Math.max(sw,sh));
+          /* ══════ KADEMELI KUCULTME ══════
+             KADRAJ DEGISMEZ: sx/sy/sw/sh ve 1920 hedefi aynen korunur.
+             Degisen tek sey KUCULTME YONTEMI. Eskiden 4000 pikselden
+             1920 e TEK drawImage ile iniliyordu; bu oranda tarayicinin
+             ornekleyicisi ara pikselleri atlayip goruntuyu yumusatiyor.
+             Simdi her adimda en fazla yariya inilerek gidiliyor; her
+             adim komsu pikselleri ortaladigi icin detay korunuyor. */
+          const hedefG = Math.max(2, Math.round(sw * Math.min(1, 1920/Math.max(sw,sh))));
+          const hedefY = Math.max(2, Math.round(sh * Math.min(1, 1920/Math.max(sw,sh))));
+
+          let kaynak = im, kx = sx, ky = sy, kg = sw, ky2 = sh;
+          while(kg > hedefG * 2){
+            const ag = Math.max(hedefG, Math.round(kg / 2));
+            const ay = Math.max(hedefY, Math.round(ky2 / 2));
+            const ara = document.createElement("canvas");
+            ara.width = ag; ara.height = ay;
+            const ax = ara.getContext("2d");
+            ax.imageSmoothingEnabled = true; ax.imageSmoothingQuality = "high";
+            ax.drawImage(kaynak, kx, ky, kg, ky2, 0, 0, ag, ay);
+            kaynak = ara; kx = 0; ky = 0; kg = ag; ky2 = ay;
+          }
+
           const c=document.createElement("canvas");
-          c.width=Math.max(2,Math.round(sw*k)); c.height=Math.max(2,Math.round(sh*k));
-          const x=c.getContext("2d"); x.imageSmoothingQuality="high";
-          x.drawImage(im,sx,sy,sw,sh,0,0,c.width,c.height);
-          coz(c.toDataURL("image/jpeg",0.92));
+          c.width = hedefG; c.height = hedefY;
+          const x=c.getContext("2d");
+          x.imageSmoothingEnabled = true; x.imageSmoothingQuality="high";
+          x.drawImage(kaynak, kx, ky, kg, ky2, 0, 0, hedefG, hedefY);
+          /* Zincirin SON kodlamasi: 0.92 yerine 0.95.
+             Onceki adimlarda birikmis kayip burada telafi edilir. */
+          coz(c.toDataURL("image/jpeg",0.95));
         }catch(e){ coz(src); }
       };
       im.onerror=function(){ coz(src); };

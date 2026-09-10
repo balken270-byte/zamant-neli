@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.9.3";
+window.KLIPSY_SURUM = "3.9.5";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -13628,6 +13628,31 @@ function _loadScript(src){
   });
 }
 
+/* ══════════ HARITA ONCEDEN HAZIRLANSIN ══════════
+   Kutuphaneler Zaman sekmesine BASILDIGI ANDA indiriliyordu:
+   leaflet ~150 KB, maplibre-gl ~790 KB. Kullanici bekliyordu.
+   Artik uygulama bosa cikinca arka planda sessizce yuklenir;
+   sekmeye basildiginda harita hazir olur.
+   Basarisiz olursa hicbir sey olmaz, eski yol yine calisir. */
+let _haritaIsinmaBasladi = false;
+function haritayiIsit(){
+  if(_haritaIsinmaBasladi) return;
+  _haritaIsinmaBasladi = true;
+  const calistir = ()=>{
+    try{
+      ensureLeaflet()
+        .then(ok => { if(ok && typeof ensureMapLibreGL === "function") return ensureMapLibreGL(); })
+        .catch(()=>{});
+    }catch(e){}
+  };
+  /* Tarayici bos kalinca; desteklemiyorsa birkac saniye sonra */
+  if(window.requestIdleCallback) requestIdleCallback(calistir, { timeout: 8000 });
+  else setTimeout(calistir, 4000);
+}
+/* Sayfa tam yuklendikten sonra basla: acilis hizini etkilemesin */
+if(document.readyState === "complete") setTimeout(haritayiIsit, 2500);
+else window.addEventListener("load", ()=>setTimeout(haritayiIsit, 2500), { once:true });
+
 let _leafletReady = null;
 function ensureLeaflet(){
   if(window.L) return Promise.resolve(true);
@@ -13729,7 +13754,30 @@ async function initMap(){
     wheelDebounceTime:24,
     inertia:true, inertiaDeceleration:2200, inertiaMaxSpeed:1600,
     easeLinearity:0.22
-  }).setView([39.0,35.0],5);
+  });
+
+  /* ══════ DOGRU YERDE AC ══════
+     Onceden harita once Turkiye genelinde (5. seviye) aciliyor,
+     karolar iniyor, sonra kullanici konumuna zipla_yip 13. seviyede
+     HEPSI YENIDEN indiriliyordu. Ilk indirilen karolar bosa gidiyordu.
+     Artik son bilinen konum varsa dogrudan oraya acilir. */
+  (function(){
+    let bas = [39.0, 35.0], yak = 5;
+    try{
+      const k = localStorage.getItem("klipsy_last_pos");
+      if(k){
+        const p = JSON.parse(k);
+        /* Ilk goruntu icin 24 saatlik kayit yeterli; gercek konum
+           gelince zaten uzerine yaziliyor. Eskiden 1 saatti ve harita
+           cogu zaman ulke genelinde aciliyordu. */
+        if(p && p.lat && p.t && (Date.now() - p.t) < 86400000){
+          bas = [p.lat, p.lng]; yak = 13;
+          _lastKnownPos = { lat:p.lat, lng:p.lng, approx:true };
+        }
+      }
+    }catch(e){}
+    _map.setView(bas, yak);
+  })();
   addCARTOVectorLayer();
   // kullanıcı haritayı elle gezdirirse otomatik odaklamayı bırak
   /* HATA DÜZELTMESİ
@@ -13765,6 +13813,20 @@ async function initMap(){
         }
       }
     }catch(e){}
+    /* ══════ IKI ASAMALI KONUM ══════
+       Once AGA dayali hizli konum (genelde 1 sn altinda), harita
+       hemen dogru sehre oturur. Ardindan hassas GPS arka planda
+       gelir ve noktayi inceltir. Eskiden tek asamada yuksek
+       hassasiyet bekleniyordu; acik alanda bile birkac saniye
+       suruyordu. */
+    try{
+      const hizli = await geoKonumAl({ enableHighAccuracy:false, timeout:4000, maximumAge:120000 });
+      if(hizli && hizli.coords && !_lastKnownPos){
+        _lastKnownPos = { lat:hizli.coords.latitude, lng:hizli.coords.longitude, approx:true };
+        drawUserDot();
+        if(!_mapUserMoved && _map) mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, true);
+      }
+    }catch(e){}
     try{
       const p=await geoKonumAl({enableHighAccuracy:true,timeout:15000});
       if(p && p.coords){
@@ -13795,7 +13857,10 @@ async function initMap(){
 
   // konum gelene kadar en fazla 2sn bekle, sonra odaklan ve pinleri çiz
   (async()=>{
-    await Promise.race([ _posReady, new Promise(r=>setTimeout(r,2000)) ]);
+    /* Onbellekten konum geldiyse beklemeye gerek yok; yoksa en fazla
+       1,2 sn beklenir. Eskiden her durumda 2 sn bekleniyordu. */
+    const bekle = _lastKnownPos ? 300 : 1200;
+    await Promise.race([ _posReady, new Promise(r=>setTimeout(r,bekle)) ]);
     if(_lastKnownPos && !_mapUserMoved){
       mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, false);   // ~5 km görüş
       drawUserDot();

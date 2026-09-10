@@ -292,6 +292,9 @@
         /* ── SIGDIR ── */
         let w = vw, h = Math.round(w * 16 / 9);
         if (h > vh) { h = vh; w = Math.round(h * 9 / 16); }
+        /* Yuvarlama yuzunden sagda 1 piksellik siyah cizgi kaliyordu:
+           1 piksel tasir, ortalamada geri alinir. */
+        w += 1;
         const x = Math.round((vw - w) / 2);
         const y = Math.round((vh - h) / 2);
         await CP().setPreviewSize({ x: x, y: y, width: w, height: h });

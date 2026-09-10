@@ -280,14 +280,28 @@
        (width ile çakışır). Boyut sonra setPreviewSize. */
     if (CP().setPreviewSize) {
       try {
-        /* 9:16 orani korunur; sadece kenar bosluklari kapatilir.
-           Onizleme yatayda ortalanir, tasan kisim kirpilir. */
+        /* SIGDIR: onizleme KIRPILMAZ. Ekranda ne goruyorsan cektigin
+           kare de o. Sensor 4:3 / 16:9, ekran ise 9:20 civari oldugu
+           icin ust ve altta siyah bant kalir; karsiliginda kamera ile
+           paylasim ekrani ayni alani gosterir.
+           Eski davranis (tam ekran, yanlardan kirpik) icin asagidaki
+           KIRP blogunu ac, SIGDIR blogunu kapat. */
         const vw = Math.ceil(window.innerWidth || 360);
         const vh = Math.ceil((window.visualViewport && window.visualViewport.height) || window.innerHeight);
+
+        /* ── SIGDIR ── */
+        let w = vw, h = Math.round(w * 16 / 9);
+        if (h > vh) { h = vh; w = Math.round(h * 9 / 16); }
+        const x = Math.round((vw - w) / 2);
+        const y = Math.round((vh - h) / 2);
+        await CP().setPreviewSize({ x: x, y: y, width: w, height: h });
+
+        /* ── KIRP (eski) ──
         let w = vw + 2, h = Math.round(w * 16 / 9);
         if (h < vh + 2) { h = vh + 2; w = Math.round(h * 9 / 16); }
         const x = Math.round((vw - w) / 2);
         await CP().setPreviewSize({ x: x, y: -1, width: w, height: h });
+        */
       } catch (e) {}
     }
 

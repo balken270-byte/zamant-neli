@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.7.2";
+window.KLIPSY_SURUM = "3.7.3";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -7361,7 +7361,12 @@ html.camNativeOn #camVideo{display:none !important}
    tasarım bozuluyordu. Yalnızca katman sırası verilir. */
 html.camNativeOn #cam > *:not(.camRoot){z-index:5}
 html.camNativeOn #cam > .camRoot{z-index:0}
-.camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.75rem) 0.875rem 0;display:flex;align-items:center;justify-content:space-between}
+/* Onizleme sigdir modunda status bar arkasina giriyor ve acik zeminde
+   beyaz ikonlar okunmuyordu. Ust serit alt cubukla ayni siyah zemini
+   kullanir; boylece saat ve dugmeler her sahnede okunur. */
+.camtop{position:relative;z-index:2;background:#000;
+  padding:calc(var(--sat) + 0.75rem) 0.875rem 0.625rem;
+  display:flex;align-items:center;gap:0.5rem;justify-content:space-between}
 .camtop .title{font-size:0.875rem;font-weight:600;letter-spacing:-.018em;
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:0.4375rem 0.875rem;border-radius:6.1875rem;
   backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
@@ -7421,6 +7426,13 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   pointer-events:none}
 .camZoom.gorunur{opacity:1;transform:translateX(-50%) scale(1)}
 
+/* Flas: kapali sonuk, acik sari, otomatik mor */
+#camFlasBtn.acik{background:rgba(245,165,36,.22);color:#F5A524;
+  box-shadow:inset 0 0 0 1px rgba(245,165,36,.45)}
+#camFlasBtn.oto{background:rgba(123,91,255,.22);color:#9B84FF;
+  box-shadow:inset 0 0 0 1px rgba(123,91,255,.45)}
+#camFlasBtn .oto2{position:absolute;right:0.125rem;bottom:0.125rem;
+  font-size:0.5rem;font-weight:800;letter-spacing:-.02em}
 .rectime{position:absolute;top:calc(var(--sat) + 4.125rem);left:50%;transform:translateX(-50%);z-index:3;
   display:none;align-items:center;gap:0.4375rem;height:1.75rem;padding:0 0.8125rem;border-radius:6.1875rem;
   background:rgba(255,59,107,.93);border:1px solid rgba(255,255,255,.24);
@@ -9814,6 +9826,9 @@ html.sb-white #userSearch::before{
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
       <span class="title" id="camTitle" data-i18n="act_shoot_now">Şu anı çek</span>
+      <button class="camFitBtn" id="camFlasBtn" type="button" aria-label="Flaş" data-i18n-aria="flash">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/></svg>
+      </button>
       <button class="camFitBtn" id="camFitBtn" type="button" aria-label="Doldur">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V4h4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M8 20H4v-4"/></svg>
       </button>
@@ -15481,6 +15496,34 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
     toast("Kaydedilemedi");
   }
 });
+
+/* ══════════ FLAŞ ══════════
+   Uc durum arasinda gecer: kapali -> acik -> otomatik.
+   Kamera eklentisi setFlashMode ile calisiyor (Kamera.flas). */
+const FLAS_SIRA = ["off","on","auto"];
+let _flasSira = 0;
+function flasUygula(){
+  const mod = FLAS_SIRA[_flasSira];
+  const b = document.getElementById("camFlasBtn");
+  if(b){
+    b.classList.toggle("acik", mod === "on");
+    b.classList.toggle("oto",  mod === "auto");
+    b.setAttribute("aria-pressed", mod !== "off" ? "true" : "false");
+    let et = b.querySelector(".oto2");
+    if(mod === "auto"){
+      if(!et){ et = document.createElement("span"); et.className="oto2"; et.textContent="A"; b.appendChild(et); }
+    }else if(et) et.remove();
+  }
+  try{ if(window.Kamera && Kamera.flas) Kamera.flas(mod); }catch(e){}
+}
+try{
+  const fb = document.getElementById("camFlasBtn");
+  if(fb) fb.addEventListener("click", ()=>{
+    _flasSira = (_flasSira + 1) % FLAS_SIRA.length;
+    flasUygula();
+    try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+  });
+}catch(e){}
 
 function paintMoodBtn(){
   const btn=$("#cpMoodBtn"), ic=$("#cpMoodIcon"), lb=$("#cpMoodBtnLb");

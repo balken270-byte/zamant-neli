@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.7.0";
+window.KLIPSY_SURUM = "3.7.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -24520,6 +24520,28 @@ async function enterApp(){
   gate.classList.add('off');
   if(window.__startApp) window.__startApp();
   try{ if(typeof loadNotifs==="function") loadNotifs(); }catch(e){}
+
+  /* ═══ REALTIME YETKILENDIRME ═══
+     notifications tablosunda RLS var. Realtime baglantisina kullanici
+     token u iletilmezse sunucu satiri gonderir ama RLS suzgecinden
+     geceremez ve olay SESSIZCE dusurulur; hata da vermez.
+     Kanallari acmadan once token u ver, tazelendiginde de guncelle. */
+  try{
+    const oturum = await sb.auth.getSession();
+    const jeton = oturum && oturum.data && oturum.data.session
+                ? oturum.data.session.access_token : null;
+    if(jeton && sb.realtime && sb.realtime.setAuth) sb.realtime.setAuth(jeton);
+    if(!window.__rtAuthBagli){
+      window.__rtAuthBagli = true;
+      sb.auth.onAuthStateChange((_olay, oturum2)=>{
+        try{
+          if(oturum2 && oturum2.access_token && sb.realtime && sb.realtime.setAuth){
+            sb.realtime.setAuth(oturum2.access_token);
+          }
+        }catch(e){}
+      });
+    }
+  }catch(e){ console.warn("realtime yetki:", e && e.message); }
 
   // canlı bildirim: notifications tablosuna bana yeni satır düşünce
   try{

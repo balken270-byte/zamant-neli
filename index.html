@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.7.3";
+window.KLIPSY_SURUM = "3.7.4";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -7344,9 +7344,10 @@ html.camNativeOn #cam #camRoot{
 }
 /* Üst/alt krom PWA'deki gibi koyu kalsın — saydam olursa açık tema
    altta beyaz şerit + kaybolmuş FOTOĞRAF/VİDEO üretir. */
-html.camNativeOn #cam .camtop{
-  background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent) !important;
-}
+/* Sigdir modunda onizleme status bar arkasina girdigi icin gecisli
+   zemin yetmiyordu: acik sahnelerde saat ve dugmeler kayboluyordu.
+   Ust serit alt cubukla ayni tam siyah zemini kullanir. */
+html.camNativeOn #cam .camtop{ background:#000 !important; }
 html.camNativeOn #cam .cambot{
   background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.35),transparent) !important;
 }
@@ -9829,7 +9830,7 @@ html.sb-white #userSearch::before{
       <button class="camFitBtn" id="camFlasBtn" type="button" aria-label="Flaş" data-i18n-aria="flash">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/></svg>
       </button>
-      <button class="camFitBtn" id="camFitBtn" type="button" aria-label="Doldur">
+      <button class="camFitBtn" id="camFitBtn" type="button" aria-label="Doldur" hidden style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V4h4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M8 20H4v-4"/></svg>
       </button>
     </div>
@@ -15500,13 +15501,17 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
 /* ══════════ FLAŞ ══════════
    Uc durum arasinda gecer: kapali -> acik -> otomatik.
    Kamera eklentisi setFlashMode ile calisiyor (Kamera.flas). */
-const FLAS_SIRA = ["off","on","auto"];
+/* torch: onizlemede de yanar (kullanici acik/kapali oldugunu gorur)
+   auto:  cihaz karar verir, yalnizca cekimde
+   Cogu Android cihazda "on" yalnizca deklansorde tetiklenir; kullanici
+   "calismiyor" sanir. Bu yuzden acik durumu torch olarak verilir. */
+const FLAS_SIRA = ["off","torch","auto"];
 let _flasSira = 0;
 function flasUygula(){
   const mod = FLAS_SIRA[_flasSira];
   const b = document.getElementById("camFlasBtn");
   if(b){
-    b.classList.toggle("acik", mod === "on");
+    b.classList.toggle("acik", mod === "torch" || mod === "on");
     b.classList.toggle("oto",  mod === "auto");
     b.setAttribute("aria-pressed", mod !== "off" ? "true" : "false");
     let et = b.querySelector(".oto2");
@@ -15514,16 +15519,25 @@ function flasUygula(){
       if(!et){ et = document.createElement("span"); et.className="oto2"; et.textContent="A"; b.appendChild(et); }
     }else if(et) et.remove();
   }
-  try{ if(window.Kamera && Kamera.flas) Kamera.flas(mod); }catch(e){}
+  window.__flasMod = mod;
+  try{
+    if(window.Kamera && Kamera.flas) Kamera.flas(mod);
+    else console.warn("flas: Kamera hazir degil, mod saklandi ->", mod);
+  }catch(e){ console.warn("flas hatasi:", e && (e.message||e)); }
 }
-try{
-  const fb = document.getElementById("camFlasBtn");
-  if(fb) fb.addEventListener("click", ()=>{
-    _flasSira = (_flasSira + 1) % FLAS_SIRA.length;
-    flasUygula();
-    try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
-  });
-}catch(e){}
+/* Kamera her acildiginda son secilen mod yeniden uygulanir */
+window.__flasTazele = function(){
+  try{ if(window.Kamera && Kamera.flas) Kamera.flas(window.__flasMod || "off"); }catch(e){}
+};
+/* Dinleyici belgeye baglanir: dugme sonradan olussa bile calisir. */
+document.addEventListener("click", (e)=>{
+  const b = e.target && e.target.closest && e.target.closest("#camFlasBtn");
+  if(!b) return;
+  e.preventDefault(); e.stopPropagation();
+  _flasSira = (_flasSira + 1) % FLAS_SIRA.length;
+  flasUygula();
+  try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e2){}
+}, true);
 
 function paintMoodBtn(){
   const btn=$("#cpMoodBtn"), ic=$("#cpMoodIcon"), lb=$("#cpMoodBtnLb");

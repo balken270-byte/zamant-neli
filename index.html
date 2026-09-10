@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.9.5";
+window.KLIPSY_SURUM = "3.9.7";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -13591,7 +13591,8 @@ function addCARTOVectorLayer(){
     antialias:true,
     refreshExpiredTiles:false,
     trackResize:true,
-    renderWorldCopies:true
+    /* Yatayda tekrarlanan dunya kopyalari kapali: gereksiz karo inmez */
+    renderWorldCopies:false
   }).addTo(_map);
   _mapGL=_mapTileLayer.getMaplibreMap ? _mapTileLayer.getMaplibreMap() : null;
   tuneMapGL(_mapGL);
@@ -13748,6 +13749,17 @@ async function initMap(){
   _map=L.map("exploreMap",{
     zoomControl:true, attributionControl:true,
     preferCanvas:true,
+    /* ══════ UZAKLASMA SINIRI ══════
+       Sinir yoktu: Leaflet varsayilani 0. seviye, yani dunya avuc ici
+       kadar kuculene dek uzaklasilabiliyordu. Hem bosuna karo
+       indiriliyor hem "yakinindaki anlar" fikri anlamini yitiriyordu.
+       3 = kita gorunumu (en uzak), 18 = sokak detayi (en yakin). */
+    minZoom:3, maxZoom:18,
+    /* Dunya yatayda tekrar tekrar cizilmesin: her kopya ayri karo demek */
+    worldCopyJump:false,
+    /* Kutup bolgelerinin otesine kaydirilamasin */
+    maxBounds: L.latLngBounds([[-85, -180],[85, 180]]),
+    maxBoundsViscosity: 0.8,
     zoomAnimation:true, markerZoomAnimation:false,
     fadeAnimation:false,
     zoomSnap:0.5,
@@ -13762,7 +13774,48 @@ async function initMap(){
      HEPSI YENIDEN indiriliyordu. Ilk indirilen karolar bosa gidiyordu.
      Artik son bilinen konum varsa dogrudan oraya acilir. */
   (function(){
-    let bas = [39.0, 35.0], yak = 5;
+    /* Onbellek YOKKEN nereye acilacak?
+       Cihazin saat diliminden ulke tahmin edilir: aga cikmaz, izin
+       istemez, aninda calisir. Eskiden herkese Turkiye aciliyordu;
+       baska ulkedeki kullanici yanlis kitada basliyordu.
+       Onbellek (klipsy_last_pos) zaten cihazda ve ulkeden bagimsiz:
+       ikinci acilistan itibaren herkes kendi sehrinde baslar. */
+    const DILIM_MERKEZ = {
+      "Europe/Istanbul":[39.0,35.0],   "Europe/Berlin":[51.2,10.4],
+      "Europe/Vienna":[47.6,14.1],     "Europe/Zurich":[46.8,8.2],
+      "Europe/Paris":[46.6,2.3],       "Europe/London":[54.0,-2.0],
+      "Europe/Amsterdam":[52.2,5.3],   "Europe/Brussels":[50.6,4.5],
+      "Europe/Madrid":[40.2,-3.7],     "Europe/Rome":[42.5,12.5],
+      "Europe/Lisbon":[39.6,-8.0],     "Europe/Stockholm":[62.0,15.0],
+      "Europe/Oslo":[61.0,9.0],        "Europe/Copenhagen":[56.1,10.0],
+      "Europe/Warsaw":[52.1,19.4],     "Europe/Prague":[49.8,15.5],
+      "Europe/Bucharest":[45.9,25.0],  "Europe/Athens":[39.0,22.0],
+      "Europe/Sofia":[42.7,25.5],      "Europe/Kyiv":[49.0,32.0],
+      "Europe/Moscow":[55.8,37.6],     "Asia/Baku":[40.4,47.6],
+      "Asia/Tbilisi":[42.0,43.5],      "Asia/Dubai":[24.3,54.0],
+      "Asia/Riyadh":[24.0,45.0],       "Asia/Qatar":[25.3,51.2],
+      "Asia/Tehran":[32.4,53.7],       "Asia/Karachi":[30.0,69.3],
+      "Asia/Kolkata":[22.0,79.0],      "Asia/Dhaka":[23.7,90.3],
+      "Asia/Jakarta":[-2.5,118.0],     "Asia/Kuala_Lumpur":[4.2,102.0],
+      "Asia/Singapore":[1.35,103.8],   "Asia/Bangkok":[15.0,101.0],
+      "Asia/Manila":[12.9,121.8],      "Asia/Tokyo":[36.2,138.3],
+      "Asia/Seoul":[36.5,127.9],       "Asia/Shanghai":[35.0,105.0],
+      "Africa/Cairo":[26.8,30.8],      "Africa/Lagos":[9.1,8.7],
+      "Africa/Johannesburg":[-29.0,25.0], "Africa/Casablanca":[31.8,-7.1],
+      "America/New_York":[39.0,-77.0], "America/Chicago":[39.8,-89.0],
+      "America/Denver":[39.0,-105.5],  "America/Los_Angeles":[37.0,-119.5],
+      "America/Toronto":[56.0,-96.0],  "America/Mexico_City":[23.6,-102.5],
+      "America/Sao_Paulo":[-14.2,-51.9], "America/Buenos_Aires":[-38.4,-63.6],
+      "America/Bogota":[4.6,-74.3],    "Australia/Sydney":[-25.3,133.8],
+      "Pacific/Auckland":[-41.0,174.0]
+    };
+    /* Bilinmeyen dilim: dunya gorunumu, kimseye ayricalik yok */
+    let bas = [20.0, 10.0], yak = 2;
+    try{
+      const dilim = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const m = DILIM_MERKEZ[dilim];
+      if(m){ bas = m; yak = 5; }
+    }catch(e){}
     try{
       const k = localStorage.getItem("klipsy_last_pos");
       if(k){

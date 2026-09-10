@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.8.2";
+window.KLIPSY_SURUM = "3.8.5";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -8517,22 +8517,6 @@ html.native button,html.native .tab{touch-action:manipulation}
 .cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000}
 #compose.cpFill .cpMediaFull video,
 #compose.cpFill .cpMediaFull img{object-fit:cover}
-/* Tam / Doldur: yazi yerine ikon, ust sag koseye alindi.
-   Alt orta konumda not alaninin onune giriyordu. */
-/* TEK DUGME: o an hangi kipteysen onu gosterir, dokununca digerine gecer.
-   Arkasinda hic zemin yok; okunurluk golgeyle saglanir. */
-#cpOlcek{position:absolute;right:0.875rem;top:calc(var(--sat) + 4.25rem);
-  z-index:6;display:none;align-items:center;padding:0;
-  background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none}
-#cpOlcek button{width:2.375rem;height:2.375rem;padding:0;border:0;background:none;
-  color:#fff;display:grid;place-items:center;
-  filter:drop-shadow(0 0.125rem 0.5rem rgba(0,0,0,.9));transition:transform .14s var(--ease)}
-#cpOlcek button:active{transform:scale(.88)}
-#cpOlcek button svg{width:1.375rem;height:1.375rem}
-#compose.open #cpOlcek{display:flex}
-#cpOlcek button{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.75rem;
-  background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
-#cpOlcek button.on{background:rgba(255,255,255,.92);color:#111}
 /* KARARTMA KALDIRILDI.
    Onceden ustte %72, altta %92 siyah katman vardi ve alttaki ekranin
    %62 sini kapliyordu; kare gercekte oldugundan cok daha koyu
@@ -10251,10 +10235,6 @@ html.sb-white #userSearch::before{
 
   <section id="compose" aria-hidden="true">
     <div class="cpMediaFull" id="cpMedia"></div>
-    <div id="cpOlcek">
-      <button type="button" data-kip="fit" class="on" id="cpKipBtn" aria-label="Tam" data-i18n-aria="fit"></button>
-      <button type="button" data-kip="fill" hidden style="display:none"></button>
-    </div>
     <div class="cpVeilTop"></div>
     <div class="cpVeilBot"></div>
 
@@ -15562,31 +15542,6 @@ document.addEventListener("click", (e)=>{
   try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e2){}
 }, true);
 
-/* ══════════ TAM / DOLDUR ══════════
-   Tek dugme. Ikon o anki kipi gosterir: cerceveye SIGMIS goruntu (tam)
-   ya da cerceveyi DOLDURAN goruntu. Dokununca oteki kipe gecer. */
-const KIP_IKON = {
-  fit:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2.5"/><rect x="6.5" y="8.5" width="11" height="7" rx="1.2" fill="currentColor" stroke="none" opacity=".9"/></svg>',
-  fill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2.5" fill="currentColor" stroke="none" opacity=".9"/></svg>'
-};
-function kipIkonuCiz(){
-  const b = document.getElementById("cpKipBtn");
-  if(!b) return;
-  const doldur = document.getElementById("compose").classList.contains("cpFill");
-  b.innerHTML = doldur ? KIP_IKON.fill : KIP_IKON.fit;
-  b.setAttribute("data-kip", doldur ? "fill" : "fit");
-  b.setAttribute("aria-label", doldur ? t("fill") : t("fit"));
-}
-document.addEventListener("click", (e)=>{
-  const b = e.target && e.target.closest && e.target.closest("#cpKipBtn");
-  if(!b) return;
-  e.preventDefault(); e.stopPropagation();
-  const c = document.getElementById("compose");
-  c.classList.toggle("cpFill");
-  kipIkonuCiz();
-  try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e2){}
-}, true);
-
 function paintMoodBtn(){
   const btn=$("#cpMoodBtn"), ic=$("#cpMoodIcon"), lb=$("#cpMoodBtnLb");
   if(!btn) return;
@@ -15856,17 +15811,6 @@ function openCompose(src,kind,blob,durationMs){
   let cpKip="fit";
   try{ if(localStorage.getItem("klipsy_web_cam_kip")==="fill") cpKip="fill"; }catch(e){}
   compose.classList.toggle("cpFill", cpKip==="fill");
-  const olcekBox=document.getElementById("cpOlcek");
-  if(olcekBox){
-    olcekBox.querySelectorAll("button").forEach(b=>{
-      b.classList.toggle("on", b.dataset.kip===cpKip);
-      b.onclick=()=>{
-        cpKip=b.dataset.kip;
-        compose.classList.toggle("cpFill", cpKip==="fill");
-        olcekBox.querySelectorAll("button").forEach(x=>x.classList.toggle("on", x.dataset.kip===cpKip));
-      };
-    });
-  }
   if(kind==="video"){
     const v=document.createElement("video");
     v.src=src;v.autoplay=true;v.loop=true;v.muted=false;v.playsInline=true;
@@ -15877,7 +15821,6 @@ function openCompose(src,kind,blob,durationMs){
     im.src=src; im.alt=""; box.appendChild(im);
   }
   $("#compose").classList.add("open");
-  try{ kipIkonuCiz(); }catch(e){}
   _pushHistory("compose");
   if(typeof pauseFeedMedia==="function") pauseFeedMedia();
   if(typeof syncStatusBar==="function") syncStatusBar();

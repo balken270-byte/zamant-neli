@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.8.0";
+window.KLIPSY_SURUM = "3.8.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -8517,18 +8517,37 @@ html.native button,html.native .tab{touch-action:manipulation}
 .cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000}
 #compose.cpFill .cpMediaFull video,
 #compose.cpFill .cpMediaFull img{object-fit:cover}
-#cpOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 7.25rem);transform:translateX(-50%);
-  z-index:6;display:none;align-items:center;gap:0.25rem;padding:0.28rem;
+/* Tam / Doldur: yazi yerine ikon, ust sag koseye alindi.
+   Alt orta konumda not alaninin onune giriyordu. */
+#cpOlcek{position:absolute;right:0.875rem;top:calc(var(--sat) + 4.25rem);
+  z-index:6;display:none;align-items:center;gap:0.125rem;padding:0.1875rem;
   border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
-  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
+  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.16)}
+#cpOlcek button{width:2rem;height:2rem;padding:0;border-radius:6.1875rem;
+  display:grid;place-items:center;color:rgba(255,255,255,.7);background:none;border:0}
+#cpOlcek button svg{width:1.0625rem;height:1.0625rem}
+#cpOlcek button.on{background:rgba(255,255,255,.16);color:#fff}
 #compose.open #cpOlcek{display:flex}
 #cpOlcek button{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.75rem;
   background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
 #cpOlcek button.on{background:rgba(255,255,255,.92);color:#111}
-.cpVeilTop{position:absolute;left:0;right:0;top:0;height:11.25rem;z-index:1;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(0,0,0,.72),transparent)}
-.cpVeilBot{position:absolute;left:0;right:0;bottom:0;height:62%;z-index:1;pointer-events:none;
-  background:linear-gradient(to top,rgba(0,0,0,.92) 24%,rgba(0,0,0,.62) 52%,transparent)}
+/* KARARTMA KALDIRILDI.
+   Onceden ustte %72, altta %92 siyah katman vardi ve alttaki ekranin
+   %62 sini kapliyordu; kare gercekte oldugundan cok daha koyu
+   goruluyordu. Okunurluk artik metin ve ikon golgeleriyle saglaniyor,
+   fotografa hicbir sey binmiyor. */
+.cpVeilTop,.cpVeilBot{display:none}
+
+/* Ustteki ve alttaki ogeler her zeminde okunsun */
+#compose .cptop,
+#compose .cpSide,
+#compose .cpBottom{ text-shadow:0 0.0625rem 0.375rem rgba(0,0,0,.75) }
+#compose .cpIconBtn,
+#compose .cpSideBtn,
+#compose .cpSideBtn .sIc,
+#compose .cpSideBtn .sLb{ filter:drop-shadow(0 0.0625rem 0.25rem rgba(0,0,0,.7)) }
+#compose .cpNote,
+#compose #cpNote{ text-shadow:0 0.0625rem 0.375rem rgba(0,0,0,.8) }
 
 /* üst şerit */
 .cptop{position:relative;z-index:3;flex:none;display:flex;align-items:center;gap:0.5625rem;
@@ -10229,8 +10248,12 @@ html.sb-white #userSearch::before{
   <section id="compose" aria-hidden="true">
     <div class="cpMediaFull" id="cpMedia"></div>
     <div id="cpOlcek">
-      <button type="button" data-kip="fit" class="on">Tam</button>
-      <button type="button" data-kip="fill">Doldur</button>
+      <button type="button" data-kip="fit" class="on" aria-label="Tam" data-i18n-aria="fit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="6.5" width="17" height="11" rx="1.8"/></svg>
+      </button>
+      <button type="button" data-kip="fill" aria-label="Doldur" data-i18n-aria="fill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="1.8"/></svg>
+      </button>
     </div>
     <div class="cpVeilTop"></div>
     <div class="cpVeilBot"></div>

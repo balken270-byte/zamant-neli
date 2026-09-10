@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.6.4";
+window.KLIPSY_SURUM = "3.7.0-t";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -16278,8 +16278,10 @@ $("#cpLater").addEventListener("click", async ()=>{
     }
   }catch(e){
     console.warn("sonra paylas:", e && (e.message||e));
-    btn.disabled=false;
     toast(t("draft_fail"));
+  }finally{
+    /* Depo takilsa bile buton kilitli kalmasin */
+    btn.disabled=false;
   }
 });
 
@@ -18272,7 +18274,7 @@ function renderDrafts(box){
   function taslakSil(d, satir){
     const kalan=readDrafts().filter(x=>x.id!==d.id);
     writeDrafts(kalan);
-    try{ idbSil(d.id); }catch(e){}
+    try{ idbSil(d.id); taslakURLBirak(d.id); }catch(e){}
     paintDraftDot();
     if(satir){ satir.style.height=satir.offsetHeight+"px"; satir.classList.add("gidiyor"); }
     setTimeout(()=>renderProfileArsiv(), 180);
@@ -22024,62 +22026,132 @@ const DRAFT_KEY = 'klipsy_drafts_v1';
    5 MB'lik siniri doldurdugu icin ikinci taslak kaydedilemiyordu.
    Cozum: MEDYA IndexedDB'de (sinirsiza yakin), listenin kendisi
    localStorage'da kaliyor. Boylece readDrafts() senkron kalir. */
-const IDB_AD = "klipsy_taslak", IDB_MAG = "medya";
-function idbAc(){
-  return new Promise((coz, red)=>{
+/* ══════════════════ TASLAK DEPOSU ══════════════════
+   Onceki surumde her islem YENI bir IndexedDB baglantisi aciyor ve
+   hicbirini kapatmiyordu. Birkac baglantidan sonra WebView acilisa
+   yanit vermiyor, await sonsuza kadar bekliyordu: taslak "kaydedilmiyor"
+   gibi gorunuyor, buton kilitli kaliyordu. Uygulama yeniden acilinca
+   baglantilar sifirlandigi icin bir tane daha kaydedilebiliyordu.
+
+   Yeni mimari:
+   - TEK paylasilan baglanti, bir kez acilir ve onbelleklenir
+   - Her islemin ZAMAN ASIMI var; hicbir sey sonsuza kadar beklemez
+   - Kare BLOB olarak saklanir (dataURL degil): %33 daha kucuk,
+     devasa metin dizeleri olusmaz
+   - Ustveri localStorage'da kalir; readDrafts() senkron kalir       */
+
+const IDB_AD = "klipsy_taslak", IDB_MAG = "medya", IDB_SURUM = 2;
+const IDB_ZAMAN_ASIMI = 8000;
+
+let _dbSoz = null;
+function idbBaglan(){
+  if(_dbSoz) return _dbSoz;
+  _dbSoz = new Promise((coz, red)=>{
+    let bitti = false;
+    const zaman = setTimeout(()=>{
+      if(bitti) return; bitti = true;
+      _dbSoz = null;                       /* takilirsa yeniden denenebilsin */
+      red(new Error("IndexedDB acilmadi (zaman asimi)"));
+    }, IDB_ZAMAN_ASIMI);
     try{
-      const r = indexedDB.open(IDB_AD, 1);
-      r.onupgradeneeded = ()=>{ try{ r.result.createObjectStore(IDB_MAG); }catch(e){} };
-      r.onsuccess = ()=>coz(r.result);
-      r.onerror   = ()=>red(r.error);
-    }catch(e){ red(e); }
+      const istek = indexedDB.open(IDB_AD, IDB_SURUM);
+      istek.onupgradeneeded = ()=>{
+        try{
+          const db = istek.result;
+          if(!db.objectStoreNames.contains(IDB_MAG)) db.createObjectStore(IDB_MAG);
+        }catch(e){}
+      };
+      istek.onsuccess = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        const db = istek.result;
+        /* Baglanti beklenmedik sekilde kapanirsa onbellegi bosalt */
+        db.onclose = db.onversionchange = ()=>{ _dbSoz = null; try{ db.close(); }catch(e){} };
+        coz(db);
+      };
+      istek.onerror = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        _dbSoz = null; red(istek.error || new Error("IndexedDB hatasi"));
+      };
+      istek.onblocked = ()=>{ /* zaman asimi devreye girer */ };
+    }catch(e){
+      if(!bitti){ bitti = true; clearTimeout(zaman); _dbSoz = null; red(e); }
+    }
   });
-}
-async function idbYaz(anahtar, deger){
-  try{
-    const db = await idbAc();
-    return await new Promise((coz)=>{
-      const t2 = db.transaction(IDB_MAG, "readwrite");
-      t2.objectStore(IDB_MAG).put(deger, anahtar);
-      t2.oncomplete = ()=>coz(true);
-      t2.onerror    = ()=>coz(false);
-    });
-  }catch(e){ return false; }
-}
-async function idbOku(anahtar){
-  try{
-    const db = await idbAc();
-    return await new Promise((coz)=>{
-      const t2 = db.transaction(IDB_MAG, "readonly");
-      const g = t2.objectStore(IDB_MAG).get(anahtar);
-      g.onsuccess = ()=>coz(g.result || null);
-      g.onerror   = ()=>coz(null);
-    });
-  }catch(e){ return null; }
-}
-async function idbSil(anahtar){
-  try{
-    const db = await idbAc();
-    return await new Promise((coz)=>{
-      const t2 = db.transaction(IDB_MAG, "readwrite");
-      t2.objectStore(IDB_MAG).delete(anahtar);
-      t2.oncomplete = ()=>coz(true);
-      t2.onerror    = ()=>coz(false);
-    });
-  }catch(e){ return false; }
-}
-/* Taslagin karesini getir: yeni kayitlar IndexedDB'de,
-   eski kayitlar hala listenin icinde olabilir. */
-async function taslakMedya(t2){
-  if(t2 && t2.data) return t2.data;
-  if(t2 && t2.id)   return await idbOku(t2.id);
-  return null;
+  return _dbSoz;
 }
 
-/* ══════════ ESKI KAYITLARI TASI ══════════
-   Onceki surumlerde kare dataURL olarak localStorage a yaziliyordu.
-   Tek kayit 4 MB yer kapladigi icin YENI taslak eklenemiyordu.
-   Acilista bir kez calisir: medyayi IndexedDB ye tasir, listeyi hafifletir. */
+/* Tek noktadan islem: baglanti + islem + zaman asimi bir arada */
+function idbIslem(mod, is){
+  return new Promise(async (coz)=>{
+    let bitti = false;
+    const zaman = setTimeout(()=>{
+      if(bitti) return; bitti = true;
+      console.warn("taslak deposu: islem zaman asimi");
+      coz(null);
+    }, IDB_ZAMAN_ASIMI);
+    try{
+      const db = await idbBaglan();
+      const tx = db.transaction(IDB_MAG, mod);
+      const magaza = tx.objectStore(IDB_MAG);
+      const istek = is(magaza);
+      tx.oncomplete = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        coz(istek ? istek.result : true);
+      };
+      tx.onerror = tx.onabort = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        coz(null);
+      };
+    }catch(e){
+      if(bitti) return; bitti = true; clearTimeout(zaman);
+      console.warn("taslak deposu:", e && e.message);
+      coz(null);
+    }
+  });
+}
+
+async function idbYaz(anahtar, deger){
+  const r = await idbIslem("readwrite", m=>m.put(deger, anahtar));
+  return r !== null;
+}
+async function idbOku(anahtar){
+  return await idbIslem("readonly", m=>m.get(anahtar));
+}
+async function idbSil(anahtar){
+  const r = await idbIslem("readwrite", m=>m.delete(anahtar));
+  return r !== null;
+}
+async function idbAnahtarlar(){
+  const r = await idbIslem("readonly", m=>m.getAllKeys());
+  return Array.isArray(r) ? r : [];
+}
+
+/* Taslagin karesini goruntulenebilir adrese cevir.
+   Blob ise gecici URL uretir, eski kayitlarda dataURL olabilir. */
+const _onizURL = new Map();
+async function taslakMedya(t2){
+  if(!t2) return null;
+  if(t2.data) return t2.data;                        /* eski bicim */
+  if(!t2.id)  return null;
+  if(_onizURL.has(t2.id)) return _onizURL.get(t2.id);
+  const veri = await idbOku(t2.id);
+  if(!veri) return null;
+  let adres = veri;
+  if(veri instanceof Blob){
+    try{ adres = URL.createObjectURL(veri); }catch(e){ return null; }
+  }
+  _onizURL.set(t2.id, adres);
+  return adres;
+}
+function taslakURLBirak(id){
+  const u = _onizURL.get(id);
+  if(u && typeof u === "string" && u.indexOf("blob:") === 0){
+    try{ URL.revokeObjectURL(u); }catch(e){}
+  }
+  _onizURL.delete(id);
+}
+
+/* Eski surumden kalan dataURL kayitlarini blob olarak IndexedDB'ye tasi */
 let _gocOldu = false;
 async function taslaklariGocur(){
   if(_gocOldu) return; _gocOldu = true;
@@ -22089,7 +22161,9 @@ async function taslaklariGocur(){
     let degisti = false;
     for(const t2 of l){
       if(t2 && t2.data && t2.id){
-        const ok = await idbYaz(t2.id, t2.data);
+        let veri = t2.data;
+        try{ veri = await (await fetch(t2.data)).blob(); }catch(e){}
+        const ok = await idbYaz(t2.id, veri);
         if(ok){ t2.data = null; degisti = true; }
       }
     }
@@ -22097,6 +22171,16 @@ async function taslaklariGocur(){
   }catch(e){ console.warn("taslak gocurme:", e && e.message); }
 }
 setTimeout(()=>{ try{ taslaklariGocur(); }catch(e){} }, 1500);
+
+/* Listede karsiligi kalmayan kareleri sil */
+async function taslakArtiklariTemizle(){
+  try{
+    const gecerli = new Set(readDrafts().map(x=>x.id));
+    const anahtarlar = await idbAnahtarlar();
+    for(const k of anahtarlar){ if(!gecerli.has(k)) await idbSil(k); }
+  }catch(e){}
+}
+setTimeout(()=>{ try{ taslakArtiklariTemizle(); }catch(e){} }, 3000);
 
 function readDrafts(){
   try{ return JSON.parse(localStorage.getItem(DRAFT_KEY) || '[]'); }
@@ -22125,19 +22209,24 @@ function dataURLtoBlobSafe(durl){
 async function saveDraft(d){
   try{
     if(!d.blob) return false;
-    const data = await blobToDataURL(d.blob);
-    if(!data) return false;
-    // çok büyük dosyalar cihaz belleğini doldurur
-    if(data.length > 4500000){ toast(t("draft_too_big")); return false; }
+    /* Blob dogrudan saklanir: dataURL'e cevirmek %33 sisirir ve
+       cok buyuk metin dizeleri olusturur. */
+    if(d.blob.size > 60 * 1024 * 1024){ toast(t("draft_too_big")); return false; }
     /* Kare IndexedDB'ye yazilir; localStorage yalnizca ustveri tutar.
        Eskiden dataURL listeye giriyordu ve tek fotograf 5 MB'lik siniri
        doldurdugu icin IKINCI taslak sessizce kaydedilemiyordu. */
     const kimlik = 'd'+Date.now()+Math.random().toString(36).slice(2,6);
-    const idbOk = await idbYaz(kimlik, data);
+    const idbOk = await idbYaz(kimlik, d.blob);
+    if(!idbOk){ toast(t("draft_fail")); return false; }
     const list = readDrafts();
     list.push({
       id: kimlik,
-      kind:d.kind, data: (idbOk ? null : data), note:d.note||"", mood:d.mood||null,
+      /* elle:true  -> kullanici "Sonra" dedi. Otomatik gonderim ASLA dokunmaz.
+         elle:false -> internet yokken dusen kayit. Baglanti gelince gonderilir.
+         Bu alan kaydedilmedigi icin elle alinan taslaklar otomatik
+         yayinlaniyor ve liste bosaltiliyordu. */
+      elle: !!d.elle,
+      kind:d.kind, data: null, note:d.note||"", mood:d.mood||null,
       where:d.where||null, extra:d.extra||null, song:d.song||null, ts:d.ts||Date.now()
     });
     const ok = writeDrafts(list);
@@ -22149,11 +22238,13 @@ async function saveDraft(d){
 async function sendDraft(d){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return false;
-  /* Kare IndexedDB de tutuluyor; gondermeden once geri yukle. */
-  if(!d.data){
-    try{ d = Object.assign({}, d, { data: await taslakMedya(d) }); }catch(e){}
+  /* Kare IndexedDB'de blob olarak duruyor. Eski kayitlar dataURL olabilir. */
+  let blob = null;
+  if(d.data) blob = dataURLtoBlobSafe(d.data);
+  else{
+    const veri = await idbOku(d.id);
+    blob = (veri instanceof Blob) ? veri : dataURLtoBlobSafe(veri);
   }
-  const blob = dataURLtoBlobSafe(d.data);
   if(!blob) return false;
   try{
     const mt = mediaTipi(blob, d.kind);
@@ -24568,5 +24659,115 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 </script>
 
 
+
+<!-- ===== KLIPSY_TASLAK_PANEL (GECICI) ===== -->
+<style>
+#tsBtn{position:fixed;right:0.375rem;bottom:9.5rem;z-index:2147483646;
+  width:2.75rem;height:2.75rem;border-radius:50%;border:0.125rem solid #0ff;
+  background:rgba(0,0,0,.85);color:#0ff;font:700 0.875rem monospace;
+  display:grid;place-items:center}
+#tsBox{position:fixed;left:0.25rem;right:0.25rem;top:5%;bottom:14%;z-index:2147483647;
+  background:rgba(0,0,0,.96);color:#0ff;border:0.125rem solid #0ff;
+  font:0.6875rem/1.45 monospace;padding:0.5rem;display:none;flex-direction:column}
+#tsBox.on{display:flex}
+#tsOut{flex:1;overflow:auto;white-space:pre-wrap;word-break:break-all}
+#tsBar{display:flex;gap:0.25rem;flex-wrap:wrap;margin-bottom:0.375rem}
+#tsBar button{background:#0ff;color:#000;border:0;border-radius:0.25rem;
+  font:700 0.625rem monospace;padding:0.3125rem 0.4375rem}
+</style>
+<button id="tsBtn" aria-hidden="true">TS</button>
+<div id="tsBox">
+  <div id="tsBar">
+    <button data-s="clear">TEMIZLE</button>
+    <button data-s="dump">DURUM</button>
+    <button data-s="idb">IDB</button>
+    <button data-s="close">KAPAT</button>
+  </div>
+  <div id="tsOut"></div>
+</div>
+<script>
+(function(){
+  var out=document.getElementById("tsOut"), box=document.getElementById("tsBox"),
+      btn=document.getElementById("tsBtn"), L=[];
+  function log(){
+    var t=new Date(), z=("0"+t.getMinutes()).slice(-2)+":"+("0"+t.getSeconds()).slice(-2)+"."+("00"+t.getMilliseconds()).slice(-3);
+    L.push(z+" "+Array.prototype.join.call(arguments," "));
+    if(L.length>400) L.shift();
+    out.textContent=L.join("\n"); out.scrollTop=out.scrollHeight;
+  }
+  window.__ts=log;
+  window.addEventListener("error",function(e){ log("HATA:",(e.message||"?"),"@",(e.lineno||"?")); });
+  window.addEventListener("unhandledrejection",function(e){ log("PROMISE:",String((e.reason&&e.reason.message)||e.reason)); });
+
+  function sar(ad){
+    var o=window[ad];
+    if(typeof o!=="function"){ log("SARILAMADI:",ad); return; }
+    window[ad]=function(){
+      var arg="";
+      try{
+        if(ad==="saveDraft") arg="elle="+(arguments[0]&&arguments[0].elle)+" kind="+(arguments[0]&&arguments[0].kind);
+        if(ad==="sendDraft") arg="id="+(arguments[0]&&arguments[0].id)+" elle="+(arguments[0]&&arguments[0].elle);
+        if(ad==="writeDrafts") arg="adet="+(arguments[0]&&arguments[0].length);
+        if(ad==="flushDrafts") arg="silent="+arguments[0];
+      }catch(e){}
+      log("-> "+ad+"("+arg+")");
+      var r;
+      try{ r=o.apply(this,arguments); }
+      catch(e){ log("   "+ad+" PATLADI: "+e.message); throw e; }
+      if(r && typeof r.then==="function"){
+        r.then(function(v){ log("   "+ad+" =",JSON.stringify(v)); })
+         .catch(function(e){ log("   "+ad+" RED:",String(e&&e.message||e)); });
+      }else log("   "+ad+" =",JSON.stringify(r));
+      return r;
+    };
+  }
+  setTimeout(function(){
+    ["saveDraft","sendDraft","writeDrafts","flushDrafts","taslaklariGocur"].forEach(sar);
+    log("izleme acildi");
+  }, 800);
+
+  btn.addEventListener("click",function(){ box.classList.toggle("on"); });
+  document.getElementById("tsBar").addEventListener("click",function(e){
+    var a=e.target&&e.target.getAttribute&&e.target.getAttribute("data-s");
+    if(a==="clear"){ L=[]; out.textContent=""; return; }
+    if(a==="close"){ box.classList.remove("on"); return; }
+    if(a==="dump"){
+      try{
+        var ham=localStorage.getItem("klipsy_drafts_v1")||"[]";
+        log("--- LISTE ---");
+        log("localStorage boyut:", ham.length, "bayt");
+        var l=JSON.parse(ham);
+        log("taslak adedi:", l.length);
+        l.forEach(function(d,i){
+          log(" ["+i+"] id="+d.id+" elle="+d.elle+" kind="+d.kind+
+              " data="+(d.data?("VAR "+d.data.length):"yok")+
+              " where="+(d.where||"-")+" song="+(d.song?"var":"-"));
+        });
+        var top=0; for(var k in localStorage){ if(localStorage.hasOwnProperty(k)) top+=(localStorage[k]||"").length; }
+        log("localStorage TOPLAM:", top, "bayt");
+      }catch(e){ log("dump hata:", e.message); }
+      return;
+    }
+    if(a==="idb"){
+      try{
+        var r=indexedDB.open("klipsy_taslak",1);
+        r.onsuccess=function(){
+          try{
+            var db=r.result, tx=db.transaction("medya","readonly"), g=tx.objectStore("medya").getAllKeys();
+            g.onsuccess=function(){ log("--- IDB ---"); log("anahtar:", JSON.stringify(g.result)); };
+            g.onerror=function(){ log("IDB anahtar okunamadi"); };
+          }catch(e){ log("IDB tx hata:", e.message); }
+        };
+        r.onerror=function(){ log("IDB acilamadi"); };
+        r.onupgradeneeded=function(){ log("IDB yeni olusturuldu (magaza yoktu)"); try{ r.result.createObjectStore("medya"); }catch(e){} };
+      }catch(e){ log("IDB hata:", e.message); }
+      return;
+    }
+  });
+  log("Taslak paneli hazir. TS ile ac.");
+  log("Sonra ya bas, sonra DURUM ve IDB ye bak.");
+})();
+</script>
+<!-- ===== /KLIPSY_TASLAK_PANEL ===== -->
 </body>
 </html>

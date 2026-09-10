@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.6.1";
+window.KLIPSY_SURUM = "3.6.2";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -7777,14 +7777,26 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .draftRow .dNote{font-size:0.75rem;color:var(--t2);margin-top:0.125rem;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.draftRow .dActs{flex:none;display:flex;align-items:center;gap:0.375rem}
+.draftRow .dChips{display:flex;flex-wrap:wrap;gap:0.3125rem;margin-top:0.375rem}
+.draftRow .dChip{display:inline-flex;align-items:center;gap:0.25rem;
+  max-width:100%;height:1.4375rem;padding:0 0.5rem;border-radius:6.1875rem;
+  background:var(--surf2);border:1px solid var(--edge-soft);
+  font-size:0.6875rem;font-weight:600;letter-spacing:-.01em;color:var(--t2)}
+.draftRow .dChip svg{width:0.75rem;height:0.75rem;flex:none;opacity:.75}
+.draftRow .dChip b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draftRow .dChip.yer  svg{color:#FF3B6B;opacity:1}
+.draftRow .dChip.muzik svg{color:#7B5BFF;opacity:1}
+.draftRow.gidiyor{opacity:0;transform:translateX(-100%) !important;
+  transition:opacity .16s ease, transform .16s ease}
+.draftRow .dActs{flex:none;display:flex;align-items:center;gap:0.25rem}
+.draftRow .flUcNokta{width:1.875rem;height:1.875rem;flex:none;border:0;
+  background:none;color:var(--t3);display:grid;place-items:center}
+.draftRow .flUcNokta svg{width:1.0625rem;height:1.0625rem}
 .draftRow .dSend{height:2rem;padding:0 0.75rem;border:0;border-radius:6.1875rem;
   background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
   font-size:0.75rem;font-weight:700;letter-spacing:-.01em}
 .draftRow .dSend:disabled{opacity:.6}
-.draftRow .dDel{width:2rem;height:2rem;flex:none;border:1px solid var(--edge-soft);
-  border-radius:6.1875rem;background:none;color:var(--t3);display:grid;place-items:center}
-.draftRow .dDel svg{width:0.9375rem;height:0.9375rem}
+.draftRow{overflow:hidden}
 
 /* arşiv sekmeleri: Anılarım | Kaydedilenler | Taslak */
 /* ═══ ARŞİV BÖLÜMÜ ═══ */
@@ -18237,11 +18249,29 @@ function renderDrafts(box){
   }
 
   const grid=document.createElement("div");grid.className="draftList";
+
+  function taslakSil(d, satir){
+    const kalan=readDrafts().filter(x=>x.id!==d.id);
+    writeDrafts(kalan);
+    try{ idbSil(d.id); }catch(e){}
+    paintDraftDot();
+    if(satir){ satir.style.height=satir.offsetHeight+"px"; satir.classList.add("gidiyor"); }
+    setTimeout(()=>renderProfileArsiv(), 180);
+  }
+
   list.slice().reverse().forEach(d=>{
-    const kart=document.createElement("div");kart.className="draftRow";
+    /* Takip listeleriyle ayni davranis: sola kaydir veya uc noktaya bas */
+    const kart=document.createElement("div");
+    kart.className="shrow draftRow kaydirilir";
+
+    const kirmizi=document.createElement("button");
+    kirmizi.className="flCikar";
+    kirmizi.textContent=t("d_del");
+    kirmizi.addEventListener("click", ev=>{ ev.stopPropagation(); taslakSil(d, kart); });
+    kart.appendChild(kirmizi);
 
     const on=document.createElement("div");on.className="dThumb";
-    if(d.data) on.style.backgroundImage='url("'+d.data+'")';
+    taslakMedya(d).then(src=>{ if(src) on.style.backgroundImage='url("'+src+'")'; });
     if(d.kind==="video"){
       const v=document.createElement("span");v.className="dVid";v.textContent=t("d_video");
       on.appendChild(v);
@@ -18249,16 +18279,36 @@ function renderDrafts(box){
     kart.appendChild(on);
 
     const orta=document.createElement("div");orta.className="dMid";
+
     const ust=document.createElement("div");ust.className="dWhen";
     ust.textContent=(typeof zamanKisa==="function") ? zamanKisa(d.ts) : new Date(d.ts).toLocaleString();
     orta.appendChild(ust);
-    if(d.where){
-      const y=document.createElement("div");y.className="dWhere";y.textContent=d.where;
-      orta.appendChild(y);
-    }
+
     if(d.note){
       const nt=document.createElement("div");nt.className="dNote";nt.textContent=d.note;
       orta.appendChild(nt);
+    }
+
+    /* Konum ve sarki, kucuk etiketler halinde */
+    if(d.where || d.song){
+      const etiketler=document.createElement("div");etiketler.className="dChips";
+      if(d.where){
+        const c=document.createElement("span");c.className="dChip yer";
+        c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>';
+        const y=document.createElement("b");y.textContent=d.where;c.appendChild(y);
+        etiketler.appendChild(c);
+      }
+      if(d.song){
+        const ad=(typeof d.song==="string") ? d.song
+                : [d.song.title, d.song.artist].filter(Boolean).join(" — ");
+        if(ad){
+          const c=document.createElement("span");c.className="dChip muzik";
+          c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5.5l10-2V16"/><circle cx="6.6" cy="18" r="2.6"/><circle cx="16.6" cy="16" r="2.6"/></svg>';
+          const y=document.createElement("b");y.textContent=ad;c.appendChild(y);
+          etiketler.appendChild(c);
+        }
+      }
+      orta.appendChild(etiketler);
     }
     kart.appendChild(orta);
 
@@ -18266,14 +18316,17 @@ function renderDrafts(box){
 
     const gonder=document.createElement("button");
     gonder.className="dSend";gonder.textContent=t("d_send");
-    gonder.addEventListener("click", async ()=>{
+    gonder.addEventListener("click", async (ev)=>{
+      ev.stopPropagation();
       if(gonder.disabled) return;
       gonder.disabled=true; gonder.textContent=t("d_sending");
       let ok=false;
       try{ ok = await sendDraft(d); }catch(e){}
       if(ok){
         const kalan=readDrafts().filter(x=>x.id!==d.id);
-        writeDrafts(kalan); paintDraftDot();
+        writeDrafts(kalan);
+        try{ idbSil(d.id); }catch(e){}
+        paintDraftDot();
         toast(t("draft_sent"));
         try{ if(typeof loadFeed==="function") loadFeed(); }catch(e){}
         try{ if(typeof loadMyMoments==="function") loadMyMoments(); }catch(e){}
@@ -18285,17 +18338,21 @@ function renderDrafts(box){
     });
     sag.appendChild(gonder);
 
-    const sil=document.createElement("button");
-    sil.className="dDel";sil.setAttribute("aria-label",t("d_del"));
-    sil.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 11.4A1.6 1.6 0 0 0 8.9 20h6.2a1.6 1.6 0 0 0 1.6-1.6L17.5 7"/></svg>';
-    sil.addEventListener("click", ()=>{
-      const kalan=readDrafts().filter(x=>x.id!==d.id);
-      writeDrafts(kalan); paintDraftDot();
-      renderProfileArsiv();
+    const uc=document.createElement("button");
+    uc.className="flUcNokta";
+    uc.setAttribute("aria-label", t("options"));
+    uc.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="18.5" r="1.9"/></svg>';
+    uc.addEventListener("click", ev=>{
+      ev.stopPropagation();
+      try{ satirlariKapat(grid); }catch(e){}
+      kart.classList.add("acik");
+      kart.style.transition="transform .18s var(--ease)";
+      kart.style.transform="translateX(-5.5rem)";
     });
-    sag.appendChild(sil);
+    sag.appendChild(uc);
 
     kart.appendChild(sag);
+    try{ kaydirmaBagla(kart, grid); }catch(e){}
     grid.appendChild(kart);
   });
   box.appendChild(grid);
@@ -21885,6 +21942,63 @@ function mediaTipi(blob, kind){
 
 const DRAFT_KEY = 'klipsy_drafts_v1';
 
+/* ══════════ TASLAK DEPOSU ══════════
+   Kare verisi (dataURL) localStorage'a sigmiyor: tek bir fotograf
+   5 MB'lik siniri doldurdugu icin ikinci taslak kaydedilemiyordu.
+   Cozum: MEDYA IndexedDB'de (sinirsiza yakin), listenin kendisi
+   localStorage'da kaliyor. Boylece readDrafts() senkron kalir. */
+const IDB_AD = "klipsy_taslak", IDB_MAG = "medya";
+function idbAc(){
+  return new Promise((coz, red)=>{
+    try{
+      const r = indexedDB.open(IDB_AD, 1);
+      r.onupgradeneeded = ()=>{ try{ r.result.createObjectStore(IDB_MAG); }catch(e){} };
+      r.onsuccess = ()=>coz(r.result);
+      r.onerror   = ()=>red(r.error);
+    }catch(e){ red(e); }
+  });
+}
+async function idbYaz(anahtar, deger){
+  try{
+    const db = await idbAc();
+    return await new Promise((coz)=>{
+      const t2 = db.transaction(IDB_MAG, "readwrite");
+      t2.objectStore(IDB_MAG).put(deger, anahtar);
+      t2.oncomplete = ()=>coz(true);
+      t2.onerror    = ()=>coz(false);
+    });
+  }catch(e){ return false; }
+}
+async function idbOku(anahtar){
+  try{
+    const db = await idbAc();
+    return await new Promise((coz)=>{
+      const t2 = db.transaction(IDB_MAG, "readonly");
+      const g = t2.objectStore(IDB_MAG).get(anahtar);
+      g.onsuccess = ()=>coz(g.result || null);
+      g.onerror   = ()=>coz(null);
+    });
+  }catch(e){ return null; }
+}
+async function idbSil(anahtar){
+  try{
+    const db = await idbAc();
+    return await new Promise((coz)=>{
+      const t2 = db.transaction(IDB_MAG, "readwrite");
+      t2.objectStore(IDB_MAG).delete(anahtar);
+      t2.oncomplete = ()=>coz(true);
+      t2.onerror    = ()=>coz(false);
+    });
+  }catch(e){ return false; }
+}
+/* Taslagin karesini getir: yeni kayitlar IndexedDB'de,
+   eski kayitlar hala listenin icinde olabilir. */
+async function taslakMedya(t2){
+  if(t2 && t2.data) return t2.data;
+  if(t2 && t2.id)   return await idbOku(t2.id);
+  return null;
+}
+
 function readDrafts(){
   try{ return JSON.parse(localStorage.getItem(DRAFT_KEY) || '[]'); }
   catch(e){ return []; }
@@ -21916,10 +22030,15 @@ async function saveDraft(d){
     if(!data) return false;
     // çok büyük dosyalar cihaz belleğini doldurur
     if(data.length > 4500000){ toast(t("draft_too_big")); return false; }
+    /* Kare IndexedDB'ye yazilir; localStorage yalnizca ustveri tutar.
+       Eskiden dataURL listeye giriyordu ve tek fotograf 5 MB'lik siniri
+       doldurdugu icin IKINCI taslak sessizce kaydedilemiyordu. */
+    const kimlik = 'd'+Date.now()+Math.random().toString(36).slice(2,6);
+    const idbOk = await idbYaz(kimlik, data);
     const list = readDrafts();
     list.push({
-      id: 'd'+Date.now()+Math.random().toString(36).slice(2,6),
-      kind:d.kind, data, note:d.note||"", mood:d.mood||null,
+      id: kimlik,
+      kind:d.kind, data: (idbOk ? null : data), note:d.note||"", mood:d.mood||null,
       where:d.where||null, extra:d.extra||null, song:d.song||null, ts:d.ts||Date.now()
     });
     const ok = writeDrafts(list);
@@ -21931,6 +22050,10 @@ async function saveDraft(d){
 async function sendDraft(d){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return false;
+  /* Kare IndexedDB de tutuluyor; gondermeden once geri yukle. */
+  if(!d.data){
+    try{ d = Object.assign({}, d, { data: await taslakMedya(d) }); }catch(e){}
+  }
   const blob = dataURLtoBlobSafe(d.data);
   if(!blob) return false;
   try{

@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.6.2";
+window.KLIPSY_SURUM = "3.6.4";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -7777,15 +7777,33 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .draftRow .dNote{font-size:0.75rem;color:var(--t2);margin-top:0.125rem;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.draftRow .dChips{display:flex;flex-wrap:wrap;gap:0.3125rem;margin-top:0.375rem}
+.draftRow .dChips{display:flex;flex-wrap:wrap;gap:0.625rem;margin-top:0.25rem}
 .draftRow .dChip{display:inline-flex;align-items:center;gap:0.25rem;
-  max-width:100%;height:1.4375rem;padding:0 0.5rem;border-radius:6.1875rem;
-  background:var(--surf2);border:1px solid var(--edge-soft);
-  font-size:0.6875rem;font-weight:600;letter-spacing:-.01em;color:var(--t2)}
+  max-width:100%;padding:0;background:none;border:0;
+  font-size:0.6875rem;font-weight:600;letter-spacing:-.01em;color:var(--t3)}
 .draftRow .dChip svg{width:0.75rem;height:0.75rem;flex:none;opacity:.75}
 .draftRow .dChip b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .draftRow .dChip.yer  svg{color:#FF3B6B;opacity:1}
 .draftRow .dChip.muzik svg{color:#7B5BFF;opacity:1}
+.draftRow .dThumb.acilir{cursor:pointer}
+#draftPrev{position:fixed;inset:0;z-index:2147483000;
+  background:rgba(6,6,10,.94);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:0.875rem;padding:1rem;
+  animation:fadeIn .16s ease}
+#draftPrev .dpClose{position:absolute;top:calc(var(--sat-root,0px) + 0.75rem);right:0.875rem;
+  width:2.375rem;height:2.375rem;border-radius:6.1875rem;border:0;
+  background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center}
+#draftPrev .dpClose svg{width:1.125rem;height:1.125rem}
+#draftPrev .dpBox{max-width:100%;max-height:64vh;border-radius:1.125rem;overflow:hidden;
+  background:#000;display:flex}
+#draftPrev .dpBox img,#draftPrev .dpBox video{max-width:100%;max-height:64vh;
+  width:auto;height:auto;object-fit:contain;display:block}
+#draftPrev .dpInfo{width:100%;max-width:26rem;text-align:center;color:#fff}
+#draftPrev .dpWhen{font-size:0.875rem;font-weight:700;letter-spacing:-.02em}
+#draftPrev .dpNote{font-size:0.8125rem;color:rgba(255,255,255,.72);margin-top:0.25rem;
+  line-height:1.45}
+#draftPrev .dChips{justify-content:center;margin-top:0.5rem}
+#draftPrev .dChip{color:rgba(255,255,255,.7)}
 .draftRow.gidiyor{opacity:0;transform:translateX(-100%) !important;
   transition:opacity .16s ease, transform .16s ease}
 .draftRow .dActs{flex:none;display:flex;align-items:center;gap:0.25rem}
@@ -16233,6 +16251,7 @@ $("#cpLater").addEventListener("click", async ()=>{
       ? (shareLoc ? place.name : (place.city || sadeceSehir(place.name)))
       : null;
     const ok = await saveDraft({
+      elle: true,
       kind: draft.kind,
       blob: draft.blob || (draft.src ? await (await fetch(draft.src)).blob() : null),
       note: cpNote.value.trim(),
@@ -18276,6 +18295,12 @@ function renderDrafts(box){
       const v=document.createElement("span");v.className="dVid";v.textContent=t("d_video");
       on.appendChild(v);
     }
+    on.classList.add("acilir");
+    on.addEventListener("click", async (ev)=>{
+      ev.stopPropagation();
+      const src = await taslakMedya(d);
+      if(src) taslakOnizle(d, src);
+    });
     kart.appendChild(on);
 
     const orta=document.createElement("div");orta.className="dMid";
@@ -18359,6 +18384,58 @@ function renderDrafts(box){
 }
 
 /* Arsiv panelini tazele (taslak silinince/gonderilince) */
+/* Taslak onizleme — kareyi tam ekran goster, bilgileri altta ozetle. */
+function taslakOnizle(d, src){
+  const eski=document.getElementById("draftPrev"); if(eski) eski.remove();
+  const kat=document.createElement("div"); kat.id="draftPrev";
+
+  const kapat=document.createElement("button"); kapat.className="dpClose";
+  kapat.setAttribute("aria-label", t("close"));
+  kapat.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  kapat.addEventListener("click", ()=>kat.remove());
+  kat.appendChild(kapat);
+
+  const kutu=document.createElement("div"); kutu.className="dpBox";
+  if(d.kind==="video"){
+    const v=document.createElement("video");
+    v.src=src; v.controls=true; v.playsInline=true; v.autoplay=true;
+    kutu.appendChild(v);
+  }else{
+    const im=document.createElement("img"); im.src=src; im.alt="";
+    kutu.appendChild(im);
+  }
+  kat.appendChild(kutu);
+
+  const alt=document.createElement("div"); alt.className="dpInfo";
+  const z=document.createElement("div"); z.className="dpWhen";
+  z.textContent=(typeof zamanKisa==="function") ? zamanKisa(d.ts) : new Date(d.ts).toLocaleString();
+  alt.appendChild(z);
+  if(d.note){ const n2=document.createElement("div"); n2.className="dpNote"; n2.textContent=d.note; alt.appendChild(n2); }
+  if(d.where || d.song){
+    const c=document.createElement("div"); c.className="dChips";
+    if(d.where){
+      const y=document.createElement("span"); y.className="dChip yer";
+      y.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>';
+      const b2=document.createElement("b"); b2.textContent=d.where; y.appendChild(b2);
+      c.appendChild(y);
+    }
+    if(d.song){
+      const ad=(typeof d.song==="string") ? d.song : [d.song.title,d.song.artist].filter(Boolean).join(" — ");
+      if(ad){
+        const m2=document.createElement("span"); m2.className="dChip muzik";
+        m2.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5.5l10-2V16"/><circle cx="6.6" cy="18" r="2.6"/><circle cx="16.6" cy="16" r="2.6"/></svg>';
+        const b3=document.createElement("b"); b3.textContent=ad; m2.appendChild(b3);
+        c.appendChild(m2);
+      }
+    }
+    alt.appendChild(c);
+  }
+  kat.appendChild(alt);
+
+  kat.addEventListener("click", ev=>{ if(ev.target===kat) kat.remove(); });
+  document.body.appendChild(kat);
+}
+
 function renderProfileArsiv(){
   try{
     const btn=document.querySelector('.arcTab[data-arc="draft"]');
@@ -21999,6 +22076,28 @@ async function taslakMedya(t2){
   return null;
 }
 
+/* ══════════ ESKI KAYITLARI TASI ══════════
+   Onceki surumlerde kare dataURL olarak localStorage a yaziliyordu.
+   Tek kayit 4 MB yer kapladigi icin YENI taslak eklenemiyordu.
+   Acilista bir kez calisir: medyayi IndexedDB ye tasir, listeyi hafifletir. */
+let _gocOldu = false;
+async function taslaklariGocur(){
+  if(_gocOldu) return; _gocOldu = true;
+  try{
+    const l = readDrafts();
+    if(!l.length) return;
+    let degisti = false;
+    for(const t2 of l){
+      if(t2 && t2.data && t2.id){
+        const ok = await idbYaz(t2.id, t2.data);
+        if(ok){ t2.data = null; degisti = true; }
+      }
+    }
+    if(degisti){ writeDrafts(l); paintDraftDot(); }
+  }catch(e){ console.warn("taslak gocurme:", e && e.message); }
+}
+setTimeout(()=>{ try{ taslaklariGocur(); }catch(e){} }, 1500);
+
 function readDrafts(){
   try{ return JSON.parse(localStorage.getItem(DRAFT_KEY) || '[]'); }
   catch(e){ return []; }
@@ -22089,7 +22188,10 @@ async function sendDraft(d){
 let _draftBusy=false;
 async function flushDrafts(silent){
   if(_draftBusy) return;
-  const list = readDrafts();
+  /* Elle alinanlar kullanicinin karariyla gonderilir; burada atlanir. */
+  const tumu = readDrafts();
+  const list = tumu.filter(x => !x.elle);
+  const elleKalan = tumu.filter(x => x.elle);
   if(!list.length) return;
   if(!navigator.onLine) return;
   if(!window.__sb || !window.__me) return;
@@ -22102,7 +22204,7 @@ async function flushDrafts(silent){
     const ok = await sendDraft(d);
     if(ok) sent++; else kalan.push(d);
   }
-  writeDrafts(kalan);
+  writeDrafts(elleKalan.concat(kalan));
   paintDraftDot();
   _draftBusy=false;
 

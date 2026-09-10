@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.9.2";
+window.KLIPSY_SURUM = "3.9.3";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -17943,7 +17943,7 @@ async function backfillPosters(list){
       if(!blob) continue;
       const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"_p.jpg";
       const up = await sb.storage.from('moments').upload(path, blob, {
-        contentType:"image/jpeg", upsert:false
+        contentType:"image/jpeg", cacheControl:"31536000", upsert:false
       });
       if(up.error) continue;
       const r = await sb.from('moments').update({poster_path:path}).eq('id',it.id).eq('author_id',me.id);
@@ -20398,7 +20398,10 @@ async function sendMedia(src, tur, sure){
     const path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+uzanti;
 
     try{ showUploadIndicator(video ? (t("sending")||"Gönderiliyor…") : (t("sending")||"Gönderiliyor…")); }catch(e){}
-    const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik});
+    /* CDN onbellegi: dosya adlari benzersiz oldugu icin bir yil guvenli.
+       Verilmezse Supabase 1 saniye koyuyor ve her izleyici dosyayi
+       sunucudan yeniden cekiyor. */
+    const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik, cacheControl:"31536000"});
     if(up.error) throw up.error;
     const {data,error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'media',msg_media:path});
     if(error){
@@ -21920,6 +21923,9 @@ function yukleIlerlemeli(path, blob, contentType, kind){
       x.open("POST", kok + "/storage/v1/object/moments/" + path, true);
       x.setRequestHeader("Authorization", "Bearer " + jeton);
       x.setRequestHeader("Content-Type", contentType);
+      /* CDN bir yil saklasin: ayni dosya her izleyici icin sunucudan
+         yeniden cekilmesin. Adlar benzersiz oldugu icin risksiz. */
+      x.setRequestHeader("Cache-Control", "public, max-age=31536000, immutable");
       x.setRequestHeader("x-upsert", "false");
 
       const t0 = Date.now();
@@ -21941,7 +21947,7 @@ function yukleIlerlemeli(path, blob, contentType, kind){
     }catch(e){
       /* XHR kurulamadi: eski yola don, yuzde olmadan yukle */
       try{
-        const r = await sb.storage.from("moments").upload(path, blob, { contentType, upsert:false });
+        const r = await sb.storage.from("moments").upload(path, blob, { contentType, cacheControl:"31536000", upsert:false });
         coz(r);
       }catch(e2){ coz({ error:e2 }); }
     }
@@ -22037,7 +22043,7 @@ async function post(src,kind,mood,where,note,extra){
         if(posterBlob){
           posterPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_p.jpg";
           const pu = await sb.storage.from('moments').upload(posterPath, posterBlob, {
-            contentType:"image/jpeg", upsert:false
+            contentType:"image/jpeg", cacheControl:"31536000", upsert:false
           });
           if(pu.error) posterPath=null;
         }
@@ -22055,7 +22061,7 @@ async function post(src,kind,mood,where,note,extra){
         if(tb){
           thumbPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_t.jpg";
           const tu = await sb.storage.from('moments').upload(thumbPath, tb, {
-            contentType:"image/jpeg", upsert:false
+            contentType:"image/jpeg", cacheControl:"31536000", upsert:false
           });
           if(tu.error) thumbPath = null;
         }
@@ -22460,7 +22466,7 @@ async function sendDraft(d){
     const mt = mediaTipi(blob, d.kind);
     const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+mt.uzanti;
     const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: mt.tip, upsert:false
+      contentType: mt.tip, cacheControl:"31536000", upsert:false
     });
     if(up.error) throw up.error;
 

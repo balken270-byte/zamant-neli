@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.9.0";
+window.KLIPSY_SURUM = "3.9.2";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      up_photo:"Kare gönderiliyor",
+      up_video:"Video gönderiliyor",
+      up_too_big:"Video çok büyük ({mb} MB) — taslaklara alındı",
+      up_kept:"Gönderilemedi, taslaklara alındı",
       video_max:"Süre doldu, an kaydedildi",
       d_tab:"Taslak",
       d_desc:"Paylaşmayı beklettiğin kareler. Konum ve saat bilgisi çekildiği andan korunur.",
@@ -720,6 +724,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      up_photo:"Uploading photo",
+      up_video:"Uploading video",
+      up_too_big:"Video too large ({mb} MB) — kept as draft",
+      up_kept:"Upload failed, kept as draft",
       video_max:"Time is up — moment saved",
       d_tab:"Drafts",
       d_desc:"Moments you chose to post later. Place and time stay as they were when shot.",
@@ -1272,6 +1280,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      up_photo:"Subiendo foto",
+      up_video:"Subiendo vídeo",
+      up_too_big:"Vídeo demasiado grande ({mb} MB) — guardado como borrador",
+      up_kept:"Fallo al subir, guardado como borrador",
       video_max:"Se acabó el tiempo, momento guardado",
       d_tab:"Borradores",
       d_desc:"Momentos que dejaste para después. El lugar y la hora se guardan tal como al capturarlos.",
@@ -1821,6 +1833,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      up_photo:"جارٍ رفع الصورة",
+      up_video:"جارٍ رفع الفيديو",
+      up_too_big:"الفيديو كبير جدًا ({mb} م.ب) — حُفظ كمسودة",
+      up_kept:"فشل الرفع، حُفظ كمسودة",
       video_max:"انتهى الوقت، حُفظت اللحظة",
       d_tab:"المسودات",
       d_desc:"لحظات أجّلت نشرها. يُحفظ المكان والوقت كما كانا عند التقاطها.",
@@ -2370,6 +2386,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      up_photo:"Envoi de la photo",
+      up_video:"Envoi de la vidéo",
+      up_too_big:"Vidéo trop lourde ({mb} Mo) — gardée en brouillon",
+      up_kept:"Échec de l’envoi, gardé en brouillon",
       video_max:"Temps écoulé, moment enregistré",
       d_tab:"Brouillons",
       d_desc:"Moments que tu as gardés pour plus tard. Le lieu et l’heure restent ceux de la prise.",
@@ -2919,6 +2939,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      up_photo:"Foto wird gesendet",
+      up_video:"Video wird gesendet",
+      up_too_big:"Video zu groß ({mb} MB) — als Entwurf gespeichert",
+      up_kept:"Senden fehlgeschlagen, als Entwurf gespeichert",
       video_max:"Zeit abgelaufen, Moment gespeichert",
       d_tab:"Entwürfe",
       d_desc:"Momente, die du später posten willst. Ort und Zeit bleiben wie bei der Aufnahme.",
@@ -3468,6 +3492,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      up_photo:"Отправка фото",
+      up_video:"Отправка видео",
+      up_too_big:"Видео слишком большое ({mb} МБ) — сохранено в черновики",
+      up_kept:"Не отправлено, сохранено в черновики",
       video_max:"Время вышло, момент сохранён",
       d_tab:"Черновики",
       d_desc:"Моменты, отложенные на потом. Место и время сохраняются с момента съёмки.",
@@ -4017,6 +4045,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      up_photo:"A enviar foto",
+      up_video:"A enviar vídeo",
+      up_too_big:"Vídeo demasiado grande ({mb} MB) — guardado nos rascunhos",
+      up_kept:"Falha ao enviar, guardado nos rascunhos",
       video_max:"Tempo esgotado, momento guardado",
       d_tab:"Rascunhos",
       d_desc:"Momentos que deixaste para depois. Local e hora ficam como no momento da captura.",
@@ -4566,6 +4598,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      up_photo:"फ़ोटो भेजी जा रही है",
+      up_video:"वीडियो भेजा जा रहा है",
+      up_too_big:"वीडियो बहुत बड़ा ({mb} MB) — ड्राफ़्ट में रखा",
+      up_kept:"भेजा नहीं गया, ड्राफ़्ट में रखा",
       video_max:"समय समाप्त, पल सहेजा गया",
       d_tab:"ड्राफ़्ट",
       d_desc:"वे पल जिन्हें आपने बाद में साझा करने के लिए रखा। जगह और समय वैसे ही रहते हैं।",
@@ -5115,6 +5151,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      up_photo:"Mengunggah foto",
+      up_video:"Mengunggah video",
+      up_too_big:"Video terlalu besar ({mb} MB) — disimpan ke draf",
+      up_kept:"Gagal mengunggah, disimpan ke draf",
       video_max:"Waktu habis, momen tersimpan",
       d_tab:"Draf",
       d_desc:"Momen yang kamu simpan untuk nanti. Lokasi dan waktu tetap seperti saat diambil.",
@@ -21860,6 +21900,61 @@ function hideUploadIndicator(force){
   }
 }
 
+/* Depolama kovasinin siniri 30 MB. Istemci tarafi bilerek 2 MB altta
+   tutulur: dosya sunucuya varmadan burada yakalanir, kullanici belirsiz
+   bir sunucu hatasi yerine anlasilir bir mesaj gorur. */
+const YUKLEME_SINIRI = 28 * 1024 * 1024;
+
+/* Yuklemeyi XHR ile yapar: ilerleme yuzdesi ve anlik hiz raporlanir.
+   Basarisiz olursa Supabase istemcisine geri doner. */
+function yukleIlerlemeli(path, blob, contentType, kind){
+  return new Promise(async (coz)=>{
+    const sb = window.__sb;
+    try{
+      const o = await sb.auth.getSession();
+      const jeton = o && o.data && o.data.session ? o.data.session.access_token : null;
+      const kok = (window.__sbUrl || (sb && sb.supabaseUrl) || "").replace(/\/+$/,"");
+      if(!jeton || !kok) throw new Error("oturum yok");
+
+      const x = new XMLHttpRequest();
+      x.open("POST", kok + "/storage/v1/object/moments/" + path, true);
+      x.setRequestHeader("Authorization", "Bearer " + jeton);
+      x.setRequestHeader("Content-Type", contentType);
+      x.setRequestHeader("x-upsert", "false");
+
+      const t0 = Date.now();
+      const etiket = kind === "video" ? t("up_video") : t("up_photo");
+      x.upload.onprogress = (e)=>{
+        if(!e.lengthComputable) return;
+        const yuzde = (e.loaded / e.total) * 100;
+        const sn = Math.max(0.25, (Date.now() - t0) / 1000);
+        const hiz = e.loaded / sn;                       /* bayt / saniye */
+        showUploadIndicator(etiket + " · " + hizMetni(hiz), yuzde);
+      };
+      x.onload = ()=>{
+        if(x.status >= 200 && x.status < 300) coz({ data:{ path }, error:null });
+        else if(x.status === 413) coz({ error:new Error("dosya cok buyuk") });
+        else coz({ error:new Error("yukleme hatasi " + x.status) });
+      };
+      x.onerror = ()=> coz({ error:new Error("baglanti kesildi") });
+      x.send(blob);
+    }catch(e){
+      /* XHR kurulamadi: eski yola don, yuzde olmadan yukle */
+      try{
+        const r = await sb.storage.from("moments").upload(path, blob, { contentType, upsert:false });
+        coz(r);
+      }catch(e2){ coz({ error:e2 }); }
+    }
+  });
+}
+
+/* Saniyedeki bayti okunur metne cevirir */
+function hizMetni(bps){
+  if(!isFinite(bps) || bps <= 0) return "";
+  if(bps >= 1048576) return (bps/1048576).toFixed(1) + " MB/sn";
+  return Math.round(bps/1024) + " KB/sn";
+}
+
 async function post(src,kind,mood,where,note,extra){
   const sb=window.__sb, me=window.__me;
   const song=(extra&&extra.song)?extra.song:null;
@@ -21907,10 +22002,30 @@ async function post(src,kind,mood,where,note,extra){
     // Gerçek tür ve uzantı (mp4 mi webm mi) kaydın kendisinden alınır
     const mt = mediaTipi(blob, kind);
     const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
-    const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: mt.tip,
-      upsert:false
-    });
+
+    /* ══════ BOYUT SINIRI ══════
+       Depolama kovasinin siniri 25 MB. Asildiginde sunucu yuklemeyi
+       reddediyor ve kullanici NEDEN olmadigini anlamiyordu.
+       Once burada yakalanir, an taslaga alinir; kaybolmaz. */
+    if(blob.size > YUKLEME_SINIRI){
+      const mb = (blob.size/1048576).toFixed(1);
+      console.warn("[Klipsy] dosya cok buyuk:", mb, "MB");
+      const ok = await saveDraft({
+        elle:true, kind, blob, note, mood: mood?mood.k:null,
+        where, extra, song, ts: Date.now()
+      });
+      hideUploadIndicator(true);
+      toast(ok ? t("up_too_big").replace("{mb}", mb) : t("draft_fail"));
+      items = items.filter(x=>x.id !== tmpId);
+      allItems = (allItems||[]).filter(x=>x.id !== tmpId);
+      render();
+      return;
+    }
+
+    /* ══════ GERCEK ILERLEME ══════
+       Supabase istemcisi yukleme yuzdesi vermiyor. XHR ile gonderilince
+       upload.onprogress calisiyor; kullanici hem yuzdeyi hem hizi gorur. */
+    const up = await yukleIlerlemeli(path, blob, mt.tip, kind);
     if(up.error) throw up.error;
 
     // 1b) video ise kapak resmi üret ve yükle (ızgarada video yerine bu gösterilecek)
@@ -22017,6 +22132,9 @@ async function post(src,kind,mood,where,note,extra){
     console.warn("[Klipsy] paylaşım başarısız:", e);
 
     const saved = await saveDraft({
+      /* elle:true -> baglanti gelince kendiliginden paylasilmaz.
+         Kullanici arsivdeki Taslak sekmesinden kendisi gonderir. */
+      elle: true,
       kind, blob, note, mood: mood?mood.k:null,
       where, extra, song, ts: Date.now()
     });

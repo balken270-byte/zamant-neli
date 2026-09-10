@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.7.0-t";
+window.KLIPSY_SURUM = "3.7.0";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -24659,115 +24659,5 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 </script>
 
 
-
-<!-- ===== KLIPSY_TASLAK_PANEL (GECICI) ===== -->
-<style>
-#tsBtn{position:fixed;right:0.375rem;bottom:9.5rem;z-index:2147483646;
-  width:2.75rem;height:2.75rem;border-radius:50%;border:0.125rem solid #0ff;
-  background:rgba(0,0,0,.85);color:#0ff;font:700 0.875rem monospace;
-  display:grid;place-items:center}
-#tsBox{position:fixed;left:0.25rem;right:0.25rem;top:5%;bottom:14%;z-index:2147483647;
-  background:rgba(0,0,0,.96);color:#0ff;border:0.125rem solid #0ff;
-  font:0.6875rem/1.45 monospace;padding:0.5rem;display:none;flex-direction:column}
-#tsBox.on{display:flex}
-#tsOut{flex:1;overflow:auto;white-space:pre-wrap;word-break:break-all}
-#tsBar{display:flex;gap:0.25rem;flex-wrap:wrap;margin-bottom:0.375rem}
-#tsBar button{background:#0ff;color:#000;border:0;border-radius:0.25rem;
-  font:700 0.625rem monospace;padding:0.3125rem 0.4375rem}
-</style>
-<button id="tsBtn" aria-hidden="true">TS</button>
-<div id="tsBox">
-  <div id="tsBar">
-    <button data-s="clear">TEMIZLE</button>
-    <button data-s="dump">DURUM</button>
-    <button data-s="idb">IDB</button>
-    <button data-s="close">KAPAT</button>
-  </div>
-  <div id="tsOut"></div>
-</div>
-<script>
-(function(){
-  var out=document.getElementById("tsOut"), box=document.getElementById("tsBox"),
-      btn=document.getElementById("tsBtn"), L=[];
-  function log(){
-    var t=new Date(), z=("0"+t.getMinutes()).slice(-2)+":"+("0"+t.getSeconds()).slice(-2)+"."+("00"+t.getMilliseconds()).slice(-3);
-    L.push(z+" "+Array.prototype.join.call(arguments," "));
-    if(L.length>400) L.shift();
-    out.textContent=L.join("\n"); out.scrollTop=out.scrollHeight;
-  }
-  window.__ts=log;
-  window.addEventListener("error",function(e){ log("HATA:",(e.message||"?"),"@",(e.lineno||"?")); });
-  window.addEventListener("unhandledrejection",function(e){ log("PROMISE:",String((e.reason&&e.reason.message)||e.reason)); });
-
-  function sar(ad){
-    var o=window[ad];
-    if(typeof o!=="function"){ log("SARILAMADI:",ad); return; }
-    window[ad]=function(){
-      var arg="";
-      try{
-        if(ad==="saveDraft") arg="elle="+(arguments[0]&&arguments[0].elle)+" kind="+(arguments[0]&&arguments[0].kind);
-        if(ad==="sendDraft") arg="id="+(arguments[0]&&arguments[0].id)+" elle="+(arguments[0]&&arguments[0].elle);
-        if(ad==="writeDrafts") arg="adet="+(arguments[0]&&arguments[0].length);
-        if(ad==="flushDrafts") arg="silent="+arguments[0];
-      }catch(e){}
-      log("-> "+ad+"("+arg+")");
-      var r;
-      try{ r=o.apply(this,arguments); }
-      catch(e){ log("   "+ad+" PATLADI: "+e.message); throw e; }
-      if(r && typeof r.then==="function"){
-        r.then(function(v){ log("   "+ad+" =",JSON.stringify(v)); })
-         .catch(function(e){ log("   "+ad+" RED:",String(e&&e.message||e)); });
-      }else log("   "+ad+" =",JSON.stringify(r));
-      return r;
-    };
-  }
-  setTimeout(function(){
-    ["saveDraft","sendDraft","writeDrafts","flushDrafts","taslaklariGocur"].forEach(sar);
-    log("izleme acildi");
-  }, 800);
-
-  btn.addEventListener("click",function(){ box.classList.toggle("on"); });
-  document.getElementById("tsBar").addEventListener("click",function(e){
-    var a=e.target&&e.target.getAttribute&&e.target.getAttribute("data-s");
-    if(a==="clear"){ L=[]; out.textContent=""; return; }
-    if(a==="close"){ box.classList.remove("on"); return; }
-    if(a==="dump"){
-      try{
-        var ham=localStorage.getItem("klipsy_drafts_v1")||"[]";
-        log("--- LISTE ---");
-        log("localStorage boyut:", ham.length, "bayt");
-        var l=JSON.parse(ham);
-        log("taslak adedi:", l.length);
-        l.forEach(function(d,i){
-          log(" ["+i+"] id="+d.id+" elle="+d.elle+" kind="+d.kind+
-              " data="+(d.data?("VAR "+d.data.length):"yok")+
-              " where="+(d.where||"-")+" song="+(d.song?"var":"-"));
-        });
-        var top=0; for(var k in localStorage){ if(localStorage.hasOwnProperty(k)) top+=(localStorage[k]||"").length; }
-        log("localStorage TOPLAM:", top, "bayt");
-      }catch(e){ log("dump hata:", e.message); }
-      return;
-    }
-    if(a==="idb"){
-      try{
-        var r=indexedDB.open("klipsy_taslak",1);
-        r.onsuccess=function(){
-          try{
-            var db=r.result, tx=db.transaction("medya","readonly"), g=tx.objectStore("medya").getAllKeys();
-            g.onsuccess=function(){ log("--- IDB ---"); log("anahtar:", JSON.stringify(g.result)); };
-            g.onerror=function(){ log("IDB anahtar okunamadi"); };
-          }catch(e){ log("IDB tx hata:", e.message); }
-        };
-        r.onerror=function(){ log("IDB acilamadi"); };
-        r.onupgradeneeded=function(){ log("IDB yeni olusturuldu (magaza yoktu)"); try{ r.result.createObjectStore("medya"); }catch(e){} };
-      }catch(e){ log("IDB hata:", e.message); }
-      return;
-    }
-  });
-  log("Taslak paneli hazir. TS ile ac.");
-  log("Sonra ya bas, sonra DURUM ve IDB ye bak.");
-})();
-</script>
-<!-- ===== /KLIPSY_TASLAK_PANEL ===== -->
 </body>
 </html>

@@ -687,7 +687,20 @@
 
       const sc = document.createElement("script");
       sc.async = true;
-      sc.src = "https://cdn.jsdelivr.net/npm/mediabunny@1.55.7/dist/bundles/mediabunny.min.cjs";
+      /* ══════ YEREL ONCE ══════
+         APK WebView i https://localhost uzerinden calisiyor ve dis
+         kaynakli betikleri engelliyor: CDN den yukleme "mediabunny
+         null" ile sonuclaniyor, sikistirma hic calismiyordu.
+         Leaflet te oldugu gibi once yerel dosya denenir, olmazsa CDN.
+         Yerel dosya: www/lib/mediabunny.min.cjs */
+      sc.src = "./lib/mediabunny.min.cjs";
+      sc.onerror = function(){
+        var yedek = document.createElement("script");
+        yedek.src = "https://cdn.jsdelivr.net/npm/mediabunny@1.55.7/dist/bundles/mediabunny.min.cjs";
+        yedek.onload  = sc.onload;
+        yedek.onerror = function(){ coz(null); };
+        document.head.appendChild(yedek);
+      };
       sc.onload = function () {
         clearTimeout(zaman);
         if (bitti) return;

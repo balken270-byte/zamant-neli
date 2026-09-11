@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.11.3-t";
+window.KLIPSY_SURUM = "3.11.4-t";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -25235,6 +25235,7 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
     <button data-k="clear">TEMIZLE</button>
     <button data-k="durum">DURUM</button>
     <button data-k="mb">KUTUPHANE</button>
+    <button data-k="kopya">KOPYALA</button>
     <button data-k="close">KAPAT</button>
   </div>
   <div id="skOut"></div>
@@ -25250,6 +25251,16 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
     out.textContent=L.join("\n"); out.scrollTop=out.scrollHeight;
   }
   window.__sk=log;
+  /* Pano API si yoksa eski yontem */
+  function eskiKopya(metin){
+    try{
+      var t=document.createElement("textarea");
+      t.value=metin; t.style.position="fixed"; t.style.opacity="0";
+      document.body.appendChild(t); t.select();
+      document.execCommand("copy"); t.remove();
+      log("[panoya kopyalandi]");
+    }catch(e){ log("kopyalanamadi:", e.message); }
+  }
   window.addEventListener("error",function(e){ log("HATA:",(e.message||"?")); });
   window.addEventListener("unhandledrejection",function(e){
     log("PROMISE:",String((e.reason&&e.reason.message)||e.reason)); });
@@ -25259,6 +25270,16 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
     var a=e.target&&e.target.getAttribute&&e.target.getAttribute("data-k");
     if(a==="clear"){ L=[]; out.textContent=""; return; }
     if(a==="close"){ box.classList.remove("on"); return; }
+    if(a==="kopya"){
+      var metin=L.join("\n");
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(metin).then(function(){ log("[panoya kopyalandi]"); })
+            .catch(function(){ eskiKopya(metin); });
+        }else eskiKopya(metin);
+      }catch(e){ eskiKopya(metin); }
+      return;
+    }
     if(a==="durum"){
       log("--- DURUM ---");
       log("surum:", window.KLIPSY_SURUM);

@@ -620,7 +620,14 @@
              yüz "başkasının gördüğü" yönde oluyordu. Önizlemeyle
              aynı olması için kare de çevrilir. */
           if (durum.yon === "on") {
-            veri = await aynala(veri);
+            /* AYNALAMA BURADA YAPILMIYOR ARTIK.
+               Fotograf cozulup aynalanip YENIDEN KODLANIYORDU: on
+               kamerada fazladan bir JPEG turu olusuyor ve goruntu
+               gozle secilir bicimde yumusuyordu (arka kamerada bu
+               adim hic calismadigi icin orada sorun yoktu).
+               Bayrak biraklir, aynalama son isleme adiminda tek
+               kodlamayla yapilir. */
+            window.__kareAynaliOlmali = true;
           }
 
           yay("foto", { boyut: veri.length });

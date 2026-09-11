@@ -595,8 +595,19 @@
             await odakla(n ? n.x : 0.5, n ? n.y : 0.5, 900);
           } catch (e) {}
 
+          /* ══════ CEKIM COZUNURLUGU ══════
+             Resmi belge: "width/height verilmezse cekilen kare
+             ONIZLEMENIN GORUNUR ALANINA esitlenir." Yani sensorun
+             tam cozunurlugu degil, ekran boyutu (~1080 px) geliyordu.
+             Sonra bunu 1920 ye olceklemeye calisinca elde veri
+             olmadigi icin goruntu YUMUSUYORDU: cektikten sonraki
+             bulaniklasmanin sebebi buydu.
+             Simdi sensorden yuksek cozunurluk isteniyor; kirpma ve
+             kuculltme islemi gercek veriyle yapiliyor. */
           const r = await CP().capture({
-            quality: kalite
+            quality: kalite,
+            width:  secenek.genislik || 2560,
+            height: secenek.yukseklik || 2560
           });
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
@@ -874,13 +885,16 @@
                  30 saniyelik 100 MB uzeri cikiyordu; yukleme siniri
                  30 MB oldugu icin kullanici paylasim yapamiyordu.
                  1080p kendi basina yeterli ve dosya ucte bire iner. */
-              /* 1080p te 25 saniye 50 MB cikti (~16 Mbps): eklenti
-                 videoBitrate i yok sayiyor. 720p hem yeterli hem
-                 dosyayi yariya indirir. */
+              /* ══════ DOSYA BOYUTU ══════
+                 Resmi belgelerde startRecordVideo YALNIZCA
+                 CameraPreviewOptions aliyor; videoBitrate diye bir
+                 alan YOK, eklendiginde yok sayiliyor. Elimizdeki iki
+                 gercek kaldirac: cozunurluk ve kare hizi.
+                 720p + 24 fps ile 30 saniye ~24 MB bandina iner. */
               videoQuality: secenek.kalite || "720p",
-              /* Eklenti destekliyorsa bit hizi da sinirlanir. Desteklemezse
-                 bu alan yok sayilir, zarari olmaz. */
-              videoBitrate: secenek.bitHizi || 5000000,
+              /* Belgelerde onerilen yol: kare hizini kayit BASLAMADAN
+                 gecirmek. Desteklemeyen surumde yok sayilir. */
+              frameRate: secenek.kareHizi || 24,
             });
           }catch(e1){
             const ay = String((e1 && e1.message) || "");

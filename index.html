@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.10.0";
+window.KLIPSY_SURUM = "3.10.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -20731,8 +20731,50 @@ function _nativePlugins(){
   const P=(cap && cap.Plugins) || {};
   return { native, FS:P.Filesystem, Share:P.Share, Media:P.Media };
 }
+/* Blob un bir parcasini base64 e cevirir */
+function _parcaB64(parca){
+  return new Promise((coz,red)=>{
+    const r=new FileReader();
+    r.onload=()=>{ const v=String(r.result||""); coz(v.slice(v.indexOf(",")+1)); };
+    r.onerror=()=>red(r.error||new Error("okunamadi"));
+    r.readAsDataURL(parca);
+  });
+}
+
 async function _writeCacheFile(FS, blob, path){
   const dir=(FS.Directory && FS.Directory.Cache) || "CACHE";
+
+  /* ══════════ BUYUK DOSYA: PARCALI YAZIM ══════════
+     Eskiden dosyanin TAMAMI base64 e cevriliyordu. 50 MB lik bir
+     video ~67 MB lik tek bir metin dizesi oluyor, ustune Capacitor
+     koprusunden JSON olarak geciyordu. WebView bellegi tasiyor ve
+     Android uygulamayi olduruyordu: 9 saniye ustu videolarda
+     "Kaydet" e basinca uygulama kapaniyordu.
+     Artik dosya 1 MB lik parcalar halinde yazilir; bellekte hicbir
+     zaman parca boyutundan fazlasi tutulmaz. */
+  const PARCA = 1024 * 1024;
+  if(blob.size > 3 * PARCA && FS.appendFile){
+    _dlDbg("parcali yazim", path+" boyut="+blob.size);
+    try{ await FS.deleteFile({ path, directory:dir }); }catch(e){}
+    let ilk = true;
+    for(let ofs = 0; ofs < blob.size; ofs += PARCA){
+      const b64 = await _parcaB64(blob.slice(ofs, Math.min(ofs + PARCA, blob.size)));
+      if(ilk){
+        await FS.writeFile({ path, data:b64, directory:dir, recursive:true });
+        ilk = false;
+      }else{
+        await FS.appendFile({ path, data:b64, directory:dir });
+      }
+    }
+    let uri2=null;
+    try{
+      const g=await FS.getUri({ path, directory:dir });
+      uri2=(g && (g.uri||g.fileUri)) || null;
+    }catch(e){ _dlDbg("getUri hata", e && e.message); }
+    _dlDbg("parcali uri", uri2);
+    return uri2;
+  }
+
   const b64=await blobToBase64(blob);
   _dlDbg("writeFile", path+" b64="+b64.length);
   const w=await FS.writeFile({ path, data:b64, directory:dir, recursive:true });

@@ -242,7 +242,7 @@
       disableAudio: secenek.ses === false,
       /* Onizleme/kayit varsayilani: "high" cihazin en yuksegini secip
          devasa dosyalar uretiyordu. 1080p hem yeterli hem oncelikli. */
-      videoQuality: "1080p",
+      videoQuality: "720p",
       includeSafeAreaInsets: false,
     };
     if (secenek.kap)   taban.parent    = secenek.kap;
@@ -874,7 +874,10 @@
                  30 saniyelik 100 MB uzeri cikiyordu; yukleme siniri
                  30 MB oldugu icin kullanici paylasim yapamiyordu.
                  1080p kendi basina yeterli ve dosya ucte bire iner. */
-              videoQuality: secenek.kalite || "1080p",
+              /* 1080p te 25 saniye 50 MB cikti (~16 Mbps): eklenti
+                 videoBitrate i yok sayiyor. 720p hem yeterli hem
+                 dosyayi yariya indirir. */
+              videoQuality: secenek.kalite || "720p",
               /* Eklenti destekliyorsa bit hizi da sinirlanir. Desteklemezse
                  bu alan yok sayilir, zarari olmaz. */
               videoBitrate: secenek.bitHizi || 5000000,

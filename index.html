@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.11.8-t";
+window.KLIPSY_SURUM = "3.11.10-t";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -21278,6 +21278,22 @@ async function start(kayitSurerken){
           });
           if(camPanel) camPanel.classList.remove("waiting");
           document.documentElement.classList.add("camNativeOn");
+      /* ══════ AKIS VIDEOLARINI BOSALT ══════
+         Kamera acilinca akistaki video elemanlari bellekte kaliyordu
+         (panelde "video= 15"). Telefonun donanim cozucusu ayni anda
+         ancak 2-4 akis kaldirir; fazlasi hem ONIZLEMEDE hem
+         OYNATMADA takilmaya yol acar. Kaynaklari birakiyoruz;
+         akisa donunce kendiliginden yeniden baglaniyorlar. */
+      try{
+        document.querySelectorAll("#feed video").forEach(v=>{
+          try{ v.pause(); }catch(e){}
+          if(v.getAttribute("src")){
+            v.removeAttribute("src");
+            try{ v.load(); }catch(e){}
+          }
+        });
+        if(window.__sk) window.__sk("akis videolari bosaltildi");
+      }catch(e){}
       /* Onizleme oturduktan sonra bir kez merkeze odaklan: kullanici
          hemen cekerse kare net olsun. */
       setTimeout(function(){
@@ -23507,9 +23523,40 @@ sh.addEventListener("pointerup", async ()=>{
     if(!Kamera.yerelMi() && typeof window.__webCamKareAl === "function"){
       foto = window.__webCamKareAl();
     }
+    const _fT0 = performance.now();
     if(!foto) foto = await Kamera.fotoCek({ kalite: 95 });
+    /* ══════ NETLIK SONDASI ══════
+       Zincirin her adiminda gercek piksel boyutunu olcer. Bulaniklik
+       nerede olusuyor: sensor mu dusuk veriyor, isleme mi kucultuyor. */
+    try{
+      if(window.__sk && foto){
+        const ol = (src)=>new Promise(r=>{
+          const im=new Image();
+          im.onload=()=>r(im.naturalWidth+"x"+im.naturalHeight);
+          im.onerror=()=>r("okunamadi");
+          im.src=src;
+        });
+        const bayt = Math.round((String(foto).length*0.75)/1024);
+        ol(foto).then(b=>{
+          window.__fotoHam = b + " (" + bayt + " KB)";
+          window.__sk("foto CEKIM:", b, "|", bayt+"KB", "|",
+                      Math.round(performance.now()-_fT0)+"ms");
+        });
+      }
+    }catch(e){}
     if(foto && Kamera.yerelMi() && typeof window.__webCamKareAlData === "function"){
       foto = await window.__webCamKareAlData(foto);
+      try{
+        if(window.__sk && foto){
+          const im2=new Image();
+          im2.onload=()=>{
+            window.__fotoSon = im2.naturalWidth+"x"+im2.naturalHeight;
+            window.__sk("foto ISLEME SONRASI:", window.__fotoSon,
+                        "| toplam", Math.round(performance.now()-_fT0)+"ms");
+          };
+          im2.src=foto;
+        }
+      }catch(e){}
     }
     if(!foto) return;
     await kameraKapanmaEfekti();
@@ -25346,6 +25393,13 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
             "| ort fps:", o.sure? Math.round(o.kare/o.sure):"-");
         log("takilan kare:", o.takilma, "| en uzun bekleme:", o.enUzun+"ms");
       }else log("kayit olcumu: (henuz yok)");
+      log("--- FOTOGRAF ZINCIRI ---");
+      log("cekimden gelen:", window.__fotoHam || "(henuz yok)");
+      log("islemeden sonra:", window.__fotoSon || "(henuz yok)");
+      log("ekran:", window.innerWidth+"x"+window.innerHeight,
+          "| yogunluk:", window.devicePixelRatio);
+      log("beklenen: cekim 2000px ustu olmali; degilse eklenti");
+      log("          width parametresini yok sayiyor demektir.");
       log("sikistirma sozu:", window.__sikistirmaSozu ? "BEKLIYOR" : "yok/bitti");
       log("arka plan isleri: video=", document.querySelectorAll("video").length,
           "| gorsel=", document.querySelectorAll("img").length);

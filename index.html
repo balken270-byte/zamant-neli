@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.11.10-t";
+window.KLIPSY_SURUM = "3.11.11-t";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -21961,13 +21961,15 @@ $("#camClose").addEventListener("click",closeCam);
       else { const n=sw/oran; sy+= (sh-n)/2; sh=n; }
     }
 
-    const k=Math.min(1,1920/Math.max(sw,sh));
+    /* Web yolu da 2560 e hizalandi; 1920 sinirinin ekranda karsiligi
+       yok, yalnizca detay atiyordu. */
+    const k=Math.min(1,2560/Math.max(sw,sh));
     const c=document.createElement("canvas");
     c.width=Math.max(2,Math.round(sw*k)); c.height=Math.max(2,Math.round(sh*k));
-    const x=c.getContext("2d"); x.imageSmoothingQuality="high";
+    const x=c.getContext("2d"); x.imageSmoothingEnabled=true; x.imageSmoothingQuality="high";
     if(v.classList.contains("mirror")){ x.translate(c.width,0); x.scale(-1,1); }
     x.drawImage(v,sx,sy,sw,sh,0,0,c.width,c.height);
-    return c.toDataURL("image/jpeg",0.92);
+    return c.toDataURL("image/jpeg",0.95);
   }
 
   function kareAlData(src){
@@ -21995,8 +21997,17 @@ $("#camClose").addEventListener("click",closeCam);
              ornekleyicisi ara pikselleri atlayip goruntuyu yumusatiyor.
              Simdi her adimda en fazla yariya inilerek gidiliyor; her
              adim komsu pikselleri ortaladigi icin detay korunuyor. */
-          const hedefG = Math.max(2, Math.round(sw * Math.min(1, 1920/Math.max(sw,sh))));
-          const hedefY = Math.max(2, Math.round(sh * Math.min(1, 1920/Math.max(sw,sh))));
+          /* ══════ KUCULTME SINIRI ══════
+             Cekim 1440x2560 geliyor, biz 1920 e indiriyorduk. Iki
+             sorun birden: (1) 1,33 kat gibi KUCUK bir oranda
+             kucultmek en kotu durum, kademeli dongu devreye girmiyor
+             ve tek gecis goruntuyu yumusatiyor; (2) ekran zaten
+             1078x2398, yani 1080 e inince hic pay kalmiyor ve
+             detay bosuna atiliyor.
+             2560 e cikarilinca cekim oldugu gibi korunuyor. */
+          const ENBUYUK = 2560;
+          const hedefG = Math.max(2, Math.round(sw * Math.min(1, ENBUYUK/Math.max(sw,sh))));
+          const hedefY = Math.max(2, Math.round(sh * Math.min(1, ENBUYUK/Math.max(sw,sh))));
 
           /* Kaynak zaten hedefe yakinsa kademeli kucultmeye girme:
              gereksiz her adim bir miktar yumusama ekliyor. */

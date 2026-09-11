@@ -894,7 +894,9 @@
               videoQuality: secenek.kalite || "720p",
               /* Belgelerde onerilen yol: kare hizini kayit BASLAMADAN
                  gecirmek. Desteklemeyen surumde yok sayilir. */
-              frameRate: secenek.kareHizi || 24,
+              /* 24 e dusurmek boyutu belirgin degistirmedi: darbogaz
+                 kare hizi degil BIT HIZI. Akicilik icin 30 a donuldu. */
+              frameRate: secenek.kareHizi || 30,
             });
           }catch(e1){
             const ay = String((e1 && e1.message) || "");

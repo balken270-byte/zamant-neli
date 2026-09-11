@@ -604,11 +604,21 @@
              bulaniklasmanin sebebi buydu.
              Simdi sensorden yuksek cozunurluk isteniyor; kirpma ve
              kuculltme islemi gercek veriyle yapiliyor. */
-          const r = await CP().capture({
-            quality: kalite,
-            width:  secenek.genislik || 2560,
-            height: secenek.yukseklik || 2560
-          });
+          /* ══════ ON KAMERADA BOYUT ISTENMEZ ══════
+             On sensorun cozunurlugu arkadan dusuk. 2560 isteyince
+             eklenti goruntuyu BUYUTUYOR ve kare yumusak cikiyordu;
+             onizleme net oldugu halde fotograf bulanik gorunmesinin
+             sebebi buydu. On kamerada sensorun kendi boyutu alinir. */
+          const onKamera = (durum.yon === "on" || durum.yon === "user" ||
+                            durum.facing === "front" || durum.onKamera === true);
+          const cekimSecenek = { quality: kalite };
+          if(!onKamera){
+            cekimSecenek.width  = secenek.genislik  || 2560;
+            cekimSecenek.height = secenek.yukseklik || 2560;
+          }
+          if(window.__sk) window.__sk("cekim istegi:",
+            onKamera ? "on kamera (dogal boyut)" : "arka kamera (2560)");
+          const r = await CP().capture(cekimSecenek);
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;

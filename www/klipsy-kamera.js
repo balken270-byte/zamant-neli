@@ -240,7 +240,9 @@
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,
-      videoQuality: "high",
+      /* Onizleme/kayit varsayilani: "high" cihazin en yuksegini secip
+         devasa dosyalar uretiyordu. 1080p hem yeterli hem oncelikli. */
+      videoQuality: "720p",
       includeSafeAreaInsets: false,
     };
     if (secenek.kap)   taban.parent    = secenek.kap;
@@ -280,14 +282,31 @@
        (width ile çakışır). Boyut sonra setPreviewSize. */
     if (CP().setPreviewSize) {
       try {
-        /* 9:16 orani korunur; sadece kenar bosluklari kapatilir.
-           Onizleme yatayda ortalanir, tasan kisim kirpilir. */
+        /* SIGDIR: onizleme KIRPILMAZ. Ekranda ne goruyorsan cektigin
+           kare de o. Sensor 4:3 / 16:9, ekran ise 9:20 civari oldugu
+           icin ust ve altta siyah bant kalir; karsiliginda kamera ile
+           paylasim ekrani ayni alani gosterir.
+           Eski davranis (tam ekran, yanlardan kirpik) icin asagidaki
+           KIRP blogunu ac, SIGDIR blogunu kapat. */
         const vw = Math.ceil(window.innerWidth || 360);
         const vh = Math.ceil((window.visualViewport && window.visualViewport.height) || window.innerHeight);
+
+        /* ── SIGDIR ── */
+        let w = vw, h = Math.round(w * 16 / 9);
+        if (h > vh) { h = vh; w = Math.round(h * 9 / 16); }
+        /* Yuvarlama yuzunden sagda 1 piksellik siyah cizgi kaliyordu:
+           1 piksel tasir, ortalamada geri alinir. */
+        w += 1;
+        const x = Math.round((vw - w) / 2);
+        const y = Math.round((vh - h) / 2);
+        await CP().setPreviewSize({ x: x, y: y, width: w, height: h });
+
+        /* ── KIRP (eski) ──
         let w = vw + 2, h = Math.round(w * 16 / 9);
         if (h < vh + 2) { h = vh + 2; w = Math.round(h * 9 / 16); }
         const x = Math.round((vw - w) / 2);
         await CP().setPreviewSize({ x: x, y: -1, width: w, height: h });
+        */
       } catch (e) {}
     }
 
@@ -499,13 +518,51 @@
             x.translate(c.width, 0);
             x.scale(-1, 1);
             x.drawImage(im, 0, 0);
-            coz(c.toDataURL("image/jpeg", 0.92));
+            /* Ara tur: zincirde bir kayip daha birikmesin diye 0.92 degil
+             0.97. Nihai sikistirma index.html icindeki son adimda. */
+          coz(c.toDataURL("image/jpeg", 0.97));
           } catch (e) { coz(veriAdresi); }
         };
         im.onerror = function () { coz(veriAdresi); };
         im.src = veriAdresi;
       } catch (e) { coz(veriAdresi); }
     });
+  }
+
+  /* ══════════════════ ODAKLAMA ══════════════════
+     Onceden deklansor dogrudan capture() cagiriyordu: kamera
+     odaklanmayi bitirmeden kare aliniyor, fotograflar bulanik
+     cikiyordu. CameraX odagi ASENKRON yurutur; beklenmesi gerekir.
+     Eklentinin setFocus({x,y}) API si 0-1 arasi NORMALIZE koordinat
+     bekler (0.5, 0.5 = ekranin ortasi). */
+  let _odakSuruyor = false;
+
+  async function odakla(x, y, beklemeMs) {
+    if (!durum.yerel || !durum.acik) return false;
+    if (_odakSuruyor) return false;
+    _odakSuruyor = true;
+    const nx = (typeof x === "number") ? Math.min(1, Math.max(0, x)) : 0.5;
+    const ny = (typeof y === "number") ? Math.min(1, Math.max(0, y)) : 0.5;
+    try {
+      const cp = CP();
+      if (!cp || typeof cp.setFocus !== "function") return false;
+      /* Odak sozunu bekle, ama sonsuza kadar degil: bazi cihazlarda
+         soz hic cozulmuyor ve deklansor kilitleniyordu. */
+      const sonuc = await Promise.race([
+        cp.setFocus({ x: nx, y: ny }).then(function () { return true; })
+                                     .catch(function () { return false; }),
+        new Promise(function (r) { setTimeout(function () { r("zamanasimi"); },
+                                              beklemeMs || 900); })
+      ]);
+      /* Odak motorunun oturmasi icin kisa pay */
+      await new Promise(function (r) { setTimeout(r, 120); });
+      yay("odak", { x: nx, y: ny, sonuc: sonuc });
+      return sonuc === true;
+    } catch (e) {
+      return false;
+    } finally {
+      _odakSuruyor = false;
+    }
   }
 
   function fotoCek(secenek) {
@@ -529,9 +586,39 @@
              yakın fotoğraf boyutunu seçer; sonrasında index.html yalnızca
              gerekiyorsa aynı 9:16 oranını uygular.
           */
-          const r = await CP().capture({
-            quality: kalite
-          });
+          /* DEKLANSOR ONCESI ODAK
+             Kullanici bir noktaya dokunmussa oraya, dokunmamissa
+             merkeze odaklanilir. Odak basarisiz olsa bile cekim
+             DEVAM EDER: kullanicinin ani kacmasin. */
+          try {
+            const n = secenek.odak || durum.sonOdak || null;
+            await odakla(n ? n.x : 0.5, n ? n.y : 0.5, 900);
+          } catch (e) {}
+
+          /* ══════ CEKIM COZUNURLUGU ══════
+             Resmi belge: "width/height verilmezse cekilen kare
+             ONIZLEMENIN GORUNUR ALANINA esitlenir." Yani sensorun
+             tam cozunurlugu degil, ekran boyutu (~1080 px) geliyordu.
+             Sonra bunu 1920 ye olceklemeye calisinca elde veri
+             olmadigi icin goruntu YUMUSUYORDU: cektikten sonraki
+             bulaniklasmanin sebebi buydu.
+             Simdi sensorden yuksek cozunurluk isteniyor; kirpma ve
+             kuculltme islemi gercek veriyle yapiliyor. */
+          /* ══════ ON KAMERADA BOYUT ISTENMEZ ══════
+             On sensorun cozunurlugu arkadan dusuk. 2560 isteyince
+             eklenti goruntuyu BUYUTUYOR ve kare yumusak cikiyordu;
+             onizleme net oldugu halde fotograf bulanik gorunmesinin
+             sebebi buydu. On kamerada sensorun kendi boyutu alinir. */
+          const onKamera = (durum.yon === "on" || durum.yon === "user" ||
+                            durum.facing === "front" || durum.onKamera === true);
+          const cekimSecenek = { quality: kalite };
+          if(!onKamera){
+            cekimSecenek.width  = secenek.genislik  || 2560;
+            cekimSecenek.height = secenek.yukseklik || 2560;
+          }
+          if(window.__sk) window.__sk("cekim istegi:",
+            onKamera ? "on kamera (dogal boyut)" : "arka kamera (2560)");
+          const r = await CP().capture(cekimSecenek);
           const v = r && (r.value || r.base64 || r.data);
           if (!v) throw KameraHatasi(HATA.BILINMEYEN);
           let veri = /^data:/.test(v) ? v : "data:image/jpeg;base64," + v;
@@ -543,7 +630,14 @@
              yüz "başkasının gördüğü" yönde oluyordu. Önizlemeyle
              aynı olması için kare de çevrilir. */
           if (durum.yon === "on") {
-            veri = await aynala(veri);
+            /* AYNALAMA BURADA YAPILMIYOR ARTIK.
+               Fotograf cozulup aynalanip YENIDEN KODLANIYORDU: on
+               kamerada fazladan bir JPEG turu olusuyor ve goruntu
+               gozle secilir bicimde yumusuyordu (arka kamerada bu
+               adim hic calismadigi icin orada sorun yoktu).
+               Bayrak biraklir, aynalama son isleme adiminda tek
+               kodlamayla yapilir. */
+            window.__kareAynaliOlmali = true;
           }
 
           yay("foto", { boyut: veri.length });
@@ -610,7 +704,20 @@
 
       const sc = document.createElement("script");
       sc.async = true;
-      sc.src = "https://cdn.jsdelivr.net/npm/mediabunny@1.55.7/dist/bundles/mediabunny.min.cjs";
+      /* ══════ YEREL ONCE ══════
+         APK WebView i https://localhost uzerinden calisiyor ve dis
+         kaynakli betikleri engelliyor: CDN den yukleme "mediabunny
+         null" ile sonuclaniyor, sikistirma hic calismiyordu.
+         Leaflet te oldugu gibi once yerel dosya denenir, olmazsa CDN.
+         Yerel dosya: www/lib/mediabunny.min.cjs */
+      sc.src = "./lib/mediabunny.min.cjs";
+      sc.onerror = function(){
+        var yedek = document.createElement("script");
+        yedek.src = "https://cdn.jsdelivr.net/npm/mediabunny@1.55.7/dist/bundles/mediabunny.min.cjs";
+        yedek.onload  = sc.onload;
+        yedek.onerror = function(){ coz(null); };
+        document.head.appendChild(yedek);
+      };
       sc.onload = function () {
         clearTimeout(zaman);
         if (bitti) return;
@@ -711,6 +818,91 @@
     };
   }
 
+  /* ══════════════════ VIDEO SIKISTIRMA ══════════════════
+     Native CameraX kaydi bit hizi kontrolu SUNMUYOR: 25 saniye
+     ~28 MB (~9 Mbps) cikiyordu. Ayni sure TikTok'ta 8,8 MB
+     (~2,8 Mbps). Fark kodlama ayarindan geliyor, cozunurlukten degil.
+
+     Cozum TikTok'un yaptigi: kaydi aldiktan SONRA cihazda yeniden
+     kodlamak. Kayit sirasinda donma olmaz cunku islem kayit bittikten
+     sonra yapilir. Basarisiz olursa HAM dosya kullanilir; kullanici
+     hicbir sey kaybetmez.
+
+     Hedef 2,5 Mbps: TikTok bandi. 25 saniye ~8 MB eder.            */
+  const SIKISTIRMA = {
+    hedefBitHizi: 2500000,
+    sesBitHizi: 128000,
+    enBuyukKenar: 1280,
+    /* Bu boyutun altindaki dosyalara dokunma: kazanc zahmete degmez */
+    esikBayt: 6 * 1024 * 1024
+  };
+
+  async function videoSikistir(blob, ilerleme) {
+    if (!blob || blob.size < SIKISTIRMA.esikBayt) return blob;
+    let mb = null;
+    try { mb = await mediabunnyYukle(); } catch (e) {
+      window.__sikistirmaSebep = "kutuphane yuklenemedi: " + (e && e.message || e);
+      return blob;
+    }
+    if (!mb) { window.__sikistirmaSebep = "mediabunny null"; return blob; }
+    /* Hangi API nin var oldugunu gorelim: surumler arasi ad degisiyor */
+    const eksik = ["Conversion","Input","Output","BlobSource","BufferTarget",
+                   "Mp4OutputFormat","ALL_FORMATS"].filter(k => !mb[k]);
+    window.__mbAnahtar = Object.keys(mb).slice(0, 40).join(",");
+    if (eksik.length) {
+      window.__sikistirmaSebep = "eksik API: " + eksik.join(",");
+      return blob;
+    }
+    const t0 = Date.now();
+    try {
+      const girdi = new mb.Input({
+        source: new mb.BlobSource(blob),
+        formats: mb.ALL_FORMATS
+      });
+      const cikti = new mb.Output({
+        format: new mb.Mp4OutputFormat(),
+        target: new mb.BufferTarget()
+      });
+
+      const donusum = await mb.Conversion.init({
+        input: girdi,
+        output: cikti,
+        /* COZUNURLUGE DOKUNULMAZ.
+           width/height verilince video 1280x1280 lik KAREYE sigdiriliyor,
+           etrafina siyah bantlar ekleniyor ve goruntu kucuk gorunuyordu.
+           Kaynak zaten 720p; bize gereken tek sey BIT HIZINI dusurmek.
+           Kadraj, oran ve donme bilgisi oldugu gibi korunur. */
+        video: {
+          bitrate: SIKISTIRMA.hedefBitHizi,
+          forceTranscode: true
+        },
+        audio: { bitrate: SIKISTIRMA.sesBitHizi }
+      });
+
+      if (typeof ilerleme === "function" && donusum.onProgress !== undefined) {
+        donusum.onProgress = function (o) {
+          try { ilerleme(Math.round((o || 0) * 100)); } catch (e) {}
+        };
+      }
+
+      await donusum.execute();
+      const veri = cikti.target.buffer;
+      if (!veri || !veri.byteLength) return blob;
+
+      const yeni = new Blob([veri], { type: "video/mp4" });
+      const sn = ((Date.now() - t0) / 1000).toFixed(1);
+      yay("bilgi", {
+        konu: "sikistirma",
+        oncesi: blob.size, sonrasi: yeni.size, saniye: sn
+      });
+      /* Buyudiyse ham dosyayi kullan */
+      return (yeni.size > 0 && yeni.size < blob.size) ? yeni : blob;
+    } catch (e) {
+      window.__sikistirmaSebep = "hata: " + String(e && e.message || e);
+      return blob;
+    }
+  }
+
   async function webCodecsKaydiBaslat(secenek, enFazlaSn) {
     const cfg = await webCodecsYapilandir(secenek);
     const mb = cfg.mb;
@@ -802,7 +994,24 @@
               storeToFile: true,
               disableAudio: false,
               maxDuration: enFazlaSn,
-              videoQuality: "high",
+              /* ══════ DOSYA BOYUTU ══════
+                 "high" CameraX te cihazin EN YUKSEGI demek: cogu
+                 telefonda 4K ya da 1080p60. 9 saniyelik kayit 25 MB,
+                 30 saniyelik 100 MB uzeri cikiyordu; yukleme siniri
+                 30 MB oldugu icin kullanici paylasim yapamiyordu.
+                 1080p kendi basina yeterli ve dosya ucte bire iner. */
+              /* ══════ DOSYA BOYUTU ══════
+                 Resmi belgelerde startRecordVideo YALNIZCA
+                 CameraPreviewOptions aliyor; videoBitrate diye bir
+                 alan YOK, eklendiginde yok sayiliyor. Elimizdeki iki
+                 gercek kaldirac: cozunurluk ve kare hizi.
+                 720p + 24 fps ile 30 saniye ~24 MB bandina iner. */
+              videoQuality: secenek.kalite || "720p",
+              /* Belgelerde onerilen yol: kare hizini kayit BASLAMADAN
+                 gecirmek. Desteklemeyen surumde yok sayilir. */
+              /* 24 e dusurmek boyutu belirgin degistirmedi: darbogaz
+                 kare hizi degil BIT HIZI. Akicilik icin 30 a donuldu. */
+              frameRate: secenek.kareHizi || 30,
             });
           }catch(e1){
             const ay = String((e1 && e1.message) || "");
@@ -1174,6 +1383,11 @@
     cevir: cevir,
 
     fotoCek: fotoCek,
+    /* Tap-to-focus ve acilis odagi icin disa acilir.
+       x ve y 0-1 arasi normalize deger olmali. */
+    odakla: odakla,
+    /* Kayittan sonra cagrilir: dosyayi hedef bit hizinda yeniden kodlar */
+    videoSikistir: videoSikistir,
     kayitBaslat: kayitBaslat,
     kayitBitir: kayitBitir,
 

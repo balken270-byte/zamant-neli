@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.5.9";
+window.KLIPSY_SURUM = "3.12.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      vid_prep:"Video hazırlanıyor",
+      up_photo:"Kare gönderiliyor",
+      up_video:"Video gönderiliyor",
+      up_too_big:"Video çok büyük ({mb} MB) — taslaklara alındı",
+      up_kept:"Gönderilemedi, taslaklara alındı",
+      video_max:"Süre doldu, an kaydedildi",
+      d_tab:"Taslak",
+      d_desc:"Paylaşmayı beklettiğin kareler. Konum ve saat bilgisi çekildiği andan korunur.",
+      d_none:"Taslak yok",
+      d_hint:"Bir kare çektikten sonra “Sonra” diyerek buraya alabilirsin.",
+      d_send:"Paylaş",
+      d_sending:"Gönderiliyor…",
+      d_del:"Sil",
+      d_video:"VİDEO",
+      d_later:"Sonra",
+      d_later_aria:"Sonra paylaş",
+      d_kept:"Taslaklara alındı",
       draft_sending:"Taslaklar gönderiliyor…",
       draft_saved:"Bağlantı yok — taslak olarak kaydedildi",
       song_no_preview:"Bu şarkının önizlemesi yok",
@@ -708,6 +725,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      vid_prep:"Preparing video",
+      up_photo:"Uploading photo",
+      up_video:"Uploading video",
+      up_too_big:"Video too large ({mb} MB) — kept as draft",
+      up_kept:"Upload failed, kept as draft",
+      video_max:"Time is up — moment saved",
+      d_tab:"Drafts",
+      d_desc:"Moments you chose to post later. Place and time stay as they were when shot.",
+      d_none:"No drafts",
+      d_hint:"After shooting, tap “Later” to keep it here.",
+      d_send:"Post",
+      d_sending:"Posting…",
+      d_del:"Delete",
+      d_video:"VIDEO",
+      d_later:"Later",
+      d_later_aria:"Post later",
+      d_kept:"Kept as draft",
       draft_sending:"Sending drafts…",
       draft_saved:"No connection — saved as a draft",
       song_no_preview:"No preview for this song",
@@ -1248,6 +1282,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      vid_prep:"Preparando vídeo",
+      up_photo:"Subiendo foto",
+      up_video:"Subiendo vídeo",
+      up_too_big:"Vídeo demasiado grande ({mb} MB) — guardado como borrador",
+      up_kept:"Fallo al subir, guardado como borrador",
+      video_max:"Se acabó el tiempo, momento guardado",
+      d_tab:"Borradores",
+      d_desc:"Momentos que dejaste para después. El lugar y la hora se guardan tal como al capturarlos.",
+      d_none:"Sin borradores",
+      d_hint:"Tras capturar, toca “Después” para guardarlo aquí.",
+      d_send:"Publicar",
+      d_sending:"Publicando…",
+      d_del:"Eliminar",
+      d_video:"VÍDEO",
+      d_later:"Después",
+      d_later_aria:"Publicar después",
+      d_kept:"Guardado como borrador",
       draft_sending:"Enviando borradores…",
       draft_saved:"Sin conexión — guardado como borrador",
       song_no_preview:"Sin vista previa para esta canción",
@@ -1785,6 +1836,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      vid_prep:"جارٍ تجهيز الفيديو",
+      up_photo:"جارٍ رفع الصورة",
+      up_video:"جارٍ رفع الفيديو",
+      up_too_big:"الفيديو كبير جدًا ({mb} م.ب) — حُفظ كمسودة",
+      up_kept:"فشل الرفع، حُفظ كمسودة",
+      video_max:"انتهى الوقت، حُفظت اللحظة",
+      d_tab:"المسودات",
+      d_desc:"لحظات أجّلت نشرها. يُحفظ المكان والوقت كما كانا عند التقاطها.",
+      d_none:"لا مسودات",
+      d_hint:"بعد الالتقاط اضغط «لاحقًا» لحفظها هنا.",
+      d_send:"نشر",
+      d_sending:"جارٍ النشر…",
+      d_del:"حذف",
+      d_video:"فيديو",
+      d_later:"لاحقًا",
+      d_later_aria:"النشر لاحقًا",
+      d_kept:"حُفظت كمسودة",
       draft_sending:"جارٍ إرسال المسودات…",
       draft_saved:"لا يوجد اتصال — حُفظ كمسودة",
       song_no_preview:"لا توجد معاينة لهذه الأغنية",
@@ -2322,6 +2390,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      vid_prep:"Préparation de la vidéo",
+      up_photo:"Envoi de la photo",
+      up_video:"Envoi de la vidéo",
+      up_too_big:"Vidéo trop lourde ({mb} Mo) — gardée en brouillon",
+      up_kept:"Échec de l’envoi, gardé en brouillon",
+      video_max:"Temps écoulé, moment enregistré",
+      d_tab:"Brouillons",
+      d_desc:"Moments que tu as gardés pour plus tard. Le lieu et l’heure restent ceux de la prise.",
+      d_none:"Aucun brouillon",
+      d_hint:"Après la prise, touche « Plus tard » pour le garder ici.",
+      d_send:"Publier",
+      d_sending:"Publication…",
+      d_del:"Supprimer",
+      d_video:"VIDÉO",
+      d_later:"Plus tard",
+      d_later_aria:"Publier plus tard",
+      d_kept:"Gardé en brouillon",
       draft_sending:"Envoi des brouillons…",
       draft_saved:"Pas de connexion — enregistré en brouillon",
       song_no_preview:"Pas d'aperçu pour ce morceau",
@@ -2859,6 +2944,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      vid_prep:"Video wird vorbereitet",
+      up_photo:"Foto wird gesendet",
+      up_video:"Video wird gesendet",
+      up_too_big:"Video zu groß ({mb} MB) — als Entwurf gespeichert",
+      up_kept:"Senden fehlgeschlagen, als Entwurf gespeichert",
+      video_max:"Zeit abgelaufen, Moment gespeichert",
+      d_tab:"Entwürfe",
+      d_desc:"Momente, die du später posten willst. Ort und Zeit bleiben wie bei der Aufnahme.",
+      d_none:"Keine Entwürfe",
+      d_hint:"Tippe nach der Aufnahme auf „Später“, um ihn hier zu behalten.",
+      d_send:"Posten",
+      d_sending:"Wird gepostet…",
+      d_del:"Löschen",
+      d_video:"VIDEO",
+      d_later:"Später",
+      d_later_aria:"Später posten",
+      d_kept:"Als Entwurf gespeichert",
       draft_sending:"Entwürfe werden gesendet…",
       draft_saved:"Keine Verbindung — als Entwurf gespeichert",
       song_no_preview:"Keine Vorschau für diesen Song",
@@ -3396,6 +3498,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      vid_prep:"Подготовка видео",
+      up_photo:"Отправка фото",
+      up_video:"Отправка видео",
+      up_too_big:"Видео слишком большое ({mb} МБ) — сохранено в черновики",
+      up_kept:"Не отправлено, сохранено в черновики",
+      video_max:"Время вышло, момент сохранён",
+      d_tab:"Черновики",
+      d_desc:"Моменты, отложенные на потом. Место и время сохраняются с момента съёмки.",
+      d_none:"Черновиков нет",
+      d_hint:"После съёмки нажми «Позже», чтобы сохранить сюда.",
+      d_send:"Опубликовать",
+      d_sending:"Публикация…",
+      d_del:"Удалить",
+      d_video:"ВИДЕО",
+      d_later:"Позже",
+      d_later_aria:"Опубликовать позже",
+      d_kept:"Сохранено в черновики",
       draft_sending:"Отправка черновиков…",
       draft_saved:"Нет связи — сохранено в черновиках",
       song_no_preview:"Нет превью для этой песни",
@@ -3933,6 +4052,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      vid_prep:"A preparar vídeo",
+      up_photo:"A enviar foto",
+      up_video:"A enviar vídeo",
+      up_too_big:"Vídeo demasiado grande ({mb} MB) — guardado nos rascunhos",
+      up_kept:"Falha ao enviar, guardado nos rascunhos",
+      video_max:"Tempo esgotado, momento guardado",
+      d_tab:"Rascunhos",
+      d_desc:"Momentos que deixaste para depois. Local e hora ficam como no momento da captura.",
+      d_none:"Sem rascunhos",
+      d_hint:"Depois de capturar, toca em “Depois” para guardar aqui.",
+      d_send:"Publicar",
+      d_sending:"A publicar…",
+      d_del:"Eliminar",
+      d_video:"VÍDEO",
+      d_later:"Depois",
+      d_later_aria:"Publicar depois",
+      d_kept:"Guardado nos rascunhos",
       draft_sending:"Enviando rascunhos…",
       draft_saved:"Sem conexão — salvo como rascunho",
       song_no_preview:"Sem prévia para esta música",
@@ -4470,6 +4606,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      vid_prep:"वीडियो तैयार हो रहा है",
+      up_photo:"फ़ोटो भेजी जा रही है",
+      up_video:"वीडियो भेजा जा रहा है",
+      up_too_big:"वीडियो बहुत बड़ा ({mb} MB) — ड्राफ़्ट में रखा",
+      up_kept:"भेजा नहीं गया, ड्राफ़्ट में रखा",
+      video_max:"समय समाप्त, पल सहेजा गया",
+      d_tab:"ड्राफ़्ट",
+      d_desc:"वे पल जिन्हें आपने बाद में साझा करने के लिए रखा। जगह और समय वैसे ही रहते हैं।",
+      d_none:"कोई ड्राफ़्ट नहीं",
+      d_hint:"कैप्चर के बाद “बाद में” दबाकर इसे यहाँ रखें।",
+      d_send:"साझा करें",
+      d_sending:"भेजा जा रहा है…",
+      d_del:"हटाएँ",
+      d_video:"वीडियो",
+      d_later:"बाद में",
+      d_later_aria:"बाद में साझा करें",
+      d_kept:"ड्राफ़्ट में रखा गया",
       draft_sending:"ड्राफ़्ट भेजे जा रहे हैं…",
       draft_saved:"कनेक्शन नहीं — ड्राफ़्ट में सहेजा",
       song_no_preview:"इस गाने का पूर्वावलोकन नहीं",
@@ -5007,6 +5160,23 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      vid_prep:"Menyiapkan video",
+      up_photo:"Mengunggah foto",
+      up_video:"Mengunggah video",
+      up_too_big:"Video terlalu besar ({mb} MB) — disimpan ke draf",
+      up_kept:"Gagal mengunggah, disimpan ke draf",
+      video_max:"Waktu habis, momen tersimpan",
+      d_tab:"Draf",
+      d_desc:"Momen yang kamu simpan untuk nanti. Lokasi dan waktu tetap seperti saat diambil.",
+      d_none:"Belum ada draf",
+      d_hint:"Setelah memotret, ketuk “Nanti” untuk menyimpannya di sini.",
+      d_send:"Bagikan",
+      d_sending:"Mengirim…",
+      d_del:"Hapus",
+      d_video:"VIDEO",
+      d_later:"Nanti",
+      d_later_aria:"Bagikan nanti",
+      d_kept:"Disimpan ke draf",
       draft_sending:"Mengirim draf…",
       draft_saved:"Tanpa koneksi — disimpan sebagai draf",
       song_no_preview:"Tidak ada pratinjau lagu ini",
@@ -5877,6 +6047,10 @@ svg{display:block}
 .tabbar.away{opacity:0;transform:translateY(100%);pointer-events:none}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.1875rem;
   color:rgba(255,255,255,.55);position:relative;transition:color .16s,transform .12s;padding-top:0.125rem}
+/* Bekleyen taslak isareti — alt cubuk Profil sekmesi */
+.tab .draftDot{position:absolute;top:0.1875rem;right:calc(50% - 1.125rem);
+  width:0.5rem;height:0.5rem;border-radius:6.1875rem;background:#F5A524;
+  box-shadow:0 0 0 0.125rem var(--panelbg)}
 .tab span{font-size:0.5625rem;font-weight:500;letter-spacing:-.008em;text-shadow:0 1px 0.375rem rgba(0,0,0,.7)}
 .tab svg{filter:drop-shadow(0 1px 0.3125rem rgba(0,0,0,.6))}
 .tab.on{color:#fff}
@@ -6134,6 +6308,7 @@ svg{display:block}
 #timeSheet{position:fixed;inset:0;z-index:var(--z-time);color:var(--t1);--sat:var(--sat-root,0px)}
 .explore{position:absolute;inset:0;overflow:hidden}
 /* haritada kullanıcının konumu */
+/* Harita atifi: normalde kucuk bir "i", basilinca kaynaklar acilir */
 .userDot{position:relative}
 .userDot .udCore{position:absolute;inset:0.3125rem;border-radius:6.1875rem;background:#2E9BFF;
   box-shadow:0 0 0 0.1875rem #fff, 0 0.125rem 0.625rem rgba(0,0,0,.55)}
@@ -6438,6 +6613,11 @@ svg{display:block}
   background:rgba(0,0,0,.28);
   backdrop-filter:blur(0.5rem);-webkit-backdrop-filter:blur(0.5rem);
   transition:opacity .14s,transform .12s}
+/* Baskasinin profilinde sagdaki uc nokta: cember ve zemin yok,
+   yalnizca ikon. Golge her fotografta okunmasini saglar. */
+#profile .profbody.otherProf .hero.heroBig .hbEnd{
+  background:none;backdrop-filter:none;-webkit-backdrop-filter:none;
+  filter:drop-shadow(0 0.0625rem 0.25rem rgba(0,0,0,.75))}
 .hero.heroBig .hbIcon:active{opacity:.6;transform:scale(.9)}
 .hero.heroBig .hbIcon svg{width:1.3125rem;height:1.3125rem}
 .hero.heroBig .hbEnd{margin-left:auto}
@@ -6487,10 +6667,26 @@ svg{display:block}
 
 /* biyografi: fotoğrafın dibinden başlamasın */
 #profile .profbody.otherProf .profbio{margin:1.375rem 0.25rem 0;padding:0.3125rem 0 0}
+/* Kapak fotografinin uzerindeki biyografi */
+#profile .hero{position:relative}
+#profile .hero .profbio.heroBio{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  margin:0;padding:2.75rem 1.125rem 2.25rem;
+  background:linear-gradient(to top,rgba(0,0,0,.78) 18%,rgba(0,0,0,.42) 55%,transparent);
+  pointer-events:auto}
+#profile .hero .profbio.heroBio .secTitle{display:none}
+#profile .hero .profbio.heroBio .bioText{
+  font-size:0.8438rem;line-height:1.5;color:#fff;letter-spacing:-.01em;
+  text-shadow:0 0.0625rem 0.375rem rgba(0,0,0,.6);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden}
+#profile .hero .profbio.heroBio .bioText.acik{-webkit-line-clamp:unset}
+#profile .hero .profbio.heroBio .bioText.empty{color:rgba(255,255,255,.72)}
 
 /* bölümler arası nefes */
-#profile .profbody.otherProf .profdetail{margin:1.375rem 0.25rem 0}
-#profile .profbody.otherProf .profnote{margin:1.5rem 0.25rem 0;padding:0}
+/* Sayac bloklari ile "Hakkinda" arasi cok acikti, yariya indirildi */
+#profile .profbody.otherProf .profdetail{margin:0.6875rem 0.25rem 0}
+#profile .profbody.otherProf .profnote{margin:0.75rem 0.25rem 0;padding:0}
 
 /* ═══ AKIŞ KİPİ DÜĞMESİ ═══
    Başlık çubuğunda, arama ve konum düğmelerinin yanında.
@@ -7230,9 +7426,10 @@ html.camNativeOn #cam #camRoot{
 }
 /* Üst/alt krom PWA'deki gibi koyu kalsın — saydam olursa açık tema
    altta beyaz şerit + kaybolmuş FOTOĞRAF/VİDEO üretir. */
-html.camNativeOn #cam .camtop{
-  background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent) !important;
-}
+/* Sigdir modunda onizleme status bar arkasina girdigi icin gecisli
+   zemin yetmiyordu: acik sahnelerde saat ve dugmeler kayboluyordu.
+   Ust serit alt cubukla ayni tam siyah zemini kullanir. */
+html.camNativeOn #cam .camtop{ background:#000 !important; }
 html.camNativeOn #cam .cambot{
   background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.35),transparent) !important;
 }
@@ -7247,7 +7444,24 @@ html.camNativeOn #camVideo{display:none !important}
    tasarım bozuluyordu. Yalnızca katman sırası verilir. */
 html.camNativeOn #cam > *:not(.camRoot){z-index:5}
 html.camNativeOn #cam > .camRoot{z-index:0}
-.camtop{position:relative;z-index:2;padding:calc(var(--sat) + 0.75rem) 0.875rem 0;display:flex;align-items:center;justify-content:space-between}
+/* Onizleme sigdir modunda status bar arkasina giriyor ve acik zeminde
+   beyaz ikonlar okunmuyordu. Ust serit alt cubukla ayni siyah zemini
+   kullanir; boylece saat ve dugmeler her sahnede okunur. */
+/* Odak halkasi: dokunulan noktada kisa sure gorunur */
+.odakHalka{position:absolute;z-index:4;width:4.5rem;height:4.5rem;
+  margin:-2.25rem 0 0 -2.25rem;border-radius:6.1875rem;
+  border:0.125rem solid rgba(255,255,255,.9);pointer-events:none;
+  box-shadow:0 0 0 0.0625rem rgba(0,0,0,.35), inset 0 0 0 0.0625rem rgba(0,0,0,.25);
+  animation:odakAt .7s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes odakAt{
+  0%{transform:scale(1.45);opacity:0}
+  25%{transform:scale(1);opacity:1}
+  70%{transform:scale(1);opacity:1}
+  100%{transform:scale(.92);opacity:0}
+}
+.camtop{position:relative;z-index:2;background:#000;
+  padding:calc(var(--sat) + 0.75rem) 0.875rem 0.625rem;
+  display:flex;align-items:center;gap:0.5rem;justify-content:space-between}
 .camtop .title{font-size:0.875rem;font-weight:600;letter-spacing:-.018em;
   background:rgba(0,0,0,.45);border:1px solid var(--edge-soft);padding:0.4375rem 0.875rem;border-radius:6.1875rem;
   backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem)}
@@ -7307,11 +7521,23 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   pointer-events:none}
 .camZoom.gorunur{opacity:1;transform:translateX(-50%) scale(1)}
 
+/* Flas: kapali sonuk, acik sari, otomatik mor */
+#camFlasBtn.acik{background:rgba(245,165,36,.22);color:#F5A524;
+  box-shadow:inset 0 0 0 1px rgba(245,165,36,.45)}
+#camFlasBtn.oto{background:rgba(123,91,255,.22);color:#9B84FF;
+  box-shadow:inset 0 0 0 1px rgba(123,91,255,.45)}
+#camFlasBtn .oto2{position:absolute;right:0.125rem;bottom:0.125rem;
+  font-size:0.5rem;font-weight:800;letter-spacing:-.02em}
 .rectime{position:absolute;top:calc(var(--sat) + 4.125rem);left:50%;transform:translateX(-50%);z-index:3;
   display:none;align-items:center;gap:0.4375rem;height:1.75rem;padding:0 0.8125rem;border-radius:6.1875rem;
   background:rgba(255,59,107,.93);border:1px solid rgba(255,255,255,.24);
   font-size:0.75rem;font-weight:600;font-variant-numeric:tabular-nums}
 .rectime.on{display:flex}
+/* Son bes saniye: sayac kirmiziya doner, nabiz hizlanir */
+.rectime.bitiyor{background:rgba(255,59,107,.24);
+  box-shadow:inset 0 0 0 1px rgba(255,59,107,.5)}
+.rectime.bitiyor span{color:#FF8AA3}
+.rectime.bitiyor i{background:#FF3B6B;animation-duration:.6s}
 .recprog{position:absolute;top:calc(var(--sat) + 6.25rem);left:50%;transform:translateX(-50%);z-index:3;
   width:10.75rem;height:0.1875rem;border-radius:6.1875rem;background:rgba(255,255,255,.22);display:none;overflow:hidden}
 .recprog.on{display:block}
@@ -7331,7 +7557,11 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 /* ============ profil ============ */
 #profile{z-index:var(--z-notif)}
 #notif{z-index:54}
-#settings,#editProfile,#blockedPanel{z-index:55}
+#settings,#editProfile{z-index:55}
+/* DUZELTME: engel listesi AYARLARIN ICINDEN aciliyor. Ayni katmanda
+   olunca ayarlar ustunu ortuyor, panel ancak ayarlar kapatilinca
+   goruluyordu. Bir kademe ustte durmali. */
+#blockedPanel{z-index:57}
 .profbody{flex:1;overflow-y:auto;padding:0 0.875rem calc(var(--sab) + 1.75rem);scrollbar-width:none}
 .setbody{flex:1;overflow-y:auto;padding:0.5rem 1rem calc(var(--sab) + 1.75rem);scrollbar-width:none}
 .setbody::-webkit-scrollbar{display:none}
@@ -7642,7 +7872,63 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .profnote .ic{flex:none;color:var(--t3);margin-top:1px}
 .profnote p{font-size:0.7812rem;line-height:1.55;color:var(--t3);letter-spacing:-.01em}
 
-/* arşiv sekmeleri: Anılarım | Kaydedilenler */
+/* ═══ TASLAK LISTESI ═══ */
+.draftList{display:flex;flex-direction:column;gap:0.625rem;padding:0.25rem 0 0.5rem}
+.draftRow{display:flex;align-items:center;gap:0.75rem;padding:0.5rem;
+  background:var(--surf1);border:1px solid var(--edge-soft);border-radius:1rem}
+.draftRow .dThumb{position:relative;flex:none;width:3.5rem;height:3.5rem;
+  border-radius:0.75rem;background:var(--avatar-bg) center/cover no-repeat;
+  border:1px solid var(--edge-soft);overflow:hidden}
+.draftRow .dVid{position:absolute;left:0.25rem;bottom:0.25rem;
+  font-size:0.5rem;font-weight:800;letter-spacing:.04em;
+  background:rgba(0,0,0,.6);color:#fff;padding:0.0625rem 0.25rem;border-radius:0.25rem;
+  letter-spacing:.04em}
+.draftRow .dMid{flex:1;min-width:0}
+.draftRow .dWhen{font-size:0.8125rem;font-weight:700;letter-spacing:-.015em;color:var(--t1)}
+.draftRow .dWhere{font-size:0.75rem;color:var(--t3);margin-top:0.0625rem;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draftRow .dNote{font-size:0.75rem;color:var(--t2);margin-top:0.125rem;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draftRow .dChips{display:flex;flex-wrap:wrap;gap:0.625rem;margin-top:0.25rem}
+.draftRow .dChip{display:inline-flex;align-items:center;gap:0.25rem;
+  max-width:100%;padding:0;background:none;border:0;
+  font-size:0.6875rem;font-weight:600;letter-spacing:-.01em;color:var(--t3)}
+.draftRow .dChip svg{width:0.75rem;height:0.75rem;flex:none;opacity:.75}
+.draftRow .dChip b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draftRow .dChip.yer  svg{color:#FF3B6B;opacity:1}
+.draftRow .dChip.muzik svg{color:#7B5BFF;opacity:1}
+.draftRow .dThumb.acilir{cursor:pointer}
+#draftPrev{position:fixed;inset:0;z-index:2147483000;
+  background:rgba(6,6,10,.94);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:0.875rem;padding:1rem;
+  animation:fadeIn .16s ease}
+#draftPrev .dpClose{position:absolute;top:calc(var(--sat-root,0px) + 0.75rem);right:0.875rem;
+  width:2.375rem;height:2.375rem;border-radius:6.1875rem;border:0;
+  background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center}
+#draftPrev .dpClose svg{width:1.125rem;height:1.125rem}
+#draftPrev .dpBox{max-width:100%;max-height:64vh;border-radius:1.125rem;overflow:hidden;
+  background:#000;display:flex}
+#draftPrev .dpBox img,#draftPrev .dpBox video{max-width:100%;max-height:64vh;
+  width:auto;height:auto;object-fit:contain;display:block}
+#draftPrev .dpInfo{width:100%;max-width:26rem;text-align:center;color:#fff}
+#draftPrev .dpWhen{font-size:0.875rem;font-weight:700;letter-spacing:-.02em}
+#draftPrev .dpNote{font-size:0.8125rem;color:rgba(255,255,255,.72);margin-top:0.25rem;
+  line-height:1.45}
+#draftPrev .dChips{justify-content:center;margin-top:0.5rem}
+#draftPrev .dChip{color:rgba(255,255,255,.7)}
+.draftRow.gidiyor{opacity:0;transform:translateX(-100%) !important;
+  transition:opacity .16s ease, transform .16s ease}
+.draftRow .dActs{flex:none;display:flex;align-items:center;gap:0.25rem}
+.draftRow .flUcNokta{width:1.875rem;height:1.875rem;flex:none;border:0;
+  background:none;color:var(--t3);display:grid;place-items:center}
+.draftRow .flUcNokta svg{width:1.0625rem;height:1.0625rem}
+.draftRow .dSend{height:2rem;padding:0 0.75rem;border:0;border-radius:6.1875rem;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  font-size:0.75rem;font-weight:700;letter-spacing:-.01em}
+.draftRow .dSend:disabled{opacity:.6}
+.draftRow{overflow:hidden}
+
+/* arşiv sekmeleri: Anılarım | Kaydedilenler | Taslak */
 /* ═══ ARŞİV BÖLÜMÜ ═══ */
 .arcHead{display:flex;align-items:center;gap:0.625rem;margin:1.625rem 0.125rem 0.75rem;
   padding-top:1.25rem;border-top:1px solid var(--edge-soft)}
@@ -7660,6 +7946,12 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   border-radius:0.6875rem;background:var(--panelbg);
   box-shadow:0 0.125rem 0.5rem -0.125rem rgba(0,0,0,.35);
   transition:transform .26s var(--ease)}
+.arcSeg .arcInd{width:33.333% !important}
+.arcTab .arcSay{margin-left:0.3125rem;font-style:normal;font-weight:800;
+  font-size:0.625rem;min-width:1.0625rem;height:1.0625rem;padding:0 0.3125rem;
+  border-radius:6.1875rem;background:#F5A524;color:#1A1206;
+  display:none;place-items:center;vertical-align:0.0625rem}
+.arcTab .arcSay.on{display:inline-grid}
 .arcTab{position:relative;z-index:1;flex:1;background:none;border:0;
   height:2.25rem;display:flex;align-items:center;justify-content:center;gap:0.4375rem;
   font-family:inherit;font-size:0.8438rem;font-weight:700;letter-spacing:-.018em;
@@ -8324,25 +8616,33 @@ html.native button,html.native .tab{touch-action:manipulation}
 .cpMediaFull video,.cpMediaFull img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#000}
 #compose.cpFill .cpMediaFull video,
 #compose.cpFill .cpMediaFull img{object-fit:cover}
-#cpOlcek{position:absolute;left:50%;bottom:calc(var(--sab) + 7.25rem);transform:translateX(-50%);
-  z-index:6;display:none;align-items:center;gap:0.25rem;padding:0.28rem;
-  border-radius:6.1875rem;background:rgba(0,0,0,.42);backdrop-filter:blur(0.75rem);
-  -webkit-backdrop-filter:blur(0.75rem);border:1px solid rgba(255,255,255,.13)}
-#compose.open #cpOlcek{display:flex}
-#cpOlcek button{border:0;border-radius:6.1875rem;height:2rem;padding:0 0.75rem;
-  background:none;color:rgba(255,255,255,.75);font:700 0.72rem/1 Inter,sans-serif}
-#cpOlcek button.on{background:rgba(255,255,255,.92);color:#111}
-.cpVeilTop{position:absolute;left:0;right:0;top:0;height:11.25rem;z-index:1;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(0,0,0,.72),transparent)}
-.cpVeilBot{position:absolute;left:0;right:0;bottom:0;height:62%;z-index:1;pointer-events:none;
-  background:linear-gradient(to top,rgba(0,0,0,.92) 24%,rgba(0,0,0,.62) 52%,transparent)}
+/* KARARTMA KALDIRILDI.
+   Onceden ustte %72, altta %92 siyah katman vardi ve alttaki ekranin
+   %62 sini kapliyordu; kare gercekte oldugundan cok daha koyu
+   goruluyordu. Okunurluk artik metin ve ikon golgeleriyle saglaniyor,
+   fotografa hicbir sey binmiyor. */
+.cpVeilTop,.cpVeilBot{display:none}
+
+/* Ustteki ve alttaki ogeler her zeminde okunsun */
+#compose .cptop,
+#compose .cpSide,
+#compose .cpBottom{ text-shadow:0 0.0625rem 0.375rem rgba(0,0,0,.75) }
+/* .sIc in ZATEN kendi golgesi var; buraya bir daha eklenince ust uste
+   binip ikonun altinda koyu bir hale olusuyordu. Yalnizca golgesi
+   olmayan ogelere, daha yumusak bir deger verilir. */
+#compose .cpIconBtn{ filter:drop-shadow(0 0.0625rem 0.1875rem rgba(0,0,0,.55)) }
+#compose .cpSideBtn .sLb{ text-shadow:0 0.0625rem 0.25rem rgba(0,0,0,.6) }
+#compose .cpNote,
+#compose #cpNote{ text-shadow:0 0.0625rem 0.375rem rgba(0,0,0,.8) }
 
 /* üst şerit */
 .cptop{position:relative;z-index:3;flex:none;display:flex;align-items:center;gap:0.5625rem;
   padding:calc(var(--sat) + 0.75rem) 0.875rem 0}
+/* Ikonlarin arkasindaki karartma kaldirildi: kare hicbir yerde
+   ortulmuyor, okunurluk golgeyle saglaniyor. */
 .cpIconBtn{width:2.375rem;height:2.375rem;flex:none;border-radius:6.1875rem;display:grid;place-items:center;
-  color:#fff;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.16);
-  backdrop-filter:blur(0.75rem);-webkit-backdrop-filter:blur(0.75rem);transition:transform .12s}
+  color:#fff;background:none;border:0;
+  filter:drop-shadow(0 0.125rem 0.5rem rgba(0,0,0,.9));transition:transform .12s}
 .cpIconBtn:active{transform:scale(.9)}
 .cpLive{margin-left:auto;display:inline-flex;align-items:center;gap:0.375rem;
   font-size:0.75rem;font-weight:600;letter-spacing:.01em;font-variant-numeric:tabular-nums;
@@ -8366,7 +8666,7 @@ html.native button,html.native .tab{touch-action:manipulation}
 .cpSideBtn:active{transform:scale(.88)}
 .sIc{width:auto;height:auto;border-radius:0;display:grid;place-items:center;
   background:none;border:0;color:#fff;
-  filter:drop-shadow(0 0.125rem 0.5rem rgba(0,0,0,.9));transition:all .2s}
+  filter:drop-shadow(0 0.0625rem 0.25rem rgba(0,0,0,.6));transition:all .2s}
 .sIc img{width:2rem;height:2rem;border-radius:0.5rem;object-fit:cover;
   box-shadow:0 0.125rem 0.5rem rgba(0,0,0,.6)}
 .sLb{font-size:0.6562rem;font-weight:600;letter-spacing:-.01em;color:rgba(255,255,255,.85);
@@ -9634,7 +9934,10 @@ html.sb-white #userSearch::before{
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
       <span class="title" id="camTitle" data-i18n="act_shoot_now">Şu anı çek</span>
-      <button class="camFitBtn" id="camFitBtn" type="button" aria-label="Doldur">
+      <button class="camFitBtn" id="camFlasBtn" type="button" aria-label="Flaş" data-i18n-aria="flash">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/></svg>
+      </button>
+      <button class="camFitBtn" id="camFitBtn" type="button" aria-label="Doldur" hidden style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V4h4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M8 20H4v-4"/></svg>
       </button>
     </div>
@@ -10032,10 +10335,6 @@ html.sb-white #userSearch::before{
 
   <section id="compose" aria-hidden="true">
     <div class="cpMediaFull" id="cpMedia"></div>
-    <div id="cpOlcek">
-      <button type="button" data-kip="fit" class="on">Tam</button>
-      <button type="button" data-kip="fill">Doldur</button>
-    </div>
     <div class="cpVeilTop"></div>
     <div class="cpVeilBot"></div>
 
@@ -10091,6 +10390,10 @@ html.sb-white #userSearch::before{
         <span class="sLb" data-i18n="share_settings">Ayarlar</span>
       </button>
       <span class="cpSideSep"></span>
+      <button class="cpSideBtn" id="cpLater" aria-label="Sonra paylaş" data-i18n-aria="d_later_aria">
+        <span class="sIc"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.4 2"/></svg></span>
+        <span class="sLb" data-i18n="d_later">Sonra</span>
+      </button>
       <button class="cpSideBtn cpSendBtn" id="cpShare" aria-label="Akışa gönder" data-i18n-aria="send_feed">
         <span class="sIc sSend">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -13332,7 +13635,8 @@ function addCARTOVectorLayer(){
     antialias:true,
     refreshExpiredTiles:false,
     trackResize:true,
-    renderWorldCopies:true
+    /* Yatayda tekrarlanan dunya kopyalari kapali: gereksiz karo inmez */
+    renderWorldCopies:false
   }).addTo(_map);
   _mapGL=_mapTileLayer.getMaplibreMap ? _mapTileLayer.getMaplibreMap() : null;
   tuneMapGL(_mapGL);
@@ -13368,6 +13672,31 @@ function _loadScript(src){
     document.head.appendChild(sc);
   });
 }
+
+/* ══════════ HARITA ONCEDEN HAZIRLANSIN ══════════
+   Kutuphaneler Zaman sekmesine BASILDIGI ANDA indiriliyordu:
+   leaflet ~150 KB, maplibre-gl ~790 KB. Kullanici bekliyordu.
+   Artik uygulama bosa cikinca arka planda sessizce yuklenir;
+   sekmeye basildiginda harita hazir olur.
+   Basarisiz olursa hicbir sey olmaz, eski yol yine calisir. */
+let _haritaIsinmaBasladi = false;
+function haritayiIsit(){
+  if(_haritaIsinmaBasladi) return;
+  _haritaIsinmaBasladi = true;
+  const calistir = ()=>{
+    try{
+      ensureLeaflet()
+        .then(ok => { if(ok && typeof ensureMapLibreGL === "function") return ensureMapLibreGL(); })
+        .catch(()=>{});
+    }catch(e){}
+  };
+  /* Tarayici bos kalinca; desteklemiyorsa birkac saniye sonra */
+  if(window.requestIdleCallback) requestIdleCallback(calistir, { timeout: 8000 });
+  else setTimeout(calistir, 4000);
+}
+/* Sayfa tam yuklendikten sonra basla: acilis hizini etkilemesin */
+if(document.readyState === "complete") setTimeout(haritayiIsit, 2500);
+else window.addEventListener("load", ()=>setTimeout(haritayiIsit, 2500), { once:true });
 
 let _leafletReady = null;
 function ensureLeaflet(){
@@ -13464,14 +13793,90 @@ async function initMap(){
   _map=L.map("exploreMap",{
     zoomControl:true, attributionControl:true,
     preferCanvas:true,
+    /* ══════ UZAKLASMA SINIRI ══════
+       Sinir yoktu: Leaflet varsayilani 0. seviye, yani dunya avuc ici
+       kadar kuculene dek uzaklasilabiliyordu. Hem bosuna karo
+       indiriliyor hem "yakinindaki anlar" fikri anlamini yitiriyordu.
+       3 = kita gorunumu (en uzak), 18 = sokak detayi (en yakin). */
+    minZoom:3, maxZoom:18,
+    /* Dunya yatayda tekrar tekrar cizilmesin: her kopya ayri karo demek */
+    worldCopyJump:false,
+    /* Kutup bolgelerinin otesine kaydirilamasin */
+    maxBounds: L.latLngBounds([[-85, -180],[85, 180]]),
+    maxBoundsViscosity: 0.8,
     zoomAnimation:true, markerZoomAnimation:false,
     fadeAnimation:false,
     zoomSnap:0.5,
     wheelDebounceTime:24,
     inertia:true, inertiaDeceleration:2200, inertiaMaxSpeed:1600,
     easeLinearity:0.22
-  }).setView([39.0,35.0],5);
+  });
+
+  /* ══════ DOGRU YERDE AC ══════
+     Onceden harita once Turkiye genelinde (5. seviye) aciliyor,
+     karolar iniyor, sonra kullanici konumuna zipla_yip 13. seviyede
+     HEPSI YENIDEN indiriliyordu. Ilk indirilen karolar bosa gidiyordu.
+     Artik son bilinen konum varsa dogrudan oraya acilir. */
+  (function(){
+    /* Onbellek YOKKEN nereye acilacak?
+       Cihazin saat diliminden ulke tahmin edilir: aga cikmaz, izin
+       istemez, aninda calisir. Eskiden herkese Turkiye aciliyordu;
+       baska ulkedeki kullanici yanlis kitada basliyordu.
+       Onbellek (klipsy_last_pos) zaten cihazda ve ulkeden bagimsiz:
+       ikinci acilistan itibaren herkes kendi sehrinde baslar. */
+    const DILIM_MERKEZ = {
+      "Europe/Istanbul":[39.0,35.0],   "Europe/Berlin":[51.2,10.4],
+      "Europe/Vienna":[47.6,14.1],     "Europe/Zurich":[46.8,8.2],
+      "Europe/Paris":[46.6,2.3],       "Europe/London":[54.0,-2.0],
+      "Europe/Amsterdam":[52.2,5.3],   "Europe/Brussels":[50.6,4.5],
+      "Europe/Madrid":[40.2,-3.7],     "Europe/Rome":[42.5,12.5],
+      "Europe/Lisbon":[39.6,-8.0],     "Europe/Stockholm":[62.0,15.0],
+      "Europe/Oslo":[61.0,9.0],        "Europe/Copenhagen":[56.1,10.0],
+      "Europe/Warsaw":[52.1,19.4],     "Europe/Prague":[49.8,15.5],
+      "Europe/Bucharest":[45.9,25.0],  "Europe/Athens":[39.0,22.0],
+      "Europe/Sofia":[42.7,25.5],      "Europe/Kyiv":[49.0,32.0],
+      "Europe/Moscow":[55.8,37.6],     "Asia/Baku":[40.4,47.6],
+      "Asia/Tbilisi":[42.0,43.5],      "Asia/Dubai":[24.3,54.0],
+      "Asia/Riyadh":[24.0,45.0],       "Asia/Qatar":[25.3,51.2],
+      "Asia/Tehran":[32.4,53.7],       "Asia/Karachi":[30.0,69.3],
+      "Asia/Kolkata":[22.0,79.0],      "Asia/Dhaka":[23.7,90.3],
+      "Asia/Jakarta":[-2.5,118.0],     "Asia/Kuala_Lumpur":[4.2,102.0],
+      "Asia/Singapore":[1.35,103.8],   "Asia/Bangkok":[15.0,101.0],
+      "Asia/Manila":[12.9,121.8],      "Asia/Tokyo":[36.2,138.3],
+      "Asia/Seoul":[36.5,127.9],       "Asia/Shanghai":[35.0,105.0],
+      "Africa/Cairo":[26.8,30.8],      "Africa/Lagos":[9.1,8.7],
+      "Africa/Johannesburg":[-29.0,25.0], "Africa/Casablanca":[31.8,-7.1],
+      "America/New_York":[39.0,-77.0], "America/Chicago":[39.8,-89.0],
+      "America/Denver":[39.0,-105.5],  "America/Los_Angeles":[37.0,-119.5],
+      "America/Toronto":[56.0,-96.0],  "America/Mexico_City":[23.6,-102.5],
+      "America/Sao_Paulo":[-14.2,-51.9], "America/Buenos_Aires":[-38.4,-63.6],
+      "America/Bogota":[4.6,-74.3],    "Australia/Sydney":[-25.3,133.8],
+      "Pacific/Auckland":[-41.0,174.0]
+    };
+    /* Bilinmeyen dilim: dunya gorunumu, kimseye ayricalik yok */
+    let bas = [20.0, 10.0], yak = 2;
+    try{
+      const dilim = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const m = DILIM_MERKEZ[dilim];
+      if(m){ bas = m; yak = 5; }
+    }catch(e){}
+    try{
+      const k = localStorage.getItem("klipsy_last_pos");
+      if(k){
+        const p = JSON.parse(k);
+        /* Ilk goruntu icin 24 saatlik kayit yeterli; gercek konum
+           gelince zaten uzerine yaziliyor. Eskiden 1 saatti ve harita
+           cogu zaman ulke genelinde aciliyordu. */
+        if(p && p.lat && p.t && (Date.now() - p.t) < 86400000){
+          bas = [p.lat, p.lng]; yak = 13;
+          _lastKnownPos = { lat:p.lat, lng:p.lng, approx:true };
+        }
+      }
+    }catch(e){}
+    _map.setView(bas, yak);
+  })();
   addCARTOVectorLayer();
+
   // kullanıcı haritayı elle gezdirirse otomatik odaklamayı bırak
   /* HATA DÜZELTMESİ
      Haritayı biz odakladığımızda (setView) da "zoomstart" tetikleniyordu.
@@ -13506,6 +13911,20 @@ async function initMap(){
         }
       }
     }catch(e){}
+    /* ══════ IKI ASAMALI KONUM ══════
+       Once AGA dayali hizli konum (genelde 1 sn altinda), harita
+       hemen dogru sehre oturur. Ardindan hassas GPS arka planda
+       gelir ve noktayi inceltir. Eskiden tek asamada yuksek
+       hassasiyet bekleniyordu; acik alanda bile birkac saniye
+       suruyordu. */
+    try{
+      const hizli = await geoKonumAl({ enableHighAccuracy:false, timeout:4000, maximumAge:120000 });
+      if(hizli && hizli.coords && !_lastKnownPos){
+        _lastKnownPos = { lat:hizli.coords.latitude, lng:hizli.coords.longitude, approx:true };
+        drawUserDot();
+        if(!_mapUserMoved && _map) mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, true);
+      }
+    }catch(e){}
     try{
       const p=await geoKonumAl({enableHighAccuracy:true,timeout:15000});
       if(p && p.coords){
@@ -13536,7 +13955,10 @@ async function initMap(){
 
   // konum gelene kadar en fazla 2sn bekle, sonra odaklan ve pinleri çiz
   (async()=>{
-    await Promise.race([ _posReady, new Promise(r=>setTimeout(r,2000)) ]);
+    /* Onbellekten konum geldiyse beklemeye gerek yok; yoksa en fazla
+       1,2 sn beklenir. Eskiden her durumda 2 sn bekleniyordu. */
+    const bekle = _lastKnownPos ? 300 : 1200;
+    await Promise.race([ _posReady, new Promise(r=>setTimeout(r,bekle)) ]);
     if(_lastKnownPos && !_mapUserMoved){
       mapGoto(_lastKnownPos.lat, _lastKnownPos.lng, 13, false);   // ~5 km görüş
       drawUserDot();
@@ -15298,6 +15720,47 @@ $("#cpSaveBtn").addEventListener("click",async ()=>{
   }
 });
 
+/* ══════════ FLAŞ ══════════
+   Uc durum arasinda gecer: kapali -> acik -> otomatik.
+   Kamera eklentisi setFlashMode ile calisiyor (Kamera.flas). */
+/* torch: onizlemede de yanar (kullanici acik/kapali oldugunu gorur)
+   auto:  cihaz karar verir, yalnizca cekimde
+   Cogu Android cihazda "on" yalnizca deklansorde tetiklenir; kullanici
+   "calismiyor" sanir. Bu yuzden acik durumu torch olarak verilir. */
+const FLAS_SIRA = ["off","torch","auto"];
+let _flasSira = 0;
+function flasUygula(){
+  const mod = FLAS_SIRA[_flasSira];
+  const b = document.getElementById("camFlasBtn");
+  if(b){
+    b.classList.toggle("acik", mod === "torch" || mod === "on");
+    b.classList.toggle("oto",  mod === "auto");
+    b.setAttribute("aria-pressed", mod !== "off" ? "true" : "false");
+    let et = b.querySelector(".oto2");
+    if(mod === "auto"){
+      if(!et){ et = document.createElement("span"); et.className="oto2"; et.textContent="A"; b.appendChild(et); }
+    }else if(et) et.remove();
+  }
+  window.__flasMod = mod;
+  try{
+    if(window.Kamera && Kamera.flas) Kamera.flas(mod);
+    else console.warn("flas: Kamera hazir degil, mod saklandi ->", mod);
+  }catch(e){ console.warn("flas hatasi:", e && (e.message||e)); }
+}
+/* Kamera her acildiginda son secilen mod yeniden uygulanir */
+window.__flasTazele = function(){
+  try{ if(window.Kamera && Kamera.flas) Kamera.flas(window.__flasMod || "off"); }catch(e){}
+};
+/* Dinleyici belgeye baglanir: dugme sonradan olussa bile calisir. */
+document.addEventListener("click", (e)=>{
+  const b = e.target && e.target.closest && e.target.closest("#camFlasBtn");
+  if(!b) return;
+  e.preventDefault(); e.stopPropagation();
+  _flasSira = (_flasSira + 1) % FLAS_SIRA.length;
+  flasUygula();
+  try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e2){}
+}, true);
+
 function paintMoodBtn(){
   const btn=$("#cpMoodBtn"), ic=$("#cpMoodIcon"), lb=$("#cpMoodBtnLb");
   if(!btn) return;
@@ -15403,23 +15866,45 @@ async function geoKonumAl(opts){
   const cap=window.Capacitor;
   const native=!!(cap && cap.isNativePlatform && cap.isNativePlatform());
   const G=cap && cap.Plugins && cap.Plugins.Geolocation;
+  const sure = opts.timeout || 15000;
+  /* Birkac saniye onceki konum cogu is icin yeterli. Eskiden her
+     cagride sifirdan GPS kilidi isteniyordu (maximumAge:0); kapali
+     alanda bu uzun suruyor ve zaman asimina dusuyordu. */
+  const yas = (opts.maximumAge !== undefined) ? opts.maximumAge : 60000;
+
   if(native && G && G.getCurrentPosition){
     try{
       if(G.requestPermissions) await G.requestPermissions();
-      const p=await G.getCurrentPosition({
-        enableHighAccuracy: opts.enableHighAccuracy!==false,
-        timeout: opts.timeout||15000
-      });
+      /* ══════ SERT ZAMAN ASIMI ══════
+         Eklentinin kendi timeout ayari Android de cogu zaman yok
+         sayiliyor: soz hic cozulmuyor ve fonksiyon SONSUZA KADAR
+         bekliyordu. Konum "takili kaliyor" belirtisinin sebebi buydu.
+         Yaris kurulur; eklenti gecikirse tarayici yoluna dusulur. */
+      const p = await Promise.race([
+        G.getCurrentPosition({
+          enableHighAccuracy: opts.enableHighAccuracy!==false,
+          timeout: sure,
+          maximumAge: yas
+        }),
+        new Promise(r=>setTimeout(()=>r(null), sure))
+      ]);
       if(p && p.coords) return p;
-    }catch(e){ console.warn("geo plugin", e); }
+      console.warn("geo: eklenti yanit vermedi, tarayici yoluna gecildi");
+    }catch(e){ console.warn("geo plugin", e && e.message); }
   }
   if(!navigator.geolocation) throw Object.assign(new Error("no geo"),{code:2});
   return await new Promise((ok,bad)=>{
-    navigator.geolocation.getCurrentPosition(ok,bad,{
-      enableHighAccuracy: opts.enableHighAccuracy!==false,
-      timeout: opts.timeout||15000,
-      maximumAge: opts.maximumAge||0
-    });
+    let bitti=false;
+    const zaman=setTimeout(()=>{
+      if(bitti) return; bitti=true;
+      bad(Object.assign(new Error("zaman asimi"),{code:3}));
+    }, sure + 500);
+    navigator.geolocation.getCurrentPosition(
+      p=>{ if(bitti) return; bitti=true; clearTimeout(zaman); ok(p); },
+      e=>{ if(bitti) return; bitti=true; clearTimeout(zaman); bad(e); },
+      { enableHighAccuracy: opts.enableHighAccuracy!==false,
+        timeout: sure, maximumAge: yas }
+    );
   });
 }
 function getLocation(){
@@ -15567,17 +16052,6 @@ function openCompose(src,kind,blob,durationMs){
   let cpKip="fit";
   try{ if(localStorage.getItem("klipsy_web_cam_kip")==="fill") cpKip="fill"; }catch(e){}
   compose.classList.toggle("cpFill", cpKip==="fill");
-  const olcekBox=document.getElementById("cpOlcek");
-  if(olcekBox){
-    olcekBox.querySelectorAll("button").forEach(b=>{
-      b.classList.toggle("on", b.dataset.kip===cpKip);
-      b.onclick=()=>{
-        cpKip=b.dataset.kip;
-        compose.classList.toggle("cpFill", cpKip==="fill");
-        olcekBox.querySelectorAll("button").forEach(x=>x.classList.toggle("on", x.dataset.kip===cpKip));
-      };
-    });
-  }
   if(kind==="video"){
     const v=document.createElement("video");
     v.src=src;v.autoplay=true;v.loop=true;v.muted=false;v.playsInline=true;
@@ -16052,6 +16526,55 @@ function closeCompose(back){
   } else setTab($("#tabFeed"));
 }
 $("#cpBack").addEventListener("click",()=>closeCompose(true));
+/* ══════════ SONRA PAYLAS ══════════
+   Kare simdi cekilir, istenen zaman gonderilir. Konum, saat, duygu,
+   sarki ve gizlilik ayari CEKILDIGI ANDAKI haliyle saklanir.
+   Guvenlik: bulundugun yerde hemen paylasmak istemeyen kullanici
+   iceriden cikinca gonderebilir, bilgiler yine dogru kalir. */
+$("#cpLater").addEventListener("click", async ()=>{
+  if(!draft) return;
+  const btn=$("#cpLater");
+  if(btn.disabled) return;
+  btn.disabled=true;
+  try{
+    const where = place
+      ? (shareLoc ? place.name : (place.city || sadeceSehir(place.name)))
+      : null;
+    const ok = await saveDraft({
+      elle: true,
+      kind: draft.kind,
+      blob: draft.blob || (draft.src ? await (await fetch(draft.src)).blob() : null),
+      note: cpNote.value.trim(),
+      mood: pickedMood ? (pickedMood.key || pickedMood.t) : null,
+      where: where,
+      song: pickedSong || null,
+      ts: draft.ts || Date.now(),
+      extra: {
+        shareLoc: shareLoc && !!place,
+        la: place ? place.la : null,
+        lo: place ? place.lo : null,
+        durationMs: draft.durationMs || null,
+        cover: pickedCover || null,
+        visibility: _shareVis || "community",
+        commentsOn: _shareCommentsOn !== false
+      }
+    });
+    if(ok){
+      toast(t("d_kept"));
+      closeCompose(false);
+    }else{
+      btn.disabled=false;
+      toast(t("draft_fail"));
+    }
+  }catch(e){
+    console.warn("sonra paylas:", e && (e.message||e));
+    toast(t("draft_fail"));
+  }finally{
+    /* Depo takilsa bile buton kilitli kalmasin */
+    btn.disabled=false;
+  }
+});
+
 $("#cpShare").addEventListener("click",()=>{
   if(!draft) return;
   /* KONUM PAYLAŞIMI KAPALIYKEN
@@ -17127,7 +17650,10 @@ function ensureSysBarBg(){
 let _lastIconStyle = null;
 function setBarIcons(bgIsLight){
   if(!isNativeApp()) return;
-  const want = bgIsLight ? 'DARK' : 'LIGHT';
+  /* Eklentinin LIGHT/DARK degerleri IKON rengini degil ZEMIN varsayimini
+     anlatiyor: acik zeminde LIGHT verilince koyu ikon geliyor.
+     Ters eslemede akista ikonlar kayboluyor, Zaman ekraninda okunmuyordu. */
+  const want = bgIsLight ? 'LIGHT' : 'DARK';
   if(want === _lastIconStyle) return;
   _lastIconStyle = want;
   const SA = _safeAreaPlugin();
@@ -17602,7 +18128,7 @@ async function backfillPosters(list){
       if(!blob) continue;
       const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"_p.jpg";
       const up = await sb.storage.from('moments').upload(path, blob, {
-        contentType:"image/jpeg", upsert:false
+        contentType:"image/jpeg", cacheControl:"31536000", upsert:false
       });
       if(up.error) continue;
       const r = await sb.from('moments').update({poster_path:path}).eq('id',it.id).eq('author_id',me.id);
@@ -17950,13 +18476,27 @@ function renderProfile(){
      "Düzenle" ekranından yönetiliyor. */
   bioWrap.innerHTML='<div class="secTitle">'+t("biography")+'</div><p class="bioText"></p>';
   const bioP = bioWrap.querySelector(".bioText");
+  /* Uzun biyografi uc satirla kesilir; dokununca tamami acilir. */
+  bioP.addEventListener("click", ()=>bioP.classList.toggle("acik"));
   if(curBio){
     bioP.textContent = curBio;
   }else{
     bioP.textContent = own ? t("f_bio_ph") : t("bio_empty_other");
     bioP.classList.add("empty");
   }
-  box.appendChild(bioWrap);
+  /* BASKASININ PROFILINDE biyografi asagida degil, isim kartinin
+     hemen altinda durur: kim oldugunu anlamak icin sayfayi
+     kaydirmak gerekmesin. Kendi profilinde eski yerinde kalir. */
+  /* BASKASININ PROFILINDE biyografi KAPAK FOTOGRAFININ USTUNDE durur:
+     kim oldugunu anlamak icin kaydirmak gerekmesin. Okunurluk icin
+     altta yumusak bir koyulasma var. Kendi profilinde eski yerinde kalir. */
+  const heroEl = box.querySelector(".hero");
+  if(!own && heroEl){
+    bioWrap.classList.add("heroBio");
+    heroEl.appendChild(bioWrap);
+  }else{
+    box.appendChild(bioWrap);
+  }
 
   /* açıklama — yalnızca başkasının profilinde.
      Kendi profilinde gereksizdi, kaldırıldı. */
@@ -17990,7 +18530,8 @@ function renderProfile(){
   tabs.innerHTML=
     '<span class="arcInd"></span>'+
     '<button class="arcTab on" data-arc="mine">'+t("my_moments2")+'</button>'+
-    '<button class="arcTab" data-arc="saved">'+t("saved2")+'</button>';
+    '<button class="arcTab" data-arc="saved">'+t("saved2")+'</button>'+
+    '<button class="arcTab" data-arc="draft">'+t("d_tab")+'<em class="arcSay" id="arcDraftSay"></em></button>';
   box.appendChild(tabs);
 
   const pane=document.createElement("div");pane.className="arcPane";
@@ -18000,9 +18541,13 @@ function renderProfile(){
   const ind = tabs.querySelector(".arcInd");
   function showArc(which){
     arcTabBtns.forEach(b=>b.classList.toggle("on", b.dataset.arc===which));
-    if(ind) ind.style.transform = (which==="saved") ? "translateX(100%)" : "translateX(0)";
+    if(ind){
+      const sira = which==="saved" ? 1 : (which==="draft" ? 2 : 0);
+      ind.style.transform = "translateX(" + (sira*100) + "%)";
+    }
     pane.innerHTML="";
     if(which==="saved"){ renderSaved(pane); }
+    else if(which==="draft"){ renderDrafts(pane); }
     else { renderMine(pane); }
   }
   arcTabBtns.forEach(b=>b.addEventListener("click",()=>showArc(b.dataset.arc)));
@@ -18013,6 +18558,200 @@ function renderProfile(){
 
 // hangi sekme açıktı (panel yeniden çizilince korunsun)
 let _arcTab="mine";
+
+/* ══════════ TASLAKLAR ══════════
+   Cekilen kare hemen paylasilmak zorunda degil. Konum, saat, duygu,
+   sarki ve gizlilik ayari cekildigi ANDA saklanir; kullanici istedigi
+   zaman gonderir. Internet yokken otomatik dusen taslaklar da burada.  */
+function renderDrafts(box){
+  const sub=document.createElement("div");sub.className="arcSub";
+  sub.textContent=t("d_desc");
+  box.appendChild(sub);
+
+  const list=readDrafts();
+  if(!list.length){
+    const e=document.createElement("div");e.className="arcEmpty";
+    e.innerHTML='<b>'+t("d_none")+'</b><span>'+t("d_hint")+'</span>';
+    box.appendChild(e);
+    return;
+  }
+
+  const grid=document.createElement("div");grid.className="draftList";
+
+  function taslakSil(d, satir){
+    const kalan=readDrafts().filter(x=>x.id!==d.id);
+    writeDrafts(kalan);
+    try{ idbSil(d.id); taslakURLBirak(d.id); }catch(e){}
+    paintDraftDot();
+    if(satir){ satir.style.height=satir.offsetHeight+"px"; satir.classList.add("gidiyor"); }
+    setTimeout(()=>renderProfileArsiv(), 180);
+  }
+
+  list.slice().reverse().forEach(d=>{
+    /* Takip listeleriyle ayni davranis: sola kaydir veya uc noktaya bas */
+    const kart=document.createElement("div");
+    kart.className="shrow draftRow kaydirilir";
+
+    const kirmizi=document.createElement("button");
+    kirmizi.className="flCikar";
+    kirmizi.textContent=t("d_del");
+    kirmizi.addEventListener("click", ev=>{ ev.stopPropagation(); taslakSil(d, kart); });
+    kart.appendChild(kirmizi);
+
+    const on=document.createElement("div");on.className="dThumb";
+    taslakMedya(d).then(src=>{ if(src) on.style.backgroundImage='url("'+src+'")'; });
+    if(d.kind==="video"){
+      const v=document.createElement("span");v.className="dVid";v.textContent=t("d_video");
+      on.appendChild(v);
+    }
+    on.classList.add("acilir");
+    on.addEventListener("click", async (ev)=>{
+      ev.stopPropagation();
+      const src = await taslakMedya(d);
+      if(src) taslakOnizle(d, src);
+    });
+    kart.appendChild(on);
+
+    const orta=document.createElement("div");orta.className="dMid";
+
+    const ust=document.createElement("div");ust.className="dWhen";
+    ust.textContent=(typeof zamanKisa==="function") ? zamanKisa(d.ts) : new Date(d.ts).toLocaleString();
+    orta.appendChild(ust);
+
+    if(d.note){
+      const nt=document.createElement("div");nt.className="dNote";nt.textContent=d.note;
+      orta.appendChild(nt);
+    }
+
+    /* Konum ve sarki, kucuk etiketler halinde */
+    if(d.where || d.song){
+      const etiketler=document.createElement("div");etiketler.className="dChips";
+      if(d.where){
+        const c=document.createElement("span");c.className="dChip yer";
+        c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>';
+        const y=document.createElement("b");y.textContent=d.where;c.appendChild(y);
+        etiketler.appendChild(c);
+      }
+      if(d.song){
+        const ad=(typeof d.song==="string") ? d.song
+                : [d.song.title, d.song.artist].filter(Boolean).join(" — ");
+        if(ad){
+          const c=document.createElement("span");c.className="dChip muzik";
+          c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5.5l10-2V16"/><circle cx="6.6" cy="18" r="2.6"/><circle cx="16.6" cy="16" r="2.6"/></svg>';
+          const y=document.createElement("b");y.textContent=ad;c.appendChild(y);
+          etiketler.appendChild(c);
+        }
+      }
+      orta.appendChild(etiketler);
+    }
+    kart.appendChild(orta);
+
+    const sag=document.createElement("div");sag.className="dActs";
+
+    const gonder=document.createElement("button");
+    gonder.className="dSend";gonder.textContent=t("d_send");
+    gonder.addEventListener("click", async (ev)=>{
+      ev.stopPropagation();
+      if(gonder.disabled) return;
+      gonder.disabled=true; gonder.textContent=t("d_sending");
+      let ok=false;
+      try{ ok = await sendDraft(d); }catch(e){}
+      if(ok){
+        const kalan=readDrafts().filter(x=>x.id!==d.id);
+        writeDrafts(kalan);
+        try{ idbSil(d.id); }catch(e){}
+        paintDraftDot();
+        toast(t("draft_sent"));
+        try{ if(typeof loadFeed==="function") loadFeed(); }catch(e){}
+        try{ if(typeof loadMyMoments==="function") loadMyMoments(); }catch(e){}
+        renderProfileArsiv();
+      }else{
+        gonder.disabled=false; gonder.textContent=t("d_send");
+        toast(t("draft_fail"));
+      }
+    });
+    sag.appendChild(gonder);
+
+    const uc=document.createElement("button");
+    uc.className="flUcNokta";
+    uc.setAttribute("aria-label", t("options"));
+    uc.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="18.5" r="1.9"/></svg>';
+    uc.addEventListener("click", ev=>{
+      ev.stopPropagation();
+      try{ satirlariKapat(grid); }catch(e){}
+      kart.classList.add("acik");
+      kart.style.transition="transform .18s var(--ease)";
+      kart.style.transform="translateX(-5.5rem)";
+    });
+    sag.appendChild(uc);
+
+    kart.appendChild(sag);
+    try{ kaydirmaBagla(kart, grid); }catch(e){}
+    grid.appendChild(kart);
+  });
+  box.appendChild(grid);
+}
+
+/* Arsiv panelini tazele (taslak silinince/gonderilince) */
+/* Taslak onizleme — kareyi tam ekran goster, bilgileri altta ozetle. */
+function taslakOnizle(d, src){
+  const eski=document.getElementById("draftPrev"); if(eski) eski.remove();
+  const kat=document.createElement("div"); kat.id="draftPrev";
+
+  const kapat=document.createElement("button"); kapat.className="dpClose";
+  kapat.setAttribute("aria-label", t("close"));
+  kapat.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  kapat.addEventListener("click", ()=>kat.remove());
+  kat.appendChild(kapat);
+
+  const kutu=document.createElement("div"); kutu.className="dpBox";
+  if(d.kind==="video"){
+    const v=document.createElement("video");
+    v.src=src; v.controls=true; v.playsInline=true; v.autoplay=true;
+    kutu.appendChild(v);
+  }else{
+    const im=document.createElement("img"); im.src=src; im.alt="";
+    kutu.appendChild(im);
+  }
+  kat.appendChild(kutu);
+
+  const alt=document.createElement("div"); alt.className="dpInfo";
+  const z=document.createElement("div"); z.className="dpWhen";
+  z.textContent=(typeof zamanKisa==="function") ? zamanKisa(d.ts) : new Date(d.ts).toLocaleString();
+  alt.appendChild(z);
+  if(d.note){ const n2=document.createElement("div"); n2.className="dpNote"; n2.textContent=d.note; alt.appendChild(n2); }
+  if(d.where || d.song){
+    const c=document.createElement("div"); c.className="dChips";
+    if(d.where){
+      const y=document.createElement("span"); y.className="dChip yer";
+      y.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>';
+      const b2=document.createElement("b"); b2.textContent=d.where; y.appendChild(b2);
+      c.appendChild(y);
+    }
+    if(d.song){
+      const ad=(typeof d.song==="string") ? d.song : [d.song.title,d.song.artist].filter(Boolean).join(" — ");
+      if(ad){
+        const m2=document.createElement("span"); m2.className="dChip muzik";
+        m2.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5.5l10-2V16"/><circle cx="6.6" cy="18" r="2.6"/><circle cx="16.6" cy="16" r="2.6"/></svg>';
+        const b3=document.createElement("b"); b3.textContent=ad; m2.appendChild(b3);
+        c.appendChild(m2);
+      }
+    }
+    alt.appendChild(c);
+  }
+  kat.appendChild(alt);
+
+  kat.addEventListener("click", ev=>{ if(ev.target===kat) kat.remove(); });
+  document.body.appendChild(kat);
+}
+
+function renderProfileArsiv(){
+  try{
+    const btn=document.querySelector('.arcTab[data-arc="draft"]');
+    if(btn) btn.click();
+    paintDraftDot();
+  }catch(e){}
+}
 
 // --- Anılarım ızgarası ---
 function renderMine(box){
@@ -19858,7 +20597,10 @@ async function sendMedia(src, tur, sure){
     const path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+uzanti;
 
     try{ showUploadIndicator(video ? (t("sending")||"Gönderiliyor…") : (t("sending")||"Gönderiliyor…")); }catch(e){}
-    const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik});
+    /* CDN onbellegi: dosya adlari benzersiz oldugu icin bir yil guvenli.
+       Verilmezse Supabase 1 saniye koyuyor ve her izleyici dosyayi
+       sunucudan yeniden cekiyor. */
+    const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik, cacheControl:"31536000"});
     if(up.error) throw up.error;
     const {data,error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'media',msg_media:path});
     if(error){
@@ -20021,8 +20763,50 @@ function _nativePlugins(){
   const P=(cap && cap.Plugins) || {};
   return { native, FS:P.Filesystem, Share:P.Share, Media:P.Media };
 }
+/* Blob un bir parcasini base64 e cevirir */
+function _parcaB64(parca){
+  return new Promise((coz,red)=>{
+    const r=new FileReader();
+    r.onload=()=>{ const v=String(r.result||""); coz(v.slice(v.indexOf(",")+1)); };
+    r.onerror=()=>red(r.error||new Error("okunamadi"));
+    r.readAsDataURL(parca);
+  });
+}
+
 async function _writeCacheFile(FS, blob, path){
   const dir=(FS.Directory && FS.Directory.Cache) || "CACHE";
+
+  /* ══════════ BUYUK DOSYA: PARCALI YAZIM ══════════
+     Eskiden dosyanin TAMAMI base64 e cevriliyordu. 50 MB lik bir
+     video ~67 MB lik tek bir metin dizesi oluyor, ustune Capacitor
+     koprusunden JSON olarak geciyordu. WebView bellegi tasiyor ve
+     Android uygulamayi olduruyordu: 9 saniye ustu videolarda
+     "Kaydet" e basinca uygulama kapaniyordu.
+     Artik dosya 1 MB lik parcalar halinde yazilir; bellekte hicbir
+     zaman parca boyutundan fazlasi tutulmaz. */
+  const PARCA = 1024 * 1024;
+  if(blob.size > 3 * PARCA && FS.appendFile){
+    _dlDbg("parcali yazim", path+" boyut="+blob.size);
+    try{ await FS.deleteFile({ path, directory:dir }); }catch(e){}
+    let ilk = true;
+    for(let ofs = 0; ofs < blob.size; ofs += PARCA){
+      const b64 = await _parcaB64(blob.slice(ofs, Math.min(ofs + PARCA, blob.size)));
+      if(ilk){
+        await FS.writeFile({ path, data:b64, directory:dir, recursive:true });
+        ilk = false;
+      }else{
+        await FS.appendFile({ path, data:b64, directory:dir });
+      }
+    }
+    let uri2=null;
+    try{
+      const g=await FS.getUri({ path, directory:dir });
+      uri2=(g && (g.uri||g.fileUri)) || null;
+    }catch(e){ _dlDbg("getUri hata", e && e.message); }
+    _dlDbg("parcali uri", uri2);
+    return uri2;
+  }
+
   const b64=await blobToBase64(blob);
   _dlDbg("writeFile", path+" b64="+b64.length);
   const w=await FS.writeFile({ path, data:b64, directory:dir, recursive:true });
@@ -20516,6 +21300,49 @@ async function start(kayitSurerken){
           });
           if(camPanel) camPanel.classList.remove("waiting");
           document.documentElement.classList.add("camNativeOn");
+      /* ══════ AKIS VIDEOLARINI BOSALT ══════
+         Kamera acilinca akistaki video elemanlari bellekte kaliyordu
+         (panelde "video= 15"). Telefonun donanim cozucusu ayni anda
+         ancak 2-4 akis kaldirir; fazlasi hem ONIZLEMEDE hem
+         OYNATMADA takilmaya yol acar. Kaynaklari birakiyoruz;
+         akisa donunce kendiliginden yeniden baglaniyorlar. */
+      try{
+        document.querySelectorAll("#feed video").forEach(v=>{
+          try{ v.pause(); }catch(e){}
+          if(v.getAttribute("src")){
+            v.removeAttribute("src");
+            try{ v.load(); }catch(e){}
+          }
+        });
+        if(window.__sk) window.__sk("akis videolari bosaltildi");
+      }catch(e){}
+      /* Onizleme oturduktan sonra bir kez merkeze odaklan: kullanici
+         hemen cekerse kare net olsun. */
+      setTimeout(function(){
+        try{ if(window.Kamera && Kamera.odakla) Kamera.odakla(0.5, 0.5, 700); }catch(e){}
+      }, 450);
+      /* DOKUNARAK ODAK — onizlemeye dokununca o noktaya odaklanir ve
+         kisa bir halka gosterilir. Koordinat 0-1 arasina cevrilir. */
+      try{
+        const camEl = document.getElementById("cam");
+        if(camEl && !camEl._odakBagli){
+          camEl._odakBagli = true;
+          camEl.addEventListener("click", (e)=>{
+            if(e.target.closest("button, .camtop, .cambot, input, a")) return;
+            const r = camEl.getBoundingClientRect();
+            const nx = (e.clientX - r.left) / r.width;
+            const ny = (e.clientY - r.top)  / r.height;
+            if(nx < 0 || nx > 1 || ny < 0 || ny > 1) return;
+            try{ if(window.Kamera && Kamera.odakla) Kamera.odakla(nx, ny, 900); }catch(x){}
+            const h2 = document.createElement("span");
+            h2.className = "odakHalka";
+            h2.style.left = (e.clientX - r.left) + "px";
+            h2.style.top  = (e.clientY - r.top)  + "px";
+            camEl.appendChild(h2);
+            setTimeout(()=>h2.remove(), 700);
+          }, true);
+        }
+      }catch(e){}
           if(typeof window.__webCamOlcekKur === "function") window.__webCamOlcekKur();
           return;
         }catch(e2){
@@ -21156,13 +21983,15 @@ $("#camClose").addEventListener("click",closeCam);
       else { const n=sw/oran; sy+= (sh-n)/2; sh=n; }
     }
 
-    const k=Math.min(1,1920/Math.max(sw,sh));
+    /* Web yolu da 2560 e hizalandi; 1920 sinirinin ekranda karsiligi
+       yok, yalnizca detay atiyordu. */
+    const k=Math.min(1,2560/Math.max(sw,sh));
     const c=document.createElement("canvas");
     c.width=Math.max(2,Math.round(sw*k)); c.height=Math.max(2,Math.round(sh*k));
-    const x=c.getContext("2d"); x.imageSmoothingQuality="high";
+    const x=c.getContext("2d"); x.imageSmoothingEnabled=true; x.imageSmoothingQuality="high";
     if(v.classList.contains("mirror")){ x.translate(c.width,0); x.scale(-1,1); }
     x.drawImage(v,sx,sy,sw,sh,0,0,c.width,c.height);
-    return c.toDataURL("image/jpeg",0.92);
+    return c.toDataURL("image/jpeg",0.95);
   }
 
   function kareAlData(src){
@@ -21183,12 +22012,54 @@ $("#camClose").addEventListener("click",closeCam);
               else { const n=sw/oran; sy+=(sh-n)/2; sh=n; }
             }
           }
-          const k=Math.min(1,1920/Math.max(sw,sh));
+          /* ══════ KADEMELI KUCULTME ══════
+             KADRAJ DEGISMEZ: sx/sy/sw/sh ve 1920 hedefi aynen korunur.
+             Degisen tek sey KUCULTME YONTEMI. Eskiden 4000 pikselden
+             1920 e TEK drawImage ile iniliyordu; bu oranda tarayicinin
+             ornekleyicisi ara pikselleri atlayip goruntuyu yumusatiyor.
+             Simdi her adimda en fazla yariya inilerek gidiliyor; her
+             adim komsu pikselleri ortaladigi icin detay korunuyor. */
+          /* ══════ KUCULTME SINIRI ══════
+             Cekim 1440x2560 geliyor, biz 1920 e indiriyorduk. Iki
+             sorun birden: (1) 1,33 kat gibi KUCUK bir oranda
+             kucultmek en kotu durum, kademeli dongu devreye girmiyor
+             ve tek gecis goruntuyu yumusatiyor; (2) ekran zaten
+             1078x2398, yani 1080 e inince hic pay kalmiyor ve
+             detay bosuna atiliyor.
+             2560 e cikarilinca cekim oldugu gibi korunuyor. */
+          const ENBUYUK = 2560;
+          const hedefG = Math.max(2, Math.round(sw * Math.min(1, ENBUYUK/Math.max(sw,sh))));
+          const hedefY = Math.max(2, Math.round(sh * Math.min(1, ENBUYUK/Math.max(sw,sh))));
+
+          /* Kaynak zaten hedefe yakinsa kademeli kucultmeye girme:
+             gereksiz her adim bir miktar yumusama ekliyor. */
+          let kaynak = im, kx = sx, ky = sy, kg = sw, ky2 = sh;
+          while(kg > hedefG * 2){
+            const ag = Math.max(hedefG, Math.round(kg / 2));
+            const ay = Math.max(hedefY, Math.round(ky2 / 2));
+            const ara = document.createElement("canvas");
+            ara.width = ag; ara.height = ay;
+            const ax = ara.getContext("2d");
+            ax.imageSmoothingEnabled = true; ax.imageSmoothingQuality = "high";
+            ax.drawImage(kaynak, kx, ky, kg, ky2, 0, 0, ag, ay);
+            kaynak = ara; kx = 0; ky = 0; kg = ag; ky2 = ay;
+          }
+
           const c=document.createElement("canvas");
-          c.width=Math.max(2,Math.round(sw*k)); c.height=Math.max(2,Math.round(sh*k));
-          const x=c.getContext("2d"); x.imageSmoothingQuality="high";
-          x.drawImage(im,sx,sy,sw,sh,0,0,c.width,c.height);
-          coz(c.toDataURL("image/jpeg",0.92));
+          c.width = hedefG; c.height = hedefY;
+          const x=c.getContext("2d");
+          x.imageSmoothingEnabled = true; x.imageSmoothingQuality="high";
+          /* On kamera aynalamasi BURADA yapilir: kamera modulunde
+             ayri bir JPEG turu olusturmak yerine son cizimde
+             halledilir, boylece tek kodlama kalir. */
+          if(window.__kareAynaliOlmali){
+            x.translate(hedefG, 0); x.scale(-1, 1);
+            window.__kareAynaliOlmali = false;
+          }
+          x.drawImage(kaynak, kx, ky, kg, ky2, 0, 0, hedefG, hedefY);
+          /* Zincirin SON kodlamasi: 0.92 yerine 0.95.
+             Onceki adimlarda birikmis kayip burada telafi edilir. */
+          coz(c.toDataURL("image/jpeg",0.95));
         }catch(e){ coz(src); }
       };
       im.onerror=function(){ coz(src); };
@@ -21336,7 +22207,91 @@ function hideUploadIndicator(force){
   }
 }
 
+/* Depolama kovasinin siniri 30 MB. Istemci tarafi bilerek 2 MB altta
+   tutulur: dosya sunucuya varmadan burada yakalanir, kullanici belirsiz
+   bir sunucu hatasi yerine anlasilir bir mesaj gorur. */
+const YUKLEME_SINIRI = 28 * 1024 * 1024;
+
+/* Yuklemeyi XHR ile yapar: ilerleme yuzdesi ve anlik hiz raporlanir.
+   Basarisiz olursa Supabase istemcisine geri doner. */
+function yukleIlerlemeli(path, blob, contentType, kind){
+  return new Promise(async (coz)=>{
+    const sb = window.__sb;
+    try{
+      const o = await sb.auth.getSession();
+      const jeton = o && o.data && o.data.session ? o.data.session.access_token : null;
+      const kok = (window.__sbUrl || (sb && sb.supabaseUrl) || "").replace(/\/+$/,"");
+      if(!jeton || !kok) throw new Error("oturum yok");
+
+      const x = new XMLHttpRequest();
+      x.open("POST", kok + "/storage/v1/object/moments/" + path, true);
+      x.setRequestHeader("Authorization", "Bearer " + jeton);
+      x.setRequestHeader("Content-Type", contentType);
+      /* CDN bir yil saklasin: ayni dosya her izleyici icin sunucudan
+         yeniden cekilmesin. Adlar benzersiz oldugu icin risksiz. */
+      x.setRequestHeader("Cache-Control", "public, max-age=31536000, immutable");
+      x.setRequestHeader("x-upsert", "false");
+
+      const t0 = Date.now();
+      /* Dosya boyutu etikette gorunur: kullanici ne yukledigini bilsin,
+         biz de tahmin yerine gercek rakami gorelim. */
+      const mb = (blob.size / 1048576).toFixed(1);
+      const etiket = (kind === "video" ? t("up_video") : t("up_photo")) + " · " + mb + " MB";
+      console.log("[Klipsy] yuklenen dosya:", mb, "MB", blob.type || "");
+      x.upload.onprogress = (e)=>{
+        if(!e.lengthComputable) return;
+        const yuzde = (e.loaded / e.total) * 100;
+        const sn = Math.max(0.25, (Date.now() - t0) / 1000);
+        const hiz = e.loaded / sn;                       /* bayt / saniye */
+        showUploadIndicator(etiket + " · " + hizMetni(hiz), yuzde);
+      };
+      x.onload = ()=>{
+        if(x.status >= 200 && x.status < 300) coz({ data:{ path }, error:null });
+        else if(x.status === 413) coz({ error:new Error("dosya cok buyuk") });
+        else coz({ error:new Error("yukleme hatasi " + x.status) });
+      };
+      x.onerror = ()=> coz({ error:new Error("baglanti kesildi") });
+      x.send(blob);
+    }catch(e){
+      /* XHR kurulamadi: eski yola don, yuzde olmadan yukle */
+      try{
+        const r = await sb.storage.from("moments").upload(path, blob, { contentType, cacheControl:"31536000", upsert:false });
+        coz(r);
+      }catch(e2){ coz({ error:e2 }); }
+    }
+  });
+}
+
+/* Saniyedeki bayti okunur metne cevirir */
+function hizMetni(bps){
+  if(!isFinite(bps) || bps <= 0) return "";
+  if(bps >= 1048576) return (bps/1048576).toFixed(1) + " MB/sn";
+  return Math.round(bps/1024) + " KB/sn";
+}
+
 async function post(src,kind,mood,where,note,extra){
+  /* Arka plandaki sikistirma bittiyse KUCUK dosya kullanilir.
+     Kullanici cok hizli davrandiysa burada kisa bir bekleme olur. */
+  if(kind === "video" && window.__sikistirmaSozu){
+    try{
+      showUploadIndicator(t("vid_prep"), 0);
+      const kucuk = await window.__sikistirmaSozu;
+      hideUploadIndicator(true);
+      if(kucuk && kucuk.size){
+        /* ONCELIK SIRASI: post() blob u extra.blob dan okuyor.
+           Yalnizca src i degistirmek yetmiyordu, ham dosya
+           gidiyordu. Asil kaynak burada guncellenir. */
+        src = URL.createObjectURL(kucuk);
+        if(extra && typeof extra === "object") extra.blob = kucuk;
+        if(typeof draft === "object" && draft) draft.blob = kucuk;
+        if(window.__sk) window.__sk("gonderim: kucuk dosya kullanildi",
+                                    (kucuk.size/1048576).toFixed(1)+"MB");
+      }else if(window.__sk){
+        window.__sk("gonderim: sikistirma sonucu YOK, ham dosya gidiyor");
+      }
+    }catch(e){ hideUploadIndicator(true); }
+    window.__sikistirmaSozu = null;
+  }
   const sb=window.__sb, me=window.__me;
   const song=(extra&&extra.song)?extra.song:null;
   // yerel önizleme: hemen akışa koy (iyimser)
@@ -21383,10 +22338,30 @@ async function post(src,kind,mood,where,note,extra){
     // Gerçek tür ve uzantı (mp4 mi webm mi) kaydın kendisinden alınır
     const mt = mediaTipi(blob, kind);
     const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
-    const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: mt.tip,
-      upsert:false
-    });
+
+    /* ══════ BOYUT SINIRI ══════
+       Depolama kovasinin siniri 25 MB. Asildiginde sunucu yuklemeyi
+       reddediyor ve kullanici NEDEN olmadigini anlamiyordu.
+       Once burada yakalanir, an taslaga alinir; kaybolmaz. */
+    if(blob.size > YUKLEME_SINIRI){
+      const mb = (blob.size/1048576).toFixed(1);
+      console.warn("[Klipsy] dosya cok buyuk:", mb, "MB");
+      const ok = await saveDraft({
+        elle:true, kind, blob, note, mood: mood?mood.k:null,
+        where, extra, song, ts: Date.now()
+      });
+      hideUploadIndicator(true);
+      toast(ok ? t("up_too_big").replace("{mb}", mb) : t("draft_fail"));
+      items = items.filter(x=>x.id !== tmpId);
+      allItems = (allItems||[]).filter(x=>x.id !== tmpId);
+      render();
+      return;
+    }
+
+    /* ══════ GERCEK ILERLEME ══════
+       Supabase istemcisi yukleme yuzdesi vermiyor. XHR ile gonderilince
+       upload.onprogress calisiyor; kullanici hem yuzdeyi hem hizi gorur. */
+    const up = await yukleIlerlemeli(path, blob, mt.tip, kind);
     if(up.error) throw up.error;
 
     // 1b) video ise kapak resmi üret ve yükle (ızgarada video yerine bu gösterilecek)
@@ -21398,7 +22373,7 @@ async function post(src,kind,mood,where,note,extra){
         if(posterBlob){
           posterPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_p.jpg";
           const pu = await sb.storage.from('moments').upload(posterPath, posterBlob, {
-            contentType:"image/jpeg", upsert:false
+            contentType:"image/jpeg", cacheControl:"31536000", upsert:false
           });
           if(pu.error) posterPath=null;
         }
@@ -21416,7 +22391,7 @@ async function post(src,kind,mood,where,note,extra){
         if(tb){
           thumbPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_t.jpg";
           const tu = await sb.storage.from('moments').upload(thumbPath, tb, {
-            contentType:"image/jpeg", upsert:false
+            contentType:"image/jpeg", cacheControl:"31536000", upsert:false
           });
           if(tu.error) thumbPath = null;
         }
@@ -21493,6 +22468,9 @@ async function post(src,kind,mood,where,note,extra){
     console.warn("[Klipsy] paylaşım başarısız:", e);
 
     const saved = await saveDraft({
+      /* elle:true -> baglanti gelince kendiliginden paylasilmaz.
+         Kullanici arsivdeki Taslak sekmesinden kendisi gonderir. */
+      elle: true,
       kind, blob, note, mood: mood?mood.k:null,
       where, extra, song, ts: Date.now()
     });
@@ -21589,6 +22567,167 @@ function mediaTipi(blob, kind){
 
 const DRAFT_KEY = 'klipsy_drafts_v1';
 
+/* ══════════ TASLAK DEPOSU ══════════
+   Kare verisi (dataURL) localStorage'a sigmiyor: tek bir fotograf
+   5 MB'lik siniri doldurdugu icin ikinci taslak kaydedilemiyordu.
+   Cozum: MEDYA IndexedDB'de (sinirsiza yakin), listenin kendisi
+   localStorage'da kaliyor. Boylece readDrafts() senkron kalir. */
+/* ══════════════════ TASLAK DEPOSU ══════════════════
+   Onceki surumde her islem YENI bir IndexedDB baglantisi aciyor ve
+   hicbirini kapatmiyordu. Birkac baglantidan sonra WebView acilisa
+   yanit vermiyor, await sonsuza kadar bekliyordu: taslak "kaydedilmiyor"
+   gibi gorunuyor, buton kilitli kaliyordu. Uygulama yeniden acilinca
+   baglantilar sifirlandigi icin bir tane daha kaydedilebiliyordu.
+
+   Yeni mimari:
+   - TEK paylasilan baglanti, bir kez acilir ve onbelleklenir
+   - Her islemin ZAMAN ASIMI var; hicbir sey sonsuza kadar beklemez
+   - Kare BLOB olarak saklanir (dataURL degil): %33 daha kucuk,
+     devasa metin dizeleri olusmaz
+   - Ustveri localStorage'da kalir; readDrafts() senkron kalir       */
+
+const IDB_AD = "klipsy_taslak", IDB_MAG = "medya", IDB_SURUM = 2;
+const IDB_ZAMAN_ASIMI = 8000;
+
+let _dbSoz = null;
+function idbBaglan(){
+  if(_dbSoz) return _dbSoz;
+  _dbSoz = new Promise((coz, red)=>{
+    let bitti = false;
+    const zaman = setTimeout(()=>{
+      if(bitti) return; bitti = true;
+      _dbSoz = null;                       /* takilirsa yeniden denenebilsin */
+      red(new Error("IndexedDB acilmadi (zaman asimi)"));
+    }, IDB_ZAMAN_ASIMI);
+    try{
+      const istek = indexedDB.open(IDB_AD, IDB_SURUM);
+      istek.onupgradeneeded = ()=>{
+        try{
+          const db = istek.result;
+          if(!db.objectStoreNames.contains(IDB_MAG)) db.createObjectStore(IDB_MAG);
+        }catch(e){}
+      };
+      istek.onsuccess = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        const db = istek.result;
+        /* Baglanti beklenmedik sekilde kapanirsa onbellegi bosalt */
+        db.onclose = db.onversionchange = ()=>{ _dbSoz = null; try{ db.close(); }catch(e){} };
+        coz(db);
+      };
+      istek.onerror = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        _dbSoz = null; red(istek.error || new Error("IndexedDB hatasi"));
+      };
+      istek.onblocked = ()=>{ /* zaman asimi devreye girer */ };
+    }catch(e){
+      if(!bitti){ bitti = true; clearTimeout(zaman); _dbSoz = null; red(e); }
+    }
+  });
+  return _dbSoz;
+}
+
+/* Tek noktadan islem: baglanti + islem + zaman asimi bir arada */
+function idbIslem(mod, is){
+  return new Promise(async (coz)=>{
+    let bitti = false;
+    const zaman = setTimeout(()=>{
+      if(bitti) return; bitti = true;
+      console.warn("taslak deposu: islem zaman asimi");
+      coz(null);
+    }, IDB_ZAMAN_ASIMI);
+    try{
+      const db = await idbBaglan();
+      const tx = db.transaction(IDB_MAG, mod);
+      const magaza = tx.objectStore(IDB_MAG);
+      const istek = is(magaza);
+      tx.oncomplete = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        coz(istek ? istek.result : true);
+      };
+      tx.onerror = tx.onabort = ()=>{
+        if(bitti) return; bitti = true; clearTimeout(zaman);
+        coz(null);
+      };
+    }catch(e){
+      if(bitti) return; bitti = true; clearTimeout(zaman);
+      console.warn("taslak deposu:", e && e.message);
+      coz(null);
+    }
+  });
+}
+
+async function idbYaz(anahtar, deger){
+  const r = await idbIslem("readwrite", m=>m.put(deger, anahtar));
+  return r !== null;
+}
+async function idbOku(anahtar){
+  return await idbIslem("readonly", m=>m.get(anahtar));
+}
+async function idbSil(anahtar){
+  const r = await idbIslem("readwrite", m=>m.delete(anahtar));
+  return r !== null;
+}
+async function idbAnahtarlar(){
+  const r = await idbIslem("readonly", m=>m.getAllKeys());
+  return Array.isArray(r) ? r : [];
+}
+
+/* Taslagin karesini goruntulenebilir adrese cevir.
+   Blob ise gecici URL uretir, eski kayitlarda dataURL olabilir. */
+const _onizURL = new Map();
+async function taslakMedya(t2){
+  if(!t2) return null;
+  if(t2.data) return t2.data;                        /* eski bicim */
+  if(!t2.id)  return null;
+  if(_onizURL.has(t2.id)) return _onizURL.get(t2.id);
+  const veri = await idbOku(t2.id);
+  if(!veri) return null;
+  let adres = veri;
+  if(veri instanceof Blob){
+    try{ adres = URL.createObjectURL(veri); }catch(e){ return null; }
+  }
+  _onizURL.set(t2.id, adres);
+  return adres;
+}
+function taslakURLBirak(id){
+  const u = _onizURL.get(id);
+  if(u && typeof u === "string" && u.indexOf("blob:") === 0){
+    try{ URL.revokeObjectURL(u); }catch(e){}
+  }
+  _onizURL.delete(id);
+}
+
+/* Eski surumden kalan dataURL kayitlarini blob olarak IndexedDB'ye tasi */
+let _gocOldu = false;
+async function taslaklariGocur(){
+  if(_gocOldu) return; _gocOldu = true;
+  try{
+    const l = readDrafts();
+    if(!l.length) return;
+    let degisti = false;
+    for(const t2 of l){
+      if(t2 && t2.data && t2.id){
+        let veri = t2.data;
+        try{ veri = await (await fetch(t2.data)).blob(); }catch(e){}
+        const ok = await idbYaz(t2.id, veri);
+        if(ok){ t2.data = null; degisti = true; }
+      }
+    }
+    if(degisti){ writeDrafts(l); paintDraftDot(); }
+  }catch(e){ console.warn("taslak gocurme:", e && e.message); }
+}
+setTimeout(()=>{ try{ taslaklariGocur(); }catch(e){} }, 1500);
+
+/* Listede karsiligi kalmayan kareleri sil */
+async function taslakArtiklariTemizle(){
+  try{
+    const gecerli = new Set(readDrafts().map(x=>x.id));
+    const anahtarlar = await idbAnahtarlar();
+    for(const k of anahtarlar){ if(!gecerli.has(k)) await idbSil(k); }
+  }catch(e){}
+}
+setTimeout(()=>{ try{ taslakArtiklariTemizle(); }catch(e){} }, 3000);
+
 function readDrafts(){
   try{ return JSON.parse(localStorage.getItem(DRAFT_KEY) || '[]'); }
   catch(e){ return []; }
@@ -21616,14 +22755,24 @@ function dataURLtoBlobSafe(durl){
 async function saveDraft(d){
   try{
     if(!d.blob) return false;
-    const data = await blobToDataURL(d.blob);
-    if(!data) return false;
-    // çok büyük dosyalar cihaz belleğini doldurur
-    if(data.length > 4500000){ toast(t("draft_too_big")); return false; }
+    /* Blob dogrudan saklanir: dataURL'e cevirmek %33 sisirir ve
+       cok buyuk metin dizeleri olusturur. */
+    if(d.blob.size > 60 * 1024 * 1024){ toast(t("draft_too_big")); return false; }
+    /* Kare IndexedDB'ye yazilir; localStorage yalnizca ustveri tutar.
+       Eskiden dataURL listeye giriyordu ve tek fotograf 5 MB'lik siniri
+       doldurdugu icin IKINCI taslak sessizce kaydedilemiyordu. */
+    const kimlik = 'd'+Date.now()+Math.random().toString(36).slice(2,6);
+    const idbOk = await idbYaz(kimlik, d.blob);
+    if(!idbOk){ toast(t("draft_fail")); return false; }
     const list = readDrafts();
     list.push({
-      id: 'd'+Date.now()+Math.random().toString(36).slice(2,6),
-      kind:d.kind, data, note:d.note||"", mood:d.mood||null,
+      id: kimlik,
+      /* elle:true  -> kullanici "Sonra" dedi. Otomatik gonderim ASLA dokunmaz.
+         elle:false -> internet yokken dusen kayit. Baglanti gelince gonderilir.
+         Bu alan kaydedilmedigi icin elle alinan taslaklar otomatik
+         yayinlaniyor ve liste bosaltiliyordu. */
+      elle: !!d.elle,
+      kind:d.kind, data: null, note:d.note||"", mood:d.mood||null,
       where:d.where||null, extra:d.extra||null, song:d.song||null, ts:d.ts||Date.now()
     });
     const ok = writeDrafts(list);
@@ -21635,13 +22784,19 @@ async function saveDraft(d){
 async function sendDraft(d){
   const sb=window.__sb, me=window.__me;
   if(!sb||!me) return false;
-  const blob = dataURLtoBlobSafe(d.data);
+  /* Kare IndexedDB'de blob olarak duruyor. Eski kayitlar dataURL olabilir. */
+  let blob = null;
+  if(d.data) blob = dataURLtoBlobSafe(d.data);
+  else{
+    const veri = await idbOku(d.id);
+    blob = (veri instanceof Blob) ? veri : dataURLtoBlobSafe(veri);
+  }
   if(!blob) return false;
   try{
     const mt = mediaTipi(blob, d.kind);
     const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+mt.uzanti;
     const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: mt.tip, upsert:false
+      contentType: mt.tip, cacheControl:"31536000", upsert:false
     });
     if(up.error) throw up.error;
 
@@ -21670,7 +22825,10 @@ async function sendDraft(d){
 let _draftBusy=false;
 async function flushDrafts(silent){
   if(_draftBusy) return;
-  const list = readDrafts();
+  /* Elle alinanlar kullanicinin karariyla gonderilir; burada atlanir. */
+  const tumu = readDrafts();
+  const list = tumu.filter(x => !x.elle);
+  const elleKalan = tumu.filter(x => x.elle);
   if(!list.length) return;
   if(!navigator.onLine) return;
   if(!window.__sb || !window.__me) return;
@@ -21683,7 +22841,7 @@ async function flushDrafts(silent){
     const ok = await sendDraft(d);
     if(ok) sent++; else kalan.push(d);
   }
-  writeDrafts(kalan);
+  writeDrafts(elleKalan.concat(kalan));
   paintDraftDot();
   _draftBusy=false;
 
@@ -21696,10 +22854,21 @@ async function flushDrafts(silent){
 // Bekleyen taslak varsa profil sekmesinde küçük bir işaret göster
 function paintDraftDot(){
   const n = readDrafts().length;
-  const el = document.getElementById("draftDot");
-  if(el) el.style.display = n ? "" : "none";
-  const cnt = document.getElementById("draftCount");
-  if(cnt) cnt.textContent = n;
+  /* Arsivdeki Taslak sekmesinin sayaci */
+  try{
+    const say=document.getElementById("arcDraftSay");
+    if(say){ say.textContent = n>9 ? "9+" : n; say.classList.toggle("on", n>0); }
+  }catch(e){}
+  /* Alt cubuktaki Profil sekmesinde kucuk isaret */
+  try{
+    const tp=document.getElementById("tabProfile");
+    if(tp){
+      let d=tp.querySelector(".draftDot");
+      if(n>0){
+        if(!d){ d=document.createElement("em"); d.className="draftDot"; tp.appendChild(d); }
+      }else if(d) d.remove();
+    }
+  }catch(e){}
 }
 
 // bağlantı gelince otomatik gönder
@@ -22179,11 +23348,36 @@ async function kayitBaslatUI(){
   /* Sayaç saniyede iki kez güncellenir. Daha sık güncellemek görüntüde
      minik takılmalara yol açıyordu; süre gösterimi için gereksiz. */
   clearInterval(recInt);
+  let _uyarildi = false;
   recInt = setInterval(()=>{
     const ms = Kamera.gecenSure();
     yaz(ms);
-    if(ms >= enFazla*1000) clearInterval(recInt);
-  }, 500);
+
+    /* SON 5 SANIYE UYARISI: sayac kirmiziya doner, tek titresim gelir.
+       Kullanici sureyi gorup kendisi bitirebilsin. */
+    const kalan = enFazla*1000 - ms;
+    const st = $("#recTime");
+    if(st) st.classList.toggle("bitiyor", kalan <= 5000 && kalan > 0);
+    if(!_uyarildi && kalan <= 5000){
+      _uyarildi = true;
+      try{ if(navigator.vibrate) navigator.vibrate([12,60,12]); }catch(e){}
+    }
+
+    /* SURE DOLDUGUNDA KAYIT TAMAMLANIR.
+       Eklenti sureyi kendisi kesip "kayitSuresiDoldu" yayinliyordu ama
+       arayuz bu olayi dinlemiyordu: kayit bitiyor, dosya hicbir yere
+       gitmiyor, sayac sifirlaniyordu. Cekilen 30 saniye bosa gidiyordu.
+       Artik normal bitirme yolunun aynisi calisir, kare paylasim
+       ekranina duser. */
+    if(ms >= enFazla*1000){
+      clearInterval(recInt);
+      if(st) st.classList.remove("bitiyor");
+      toast(t("video_max"));
+      kayitBitirVeAc().catch(e=>console.warn("sure doldu:", e && e.message));
+    }
+  /* 250 ms cok sikti: her adimda DOM yazimi ve sinif degisimi
+     kayit sirasinda hafif takilmaya yol aciyordu. 400 ms yeterli. */
+  }, 400);
 }
 
 /* Kameradan önizlemeye geçiş efekti: görüntü hızla kısılır,
@@ -22232,6 +23426,45 @@ async function kayitBitirVeAc(){
     toast(t("rec_failed"));
     return;
   }
+
+  /* ══════════ CIHAZDA SIKISTIRMA ══════════
+     Native kayit bit hizi kontrolu sunmuyor: 25 saniye ~28 MB.
+     Ayni sure TikTok ta 8,8 MB. Fark kodlama ayarindan geliyor.
+     Kayit BITTIKTEN sonra hedef bit hizinda yeniden kodlanir;
+     kayit sirasinda donma olmaz. Basarisiz olursa ham dosya
+     kullanilir, kullanici hicbir sey kaybetmez. */
+  /* Sessiz atlama olmasin: eksik ne varsa ekranda gorunsun.
+     En sik sebep klipsy-kamera.js in guncellenmemis olmasi. */
+  if(sonuc && sonuc.blob && (!window.Kamera || !Kamera.videoSikistir)){
+    console.warn("[Klipsy] videoSikistir yok — klipsy-kamera.js eski olabilir");
+    toast("Sıkıştırma yok: kamera dosyası eski");
+  }
+  if(sonuc && sonuc.blob && window.Kamera && Kamera.videoSikistir){
+    const ham = sonuc.blob.size;
+    if(window.__sk) window.__sk("sikistirma basliyor, ham=", (ham/1048576).toFixed(1),"MB");
+    /* ══════════ ARKA PLANDA SIKISTIR ══════════
+       Onceden sikistirma BEKLENIYORDU: kayit bitince paylasim ekrani
+       acilmiyor, kullanici 7-10 saniye bos ekrana bakiyordu.
+       Artik ekran HEMEN acilir, sikistirma arka planda surer.
+       Gonderme aninda sonuc beklenir; kullanici not yazarken islem
+       zaten bitmis oluyor. */
+    window.__sikistirmaSozu = (async ()=>{
+      try{
+        const kucuk = await Kamera.videoSikistir(sonuc.blob, null);
+        if(kucuk && kucuk.size && kucuk.size < ham){
+          window.__sonHam=(ham/1048576).toFixed(1)+"MB";
+          window.__sonKucuk=(kucuk.size/1048576).toFixed(1)+"MB";
+          if(window.__sk) window.__sk("sikistirma OK", window.__sonHam, "->", window.__sonKucuk);
+          return kucuk;
+        }
+      }catch(e){
+        if(window.__sk) window.__sk("sikistirma hata:", e && e.message);
+      }
+      return null;
+    })();
+  }
+
+
 
   /* Kayıt süre sınırına takılıp KENDİLİĞİNDEN bittiyse durum zaten
      kapanmış oluyor ve buradan boş dönüyordu — önizleme hiç açılmıyordu.
@@ -22304,9 +23537,40 @@ sh.addEventListener("pointerup", async ()=>{
     if(!Kamera.yerelMi() && typeof window.__webCamKareAl === "function"){
       foto = window.__webCamKareAl();
     }
+    const _fT0 = performance.now();
     if(!foto) foto = await Kamera.fotoCek({ kalite: 95 });
+    /* ══════ NETLIK SONDASI ══════
+       Zincirin her adiminda gercek piksel boyutunu olcer. Bulaniklik
+       nerede olusuyor: sensor mu dusuk veriyor, isleme mi kucultuyor. */
+    try{
+      if(window.__sk && foto){
+        const ol = (src)=>new Promise(r=>{
+          const im=new Image();
+          im.onload=()=>r(im.naturalWidth+"x"+im.naturalHeight);
+          im.onerror=()=>r("okunamadi");
+          im.src=src;
+        });
+        const bayt = Math.round((String(foto).length*0.75)/1024);
+        ol(foto).then(b=>{
+          window.__fotoHam = b + " (" + bayt + " KB)";
+          window.__sk("foto CEKIM:", b, "|", bayt+"KB", "|",
+                      Math.round(performance.now()-_fT0)+"ms");
+        });
+      }
+    }catch(e){}
     if(foto && Kamera.yerelMi() && typeof window.__webCamKareAlData === "function"){
       foto = await window.__webCamKareAlData(foto);
+      try{
+        if(window.__sk && foto){
+          const im2=new Image();
+          im2.onload=()=>{
+            window.__fotoSon = im2.naturalWidth+"x"+im2.naturalHeight;
+            window.__sk("foto ISLEME SONRASI:", window.__fotoSon,
+                        "| toplam", Math.round(performance.now()-_fT0)+"ms");
+          };
+          im2.src=foto;
+        }
+      }catch(e){}
     }
     if(!foto) return;
     await kameraKapanmaEfekti();
@@ -23897,6 +25161,28 @@ async function enterApp(){
   gate.classList.add('off');
   if(window.__startApp) window.__startApp();
   try{ if(typeof loadNotifs==="function") loadNotifs(); }catch(e){}
+
+  /* ═══ REALTIME YETKILENDIRME ═══
+     notifications tablosunda RLS var. Realtime baglantisina kullanici
+     token u iletilmezse sunucu satiri gonderir ama RLS suzgecinden
+     geceremez ve olay SESSIZCE dusurulur; hata da vermez.
+     Kanallari acmadan once token u ver, tazelendiginde de guncelle. */
+  try{
+    const oturum = await sb.auth.getSession();
+    const jeton = oturum && oturum.data && oturum.data.session
+                ? oturum.data.session.access_token : null;
+    if(jeton && sb.realtime && sb.realtime.setAuth) sb.realtime.setAuth(jeton);
+    if(!window.__rtAuthBagli){
+      window.__rtAuthBagli = true;
+      sb.auth.onAuthStateChange((_olay, oturum2)=>{
+        try{
+          if(oturum2 && oturum2.access_token && sb.realtime && sb.realtime.setAuth){
+            sb.realtime.setAuth(oturum2.access_token);
+          }
+        }catch(e){}
+      });
+    }
+  }catch(e){ console.warn("realtime yetki:", e && e.message); }
 
   // canlı bildirim: notifications tablosuna bana yeni satır düşünce
   try{

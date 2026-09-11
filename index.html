@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.11.13-t";
+window.KLIPSY_SURUM = "3.12.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -15866,23 +15866,45 @@ async function geoKonumAl(opts){
   const cap=window.Capacitor;
   const native=!!(cap && cap.isNativePlatform && cap.isNativePlatform());
   const G=cap && cap.Plugins && cap.Plugins.Geolocation;
+  const sure = opts.timeout || 15000;
+  /* Birkac saniye onceki konum cogu is icin yeterli. Eskiden her
+     cagride sifirdan GPS kilidi isteniyordu (maximumAge:0); kapali
+     alanda bu uzun suruyor ve zaman asimina dusuyordu. */
+  const yas = (opts.maximumAge !== undefined) ? opts.maximumAge : 60000;
+
   if(native && G && G.getCurrentPosition){
     try{
       if(G.requestPermissions) await G.requestPermissions();
-      const p=await G.getCurrentPosition({
-        enableHighAccuracy: opts.enableHighAccuracy!==false,
-        timeout: opts.timeout||15000
-      });
+      /* ══════ SERT ZAMAN ASIMI ══════
+         Eklentinin kendi timeout ayari Android de cogu zaman yok
+         sayiliyor: soz hic cozulmuyor ve fonksiyon SONSUZA KADAR
+         bekliyordu. Konum "takili kaliyor" belirtisinin sebebi buydu.
+         Yaris kurulur; eklenti gecikirse tarayici yoluna dusulur. */
+      const p = await Promise.race([
+        G.getCurrentPosition({
+          enableHighAccuracy: opts.enableHighAccuracy!==false,
+          timeout: sure,
+          maximumAge: yas
+        }),
+        new Promise(r=>setTimeout(()=>r(null), sure))
+      ]);
       if(p && p.coords) return p;
-    }catch(e){ console.warn("geo plugin", e); }
+      console.warn("geo: eklenti yanit vermedi, tarayici yoluna gecildi");
+    }catch(e){ console.warn("geo plugin", e && e.message); }
   }
   if(!navigator.geolocation) throw Object.assign(new Error("no geo"),{code:2});
   return await new Promise((ok,bad)=>{
-    navigator.geolocation.getCurrentPosition(ok,bad,{
-      enableHighAccuracy: opts.enableHighAccuracy!==false,
-      timeout: opts.timeout||15000,
-      maximumAge: opts.maximumAge||0
-    });
+    let bitti=false;
+    const zaman=setTimeout(()=>{
+      if(bitti) return; bitti=true;
+      bad(Object.assign(new Error("zaman asimi"),{code:3}));
+    }, sure + 500);
+    navigator.geolocation.getCurrentPosition(
+      p=>{ if(bitti) return; bitti=true; clearTimeout(zaman); ok(p); },
+      e=>{ if(bitti) return; bitti=true; clearTimeout(zaman); bad(e); },
+      { enableHighAccuracy: opts.enableHighAccuracy!==false,
+        timeout: sure, maximumAge: yas }
+    );
   });
 }
 function getLocation(){
@@ -23325,32 +23347,6 @@ async function kayitBaslatUI(){
 
   /* Sayaç saniyede iki kez güncellenir. Daha sık güncellemek görüntüde
      minik takılmalara yol açıyordu; süre gösterimi için gereksiz. */
-  /* ══════ KAYIT SIRASINDA TAKILMA SONDASI ══════
-     Her karede gecen sureyi olcer. 32 ms yi asan adimlar "takilma"
-     sayilir; hangi anda ve ne kadar surdugunu panele yazar.
-     Ayrica kayit boyunca calisan zamanlayici ve gozlemcileri sayar. */
-  (function(){
-    if(!window.__sk) return;
-    let onceki = performance.now(), enUzun = 0, takilma = 0, kare = 0;
-    const bas = performance.now();
-    function ol(){
-      if(!recInt) return;
-      const simdi = performance.now();
-      const fark = simdi - onceki;
-      onceki = simdi; kare++;
-      if(fark > 32){
-        takilma++;
-        if(fark > enUzun) enUzun = Math.round(fark);
-        if(fark > 80) window.__sk("TAKILMA +" + Math.round(simdi-bas) + "ms: " + Math.round(fark) + "ms");
-      }
-      window.__kayitOlcum = { kare, takilma, enUzun,
-        sure: Math.round((simdi-bas)/1000) };
-      requestAnimationFrame(ol);
-    }
-    requestAnimationFrame(ol);
-    window.__sk("kayit izleme basladi");
-  })();
-
   clearInterval(recInt);
   let _uyarildi = false;
   recInt = setInterval(()=>{
@@ -25326,133 +25322,5 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
 </script>
 
 
-
-<!-- ===== KLIPSY_SIK_PANEL (GECICI) ===== -->
-<style>
-#skBtn{position:fixed;right:0.375rem;bottom:13rem;z-index:2147483646;
-  width:2.75rem;height:2.75rem;border-radius:50%;border:0.125rem solid #6f6;
-  background:rgba(0,0,0,.85);color:#6f6;font:700 0.75rem monospace;display:grid;place-items:center}
-#skBox{position:fixed;left:0.25rem;right:0.25rem;top:5%;bottom:14%;z-index:2147483647;
-  background:rgba(0,0,0,.96);color:#6f6;border:0.125rem solid #6f6;
-  font:0.6875rem/1.45 monospace;padding:0.5rem;display:none;flex-direction:column}
-#skBox.on{display:flex}
-#skOut{flex:1;overflow:auto;white-space:pre-wrap;word-break:break-all}
-#skBar{display:flex;gap:0.25rem;flex-wrap:wrap;margin-bottom:0.375rem}
-#skBar button{background:#6f6;color:#000;border:0;border-radius:0.25rem;
-  font:700 0.625rem monospace;padding:0.3125rem 0.4375rem}
-</style>
-<button id="skBtn" aria-hidden="true">SK</button>
-<div id="skBox">
-  <div id="skBar">
-    <button data-k="clear">TEMIZLE</button>
-    <button data-k="durum">DURUM</button>
-    <button data-k="mb">KUTUPHANE</button>
-    <button data-k="kopya">KOPYALA</button>
-    <button data-k="close">KAPAT</button>
-  </div>
-  <div id="skOut"></div>
-</div>
-<script>
-(function(){
-  var out=document.getElementById("skOut"), box=document.getElementById("skBox"),
-      btn=document.getElementById("skBtn"), L=[];
-  function log(){
-    var t=new Date(), z=("0"+t.getMinutes()).slice(-2)+":"+("0"+t.getSeconds()).slice(-2);
-    L.push(z+" "+Array.prototype.join.call(arguments," "));
-    if(L.length>300) L.shift();
-    out.textContent=L.join("\n"); out.scrollTop=out.scrollHeight;
-  }
-  window.__sk=log;
-  /* Pano API si yoksa eski yontem */
-  function eskiKopya(metin){
-    try{
-      var t=document.createElement("textarea");
-      t.value=metin; t.style.position="fixed"; t.style.opacity="0";
-      document.body.appendChild(t); t.select();
-      document.execCommand("copy"); t.remove();
-      log("[panoya kopyalandi]");
-    }catch(e){ log("kopyalanamadi:", e.message); }
-  }
-  window.addEventListener("error",function(e){ log("HATA:",(e.message||"?")); });
-  window.addEventListener("unhandledrejection",function(e){
-    log("PROMISE:",String((e.reason&&e.reason.message)||e.reason)); });
-
-  btn.addEventListener("click",function(){ box.classList.toggle("on"); });
-  document.getElementById("skBar").addEventListener("click",function(e){
-    var a=e.target&&e.target.getAttribute&&e.target.getAttribute("data-k");
-    if(a==="clear"){ L=[]; out.textContent=""; return; }
-    if(a==="close"){ box.classList.remove("on"); return; }
-    if(a==="kopya"){
-      var metin=L.join("\n");
-      try{
-        if(navigator.clipboard && navigator.clipboard.writeText){
-          navigator.clipboard.writeText(metin).then(function(){ log("[panoya kopyalandi]"); })
-            .catch(function(){ eskiKopya(metin); });
-        }else eskiKopya(metin);
-      }catch(e){ eskiKopya(metin); }
-      return;
-    }
-    if(a==="durum"){
-      log("--- DURUM ---");
-      log("surum:", window.KLIPSY_SURUM);
-      log("Kamera var mi:", !!window.Kamera);
-      if(window.Kamera){
-        log("Kamera anahtarlari:", Object.keys(window.Kamera).join(","));
-        log("videoSikistir:", typeof window.Kamera.videoSikistir);
-        log("odakla:", typeof window.Kamera.odakla);
-      }
-      log("son sebep:", window.__sikistirmaSebep || "(yok)");
-      log("mb anahtar:", window.__mbAnahtar || "(yok)");
-      log("son boyut:", window.__sonHam || "-", "->", window.__sonKucuk || "-");
-      var o=window.__kayitOlcum;
-      if(o){
-        log("--- KAYIT AKICILIGI ---");
-        log("sure:", o.sure+"sn", "| kare:", o.kare,
-            "| ort fps:", o.sure? Math.round(o.kare/o.sure):"-");
-        log("takilan kare:", o.takilma, "| en uzun bekleme:", o.enUzun+"ms");
-      }else log("kayit olcumu: (henuz yok)");
-      log("--- FOTOGRAF ZINCIRI ---");
-      log("cekimden gelen:", window.__fotoHam || "(henuz yok)");
-      log("islemeden sonra:", window.__fotoSon || "(henuz yok)");
-      log("ekran:", window.innerWidth+"x"+window.innerHeight,
-          "| yogunluk:", window.devicePixelRatio);
-      log("beklenen: cekim 2000px ustu olmali; degilse eklenti");
-      log("          width parametresini yok sayiyor demektir.");
-      log("sikistirma sozu:", window.__sikistirmaSozu ? "BEKLIYOR" : "yok/bitti");
-      log("arka plan isleri: video=", document.querySelectorAll("video").length,
-          "| gorsel=", document.querySelectorAll("img").length);
-      try{
-        var m=performance.memory;
-        if(m) log("bellek:", Math.round(m.usedJSHeapSize/1048576)+"MB /",
-                  Math.round(m.jsHeapSizeLimit/1048576)+"MB");
-      }catch(e){}
-      return;
-    }
-    if(a==="mb"){
-      log("--- KUTUPHANE YUKLENIYOR ---");
-      (async function(){
-        try{
-          if(!window.Kamera || !window.Kamera.mbTest){
-            log("mbTest yok, dogrudan CDN denenir");
-          }
-          var sc=document.createElement("script");
-          sc.src="https://cdn.jsdelivr.net/npm/mediabunny@1.55.7/dist/bundles/mediabunny.min.cjs";
-          sc.onload=function(){
-            var m=window.mediabunny||window.Mediabunny||null;
-            log("yuklendi. global:", m? "var":"YOK");
-            if(m) log("anahtarlar:", Object.keys(m).slice(0,45).join(","));
-          };
-          sc.onerror=function(){ log("CDN YUKLENEMEDI (ag izni?)"); };
-          document.head.appendChild(sc);
-        }catch(e){ log("hata:", e.message); }
-      })();
-      return;
-    }
-  });
-  log("Sikistirma paneli hazir.");
-  log("1) Video cek  2) SK ye bas  3) DURUM");
-})();
-</script>
-<!-- ===== /KLIPSY_SIK_PANEL ===== -->
 </body>
 </html>

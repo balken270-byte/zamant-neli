@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.11.5-t";
+window.KLIPSY_SURUM = "3.11.7-t";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -22214,6 +22214,20 @@ function hizMetni(bps){
 }
 
 async function post(src,kind,mood,where,note,extra){
+  /* Arka plandaki sikistirma bittiyse KUCUK dosya kullanilir.
+     Kullanici cok hizli davrandiysa burada kisa bir bekleme olur. */
+  if(kind === "video" && window.__sikistirmaSozu){
+    try{
+      showUploadIndicator(t("vid_prep"), 0);
+      const kucuk = await window.__sikistirmaSozu;
+      hideUploadIndicator(true);
+      if(kucuk && kucuk.size){
+        src = URL.createObjectURL(kucuk);
+        if(typeof draft === "object" && draft) draft.blob = kucuk;
+      }
+    }catch(e){ hideUploadIndicator(true); }
+    window.__sikistirmaSozu = null;
+  }
   const sb=window.__sb, me=window.__me;
   const song=(extra&&extra.song)?extra.song:null;
   // yerel önizleme: hemen akışa koy (iyimser)
@@ -23269,6 +23283,32 @@ async function kayitBaslatUI(){
 
   /* Sayaç saniyede iki kez güncellenir. Daha sık güncellemek görüntüde
      minik takılmalara yol açıyordu; süre gösterimi için gereksiz. */
+  /* ══════ KAYIT SIRASINDA TAKILMA SONDASI ══════
+     Her karede gecen sureyi olcer. 32 ms yi asan adimlar "takilma"
+     sayilir; hangi anda ve ne kadar surdugunu panele yazar.
+     Ayrica kayit boyunca calisan zamanlayici ve gozlemcileri sayar. */
+  (function(){
+    if(!window.__sk) return;
+    let onceki = performance.now(), enUzun = 0, takilma = 0, kare = 0;
+    const bas = performance.now();
+    function ol(){
+      if(!recInt) return;
+      const simdi = performance.now();
+      const fark = simdi - onceki;
+      onceki = simdi; kare++;
+      if(fark > 32){
+        takilma++;
+        if(fark > enUzun) enUzun = Math.round(fark);
+        if(fark > 80) window.__sk("TAKILMA +" + Math.round(simdi-bas) + "ms: " + Math.round(fark) + "ms");
+      }
+      window.__kayitOlcum = { kare, takilma, enUzun,
+        sure: Math.round((simdi-bas)/1000) };
+      requestAnimationFrame(ol);
+    }
+    requestAnimationFrame(ol);
+    window.__sk("kayit izleme basladi");
+  })();
+
   clearInterval(recInt);
   let _uyarildi = false;
   recInt = setInterval(()=>{
@@ -23297,7 +23337,9 @@ async function kayitBaslatUI(){
       toast(t("video_max"));
       kayitBitirVeAc().catch(e=>console.warn("sure doldu:", e && e.message));
     }
-  }, 250);
+  /* 250 ms cok sikti: her adimda DOM yazimi ve sinif degisimi
+     kayit sirasinda hafif takilmaya yol aciyordu. 400 ms yeterli. */
+  }, 400);
 }
 
 /* Kameradan önizlemeye geçiş efekti: görüntü hızla kısılır,
@@ -23362,32 +23404,29 @@ async function kayitBitirVeAc(){
   if(sonuc && sonuc.blob && window.Kamera && Kamera.videoSikistir){
     const ham = sonuc.blob.size;
     if(window.__sk) window.__sk("sikistirma basliyor, ham=", (ham/1048576).toFixed(1),"MB");
-    try{
-      showUploadIndicator(t("vid_prep"), 0);
-      const kucuk = await Kamera.videoSikistir(sonuc.blob, (yuzde)=>{
-        showUploadIndicator(t("vid_prep"), yuzde);
-      });
-      hideUploadIndicator(true);
-      /* Sikistirma calismadiysa SEBEBINI ekranda goster: kor tahmin yok */
-      if(!kucuk || kucuk.size >= ham){
-        const sebep = window.__sikistirmaSebep || "bilinmiyor";
-        console.warn("[Klipsy] sikistirma yapilmadi:", sebep, "| mb anahtarlari:", window.__mbAnahtar||"-");
-        toast("Sıkıştırma yok: " + sebep.slice(0,60));
+    /* ══════════ ARKA PLANDA SIKISTIR ══════════
+       Onceden sikistirma BEKLENIYORDU: kayit bitince paylasim ekrani
+       acilmiyor, kullanici 7-10 saniye bos ekrana bakiyordu.
+       Artik ekran HEMEN acilir, sikistirma arka planda surer.
+       Gonderme aninda sonuc beklenir; kullanici not yazarken islem
+       zaten bitmis oluyor. */
+    window.__sikistirmaSozu = (async ()=>{
+      try{
+        const kucuk = await Kamera.videoSikistir(sonuc.blob, null);
+        if(kucuk && kucuk.size && kucuk.size < ham){
+          window.__sonHam=(ham/1048576).toFixed(1)+"MB";
+          window.__sonKucuk=(kucuk.size/1048576).toFixed(1)+"MB";
+          if(window.__sk) window.__sk("sikistirma OK", window.__sonHam, "->", window.__sonKucuk);
+          return kucuk;
+        }
+      }catch(e){
+        if(window.__sk) window.__sk("sikistirma hata:", e && e.message);
       }
-      if(kucuk && kucuk.size && kucuk.size < ham){
-        console.log("[Klipsy] sikistirma:",
-          (ham/1048576).toFixed(1),"MB ->",(kucuk.size/1048576).toFixed(1),"MB");
-        window.__sonHam=(ham/1048576).toFixed(1)+"MB"; window.__sonKucuk=(kucuk.size/1048576).toFixed(1)+"MB";
-        if(window.__sk) window.__sk("sikistirma OK", window.__sonHam, "->", window.__sonKucuk);
-        sonuc.blob = kucuk;
-        try{ if(sonuc.url){ URL.revokeObjectURL(sonuc.url); } }catch(e){}
-        sonuc.url = URL.createObjectURL(kucuk);
-      }
-    }catch(e){
-      hideUploadIndicator(true);
-      console.warn("sikistirma:", e && e.message);
-    }
+      return null;
+    })();
   }
+
+
 
   /* Kayıt süre sınırına takılıp KENDİLİĞİNDEN bittiyse durum zaten
      kapanmış oluyor ve buradan boş dönüyordu — önizleme hiç açılmıyordu.
@@ -25292,6 +25331,21 @@ if(!$('#gWall2').children.length) buildWall($('#gWall2'));
       log("son sebep:", window.__sikistirmaSebep || "(yok)");
       log("mb anahtar:", window.__mbAnahtar || "(yok)");
       log("son boyut:", window.__sonHam || "-", "->", window.__sonKucuk || "-");
+      var o=window.__kayitOlcum;
+      if(o){
+        log("--- KAYIT AKICILIGI ---");
+        log("sure:", o.sure+"sn", "| kare:", o.kare,
+            "| ort fps:", o.sure? Math.round(o.kare/o.sure):"-");
+        log("takilan kare:", o.takilma, "| en uzun bekleme:", o.enUzun+"ms");
+      }else log("kayit olcumu: (henuz yok)");
+      log("sikistirma sozu:", window.__sikistirmaSozu ? "BEKLIYOR" : "yok/bitti");
+      log("arka plan isleri: video=", document.querySelectorAll("video").length,
+          "| gorsel=", document.querySelectorAll("img").length);
+      try{
+        var m=performance.memory;
+        if(m) log("bellek:", Math.round(m.usedJSHeapSize/1048576)+"MB /",
+                  Math.round(m.jsHeapSizeLimit/1048576)+"MB");
+      }catch(e){}
       return;
     }
     if(a==="mb"){

@@ -240,7 +240,9 @@
       enableVideoMode: true,
       lockAndroidOrientation: true,
       disableAudio: secenek.ses === false,
-      videoQuality: "high",
+      /* Onizleme/kayit varsayilani: "high" cihazin en yuksegini secip
+         devasa dosyalar uretiyordu. 1080p hem yeterli hem oncelikli. */
+      videoQuality: "1080p",
       includeSafeAreaInsets: false,
     };
     if (secenek.kap)   taban.parent    = secenek.kap;
@@ -527,6 +529,42 @@
     });
   }
 
+  /* ══════════════════ ODAKLAMA ══════════════════
+     Onceden deklansor dogrudan capture() cagiriyordu: kamera
+     odaklanmayi bitirmeden kare aliniyor, fotograflar bulanik
+     cikiyordu. CameraX odagi ASENKRON yurutur; beklenmesi gerekir.
+     Eklentinin setFocus({x,y}) API si 0-1 arasi NORMALIZE koordinat
+     bekler (0.5, 0.5 = ekranin ortasi). */
+  let _odakSuruyor = false;
+
+  async function odakla(x, y, beklemeMs) {
+    if (!durum.yerel || !durum.acik) return false;
+    if (_odakSuruyor) return false;
+    _odakSuruyor = true;
+    const nx = (typeof x === "number") ? Math.min(1, Math.max(0, x)) : 0.5;
+    const ny = (typeof y === "number") ? Math.min(1, Math.max(0, y)) : 0.5;
+    try {
+      const cp = CP();
+      if (!cp || typeof cp.setFocus !== "function") return false;
+      /* Odak sozunu bekle, ama sonsuza kadar degil: bazi cihazlarda
+         soz hic cozulmuyor ve deklansor kilitleniyordu. */
+      const sonuc = await Promise.race([
+        cp.setFocus({ x: nx, y: ny }).then(function () { return true; })
+                                     .catch(function () { return false; }),
+        new Promise(function (r) { setTimeout(function () { r("zamanasimi"); },
+                                              beklemeMs || 900); })
+      ]);
+      /* Odak motorunun oturmasi icin kisa pay */
+      await new Promise(function (r) { setTimeout(r, 120); });
+      yay("odak", { x: nx, y: ny, sonuc: sonuc });
+      return sonuc === true;
+    } catch (e) {
+      return false;
+    } finally {
+      _odakSuruyor = false;
+    }
+  }
+
   function fotoCek(secenek) {
     secenek = secenek || {};
     const kalite = secenek.kalite || 92;
@@ -548,6 +586,15 @@
              yakın fotoğraf boyutunu seçer; sonrasında index.html yalnızca
              gerekiyorsa aynı 9:16 oranını uygular.
           */
+          /* DEKLANSOR ONCESI ODAK
+             Kullanici bir noktaya dokunmussa oraya, dokunmamissa
+             merkeze odaklanilir. Odak basarisiz olsa bile cekim
+             DEVAM EDER: kullanicinin ani kacmasin. */
+          try {
+            const n = secenek.odak || durum.sonOdak || null;
+            await odakla(n ? n.x : 0.5, n ? n.y : 0.5, 900);
+          } catch (e) {}
+
           const r = await CP().capture({
             quality: kalite
           });
@@ -821,7 +868,16 @@
               storeToFile: true,
               disableAudio: false,
               maxDuration: enFazlaSn,
-              videoQuality: "high",
+              /* ══════ DOSYA BOYUTU ══════
+                 "high" CameraX te cihazin EN YUKSEGI demek: cogu
+                 telefonda 4K ya da 1080p60. 9 saniyelik kayit 25 MB,
+                 30 saniyelik 100 MB uzeri cikiyordu; yukleme siniri
+                 30 MB oldugu icin kullanici paylasim yapamiyordu.
+                 1080p kendi basina yeterli ve dosya ucte bire iner. */
+              videoQuality: secenek.kalite || "1080p",
+              /* Eklenti destekliyorsa bit hizi da sinirlanir. Desteklemezse
+                 bu alan yok sayilir, zarari olmaz. */
+              videoBitrate: secenek.bitHizi || 5000000,
             });
           }catch(e1){
             const ay = String((e1 && e1.message) || "");
@@ -1193,6 +1249,9 @@
     cevir: cevir,
 
     fotoCek: fotoCek,
+    /* Tap-to-focus ve acilis odagi icin disa acilir.
+       x ve y 0-1 arasi normalize deger olmali. */
+    odakla: odakla,
     kayitBaslat: kayitBaslat,
     kayitBitir: kayitBitir,
 

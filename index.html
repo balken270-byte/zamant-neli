@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.9.7";
+window.KLIPSY_SURUM = "3.10.0";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -6298,6 +6298,7 @@ svg{display:block}
 #timeSheet{position:fixed;inset:0;z-index:var(--z-time);color:var(--t1);--sat:var(--sat-root,0px)}
 .explore{position:absolute;inset:0;overflow:hidden}
 /* haritada kullanıcının konumu */
+/* Harita atifi: normalde kucuk bir "i", basilinca kaynaklar acilir */
 .userDot{position:relative}
 .userDot .udCore{position:absolute;inset:0.3125rem;border-radius:6.1875rem;background:#2E9BFF;
   box-shadow:0 0 0 0.1875rem #fff, 0 0.125rem 0.625rem rgba(0,0,0,.55)}
@@ -6602,6 +6603,11 @@ svg{display:block}
   background:rgba(0,0,0,.28);
   backdrop-filter:blur(0.5rem);-webkit-backdrop-filter:blur(0.5rem);
   transition:opacity .14s,transform .12s}
+/* Baskasinin profilinde sagdaki uc nokta: cember ve zemin yok,
+   yalnizca ikon. Golge her fotografta okunmasini saglar. */
+#profile .profbody.otherProf .hero.heroBig .hbEnd{
+  background:none;backdrop-filter:none;-webkit-backdrop-filter:none;
+  filter:drop-shadow(0 0.0625rem 0.25rem rgba(0,0,0,.75))}
 .hero.heroBig .hbIcon:active{opacity:.6;transform:scale(.9)}
 .hero.heroBig .hbIcon svg{width:1.3125rem;height:1.3125rem}
 .hero.heroBig .hbEnd{margin-left:auto}
@@ -6651,10 +6657,26 @@ svg{display:block}
 
 /* biyografi: fotoğrafın dibinden başlamasın */
 #profile .profbody.otherProf .profbio{margin:1.375rem 0.25rem 0;padding:0.3125rem 0 0}
+/* Kapak fotografinin uzerindeki biyografi */
+#profile .hero{position:relative}
+#profile .hero .profbio.heroBio{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  margin:0;padding:2.75rem 1.125rem 2.25rem;
+  background:linear-gradient(to top,rgba(0,0,0,.78) 18%,rgba(0,0,0,.42) 55%,transparent);
+  pointer-events:auto}
+#profile .hero .profbio.heroBio .secTitle{display:none}
+#profile .hero .profbio.heroBio .bioText{
+  font-size:0.8438rem;line-height:1.5;color:#fff;letter-spacing:-.01em;
+  text-shadow:0 0.0625rem 0.375rem rgba(0,0,0,.6);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden}
+#profile .hero .profbio.heroBio .bioText.acik{-webkit-line-clamp:unset}
+#profile .hero .profbio.heroBio .bioText.empty{color:rgba(255,255,255,.72)}
 
 /* bölümler arası nefes */
-#profile .profbody.otherProf .profdetail{margin:1.375rem 0.25rem 0}
-#profile .profbody.otherProf .profnote{margin:1.5rem 0.25rem 0;padding:0}
+/* Sayac bloklari ile "Hakkinda" arasi cok acikti, yariya indirildi */
+#profile .profbody.otherProf .profdetail{margin:0.6875rem 0.25rem 0}
+#profile .profbody.otherProf .profnote{margin:0.75rem 0.25rem 0;padding:0}
 
 /* ═══ AKIŞ KİPİ DÜĞMESİ ═══
    Başlık çubuğunda, arama ve konum düğmelerinin yanında.
@@ -7415,6 +7437,18 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 /* Onizleme sigdir modunda status bar arkasina giriyor ve acik zeminde
    beyaz ikonlar okunmuyordu. Ust serit alt cubukla ayni siyah zemini
    kullanir; boylece saat ve dugmeler her sahnede okunur. */
+/* Odak halkasi: dokunulan noktada kisa sure gorunur */
+.odakHalka{position:absolute;z-index:4;width:4.5rem;height:4.5rem;
+  margin:-2.25rem 0 0 -2.25rem;border-radius:6.1875rem;
+  border:0.125rem solid rgba(255,255,255,.9);pointer-events:none;
+  box-shadow:0 0 0 0.0625rem rgba(0,0,0,.35), inset 0 0 0 0.0625rem rgba(0,0,0,.25);
+  animation:odakAt .7s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes odakAt{
+  0%{transform:scale(1.45);opacity:0}
+  25%{transform:scale(1);opacity:1}
+  70%{transform:scale(1);opacity:1}
+  100%{transform:scale(.92);opacity:0}
+}
 .camtop{position:relative;z-index:2;background:#000;
   padding:calc(var(--sat) + 0.75rem) 0.875rem 0.625rem;
   display:flex;align-items:center;gap:0.5rem;justify-content:space-between}
@@ -13832,6 +13866,7 @@ async function initMap(){
     _map.setView(bas, yak);
   })();
   addCARTOVectorLayer();
+
   // kullanıcı haritayı elle gezdirirse otomatik odaklamayı bırak
   /* HATA DÜZELTMESİ
      Haritayı biz odakladığımızda (setView) da "zoomstart" tetikleniyordu.
@@ -18409,13 +18444,27 @@ function renderProfile(){
      "Düzenle" ekranından yönetiliyor. */
   bioWrap.innerHTML='<div class="secTitle">'+t("biography")+'</div><p class="bioText"></p>';
   const bioP = bioWrap.querySelector(".bioText");
+  /* Uzun biyografi uc satirla kesilir; dokununca tamami acilir. */
+  bioP.addEventListener("click", ()=>bioP.classList.toggle("acik"));
   if(curBio){
     bioP.textContent = curBio;
   }else{
     bioP.textContent = own ? t("f_bio_ph") : t("bio_empty_other");
     bioP.classList.add("empty");
   }
-  box.appendChild(bioWrap);
+  /* BASKASININ PROFILINDE biyografi asagida degil, isim kartinin
+     hemen altinda durur: kim oldugunu anlamak icin sayfayi
+     kaydirmak gerekmesin. Kendi profilinde eski yerinde kalir. */
+  /* BASKASININ PROFILINDE biyografi KAPAK FOTOGRAFININ USTUNDE durur:
+     kim oldugunu anlamak icin kaydirmak gerekmesin. Okunurluk icin
+     altta yumusak bir koyulasma var. Kendi profilinde eski yerinde kalir. */
+  const heroEl = box.querySelector(".hero");
+  if(!own && heroEl){
+    bioWrap.classList.add("heroBio");
+    heroEl.appendChild(bioWrap);
+  }else{
+    box.appendChild(bioWrap);
+  }
 
   /* açıklama — yalnızca başkasının profilinde.
      Kendi profilinde gereksizdi, kaldırıldı. */
@@ -21177,6 +21226,33 @@ async function start(kayitSurerken){
           });
           if(camPanel) camPanel.classList.remove("waiting");
           document.documentElement.classList.add("camNativeOn");
+      /* Onizleme oturduktan sonra bir kez merkeze odaklan: kullanici
+         hemen cekerse kare net olsun. */
+      setTimeout(function(){
+        try{ if(window.Kamera && Kamera.odakla) Kamera.odakla(0.5, 0.5, 700); }catch(e){}
+      }, 450);
+      /* DOKUNARAK ODAK — onizlemeye dokununca o noktaya odaklanir ve
+         kisa bir halka gosterilir. Koordinat 0-1 arasina cevrilir. */
+      try{
+        const camEl = document.getElementById("cam");
+        if(camEl && !camEl._odakBagli){
+          camEl._odakBagli = true;
+          camEl.addEventListener("click", (e)=>{
+            if(e.target.closest("button, .camtop, .cambot, input, a")) return;
+            const r = camEl.getBoundingClientRect();
+            const nx = (e.clientX - r.left) / r.width;
+            const ny = (e.clientY - r.top)  / r.height;
+            if(nx < 0 || nx > 1 || ny < 0 || ny > 1) return;
+            try{ if(window.Kamera && Kamera.odakla) Kamera.odakla(nx, ny, 900); }catch(x){}
+            const h2 = document.createElement("span");
+            h2.className = "odakHalka";
+            h2.style.left = (e.clientX - r.left) + "px";
+            h2.style.top  = (e.clientY - r.top)  + "px";
+            camEl.appendChild(h2);
+            setTimeout(()=>h2.remove(), 700);
+          }, true);
+        }
+      }catch(e){}
           if(typeof window.__webCamOlcekKur === "function") window.__webCamOlcekKur();
           return;
         }catch(e2){

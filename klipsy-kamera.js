@@ -850,11 +850,13 @@
       const donusum = await mb.Conversion.init({
         input: girdi,
         output: cikti,
+        /* COZUNURLUGE DOKUNULMAZ.
+           width/height verilince video 1280x1280 lik KAREYE sigdiriliyor,
+           etrafina siyah bantlar ekleniyor ve goruntu kucuk gorunuyordu.
+           Kaynak zaten 720p; bize gereken tek sey BIT HIZINI dusurmek.
+           Kadraj, oran ve donme bilgisi oldugu gibi korunur. */
         video: {
           bitrate: SIKISTIRMA.hedefBitHizi,
-          width: SIKISTIRMA.enBuyukKenar,
-          height: SIKISTIRMA.enBuyukKenar,
-          fit: "contain",
           forceTranscode: true
         },
         audio: { bitrate: SIKISTIRMA.sesBitHizi }

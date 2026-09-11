@@ -788,6 +788,81 @@
     };
   }
 
+  /* ══════════════════ VIDEO SIKISTIRMA ══════════════════
+     Native CameraX kaydi bit hizi kontrolu SUNMUYOR: 25 saniye
+     ~28 MB (~9 Mbps) cikiyordu. Ayni sure TikTok'ta 8,8 MB
+     (~2,8 Mbps). Fark kodlama ayarindan geliyor, cozunurlukten degil.
+
+     Cozum TikTok'un yaptigi: kaydi aldiktan SONRA cihazda yeniden
+     kodlamak. Kayit sirasinda donma olmaz cunku islem kayit bittikten
+     sonra yapilir. Basarisiz olursa HAM dosya kullanilir; kullanici
+     hicbir sey kaybetmez.
+
+     Hedef 2,5 Mbps: TikTok bandi. 25 saniye ~8 MB eder.            */
+  const SIKISTIRMA = {
+    hedefBitHizi: 2500000,
+    sesBitHizi: 128000,
+    enBuyukKenar: 1280,
+    /* Bu boyutun altindaki dosyalara dokunma: kazanc zahmete degmez */
+    esikBayt: 6 * 1024 * 1024
+  };
+
+  async function videoSikistir(blob, ilerleme) {
+    if (!blob || blob.size < SIKISTIRMA.esikBayt) return blob;
+    let mb = null;
+    try { mb = await mediabunnyYukle(); } catch (e) {}
+    if (!mb || !mb.Conversion || !mb.Input) {
+      yay("bilgi", { konu: "sikistirma", durum: "kutuphane yok" });
+      return blob;
+    }
+    const t0 = Date.now();
+    try {
+      const girdi = new mb.Input({
+        source: new mb.BlobSource(blob),
+        formats: mb.ALL_FORMATS
+      });
+      const cikti = new mb.Output({
+        format: new mb.Mp4OutputFormat(),
+        target: new mb.BufferTarget()
+      });
+
+      const donusum = await mb.Conversion.init({
+        input: girdi,
+        output: cikti,
+        video: {
+          bitrate: SIKISTIRMA.hedefBitHizi,
+          width: SIKISTIRMA.enBuyukKenar,
+          height: SIKISTIRMA.enBuyukKenar,
+          fit: "contain",
+          forceTranscode: true
+        },
+        audio: { bitrate: SIKISTIRMA.sesBitHizi }
+      });
+
+      if (typeof ilerleme === "function" && donusum.onProgress !== undefined) {
+        donusum.onProgress = function (o) {
+          try { ilerleme(Math.round((o || 0) * 100)); } catch (e) {}
+        };
+      }
+
+      await donusum.execute();
+      const veri = cikti.target.buffer;
+      if (!veri || !veri.byteLength) return blob;
+
+      const yeni = new Blob([veri], { type: "video/mp4" });
+      const sn = ((Date.now() - t0) / 1000).toFixed(1);
+      yay("bilgi", {
+        konu: "sikistirma",
+        oncesi: blob.size, sonrasi: yeni.size, saniye: sn
+      });
+      /* Buyudiyse ham dosyayi kullan */
+      return (yeni.size > 0 && yeni.size < blob.size) ? yeni : blob;
+    } catch (e) {
+      yay("bilgi", { konu: "sikistirma", durum: "basarisiz", hata: String(e && e.message || e) });
+      return blob;
+    }
+  }
+
   async function webCodecsKaydiBaslat(secenek, enFazlaSn) {
     const cfg = await webCodecsYapilandir(secenek);
     const mb = cfg.mb;
@@ -1271,6 +1346,8 @@
     /* Tap-to-focus ve acilis odagi icin disa acilir.
        x ve y 0-1 arasi normalize deger olmali. */
     odakla: odakla,
+    /* Kayittan sonra cagrilir: dosyayi hedef bit hizinda yeniden kodlar */
+    videoSikistir: videoSikistir,
     kayitBaslat: kayitBaslat,
     kayitBitir: kayitBitir,
 

@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.10.4";
+window.KLIPSY_SURUM = "3.11.0";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      vid_prep:"Video hazırlanıyor",
       up_photo:"Kare gönderiliyor",
       up_video:"Video gönderiliyor",
       up_too_big:"Video çok büyük ({mb} MB) — taslaklara alındı",
@@ -724,6 +725,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      vid_prep:"Preparing video",
       up_photo:"Uploading photo",
       up_video:"Uploading video",
       up_too_big:"Video too large ({mb} MB) — kept as draft",
@@ -1280,6 +1282,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      vid_prep:"Preparando vídeo",
       up_photo:"Subiendo foto",
       up_video:"Subiendo vídeo",
       up_too_big:"Vídeo demasiado grande ({mb} MB) — guardado como borrador",
@@ -1833,6 +1836,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      vid_prep:"جارٍ تجهيز الفيديو",
       up_photo:"جارٍ رفع الصورة",
       up_video:"جارٍ رفع الفيديو",
       up_too_big:"الفيديو كبير جدًا ({mb} م.ب) — حُفظ كمسودة",
@@ -2386,6 +2390,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      vid_prep:"Préparation de la vidéo",
       up_photo:"Envoi de la photo",
       up_video:"Envoi de la vidéo",
       up_too_big:"Vidéo trop lourde ({mb} Mo) — gardée en brouillon",
@@ -2939,6 +2944,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      vid_prep:"Video wird vorbereitet",
       up_photo:"Foto wird gesendet",
       up_video:"Video wird gesendet",
       up_too_big:"Video zu groß ({mb} MB) — als Entwurf gespeichert",
@@ -3492,6 +3498,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      vid_prep:"Подготовка видео",
       up_photo:"Отправка фото",
       up_video:"Отправка видео",
       up_too_big:"Видео слишком большое ({mb} МБ) — сохранено в черновики",
@@ -4045,6 +4052,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      vid_prep:"A preparar vídeo",
       up_photo:"A enviar foto",
       up_video:"A enviar vídeo",
       up_too_big:"Vídeo demasiado grande ({mb} MB) — guardado nos rascunhos",
@@ -4598,6 +4606,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      vid_prep:"वीडियो तैयार हो रहा है",
       up_photo:"फ़ोटो भेजी जा रही है",
       up_video:"वीडियो भेजा जा रहा है",
       up_too_big:"वीडियो बहुत बड़ा ({mb} MB) — ड्राफ़्ट में रखा",
@@ -5151,6 +5160,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      vid_prep:"Menyiapkan video",
       up_photo:"Mengunggah foto",
       up_video:"Mengunggah video",
       up_too_big:"Video terlalu besar ({mb} MB) — disimpan ke draf",
@@ -22167,7 +22177,11 @@ function yukleIlerlemeli(path, blob, contentType, kind){
       x.setRequestHeader("x-upsert", "false");
 
       const t0 = Date.now();
-      const etiket = kind === "video" ? t("up_video") : t("up_photo");
+      /* Dosya boyutu etikette gorunur: kullanici ne yukledigini bilsin,
+         biz de tahmin yerine gercek rakami gorelim. */
+      const mb = (blob.size / 1048576).toFixed(1);
+      const etiket = (kind === "video" ? t("up_video") : t("up_photo")) + " · " + mb + " MB";
+      console.log("[Klipsy] yuklenen dosya:", mb, "MB", blob.type || "");
       x.upload.onprogress = (e)=>{
         if(!e.lengthComputable) return;
         const yuzde = (e.loaded / e.total) * 100;
@@ -23331,6 +23345,33 @@ async function kayitBitirVeAc(){
   if(sonuc && sonuc.blob && sonuc.blob.size < 1024){
     toast(t("rec_failed"));
     return;
+  }
+
+  /* ══════════ CIHAZDA SIKISTIRMA ══════════
+     Native kayit bit hizi kontrolu sunmuyor: 25 saniye ~28 MB.
+     Ayni sure TikTok ta 8,8 MB. Fark kodlama ayarindan geliyor.
+     Kayit BITTIKTEN sonra hedef bit hizinda yeniden kodlanir;
+     kayit sirasinda donma olmaz. Basarisiz olursa ham dosya
+     kullanilir, kullanici hicbir sey kaybetmez. */
+  if(sonuc && sonuc.blob && window.Kamera && Kamera.videoSikistir){
+    const ham = sonuc.blob.size;
+    try{
+      showUploadIndicator(t("vid_prep"), 0);
+      const kucuk = await Kamera.videoSikistir(sonuc.blob, (yuzde)=>{
+        showUploadIndicator(t("vid_prep"), yuzde);
+      });
+      hideUploadIndicator(true);
+      if(kucuk && kucuk.size && kucuk.size < ham){
+        console.log("[Klipsy] sikistirma:",
+          (ham/1048576).toFixed(1),"MB ->",(kucuk.size/1048576).toFixed(1),"MB");
+        sonuc.blob = kucuk;
+        try{ if(sonuc.url){ URL.revokeObjectURL(sonuc.url); } }catch(e){}
+        sonuc.url = URL.createObjectURL(kucuk);
+      }
+    }catch(e){
+      hideUploadIndicator(true);
+      console.warn("sikistirma:", e && e.message);
+    }
   }
 
   /* Kayıt süre sınırına takılıp KENDİLİĞİNDEN bittiyse durum zaten

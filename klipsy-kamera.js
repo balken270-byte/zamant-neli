@@ -810,9 +810,17 @@
   async function videoSikistir(blob, ilerleme) {
     if (!blob || blob.size < SIKISTIRMA.esikBayt) return blob;
     let mb = null;
-    try { mb = await mediabunnyYukle(); } catch (e) {}
-    if (!mb || !mb.Conversion || !mb.Input) {
-      yay("bilgi", { konu: "sikistirma", durum: "kutuphane yok" });
+    try { mb = await mediabunnyYukle(); } catch (e) {
+      window.__sikistirmaSebep = "kutuphane yuklenemedi: " + (e && e.message || e);
+      return blob;
+    }
+    if (!mb) { window.__sikistirmaSebep = "mediabunny null"; return blob; }
+    /* Hangi API nin var oldugunu gorelim: surumler arasi ad degisiyor */
+    const eksik = ["Conversion","Input","Output","BlobSource","BufferTarget",
+                   "Mp4OutputFormat","ALL_FORMATS"].filter(k => !mb[k]);
+    window.__mbAnahtar = Object.keys(mb).slice(0, 40).join(",");
+    if (eksik.length) {
+      window.__sikistirmaSebep = "eksik API: " + eksik.join(",");
       return blob;
     }
     const t0 = Date.now();
@@ -858,7 +866,7 @@
       /* Buyudiyse ham dosyayi kullan */
       return (yeni.size > 0 && yeni.size < blob.size) ? yeni : blob;
     } catch (e) {
-      yay("bilgi", { konu: "sikistirma", durum: "basarisiz", hata: String(e && e.message || e) });
+      window.__sikistirmaSebep = "hata: " + String(e && e.message || e);
       return blob;
     }
   }

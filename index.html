@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.13.8";
+window.KLIPSY_SURUM = "3.21.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      cal_places:"yer",
+      cal_month:"Ay",
+      diary_edit:"Notu düzenle",
+      diary_ph:"Bugün ne hissettin?",
+      diary_saving:"kaydediliyor…",
+      diary_saved:"kaydedildi",
+      diary_fail:"kaydedilemedi",
+      cal_tab:"Takvim",
+      cal_desc:"Hangi gün ne yaşadığın. Bir güne dokun, o günün anları açılsın.",
+      cal_pick:"Bir gün seç",
+      cal_empty:"O gün paylaşım yok",
+      cal_days:"Pt Sa Ça Pe Cu Ct Pz",
+      map_moments_k:"an",
+      date_note:"Son bir ay seçilemez. Geçmiş anlar dönem olarak görünür, kimseyi işaret etmez.",
       priv_title:"Burada geçmiş yok",
       priv_text:"Konum, arşiv ve geçmiş paylaşımlar profilde tutulmaz. Anlar akışta yaşar, sonra kaybolur.",
       vid_prep:"Video hazırlanıyor",
@@ -727,6 +741,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      cal_places:"places",
+      cal_month:"Month",
+      diary_edit:"Edit note",
+      diary_ph:"How did this feel?",
+      diary_saving:"saving…",
+      diary_saved:"saved",
+      diary_fail:"not saved",
+      cal_tab:"Calendar",
+      cal_desc:"What you lived, day by day. Tap a day to open its moments.",
+      cal_pick:"Pick a day",
+      cal_empty:"Nothing shared that day",
+      cal_days:"Mo Tu We Th Fr Sa Su",
+      map_moments_k:"moments",
+      date_note:"The last month cannot be selected. Past moments appear as a period, never pointing at anyone.",
       priv_title:"No history here",
       priv_text:"Location, archive and past moments are never kept on a profile. Moments live in the feed, then fade.",
       vid_prep:"Preparing video",
@@ -1286,6 +1314,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      cal_places:"lugares",
+      cal_month:"Mes",
+      diary_edit:"Editar nota",
+      diary_ph:"¿Cómo te sentiste?",
+      diary_saving:"guardando…",
+      diary_saved:"guardado",
+      diary_fail:"no guardado",
+      cal_tab:"Calendario",
+      cal_desc:"Lo que viviste, día a día. Toca un día para ver sus momentos.",
+      cal_pick:"Elige un día",
+      cal_empty:"Nada compartido ese día",
+      cal_days:"Lu Ma Mi Ju Vi Sá Do",
+      map_moments_k:"momentos",
+      date_note:"No se puede elegir el último mes. Los momentos pasados se ven como periodo, sin señalar a nadie.",
       priv_title:"Aquí no hay historial",
       priv_text:"La ubicación, el archivo y los momentos pasados no se guardan en el perfil. Los momentos viven en el feed y luego desaparecen.",
       vid_prep:"Preparando vídeo",
@@ -1842,6 +1884,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      cal_places:"أماكن",
+      cal_month:"شهر",
+      diary_edit:"تعديل الملاحظة",
+      diary_ph:"بماذا شعرت؟",
+      diary_saving:"جارٍ الحفظ…",
+      diary_saved:"حُفظ",
+      diary_fail:"لم يُحفظ",
+      cal_tab:"التقويم",
+      cal_desc:"ما عشته يومًا بيوم. اضغط على يوم لعرض لحظاته.",
+      cal_pick:"اختر يومًا",
+      cal_empty:"لا مشاركات في ذلك اليوم",
+      cal_days:"إث ثل أر خم جم سب أح",
+      map_moments_k:"لحظة",
+      date_note:"لا يمكن اختيار الشهر الأخير. تظهر اللحظات السابقة كفترة دون الإشارة إلى أحد.",
       priv_title:"لا سجل هنا",
       priv_text:"لا يُحفظ الموقع ولا الأرشيف ولا اللحظات السابقة في الملف الشخصي. اللحظات تعيش في التدفق ثم تختفي.",
       vid_prep:"جارٍ تجهيز الفيديو",
@@ -2398,6 +2454,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      cal_places:"lieux",
+      cal_month:"Mois",
+      diary_edit:"Modifier la note",
+      diary_ph:"Qu’as-tu ressenti ?",
+      diary_saving:"enregistrement…",
+      diary_saved:"enregistré",
+      diary_fail:"non enregistré",
+      cal_tab:"Calendrier",
+      cal_desc:"Ce que tu as vécu, jour après jour. Touche un jour pour voir ses moments.",
+      cal_pick:"Choisis un jour",
+      cal_empty:"Rien partagé ce jour-là",
+      cal_days:"Lu Ma Me Je Ve Sa Di",
+      map_moments_k:"moments",
+      date_note:"Le dernier mois ne peut pas être choisi. Les moments passés apparaissent comme une période, sans désigner personne.",
       priv_title:"Pas d’historique ici",
       priv_text:"Le lieu, les archives et les moments passés ne sont jamais gardés sur un profil. Les moments vivent dans le fil, puis s’effacent.",
       vid_prep:"Préparation de la vidéo",
@@ -2954,6 +3024,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      cal_places:"Orte",
+      cal_month:"Monat",
+      diary_edit:"Notiz bearbeiten",
+      diary_ph:"Wie hat sich das angefühlt?",
+      diary_saving:"speichern…",
+      diary_saved:"gespeichert",
+      diary_fail:"nicht gespeichert",
+      cal_tab:"Kalender",
+      cal_desc:"Was du erlebt hast, Tag für Tag. Tippe auf einen Tag für seine Momente.",
+      cal_pick:"Wähle einen Tag",
+      cal_empty:"An dem Tag nichts geteilt",
+      cal_days:"Mo Di Mi Do Fr Sa So",
+      map_moments_k:"Momente",
+      date_note:"Der letzte Monat ist nicht wählbar. Vergangene Momente erscheinen als Zeitraum, ohne jemanden zu benennen.",
       priv_title:"Hier gibt es keine Historie",
       priv_text:"Ort, Archiv und vergangene Momente werden nicht im Profil gespeichert. Momente leben im Feed und verschwinden dann.",
       vid_prep:"Video wird vorbereitet",
@@ -3510,6 +3594,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      cal_places:"мест",
+      cal_month:"Месяц",
+      diary_edit:"Изменить заметку",
+      diary_ph:"Что ты почувствовал?",
+      diary_saving:"сохранение…",
+      diary_saved:"сохранено",
+      diary_fail:"не сохранено",
+      cal_tab:"Календарь",
+      cal_desc:"Что ты прожил, день за днём. Нажми на день, чтобы открыть его моменты.",
+      cal_pick:"Выбери день",
+      cal_empty:"В тот день ничего нет",
+      cal_days:"Пн Вт Ср Чт Пт Сб Вс",
+      map_moments_k:"моментов",
+      date_note:"Последний месяц выбрать нельзя. Прошлые моменты показываются как период и ни на кого не указывают.",
       priv_title:"Здесь нет истории",
       priv_text:"Местоположение, архив и прошлые моменты не хранятся в профиле. Моменты живут в ленте, а затем исчезают.",
       vid_prep:"Подготовка видео",
@@ -4066,6 +4164,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      cal_places:"lugares",
+      cal_month:"Mês",
+      diary_edit:"Editar nota",
+      diary_ph:"Como te sentiste?",
+      diary_saving:"a guardar…",
+      diary_saved:"guardado",
+      diary_fail:"não guardado",
+      cal_tab:"Calendário",
+      cal_desc:"O que viveste, dia a dia. Toca num dia para abrir os seus momentos.",
+      cal_pick:"Escolhe um dia",
+      cal_empty:"Nada partilhado nesse dia",
+      cal_days:"Se Te Qua Qui Sex Sáb Dom",
+      map_moments_k:"momentos",
+      date_note:"O último mês não pode ser escolhido. Os momentos passados surgem como período, sem apontar ninguém.",
       priv_title:"Aqui não há histórico",
       priv_text:"Localização, arquivo e momentos passados não ficam no perfil. Os momentos vivem no feed e depois desaparecem.",
       vid_prep:"A preparar vídeo",
@@ -4622,6 +4734,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      cal_places:"स्थान",
+      cal_month:"माह",
+      diary_edit:"नोट संपादित करें",
+      diary_ph:"कैसा महसूस हुआ?",
+      diary_saving:"सहेजा जा रहा…",
+      diary_saved:"सहेजा गया",
+      diary_fail:"सहेजा नहीं गया",
+      cal_tab:"कैलेंडर",
+      cal_desc:"आपने दिन-ब-दिन क्या जिया। किसी दिन पर टैप करें।",
+      cal_pick:"एक दिन चुनें",
+      cal_empty:"उस दिन कुछ साझा नहीं",
+      cal_days:"सो मं बु गु शु श र",
+      map_moments_k:"पल",
+      date_note:"पिछला महीना नहीं चुना जा सकता। पुराने पल अवधि के रूप में दिखते हैं, किसी की ओर इशारा नहीं करते।",
       priv_title:"यहाँ कोई इतिहास नहीं",
       priv_text:"स्थान, संग्रह और पुराने पल प्रोफ़ाइल पर नहीं रखे जाते। पल फ़ीड में जीते हैं, फिर मिट जाते हैं।",
       vid_prep:"वीडियो तैयार हो रहा है",
@@ -5178,6 +5304,20 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      cal_places:"tempat",
+      cal_month:"Bulan",
+      diary_edit:"Edit catatan",
+      diary_ph:"Bagaimana rasanya?",
+      diary_saving:"menyimpan…",
+      diary_saved:"tersimpan",
+      diary_fail:"gagal disimpan",
+      cal_tab:"Kalender",
+      cal_desc:"Apa yang kamu jalani, hari demi hari. Ketuk satu hari untuk melihat momennya.",
+      cal_pick:"Pilih satu hari",
+      cal_empty:"Tidak ada yang dibagikan hari itu",
+      cal_days:"Sn Sl Rb Km Jm Sb Mg",
+      map_moments_k:"momen",
+      date_note:"Satu bulan terakhir tidak bisa dipilih. Momen lama tampil sebagai periode, tanpa menunjuk siapa pun.",
       priv_title:"Tidak ada riwayat di sini",
       priv_text:"Lokasi, arsip, dan momen lama tidak disimpan di profil. Momen hidup di beranda, lalu menghilang.",
       vid_prep:"Menyiapkan video",
@@ -5859,7 +5999,14 @@ svg{display:block}
 /* ============ akış: tam ekran ============ */
 #feed{position:absolute;inset:0;z-index:1;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  scroll-snap-type:y proximity;transition:opacity .2s;
+  /* mandatory: kart hep yerine oturur, arada asili kalmaz.
+     Onceki "proximity" yeterince yakin degilse birakiyordu ve
+     kaydirma sert hissediliyordu. */
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+  /* Parmak birakildiktan sonra hareketin sonlanma egrisi */
+  overscroll-behavior-y:contain;
+  transition:opacity .2s;
   padding:calc(var(--sat) + var(--top) + 0.35rem) 0.5rem calc(var(--tab) + var(--sab) + 0.5rem);
   box-sizing:border-box;background:#08080C}
 #feed::-webkit-scrollbar{display:none}
@@ -5876,8 +6023,14 @@ svg{display:block}
 
 .post{position:relative;height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.85rem);
   min-height:calc(var(--vh,100dvh) - var(--sat) - var(--top) - var(--tab) - var(--sab) - 0.85rem);
-  flex:none;scroll-snap-align:start;scroll-snap-stop:normal;
-  overflow:hidden;background:#111116;content-visibility:auto;
+  flex:none;scroll-snap-align:start;
+  /* always: her kartta durur, iki kart birden atlanmaz.
+     TikTok ve Reels bu davranisi kullaniyor. */
+  scroll-snap-stop:always;
+  /* content-visibility:auto ekran disindaki karti hic islemiyordu.
+     Gorunur alana yakin kartlar da islensin diye kaldirildi;
+     yerine yalnizca yerlesim korunur. */
+  overflow:hidden;background:#111116;contain:layout paint;
   contain-intrinsic-size:auto calc(var(--vh,100dvh) - 5rem);
   border-radius:1.125rem;border:1px solid rgba(255,255,255,.08);
   box-shadow:0 0.5rem 1.5rem rgba(0,0,0,.35)}
@@ -6346,6 +6499,139 @@ svg{display:block}
   letter-spacing:-.02em;color:var(--t1)}
 .profGiz p{margin:0.3125rem auto 0;max-width:17rem;
   font-size:0.8125rem;line-height:1.5;color:var(--t3)}
+
+/* Akis gorseli: kucuk onizlemenin uzerine yumusak beliriyor */
+.pmedia img.gelecek{opacity:0;transition:opacity .22s ease}
+.pmedia img.gelecek.geldi{opacity:1}
+.pmediaBg{filter:blur(0.75rem);transform:scale(1.06)}
+
+/* ═══ KAYDIRMA YUMUSATMA ═══
+   Kart aktif olurken hafifce buyuyup netlesir. Hareket kucuk
+   tutuldu: abartili olcek kaydirmayi agirlastirir. */
+/* Olcek degisimi kaldirildi: kart buyuyup kuculunce yerine
+   otururken ZIPLIYOR gibi gorunuyordu. Geriye yalnizca hafif bir
+   soluklasma kaldi; hareket yok, sadece odak hissi var. */
+.post{
+  opacity:.72;
+  transition:opacity .28s ease;
+}
+.post.active{ opacity:1 }
+@media (prefers-reduced-motion: reduce){
+  .post{opacity:1;transition:none}
+  #feed{scroll-behavior:auto}
+}
+
+/* ═══ PROFIL TAKVIMI ═══ */
+.myCal{margin:0.375rem 0 0.75rem;padding:0.75rem;border-radius:1.125rem;
+  background:var(--surf1);border:1px solid var(--edge-soft)}
+.myCal .tkUst{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:0.5rem}
+.myCal .tkUst b{font-size:0.8125rem;font-weight:700;letter-spacing:-.01em}
+.myCal .tkOk{width:1.875rem;height:1.875rem;border:0;border-radius:6.1875rem;
+  background:none;color:var(--t2);display:grid;place-items:center}
+.myCal .tkOk svg{width:1rem;height:1rem}
+.myCal .tkOk[disabled]{opacity:.25}
+.myCal .tkHafta,.myCal .tkGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.1875rem}
+.myCal .tkHafta span{text-align:center;font-size:0.625rem;font-weight:700;
+  color:var(--t3);padding:0.25rem 0}
+.myCal .tkGun{position:relative;height:2.25rem;border:0;border-radius:0.75rem;
+  background:none;color:var(--t2);font-size:0.75rem;font-weight:600}
+.myCal .tkGun.bos{opacity:.34}
+/* Yogunluk: o gun kac an paylasilmis */
+/* Gun zemini duygu renginden gelir (JS ile atanir) */
+.myCal .tkGun.dolu{color:var(--t1)}
+/* Yil gorunumu */
+/* Baslik dugmesi: ay adi + kucuk ok */
+.myCal .tkBaslik{display:inline-flex;align-items:center;gap:0.1875rem;
+  border:0;background:none;padding:0.125rem 0.25rem;border-radius:0.5rem;
+  color:var(--t1);font-size:0.8125rem;font-weight:700;letter-spacing:-.01em;
+  text-transform:capitalize}
+.myCal .tkBaslik svg{width:0.875rem;height:0.875rem;opacity:.55;
+  transition:transform .2s var(--ease)}
+.myCal .tkBaslik.acik svg{transform:rotate(180deg)}
+.myCal .tkBaslik:active{background:var(--surf2)}
+/* Yil gorunumunde aylar tiklanabilir */
+.myCal .tkAy{min-width:0;border-radius:0.625rem;padding:0.25rem;
+  transition:background .14s}
+.myCal .tkAy:active{background:var(--surf2)}
+.myCal .tkYil{display:grid;grid-template-columns:repeat(3,1fr);gap:0.625rem;
+  margin-top:0.25rem}
+.myCal .tkAy{min-width:0}
+.myCal .tkAyAd{display:block;font-size:0.625rem;font-weight:700;color:var(--t3);
+  margin-bottom:0.25rem;text-transform:capitalize}
+.myCal .tkAyGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.0938rem}
+.myCal .tkNokta{aspect-ratio:1;border-radius:0.125rem;background:var(--surf2)}
+.myCal .tkNokta.bos{background:var(--surf2);opacity:.55}
+.myCal .tkYukleniyor{height:9rem;display:grid;place-items:center}
+.myCal .tkYukleniyor::after{content:"";width:1.25rem;height:1.25rem;
+  border:0.125rem solid var(--edge);border-top-color:var(--t3);
+  border-radius:6.1875rem;animation:spin .7s linear infinite}
+/* Ay ozeti */
+.myCal .tkOzet{display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.625rem;
+  padding-top:0.5625rem;border-top:1px solid var(--edge-soft);
+  font-size:0.6875rem;color:var(--t3)}
+.myCal .tkOzet b{color:var(--t1);font-weight:700}
+.myCal .tkOzetD{text-transform:capitalize}
+.myCal .tkGun.bugun{box-shadow:inset 0 0 0 0.09375rem var(--t3)}
+.myCal .tkGun.secili{box-shadow:inset 0 0 0 0.125rem #FF3B6B}
+.myCal .tkGun i{position:absolute;left:50%;bottom:0.25rem;transform:translateX(-50%);
+  width:0.25rem;height:0.25rem;border-radius:6.1875rem;background:currentColor;opacity:.6}
+.myCal .tkBos{height:2.25rem}
+
+.myCalGun{padding:0 0 0.5rem}
+.mcBas{font-size:0.75rem;font-weight:700;letter-spacing:-.01em;
+  color:var(--t2);margin:0 0.125rem 0.5rem}
+.mcBos{padding:1.25rem 0.5rem;text-align:center;font-size:0.8125rem;color:var(--t3)}
+.mcListe{display:flex;flex-direction:column;gap:0.625rem}
+/* ══════════ SABIT YUKSEKLIK ══════════
+   Not uzadikca satirin tamami (ve kart) uzuyordu. Artik satir
+   yuksekligi KARTIN boyutunda sabit; uzun not kendi icinde kayar. */
+.mcSatir{display:flex;gap:0.625rem;align-items:stretch;
+  height:9.33rem}
+.mcKart{position:relative;flex:none;width:5.25rem;height:100%;
+  border-radius:0.875rem;overflow:hidden;
+  background:var(--surf2);border:1px solid var(--edge-soft)}
+/* Gunluk: anin yanindaki bosluk artik kendi dusuncelerine ayrildi */
+/* Not blogu karti boyunda: satir "stretch" oldugu icin yukseklik
+   kartla esitlenir. Okuma kipinde hicbir cerceve yok. */
+.mcGunluk{position:relative;flex:1;min-width:0;display:flex;
+  flex-direction:column;gap:0.25rem}
+.mcKalem{position:absolute;right:0;top:0;z-index:2;
+  width:1.625rem;height:1.625rem;border:0;border-radius:6.1875rem;
+  background:none;color:var(--t3);display:grid;place-items:center;
+  opacity:.75;transition:opacity .14s,color .14s}
+.mcKalem svg{width:0.9375rem;height:0.9375rem}
+.mcKalem:active{opacity:1;color:var(--t1)}
+.mcSatir.yaziyor .mcKalem{display:none}
+/* OKUMA: zemin yok, kenarlik yok — sayfadaki duz yazi gibi */
+.mcOku{flex:1;min-height:0;margin:0;padding:0.125rem 1.75rem 0 0;
+  font-size:0.8125rem;line-height:1.5;color:var(--t1);
+  white-space:pre-wrap;
+  /* Uzun not kendi alaninda kayar, satiri uzatmaz */
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none}
+.mcOku::-webkit-scrollbar{display:none}
+.mcOku.bos{color:var(--t3)}
+.mcOku.hide{display:none}
+/* DUZENLEME: yalnizca yazarken cerceve gorunur */
+.mcNot{flex:1;min-height:0;width:100%;resize:none;border-radius:0.875rem;
+  padding:0.5rem 0.5625rem;border:1px solid rgba(123,91,255,.5);
+  background:var(--surf1);color:var(--t1);
+  font:inherit;font-size:0.8125rem;line-height:1.5;
+  overflow-y:auto}
+.mcNot.hide{display:none}
+.mcNot:focus{outline:none}
+.mcNot::placeholder{color:var(--t3)}
+.mcDurum{min-height:0.875rem;font-size:0.625rem;color:var(--t3);padding-left:0.25rem}
+.mcDurum.ok{color:#3BC47D}
+.mcDurum.hata{color:#FF3B6B}
+.mcKart .mcIm{position:absolute;inset:0;background:center/cover no-repeat}
+.mcKart .mcSa{position:absolute;left:0.3125rem;top:0.3125rem;
+  padding:0.0625rem 0.3125rem;border-radius:6.1875rem;
+  background:rgba(0,0,0,.58);color:#fff;font-size:0.5625rem;font-weight:700}
+.mcKart .mcYer{position:absolute;left:0.3125rem;right:0.3125rem;bottom:0.3125rem;
+  font-size:0.5625rem;color:#fff;text-shadow:0 0.0625rem 0.25rem rgba(0,0,0,.8);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .userDot{position:relative}
 .userDot .udCore{position:absolute;inset:0.3125rem;border-radius:6.1875rem;background:#2E9BFF;
@@ -7978,13 +8264,58 @@ html.camNativeOn #cam > .camRoot{z-index:0}
   font-size:0.6875rem;font-weight:700;color:var(--t3);letter-spacing:.02em}
 
 /* segment kutusu */
-.arcSeg{position:relative;display:flex;gap:0;margin:0 0 0.875rem;padding:0.25rem;
-  border-radius:0.875rem;background:var(--surf1);border:1px solid var(--edge-soft)}
-.arcInd{position:absolute;top:0.25rem;left:0.25rem;width:calc(50% - 0.25rem);height:calc(100% - 0.5rem);
-  border-radius:0.6875rem;background:var(--panelbg);
-  box-shadow:0 0.125rem 0.5rem -0.125rem rgba(0,0,0,.35);
+/* ══════════ BLOKSUZ SERIT ══════════
+   Hap icinde hap gorunumu agir duruyordu. Zemin, cerceve ve
+   kaydirilan beyaz kutu kalkti; yerine yalnizca altta ince bir
+   gosterge cizgisi var. Sekmeler sayfanin uzerinde duz duruyor. */
+.arcSeg{position:relative;display:flex;gap:0;justify-content:space-between;
+  margin:0 0 0.875rem;padding:0 0 0.5rem;
+  border-radius:0;background:none;border:0;
+  box-shadow:inset 0 -1px 0 var(--edge-soft)}
+.arcInd{position:absolute;left:0;bottom:0;top:auto;
+  width:calc(50% - 0.25rem);height:0.125rem;
+  border-radius:6.1875rem;
+  background:linear-gradient(90deg,#FF3B6B,#7B5BFF);
+  box-shadow:none;
   transition:transform .26s var(--ease)}
-.arcSeg .arcInd{width:33.333% !important}
+/* Genislik ve konum JS ten gelir: sabit %25 artik gecerli degil */
+.arcSeg .arcInd{height:0.125rem;transition:transform .26s var(--ease),
+  width .26s var(--ease)}
+
+/* Dort sekme olunca "Kaydedilenler" tasiyordu: yazi kucultuldu */
+/* ══════════ ARSIV SEKMELERI ══════════
+   Olcum: 392 px ekranda serit ic bosluklariyla sekme basina ~92 px
+   dusuyor. Ikon (15 px) + aralik (4 px) = 19 px; yaziya 70 px kalir.
+   En uzun etiket "Kaydedilenler" 12 karakter, 0,65rem de ~62 px.
+   Sigiyor — yazi kucultmeye ya da dikey duzene gerek yok.
+   Ikon solda, yazi saginda: satir duzeni korunur. */
+.arcTab{position:relative;
+  /* ══════════ ORANTILI GENISLIK ══════════
+     flex:1 ile hepsi ESIT genisti: "Takvim" alanin yarisini bos
+     birakirken "Kaydedilenler" sikisiyordu. Artik her sekme kendi
+     metnine gore yer aliyor, bos alan uzun basliga gidiyor.
+     Gosterge de aktif sekmenin GERCEK konumuna hizalanir. */
+  /* flex-shrink 1 iken tarayici sekmeleri yine daraltiyor,
+     overflow:hidden de son harfi kesiyordu ("Kaydedilenle_").
+     Olcum: dort sekmenin toplam ihtiyaci ~310 px, kapsayici ~360 px.
+     50 px fazla var; daralmaya gerek yok. */
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;gap:0.25rem;
+  padding:0 0.4375rem;
+  /* 0,6563rem de "Kaydedilenler" sigsa da sikisik duruyordu;
+     bir tik kuculunce pay rahatladi. */
+  font-size:0.625rem;font-weight:600;letter-spacing:-.02em;
+  white-space:nowrap}
+.arcTab .atIc{display:grid;place-items:center;flex:none;opacity:.6;
+  transition:opacity .16s}
+.arcTab .atIc svg{width:0.875rem;height:0.875rem}
+.arcTab{color:var(--t3);transition:color .18s}
+.arcTab.on{color:var(--t1)}
+.arcTab.on .atIc{opacity:1}
+/* Taslak sayaci: yaziyi itmesin diye ikonun ust kosesinde durur */
+.arcTab .arcSay{position:absolute;top:0.375rem;left:calc(50% - 1.75rem);
+  margin:0;min-width:0.875rem;height:0.875rem;padding:0 0.1875rem;
+  font-size:0.5313rem;line-height:0.875rem}
 .arcTab .arcSay{margin-left:0.3125rem;font-style:normal;font-weight:800;
   font-size:0.625rem;min-width:1.0625rem;height:1.0625rem;padding:0 0.3125rem;
   border-radius:6.1875rem;background:#F5A524;color:#1A1206;
@@ -10724,14 +11055,14 @@ function nf(n){
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 
 const I={
-  heart:'<svg width="31" height="31" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-7.8-4.7-7.8-9.9A4.5 4.5 0 0 1 12 7.4a4.5 4.5 0 0 1 7.8 3.2c0 5.2-7.8 9.9-7.8 9.9Z"/></svg>',
-  heartsm:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.3s-7.6-4.6-7.6-9.7A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 7.6 3c0 5.1-7.6 9.7-7.6 9.7Z"/></svg>',
-  chat:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6c0 4.2-3.8 7.6-8.5 7.6-1 0-2-.16-2.9-.45L4 20.5l1.5-3.6A7.2 7.2 0 0 1 3.5 11.6C3.5 7.4 7.3 4 12 4s8.5 3.4 8.5 7.6Z"/></svg>',
+  heart:'<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.1c-.3 0-.6-.1-.8-.3C7.4 17.6 3 14 3 9.9 3 7.1 5.2 5 7.9 5c1.6 0 3.1.8 4.1 2 1-1.2 2.5-2 4.1-2C18.8 5 21 7.1 21 9.9c0 4.1-4.4 7.7-8.2 10.9-.2.2-.5.3-.8.3z"/></svg>',
+  heartsm:'<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.1c-.3 0-.6-.1-.8-.3C7.4 17.6 3 14 3 9.9 3 7.1 5.2 5 7.9 5c1.6 0 3.1.8 4.1 2 1-1.2 2.5-2 4.1-2C18.8 5 21 7.1 21 9.9c0 4.1-4.4 7.7-8.2 10.9-.2.2-.5.3-.8.3z"/></svg>',
+  chat:'<svg width="29" height="29" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.9 3 2.8 6.5 2.8 10.9c0 2.4 1.2 4.6 3.2 6-.1 1.2-.5 2.4-1.2 3.4-.2.3 0 .7.4.6 1.8-.4 3.3-1.2 4.4-2.1.8.2 1.6.3 2.4.3 5.1 0 9.2-3.5 9.2-7.9S17.1 3 12 3z"/></svg>',
   send:'<svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 3.4 10.6 13.9"/><path d="M21.2 3.4 14.5 21l-3.9-7.1L3.5 10z"/></svg>',
   soundOn:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="M15.4 8.8a4.4 4.4 0 0 1 0 6.4"/><path d="M18.2 6a8 8 0 0 1 0 12"/></svg>',
   soundOff:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="m16.5 9.5 5 5M21.5 9.5l-5 5"/></svg>',
-  views:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4.6 20V13.6"/><path d="M9.7 20V8.8"/><path d="M14.8 20v-7.4"/><path d="M19.9 20V4.6"/></svg>',
-  save:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.6h10.8a1 1 0 0 1 1 1v15.8l-6.4-4.3-6.4 4.3V4.6a1 1 0 0 1 1-1Z"/></svg>',
+  views:'<svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M8.4 5.3v13.4c0 .8.9 1.3 1.6.9l10.6-6.7c.6-.4.6-1.3 0-1.7L10 4.4c-.7-.4-1.6.1-1.6.9z" opacity=".95"/><path d="M4.2 6.4c-.6 0-1.1.5-1.1 1.1v8.9c0 .6.5 1.1 1.1 1.1s1.1-.5 1.1-1.1V7.6c0-.6-.5-1.2-1.1-1.2z"/></svg>',
+  save:'<svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M7.3 2.8h9.4c1 0 1.9.8 1.9 1.9v15.6c0 .8-.9 1.3-1.6.9L12 18l-5 3.2c-.7.4-1.6-.1-1.6-.9V4.7c0-1.1.9-1.9 1.9-1.9z"/></svg>',
   big:'<svg width="110" height="110" viewBox="0 0 24 24" fill="#fff" opacity=".95"><path d="M12 20.6s-8-4.9-8-10.2A4.7 4.7 0 0 1 12 7.3a4.7 4.7 0 0 1 8 3.1c0 5.3-8 10.2-8 10.2Z"/></svg>',
   bigplay:'<svg width="74" height="74" viewBox="0 0 24 24" fill="rgba(255,255,255,.86)"><path d="M7 4.5 19 12 7 19.5z"/></svg>',
   play:'<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5 19 12 7 19.5z"/></svg>',
@@ -10913,6 +11244,12 @@ const isReal=id=>typeof id==="string" && id.length>=32 && id.includes("-");
    aşağı kaydırdıkça bir sonraki sayfa sunucudan eklenir.
    get_feed before_ts desteklemezse moments tablosuna düşülür. */
 const FEED_PAGE = 30;
+/* ══════════ ILK ACILIS ══════════
+   Akis ilk acilista 30 ani birden cekiyor ve HEPSI gelene kadar
+   ekrana hicbir sey basmiyordu; kullanicinin hissettigi bekleme
+   buydu. Ilk sayfa kucuk tutulur, ekran hemen dolar, kalani arka
+   planda gelir. Kullanici zaten ilk kartin otesini goremiyor. */
+const FEED_ILK = 6;
 let _feedLoading=false;
 let _feedHasMore=true;
 let _feedLoadMoreBusy=false;
@@ -10931,6 +11268,10 @@ function _mapFeedRow(r, me, sb){
     mediaPath:r.media_path||null,
     src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
     poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
+    /* Kucuk onizleme AKISTA da kullanilir. Eskiden yalnizca an
+       sayfasinda vardi; akis karti tam boyut dosya inene kadar bos
+       kaliyor, kademeli siyah ekran gorunuyordu. */
+    thumb: r.thumb_path ? sb.storage.from('moments').getPublicUrl(r.thumb_path).data.publicUrl : null,
     lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
     lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
     likes:r.like_count, views:r.view_count, cc:r.comment_count,
@@ -11302,11 +11643,22 @@ async function loadFeed(opts){
     // Yerel / henüz sunucuya yazılmamış anları koru
     const pendingKeep = (items||[]).filter(_isLocalPending);
 
-    const data = await _fetchFeedPage({ limit: FEED_PAGE });
+    /* Elde hic kart yoksa (ilk acilis) kucuk sayfa istenir */
+    const ilkAcilis = !(items && items.length);
+    const istenen = ilkAcilis ? FEED_ILK : FEED_PAGE;
+    const data = await _fetchFeedPage({ limit: istenen });
     const me=window.__me;
     const serverItems = (data||[]).map(r=>_mapFeedRow(r, me, sb));
     // Dolu sayfa geldiyse devamı vardır; az geldiyse bitti olabilir
-    _feedHasMore = serverItems.length >= FEED_PAGE;
+    _feedHasMore = serverItems.length >= istenen;
+
+    /* Ilk kucuk sayfa ekrana basildiktan SONRA gerisi sessizce alinir.
+       Kullanici bu sirada zaten ilk kartlari izliyor. */
+    if(ilkAcilis && serverItems.length >= FEED_ILK){
+      setTimeout(()=>{
+        try{ loadFeed({ force:true }); }catch(e){}
+      }, 900);
+    }
 
     // İstek sürerken paylaşılan anları da koru
     const pendingNow = (items||[]).filter(_isLocalPending);
@@ -11941,7 +12293,7 @@ function build(it){
     mediaEl.loop=true;mediaEl.muted=true;mediaEl.playsInline=true;
     mediaEl.setAttribute("playsinline","");mediaEl.preload="none";
     // Yerel oynat ikonunu bastır: kapak varsa onu, yoksa koyu yer tutucuyu koy.
-    mediaEl.poster = it.poster || BLANK_POSTER;
+    mediaEl.poster = it.poster || it.thumb || BLANK_POSTER;
     mediaEl.controls=false; mediaEl.disablePictureInPicture=true;
     mediaEl.setAttribute("disableremoteplayback","");
 
@@ -11964,6 +12316,17 @@ function build(it){
   }else{
     mediaEl=document.createElement("img");
     mediaEl.alt="";mediaEl.decoding="async";
+    /* Tam gorsel inince yumusak beliriyor: ani sicrama yerine
+       kucuk onizlemenin uzerine gecis yapiyor. */
+    try{ el._src = it.src; }catch(e){}
+    mediaEl.classList.add("gelecek");
+    /* Cozme bitince goster: yarim cizilmis kare hic gorunmez */
+    /* Cozme bitince goster: yarim cizilmis kare hic gorunmez */
+    mediaEl.addEventListener("load", ()=>{
+      const bit = ()=>mediaEl.classList.add("geldi");
+      if(mediaEl.decode) mediaEl.decode().then(bit).catch(bit);
+      else bit();
+    }, {once:true});
     // ilk kartlar yüksek öncelikli indirilsin (ekran hemen dolsun)
     try{ mediaEl.fetchPriority = (_buildIndex<3) ? "high" : "low"; }catch(e){}
     mediaEl.loading = (_buildIndex<3) ? "eager" : "lazy";
@@ -11972,7 +12335,9 @@ function build(it){
   if(it.kind!=="video") mediaEl.style.filter=agingFilter(it.ts);
   if(it.src){
     const bg=document.createElement("img");
-    bg.className="pmediaBg"; bg.alt=""; bg.src=it.poster||it.src;
+    /* Once kucuk onizleme: birkac KB, aninda gelir ve kart hic bos
+       kalmaz. Tam dosya uzerine binerek acilir. */
+    bg.className="pmediaBg"; bg.alt=""; bg.src=it.thumb||it.poster||it.src;
     media.appendChild(bg);
   }
   media.appendChild(mediaEl);
@@ -12433,9 +12798,48 @@ function bindFeedVideo(v, on){
     if(v.getAttribute('src')){ try{ v.removeAttribute('src'); v.load(); }catch(e){} }
   }
 }
+/* ══════════ GORSELLERI ONCEDEN INDIR ══════════
+   Kartlarda content-visibility:auto var: tarayici ekran disindaki
+   icerigi HIC islemiyor, gorseli de cozmuyor. Uzerine loading="lazy"
+   binince dosya ancak kart gorunur olunca inmeye basliyor ve kart
+   siyahtan kademeli aciliyor.
+   Videolarda zaten +-1 penceresi vardi; ayni disiplin gorsellere de
+   uygulanir: bir onceki, simdiki ve sonraki IKI kart hazir tutulur. */
+const _onYuklenen = new Set();
+function gorselleriHazirla(posts, idx){
+  for(let i = Math.max(0, idx-1); i <= Math.min(posts.length-1, idx+2); i++){
+    const p = posts[i];
+    if(!p) continue;
+    const im = p.querySelector(".pmedia img:not(.pmediaBg)");
+    if(im){
+      /* Gorunur pencerede tembel yukleme kapatilir */
+      if(im.getAttribute("loading") === "lazy") im.setAttribute("loading","eager");
+      if(i === idx || i === idx+1){
+        try{ im.fetchPriority = "high"; }catch(e){}
+      }
+    }
+    /* Sonraki kartlarin dosyasini sessizce onbellege al */
+    const kaynak = p._src || (im && im.src);
+    if(kaynak && !_onYuklenen.has(kaynak)){
+      _onYuklenen.add(kaynak);
+      if(_onYuklenen.size > 60) _onYuklenen.clear();
+      /* INDIRMEK YETMIYOR: en pahali is COZME (decode). Sikistirilmis
+         JPEG i bitmap e cevirmek ana is parcaciginda yapilinca kart
+         gorundugu anda takiliyor ve kademeli aciliyordu.
+         img.decode() bu isi ONCEDEN ve ana is parcacigi disinda
+         yapar; kart gorundugunde goruntu coktan hazirdir. */
+      const on = new Image();
+      on.decoding = "async";
+      on.src = kaynak;
+      if(on.decode){ on.decode().catch(()=>{}); }
+    }
+  }
+}
+
 function syncActive(){
   const idx=currentIndex();
   const posts=list.querySelectorAll(".post");
+  try{ gorselleriHazirla(posts, idx); }catch(e){}
   const blocked = (typeof anyBlockerOpen==="function") && anyBlockerOpen();
   if(idx!==activeIdx){
     activeIdx=idx;
@@ -18581,9 +18985,10 @@ function renderProfile(){
   const tabs=document.createElement("div");tabs.className="arcSeg";
   tabs.innerHTML=
     '<span class="arcInd"></span>'+
-    '<button class="arcTab on" data-arc="mine">'+t("my_moments2")+'</button>'+
-    '<button class="arcTab" data-arc="saved">'+t("saved2")+'</button>'+
-    '<button class="arcTab" data-arc="draft">'+t("d_tab")+'<em class="arcSay" id="arcDraftSay"></em></button>';
+    '<button class="arcTab on" data-arc="mine"><span class="atIc">'+ARC_IC.mine+'</span>'+t("my_moments2")+'</button>'+
+    '<button class="arcTab" data-arc="cal"><span class="atIc">'+ARC_IC.cal+'</span>'+t("cal_tab")+'</button>'+
+    '<button class="arcTab" data-arc="saved"><span class="atIc">'+ARC_IC.saved+'</span>'+t("saved2")+'</button>'+
+    '<button class="arcTab" data-arc="draft"><span class="atIc">'+ARC_IC.draft+'</span>'+t("d_tab")+'<em class="arcSay" id="arcDraftSay"></em></button>';
   box.appendChild(tabs);
 
   const pane=document.createElement("div");pane.className="arcPane";
@@ -18594,12 +18999,17 @@ function renderProfile(){
   function showArc(which){
     arcTabBtns.forEach(b=>b.classList.toggle("on", b.dataset.arc===which));
     if(ind){
-      const sira = which==="saved" ? 1 : (which==="draft" ? 2 : 0);
-      ind.style.transform = "translateX(" + (sira*100) + "%)";
+      /* Aktif dugmenin gercek konumu ve genisligi olculur */
+      const aktif = tabs.querySelector('.arcTab[data-arc="'+which+'"]');
+      if(aktif){
+        ind.style.width = aktif.offsetWidth + "px";
+        ind.style.transform = "translateX(" + aktif.offsetLeft + "px)";
+      }
     }
     pane.innerHTML="";
     if(which==="saved"){ renderSaved(pane); }
     else if(which==="draft"){ renderDrafts(pane); }
+    else if(which==="cal"){ renderTakvim(pane); }
     else { renderMine(pane); }
   }
   arcTabBtns.forEach(b=>b.addEventListener("click",()=>showArc(b.dataset.arc)));
@@ -18805,6 +19215,393 @@ function renderProfileArsiv(){
   }catch(e){}
 }
 
+/* ══════════ KENDI TAKVIMIN ══════════
+   Yalnizca KENDI anlarin. Hangi gun ne yasadigin bir bakista
+   gorunur; gune dokununca o gunun anlari acilir.
+   Gizlilik sorunu yok: kimse baskasinin takvimini goremez. */
+let _takvimAy = null;
+let _takvimYil = new Date().getFullYear();
+let _takvimGunler = null;      /* "2026-03-14" -> {adet, duygular, yerler} */
+
+/* Arsiv sekmesi ikonlari — duz yazinin soluna kucuk isaret */
+const ARC_IC = {
+  mine:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3"/><path d="M3.6 15.2l4.2-4.2 4.4 4.4"/><circle cx="15.2" cy="8.6" r="1.5"/></svg>',
+  cal:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.4" y="5.2" width="17.2" height="15.4" rx="2.8"/><path d="M3.4 10h17.2M8.4 3.4v3.4M15.6 3.4v3.4"/></svg>',
+  saved: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.6h10.8v16.8L12 17.1l-5.4 3.3V3.6Z"/></svg>',
+  draft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 19.4h3.1l8.9-8.9a2.1 2.1 0 0 0 0-3.1 2.1 2.1 0 0 0-3.1 0l-8.9 8.9z"/><path d="M13.2 6.8l4 4"/></svg>'
+};
+
+function renderTakvim(box){
+  const sub=document.createElement("div");sub.className="arcSub";
+  sub.textContent=t("cal_desc");
+  box.appendChild(sub);
+
+  const kap=document.createElement("div");kap.className="myCal";
+  box.appendChild(kap);
+
+  const liste=document.createElement("div");liste.className="myCalGun";
+  box.appendChild(liste);
+
+  if(!_takvimAy){ const n=new Date(); _takvimAy=new Date(n.getFullYear(), n.getMonth(), 1); }
+  takvimVeriYukle().then(()=>takvimCiz(kap, liste));
+
+  kap.addEventListener("click",(e)=>{
+    /* Yil gorunumu gezinme */
+    const yo=e.target.closest("[data-yil]");
+    if(yo){
+      if(yo.dataset.yil==="ay"){
+        takvimVeriYukle().then(()=>takvimCiz(kap, liste));
+      }else{
+        _takvimYil += (yo.dataset.yil==="ileri" ? 1 : -1);
+        yilCiz(kap, liste, _takvimYil);
+      }
+      return;
+    }
+    /* Yil gorunumunde bir aya dokununca o ay acilir */
+    const ayKutu=e.target.closest("[data-ay]");
+    if(ayKutu){
+      _takvimAy=new Date(_takvimYil, Number(ayKutu.dataset.ay), 1);
+      takvimVeriYukle().then(()=>takvimCiz(kap, liste));
+      return;
+    }
+    const ok=e.target.closest("[data-tk]");
+    if(ok && ok.dataset.tk==="yil"){
+      _takvimYil=_takvimAy.getFullYear();
+      yilCiz(kap, liste, _takvimYil);
+      return;
+    }
+    if(ok){
+      _takvimAy=new Date(_takvimAy.getFullYear(),
+        _takvimAy.getMonth()+(ok.dataset.tk==="ileri"?1:-1), 1);
+      takvimVeriYukle().then(()=>takvimCiz(kap, liste));
+      return;
+    }
+    const g=e.target.closest(".tkGun");
+    if(g && g.dataset.gun && !g.classList.contains("bos")){
+      takvimGunAc(g.dataset.gun, liste);
+      kap.querySelectorAll(".tkGun").forEach(x=>x.classList.remove("secili"));
+      g.classList.add("secili");
+    }
+  });
+}
+
+/* O ayin hangi gunlerinde kac an var */
+async function takvimVeriYukle(){
+  _takvimGunler = new Map();
+  try{
+    const sb=window.__sb, me=window.__me;
+    if(!sb||!me) return;
+    const y=_takvimAy.getFullYear(), a=_takvimAy.getMonth();
+    const bas=new Date(y,a,1).toISOString();
+    const son=new Date(y,a+1,0,23,59,59,999).toISOString();
+    /* Duygu da alinir: gunun rengi o gun secilen duygudan gelir */
+    const r=await sb.from("moments")
+      .select("created_at, mood, place_label")
+      .eq("author_id", me.id)
+      .eq("is_removed", false)
+      .gte("created_at", bas).lte("created_at", son);
+    if(r.error) throw r.error;
+    (r.data||[]).forEach(x=>{
+      const t2=new Date(x.created_at);
+      const iso=t2.getFullYear()+"-"+String(t2.getMonth()+1).padStart(2,"0")+
+                "-"+String(t2.getDate()).padStart(2,"0");
+      let g=_takvimGunler.get(iso);
+      if(!g){ g={adet:0, duygular:{}, yerler:new Set()}; _takvimGunler.set(iso,g); }
+      g.adet++;
+      if(x.mood) g.duygular[x.mood]=(g.duygular[x.mood]||0)+1;
+      if(x.place_label) g.yerler.add(x.place_label);
+    });
+  }catch(e){ console.warn("takvim:", e && e.message); }
+}
+
+/* O gunun baskin duygusunu ve rengini bulur */
+function gunDuygu(g){
+  if(!g || !g.duygular) return null;
+  let en=null, adet=0;
+  Object.keys(g.duygular).forEach(k=>{
+    if(g.duygular[k]>adet){ adet=g.duygular[k]; en=k; }
+  });
+  return en ? (MOOD_BY_KEY[en]||null) : null;
+}
+
+function takvimCiz(kap, liste){
+  const y=_takvimAy.getFullYear(), a=_takvimAy.getMonth();
+  const ilk=new Date(y,a,1);
+  const gunSayisi=new Date(y,a+1,0).getDate();
+  const bosluk=(ilk.getDay()+6)%7;
+  const bugun=new Date();
+  const ileriVar = new Date(y,a+1,1) <= new Date(bugun.getFullYear(), bugun.getMonth()+1, 1);
+
+  let h='<div class="tkUst">'+
+    '<button class="tkOk" data-tk="geri" aria-label="Önceki">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>'+
+    /* Baslik dugme: dokununca yil gorunumu acilir. Cogu takvim
+       uygulamasinin yaptigi gibi ayri bir dugmeye gerek yok. */
+    '<button class="tkBaslik" data-tk="yil">'+
+      ilk.toLocaleDateString(undefined,{month:"long",year:"numeric"})+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5l6 6 6-6"/></svg>'+
+    '</button>'+
+    '<button class="tkOk" data-tk="ileri" aria-label="Sonraki"'+(ileriVar?"":" disabled")+'>'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>'+
+    '</div><div class="tkHafta">';
+  (t("cal_days")||"Pt Sa Ça Pe Cu Ct Pz").split(" ").forEach(g=>{ h+='<span>'+g+'</span>'; });
+  h+='</div><div class="tkGrid">';
+  for(let i=0;i<bosluk;i++) h+='<span class="tkBos"></span>';
+  let ayAdet=0; const ayYerler=new Set(); const ayDuygu={};
+  for(let g=1;g<=gunSayisi;g++){
+    const iso=y+"-"+String(a+1).padStart(2,"0")+"-"+String(g).padStart(2,"0");
+    const veri=_takvimGunler ? _takvimGunler.get(iso) : null;
+    const adet=veri ? veri.adet : 0;
+    ayAdet+=adet;
+    if(veri){
+      veri.yerler.forEach(v=>ayYerler.add(v));
+      Object.keys(veri.duygular).forEach(k=>ayDuygu[k]=(ayDuygu[k]||0)+veri.duygular[k]);
+    }
+    const bugunMu=(y===bugun.getFullYear()&&a===bugun.getMonth()&&g===bugun.getDate());
+    /* ══════ DUYGU RENGI ══════
+       Gunun zemini o gun en cok secilen duygunun rengi. Yogunluk
+       opaklikla anlatilir: bir an soluk, dort ve uzeri koyu.
+       Bir aya bakinca ruh halinin ritmi gorunur. */
+    const duy=gunDuygu(veri);
+    const alfa = adet>=4 ? .5 : adet>=2 ? .34 : adet>=1 ? .2 : 0;
+    const stil = duy && alfa
+      ? ' style="background:'+duy.c+Math.round(alfa*255).toString(16).padStart(2,"0")+'"'
+      : '';
+    h+='<button class="tkGun'+(adet?" dolu":" bos")+(bugunMu?" bugun":"")+'"'+
+       stil+' data-gun="'+iso+'" title="'+(duy?duy.em:"")+'">'+
+       g+(adet?'<i></i>':'')+'</button>';
+  }
+  h+='</div>';
+
+  /* ══════ AY OZETI ══════ */
+  if(ayAdet){
+    let enD=null, enA=0;
+    Object.keys(ayDuygu).forEach(k=>{ if(ayDuygu[k]>enA){ enA=ayDuygu[k]; enD=k; } });
+    const m2=enD?MOOD_BY_KEY[enD]:null;
+    h+='<div class="tkOzet">'+
+       '<span><b>'+ayAdet+'</b> '+t("map_moments_k")+'</span>'+
+       (ayYerler.size?'<span><b>'+ayYerler.size+'</b> '+t("cal_places")+'</span>':'')+
+       (m2?'<span class="tkOzetD">'+m2.em+' '+t("mood_"+m2.k)+'</span>':'')+
+       '</div>';
+  }
+  kap.innerHTML=h;
+  if(liste) liste.innerHTML='<div class="mcBos">'+t("cal_pick")+'</div>';
+}
+
+/* Gunluk notlarini getirir ve alanlara yazar */
+async function gunlukYukle(liste, idler){
+  const sb=window.__sb, me=window.__me;
+  if(!sb||!me||!idler.length) return;
+  let notlar=new Map();
+  try{
+    const r=await sb.from("moment_notes")
+      .select("moment_id, body")
+      .eq("user_id", me.id)
+      .in("moment_id", idler);
+    if(!r.error) (r.data||[]).forEach(x=>notlar.set(x.moment_id, x.body));
+  }catch(e){ console.warn("gunluk:", e && e.message); }
+
+  liste.querySelectorAll(".mcSatir").forEach(st=>{
+    const id=st.dataset.id;
+    const ta=st.querySelector(".mcNot");
+    const dr=st.querySelector(".mcDurum");
+    if(!ta) return;
+    const oku=st.querySelector(".mcOku");
+    const kalem=st.querySelector(".mcKalem");
+    ta.value = notlar.get(id) || "";
+
+    /* Okuma kipi: not bloksuz duz metin olarak durur.
+       Kalem ikonuna basilinca duzenlemeye gecer. */
+    const okuYaz=()=>{
+      const v=ta.value.trim();
+      oku.textContent = v || t("diary_ph");
+      oku.classList.toggle("bos", !v);
+    };
+    const duzenleAc=()=>{
+      oku.classList.add("hide");
+      ta.classList.remove("hide");
+      st.classList.add("yaziyor");
+      ta.focus();
+      try{ ta.setSelectionRange(ta.value.length, ta.value.length); }catch(e){}
+    };
+    const duzenleKapa=()=>{
+      ta.classList.add("hide");
+      oku.classList.remove("hide");
+      st.classList.remove("yaziyor");
+      okuYaz();
+    };
+    okuYaz();
+    kalem.addEventListener("click",(e)=>{ e.stopPropagation(); duzenleAc(); });
+    oku.addEventListener("click",()=>duzenleAc());
+
+    let zaman=null;
+    const kaydet=async ()=>{
+      const metin=ta.value.trim();
+      dr.textContent=t("diary_saving");
+      dr.className="mcDurum bekliyor";
+      const ok=await gunlukKaydet(id, metin);
+      dr.textContent = ok ? t("diary_saved") : t("diary_fail");
+      dr.className = "mcDurum " + (ok?"ok":"hata");
+      if(ok) setTimeout(()=>{ if(dr.classList.contains("ok")) dr.textContent=""; }, 1800);
+    };
+    /* Yazma bitince kaydet: her tusa basista sunucuya gitmez */
+    ta.addEventListener("input",()=>{
+      clearTimeout(zaman);
+      dr.textContent=""; dr.className="mcDurum";
+      zaman=setTimeout(kaydet, 900);
+    });
+    ta.addEventListener("blur",()=>{ clearTimeout(zaman); kaydet(); duzenleKapa(); });
+  });
+}
+
+async function gunlukKaydet(momentId, metin){
+  try{
+    const sb=window.__sb, me=window.__me;
+    if(!sb||!me) return false;
+    if(!metin){
+      const r=await sb.from("moment_notes").delete()
+        .eq("moment_id", momentId).eq("user_id", me.id);
+      return !r.error;
+    }
+    const r=await sb.from("moment_notes")
+      .upsert({ moment_id:momentId, user_id:me.id, body:metin.slice(0,2000),
+                updated_at:new Date().toISOString() },
+              { onConflict:"moment_id,user_id" });
+    return !r.error;
+  }catch(e){ console.warn("gunluk kaydet:", e && e.message); return false; }
+}
+
+/* ══════════ YIL GORUNUMU ══════════
+   12 ay tek ekranda. Her gun kucuk bir kare, rengi o gunun baskin
+   duygusundan. Bir yilin duygusal haritasi bir bakista gorunur. */
+async function yilCiz(kap, liste, yil){
+  kap.innerHTML='<div class="tkYukleniyor"></div>';
+  const gunler=new Map();
+  try{
+    const sb=window.__sb, me=window.__me;
+    if(!sb||!me) throw new Error("oturum yok");
+    const r=await sb.from("moments")
+      .select("created_at, mood")
+      .eq("author_id", me.id).eq("is_removed", false)
+      .gte("created_at", new Date(yil,0,1).toISOString())
+      .lte("created_at", new Date(yil,11,31,23,59,59).toISOString());
+    if(r.error) throw r.error;
+    (r.data||[]).forEach(x=>{
+      const t2=new Date(x.created_at);
+      const iso=t2.getFullYear()+"-"+String(t2.getMonth()+1).padStart(2,"0")+
+                "-"+String(t2.getDate()).padStart(2,"0");
+      let g=gunler.get(iso);
+      if(!g){ g={adet:0,duygular:{}}; gunler.set(iso,g); }
+      g.adet++;
+      if(x.mood) g.duygular[x.mood]=(g.duygular[x.mood]||0)+1;
+    });
+  }catch(e){ console.warn("yil:", e && e.message); }
+
+  const bugun=new Date();
+  const ileriVar = yil < bugun.getFullYear();
+  let toplam=0;
+  let h='<div class="tkUst">'+
+    '<button class="tkOk" data-yil="geri" aria-label="Önceki">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>'+
+    '<button class="tkBaslik acik" data-yil="ay">'+yil+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5l6 6 6-6"/></svg>'+
+    '</button>'+
+    '<button class="tkOk" data-yil="ileri" aria-label="Sonraki"'+(ileriVar?"":" disabled")+'>'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>'+
+    '</div><div class="tkYil">';
+
+  for(let a=0;a<12;a++){
+    const gunSayisi=new Date(yil,a+1,0).getDate();
+    const ayAdi=new Date(yil,a,1).toLocaleDateString(undefined,{month:"short"});
+    h+='<div class="tkAy" data-ay="'+a+'"><span class="tkAyAd">'+ayAdi+'</span><div class="tkAyGrid">';
+    for(let g=1;g<=gunSayisi;g++){
+      const iso=yil+"-"+String(a+1).padStart(2,"0")+"-"+String(g).padStart(2,"0");
+      const veri=gunler.get(iso);
+      const adet=veri?veri.adet:0;
+      toplam+=adet;
+      const duy=gunDuygu(veri);
+      const alfa = adet>=4 ? .85 : adet>=2 ? .6 : adet>=1 ? .38 : 0;
+      const stil = duy && alfa
+        ? ' style="background:'+duy.c+Math.round(alfa*255).toString(16).padStart(2,"0")+'"'
+        : '';
+      h+='<span class="tkNokta'+(adet?"":" bos")+'"'+stil+'></span>';
+    }
+    h+='</div></div>';
+  }
+  h+='</div><div class="tkOzet"><span><b>'+toplam+'</b> '+t("map_moments_k")+
+     ' · '+yil+'</span></div>';
+  kap.innerHTML=h;
+  if(liste) liste.innerHTML='<div class="mcBos">'+t("cal_pick")+'</div>';
+}
+
+/* Secilen gunun anlari */
+async function takvimGunAc(iso, liste){
+  if(!liste) return;
+  liste.innerHTML='<div class="mcBos">'+t("loading")+'</div>';
+  try{
+    const sb=window.__sb, me=window.__me;
+    if(!sb||!me) throw new Error("oturum yok");
+    const bas=new Date(iso+"T00:00:00").toISOString();
+    const son=new Date(iso+"T23:59:59.999").toISOString();
+    const r=await sb.from("moments")
+      .select("id, media_path, media_kind, poster_path, thumb_path, note, place_label, created_at")
+      .eq("author_id", me.id).eq("is_removed", false)
+      .gte("created_at", bas).lte("created_at", son)
+      .order("created_at",{ascending:true});
+    if(r.error) throw r.error;
+    const veri=r.data||[];
+    if(!veri.length){
+      liste.innerHTML='<div class="mcBos">'+t("cal_empty")+'</div>';
+      return;
+    }
+    const adr=(p)=>p ? sb.storage.from("moments").getPublicUrl(p).data.publicUrl : null;
+    let h='<div class="mcBas">'+new Date(iso+"T12:00:00")
+      .toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"})+
+      ' · '+veri.length+" "+t("map_moments_k")+'</div><div class="mcListe">';
+    veri.forEach(m=>{
+      /* thumb_path cok kucuk; 5,25rem lik kartta buyutulunce
+         bulaniklasiyordu. Fotografta tam kare, videoda kapak. */
+      const g = (m.media_kind==="video")
+        ? (adr(m.poster_path)||adr(m.thumb_path)||adr(m.media_path))
+        : (adr(m.media_path)||adr(m.poster_path)||adr(m.thumb_path));
+      const sa=new Date(m.created_at).toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
+      h+='<div class="mcSatir" data-id="'+m.id+'">'+
+         '<div class="mcKart">'+
+           '<span class="mcIm" style="background-image:url(\''+g+'\')"></span>'+
+           '<span class="mcSa">'+sa+'</span>'+
+           (m.place_label?'<span class="mcYer">'+esc(m.place_label)+'</span>':'')+
+         '</div>'+
+         '<div class="mcGunluk">'+
+           '<button class="mcKalem" aria-label="'+esc(t("diary_edit"))+'">'+
+             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+
+             '<path d="M4.5 19.5h3.2l9.1-9.1a2.2 2.2 0 0 0 0-3.2l0 0a2.2 2.2 0 0 0-3.2 0l-9.1 9.1z"/>'+
+             '<path d="M13.4 6.6l4 4"/></svg>'+
+           '</button>'+
+           '<p class="mcOku"></p>'+
+           '<textarea class="mcNot hide" rows="4" placeholder="'+esc(t("diary_ph"))+'"></textarea>'+
+           '<span class="mcDurum"></span>'+
+         '</div>'+
+         '</div>';
+    });
+    h+='</div>';
+    liste.innerHTML=h;
+    liste.querySelectorAll(".mcKart").forEach(k=>{
+      k.addEventListener("click",()=>{
+        const st=k.closest(".mcSatir");
+        try{ if(typeof openMoment==="function" && st) openMoment(st.dataset.id); }catch(e){}
+      });
+    });
+    /* ══════════ GUNLUK ══════════
+       Kullanici kendi anina sonradan not dusebilir. Not YALNIZCA
+       kendisine gorunur (RLS: user_id = auth.uid()), ana degil
+       kisiye baglidir. Yazma bitince kendiliginden kaydedilir. */
+    try{ await gunlukYukle(liste, veri.map(x=>x.id)); }catch(e){}
+  }catch(e){
+    console.warn("takvim gun:", e && e.message);
+    liste.innerHTML='<div class="mcBos">'+t("cal_empty")+'</div>';
+  }
+}
+
 // --- Anılarım ızgarası ---
 function renderMine(box){
   const sub=document.createElement("div");sub.className="arcSub";
@@ -18826,7 +19623,9 @@ function renderMine(box){
     c.setAttribute("role","button");
     if(it.id) c.setAttribute("data-mid", it.id);
     // ızgarada ASLA <video> yok — sadece kapak/resim (tembel yükleme)
-    const imgUrl = (it.kind==="video") ? (it.poster||null) : (it.src||null);
+    /* Izgara karesi ekranin ucte biri kadar; kucuk onizleme burada
+       buyutulunce bulaniklasiyordu. Fotografta TAM kare kullanilir. */
+    const imgUrl = (it.kind==="video") ? (it.poster||it.thumb||null) : (it.src||null);
     if(imgUrl) c.setAttribute("data-bg", imgUrl);
     else if(it.kind==="video") c.appendChild(makeArcPlaceholder());
     const g=document.createElement("div");g.className="grad";
@@ -19020,7 +19819,9 @@ function renderSaved(box){
     const c=document.createElement("div");c.className="arc";
     c.setAttribute("role","button");
     if(it.id) c.setAttribute("data-mid", it.id);
-    const imgUrl = (it.kind==="video") ? (it.poster||null) : (it.src||null);
+    /* Izgara karesi ekranin ucte biri kadar; kucuk onizleme burada
+       buyutulunce bulaniklasiyordu. Fotografta TAM kare kullanilir. */
+    const imgUrl = (it.kind==="video") ? (it.poster||it.thumb||null) : (it.src||null);
     if(imgUrl) c.setAttribute("data-bg", imgUrl);
     else if(it.kind==="video") c.appendChild(makeArcPlaceholder());
     const g=document.createElement("div");g.className="grad";
@@ -21266,7 +22067,10 @@ async function start(kayitSurerken){
       }catch(e){}
       await Kamera.baslat({
         yon: facing==="user" ? "on" : "arka",
-        ses: (camMode==="video"),
+        /* Kamera fotograf kipinde acilirsa ses KAPALI basliyordu;
+           sonradan videoya gecilince mikrofon devre disi kaldigi icin
+           kayitlarda ses yoktu. Her zaman sesli baslatilir. */
+        ses: true,
         kap: "camRoot",
         video: "camVideo"
       });
@@ -21346,7 +22150,7 @@ async function start(kayitSurerken){
         try{
           await Kamera.baslat({
             yon: facing==="user" ? "on" : "arka",
-            ses: (camMode==="video"),
+            ses: true,
             kap: "camRoot",
             video: "camVideo"
           });

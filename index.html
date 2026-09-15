@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.21.1";
+window.KLIPSY_SURUM = "3.23.2";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      s_privacy:"Gizlilik Politikası",
+      s_privacy_sub:"Verilerin nasıl kullanılıyor",
+      s_terms:"Kullanım Şartları",
+      s_terms_sub:"Uygulamayı kullanma koşulları",
+      s_delete:"Hesabı sil",
+      s_delete_sub:"Kalıcı olarak silinir, geri alınamaz",
+      birth_label:"Doğum tarihi",
+      birth_hint:"13 yaşından küçükler kayıt olamaz.",
+      birth_need:"Doğum tarihini gir",
+      birth_too_young:"Kayıt için en az 13 yaşında olmalısın",
+      terms_pre:"Kayıt olarak",
+      terms_link:"Kullanım Şartları",
+      terms_and:"ve",
+      privacy_link:"Gizlilik Politikası",
+      terms_post:"metinlerini kabul etmiş olursun.",
+      terms_need:"Şartları kabul etmelisin",
+      del_confirm1:"Hesabın kalıcı olarak silinecek. Anıların, mesajların ve notların geri getirilemez. Devam edilsin mi?",
+      del_confirm2:"Onaylamak için SIL yaz:",
+      del_word:"SIL",
+      del_cancel:"Silme iptal edildi",
+      del_running:"Hesap siliniyor…",
+      del_fail:"Silinemedi, tekrar dene",
+      forgot_pw:"Şifremi unuttum",
+      forgot_need_mail:"Önce e-posta adresini yaz",
+      forgot_sending:"Gönderiliyor…",
+      forgot_sent:"Sıfırlama bağlantısı e-postana gönderildi",
+      forgot_fail:"Gönderilemedi, tekrar dene",
       cal_places:"yer",
       cal_month:"Ay",
       diary_edit:"Notu düzenle",
@@ -741,6 +768,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      s_privacy:"Privacy Policy",
+      s_privacy_sub:"How your data is used",
+      s_terms:"Terms of Use",
+      s_terms_sub:"Conditions for using the app",
+      s_delete:"Delete account",
+      s_delete_sub:"Permanent, cannot be undone",
+      birth_label:"Date of birth",
+      birth_hint:"You must be 13 or older to sign up.",
+      birth_need:"Enter your date of birth",
+      birth_too_young:"You must be at least 13 to sign up",
+      terms_pre:"By signing up you accept the",
+      terms_link:"Terms of Use",
+      terms_and:"and",
+      privacy_link:"Privacy Policy",
+      terms_post:".",
+      terms_need:"You must accept the terms",
+      del_confirm1:"Your account will be permanently deleted. Moments, messages and notes cannot be recovered. Continue?",
+      del_confirm2:"Type DELETE to confirm:",
+      del_word:"DELETE",
+      del_cancel:"Deletion cancelled",
+      del_running:"Deleting account…",
+      del_fail:"Could not delete, try again",
+      forgot_pw:"Forgot password",
+      forgot_need_mail:"Enter your email first",
+      forgot_sending:"Sending…",
+      forgot_sent:"Reset link sent to your email",
+      forgot_fail:"Could not send, try again",
       cal_places:"places",
       cal_month:"Month",
       diary_edit:"Edit note",
@@ -1314,6 +1368,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      s_privacy:"Política de privacidad",
+      s_privacy_sub:"Cómo se usan tus datos",
+      s_terms:"Términos de uso",
+      s_terms_sub:"Condiciones de uso de la app",
+      s_delete:"Eliminar cuenta",
+      s_delete_sub:"Permanente, no se puede deshacer",
+      birth_label:"Fecha de nacimiento",
+      birth_hint:"Debes tener 13 años o más.",
+      birth_need:"Introduce tu fecha de nacimiento",
+      birth_too_young:"Debes tener al menos 13 años",
+      terms_pre:"Al registrarte aceptas los",
+      terms_link:"Términos de uso",
+      terms_and:"y la",
+      privacy_link:"Política de privacidad",
+      terms_post:".",
+      terms_need:"Debes aceptar los términos",
+      del_confirm1:"Tu cuenta se eliminará permanentemente. No se podrá recuperar. ¿Continuar?",
+      del_confirm2:"Escribe BORRAR para confirmar:",
+      del_word:"BORRAR",
+      del_cancel:"Eliminación cancelada",
+      del_running:"Eliminando cuenta…",
+      del_fail:"No se pudo eliminar",
+      forgot_pw:"Olvidé mi contraseña",
+      forgot_need_mail:"Escribe tu correo primero",
+      forgot_sending:"Enviando…",
+      forgot_sent:"Enlace de restablecimiento enviado",
+      forgot_fail:"No se pudo enviar, inténtalo de nuevo",
       cal_places:"lugares",
       cal_month:"Mes",
       diary_edit:"Editar nota",
@@ -1884,6 +1965,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      s_privacy:"سياسة الخصوصية",
+      s_privacy_sub:"كيف تُستخدم بياناتك",
+      s_terms:"شروط الاستخدام",
+      s_terms_sub:"شروط استخدام التطبيق",
+      s_delete:"حذف الحساب",
+      s_delete_sub:"نهائي ولا يمكن التراجع",
+      birth_label:"تاريخ الميلاد",
+      birth_hint:"يجب أن يكون عمرك 13 سنة أو أكثر.",
+      birth_need:"أدخل تاريخ ميلادك",
+      birth_too_young:"يجب أن يكون عمرك 13 على الأقل",
+      terms_pre:"بالتسجيل أنت توافق على",
+      terms_link:"شروط الاستخدام",
+      terms_and:"و",
+      privacy_link:"سياسة الخصوصية",
+      terms_post:".",
+      terms_need:"يجب قبول الشروط",
+      del_confirm1:"سيُحذف حسابك نهائيًا ولا يمكن استرجاعه. متابعة؟",
+      del_confirm2:"اكتب حذف للتأكيد:",
+      del_word:"حذف",
+      del_cancel:"أُلغي الحذف",
+      del_running:"جارٍ حذف الحساب…",
+      del_fail:"تعذّر الحذف",
+      forgot_pw:"نسيت كلمة المرور",
+      forgot_need_mail:"اكتب بريدك أولاً",
+      forgot_sending:"جارٍ الإرسال…",
+      forgot_sent:"أُرسل رابط الاستعادة إلى بريدك",
+      forgot_fail:"تعذّر الإرسال، حاول مجددًا",
       cal_places:"أماكن",
       cal_month:"شهر",
       diary_edit:"تعديل الملاحظة",
@@ -2454,6 +2562,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      s_privacy:"Politique de confidentialité",
+      s_privacy_sub:"Comment tes données sont utilisées",
+      s_terms:"Conditions d’utilisation",
+      s_terms_sub:"Conditions d’usage de l’app",
+      s_delete:"Supprimer le compte",
+      s_delete_sub:"Définitif, irréversible",
+      birth_label:"Date de naissance",
+      birth_hint:"Tu dois avoir 13 ans ou plus.",
+      birth_need:"Saisis ta date de naissance",
+      birth_too_young:"Tu dois avoir au moins 13 ans",
+      terms_pre:"En t’inscrivant tu acceptes les",
+      terms_link:"Conditions d’utilisation",
+      terms_and:"et la",
+      privacy_link:"Politique de confidentialité",
+      terms_post:".",
+      terms_need:"Tu dois accepter les conditions",
+      del_confirm1:"Ton compte sera supprimé définitivement. Rien ne pourra être récupéré. Continuer ?",
+      del_confirm2:"Tape SUPPRIMER pour confirmer :",
+      del_word:"SUPPRIMER",
+      del_cancel:"Suppression annulée",
+      del_running:"Suppression du compte…",
+      del_fail:"Suppression impossible",
+      forgot_pw:"Mot de passe oublié",
+      forgot_need_mail:"Saisis d’abord ton e-mail",
+      forgot_sending:"Envoi…",
+      forgot_sent:"Lien de réinitialisation envoyé",
+      forgot_fail:"Envoi impossible, réessaie",
       cal_places:"lieux",
       cal_month:"Mois",
       diary_edit:"Modifier la note",
@@ -3024,6 +3159,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      s_privacy:"Datenschutzerklärung",
+      s_privacy_sub:"Wie deine Daten genutzt werden",
+      s_terms:"Nutzungsbedingungen",
+      s_terms_sub:"Bedingungen für die Nutzung",
+      s_delete:"Konto löschen",
+      s_delete_sub:"Dauerhaft, nicht rückgängig",
+      birth_label:"Geburtsdatum",
+      birth_hint:"Du musst 13 Jahre oder älter sein.",
+      birth_need:"Gib dein Geburtsdatum ein",
+      birth_too_young:"Du musst mindestens 13 Jahre alt sein",
+      terms_pre:"Mit der Registrierung akzeptierst du die",
+      terms_link:"Nutzungsbedingungen",
+      terms_and:"und die",
+      privacy_link:"Datenschutzerklärung",
+      terms_post:".",
+      terms_need:"Du musst die Bedingungen akzeptieren",
+      del_confirm1:"Dein Konto wird dauerhaft gelöscht und kann nicht wiederhergestellt werden. Fortfahren?",
+      del_confirm2:"Tippe LOESCHEN zum Bestätigen:",
+      del_word:"LOESCHEN",
+      del_cancel:"Löschen abgebrochen",
+      del_running:"Konto wird gelöscht…",
+      del_fail:"Löschen fehlgeschlagen",
+      forgot_pw:"Passwort vergessen",
+      forgot_need_mail:"Gib zuerst deine E-Mail ein",
+      forgot_sending:"Wird gesendet…",
+      forgot_sent:"Link zum Zurücksetzen gesendet",
+      forgot_fail:"Senden fehlgeschlagen, versuch es erneut",
       cal_places:"Orte",
       cal_month:"Monat",
       diary_edit:"Notiz bearbeiten",
@@ -3594,6 +3756,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      s_privacy:"Политика конфиденциальности",
+      s_privacy_sub:"Как используются ваши данные",
+      s_terms:"Условия использования",
+      s_terms_sub:"Правила пользования приложением",
+      s_delete:"Удалить аккаунт",
+      s_delete_sub:"Навсегда, без возврата",
+      birth_label:"Дата рождения",
+      birth_hint:"Вам должно быть 13 лет или больше.",
+      birth_need:"Введите дату рождения",
+      birth_too_young:"Регистрация с 13 лет",
+      terms_pre:"Регистрируясь, вы принимаете",
+      terms_link:"Условия использования",
+      terms_and:"и",
+      privacy_link:"Политику конфиденциальности",
+      terms_post:".",
+      terms_need:"Нужно принять условия",
+      del_confirm1:"Аккаунт будет удалён навсегда и не подлежит восстановлению. Продолжить?",
+      del_confirm2:"Введите УДАЛИТЬ для подтверждения:",
+      del_word:"УДАЛИТЬ",
+      del_cancel:"Удаление отменено",
+      del_running:"Удаление аккаунта…",
+      del_fail:"Не удалось удалить",
+      forgot_pw:"Забыли пароль",
+      forgot_need_mail:"Сначала введите почту",
+      forgot_sending:"Отправка…",
+      forgot_sent:"Ссылка для сброса отправлена",
+      forgot_fail:"Не отправлено, попробуйте снова",
       cal_places:"мест",
       cal_month:"Месяц",
       diary_edit:"Изменить заметку",
@@ -4164,6 +4353,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      s_privacy:"Política de Privacidade",
+      s_privacy_sub:"Como os teus dados são usados",
+      s_terms:"Termos de Utilização",
+      s_terms_sub:"Condições de uso da app",
+      s_delete:"Eliminar conta",
+      s_delete_sub:"Permanente, sem retorno",
+      birth_label:"Data de nascimento",
+      birth_hint:"Tens de ter 13 anos ou mais.",
+      birth_need:"Introduz a tua data de nascimento",
+      birth_too_young:"Tens de ter pelo menos 13 anos",
+      terms_pre:"Ao registares-te aceitas os",
+      terms_link:"Termos de Utilização",
+      terms_and:"e a",
+      privacy_link:"Política de Privacidade",
+      terms_post:".",
+      terms_need:"Tens de aceitar os termos",
+      del_confirm1:"A tua conta será eliminada permanentemente e não poderá ser recuperada. Continuar?",
+      del_confirm2:"Escreve APAGAR para confirmar:",
+      del_word:"APAGAR",
+      del_cancel:"Eliminação cancelada",
+      del_running:"A eliminar conta…",
+      del_fail:"Não foi possível eliminar",
+      forgot_pw:"Esqueci a palavra-passe",
+      forgot_need_mail:"Escreve o teu e-mail primeiro",
+      forgot_sending:"A enviar…",
+      forgot_sent:"Link de reposição enviado",
+      forgot_fail:"Não foi enviado, tenta de novo",
       cal_places:"lugares",
       cal_month:"Mês",
       diary_edit:"Editar nota",
@@ -4734,6 +4950,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      s_privacy:"गोपनीयता नीति",
+      s_privacy_sub:"आपका डेटा कैसे उपयोग होता है",
+      s_terms:"उपयोग की शर्तें",
+      s_terms_sub:"ऐप उपयोग की शर्तें",
+      s_delete:"खाता हटाएँ",
+      s_delete_sub:"स्थायी, वापस नहीं",
+      birth_label:"जन्म तिथि",
+      birth_hint:"आपकी आयु 13 वर्ष या अधिक होनी चाहिए।",
+      birth_need:"जन्म तिथि दर्ज करें",
+      birth_too_young:"कम से कम 13 वर्ष के होने चाहिए",
+      terms_pre:"साइन अप करके आप",
+      terms_link:"उपयोग की शर्तें",
+      terms_and:"और",
+      privacy_link:"गोपनीयता नीति",
+      terms_post:"स्वीकार करते हैं।",
+      terms_need:"शर्तें स्वीकार करें",
+      del_confirm1:"आपका खाता स्थायी रूप से हट जाएगा और वापस नहीं आएगा। जारी रखें?",
+      del_confirm2:"पुष्टि के लिए DELETE लिखें:",
+      del_word:"DELETE",
+      del_cancel:"रद्द किया गया",
+      del_running:"खाता हटाया जा रहा…",
+      del_fail:"हटाया नहीं जा सका",
+      forgot_pw:"पासवर्ड भूल गए",
+      forgot_need_mail:"पहले ईमेल दर्ज करें",
+      forgot_sending:"भेजा जा रहा…",
+      forgot_sent:"रीसेट लिंक भेजा गया",
+      forgot_fail:"भेजा नहीं गया, फिर कोशिश करें",
       cal_places:"स्थान",
       cal_month:"माह",
       diary_edit:"नोट संपादित करें",
@@ -5304,6 +5547,33 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      s_privacy:"Kebijakan Privasi",
+      s_privacy_sub:"Bagaimana datamu digunakan",
+      s_terms:"Ketentuan Penggunaan",
+      s_terms_sub:"Syarat memakai aplikasi",
+      s_delete:"Hapus akun",
+      s_delete_sub:"Permanen, tidak bisa dibatalkan",
+      birth_label:"Tanggal lahir",
+      birth_hint:"Usia minimal 13 tahun.",
+      birth_need:"Masukkan tanggal lahir",
+      birth_too_young:"Usia minimal 13 tahun untuk mendaftar",
+      terms_pre:"Dengan mendaftar kamu menyetujui",
+      terms_link:"Ketentuan Penggunaan",
+      terms_and:"dan",
+      privacy_link:"Kebijakan Privasi",
+      terms_post:".",
+      terms_need:"Kamu harus menyetujui ketentuan",
+      del_confirm1:"Akunmu akan dihapus permanen dan tidak bisa dipulihkan. Lanjutkan?",
+      del_confirm2:"Ketik HAPUS untuk konfirmasi:",
+      del_word:"HAPUS",
+      del_cancel:"Penghapusan dibatalkan",
+      del_running:"Menghapus akun…",
+      del_fail:"Gagal menghapus",
+      forgot_pw:"Lupa kata sandi",
+      forgot_need_mail:"Masukkan email dulu",
+      forgot_sending:"Mengirim…",
+      forgot_sent:"Tautan atur ulang terkirim",
+      forgot_fail:"Gagal mengirim, coba lagi",
       cal_places:"tempat",
       cal_month:"Bulan",
       diary_edit:"Edit catatan",
@@ -6632,6 +6902,27 @@ svg{display:block}
 .mcKart .mcYer{position:absolute;left:0.3125rem;right:0.3125rem;bottom:0.3125rem;
   font-size:0.5625rem;color:#fff;text-shadow:0 0.0625rem 0.25rem rgba(0,0,0,.8);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Giris ekrani: sifremi unuttum */
+.gForgot{display:block;width:100%;margin-top:0.625rem;padding:0.375rem 0;
+  border:0;background:none;color:var(--t3);
+  font-size:0.75rem;font-weight:600;letter-spacing:-.01em;text-align:center}
+.gForgot.hide{display:none}
+.gForgot:active{color:var(--t1)}
+
+/* Hesap silme satiri: geri donusu olmayan islem */
+.setRow.setTehlike{color:#FF3B6B}
+.setRow.setTehlike .setIc{color:#FF3B6B}
+.setRow.setTehlike .setSub{color:rgba(255,59,107,.62)}
+
+/* Giris ekrani: dogum tarihi ve sartlar */
+.gfield.suOnly.hide,.gTerms.hide{display:none}
+.gTerms{display:flex;align-items:flex-start;gap:0.5rem;margin:0.75rem 0 0.25rem;
+  font-size:0.6875rem;line-height:1.5;color:var(--t3)}
+.gTerms input{flex:none;width:1.0625rem;height:1.0625rem;margin-top:0.0625rem;
+  accent-color:#7B5BFF}
+.gTerms a{color:var(--t2);font-weight:600;text-decoration:underline;
+  text-underline-offset:0.125rem}
 
 .userDot{position:relative}
 .userDot .udCore{position:absolute;inset:0.3125rem;border-radius:6.1875rem;background:#2E9BFF;
@@ -10117,11 +10408,31 @@ html.sb-white #userSearch::before{
                 <label>E-posta</label>
                 <div class="ginwrap"><input id="gEmail" type="email" autocomplete="email" placeholder="ornek@eposta.com" autocapitalize="none" spellcheck="false"></div>
               </div>
+              <!-- Yalnizca KAYIT kipinde gorunur -->
+              <div class="gfield suOnly hide" id="gfBirth">
+                <label data-i18n="birth_label">Doğum tarihi</label>
+                <div class="ginwrap"><input id="gBirth" type="date" autocomplete="bday"></div>
+                <div class="ghint" data-i18n="birth_hint">13 yaşından küçükler kayıt olamaz.</div>
+              </div>
               <div class="gfield">
                 <label>Parola</label>
                 <div class="ginwrap"><input id="gPassword" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
               </div>
+              <label class="gTerms suOnly hide" id="gfTerms">
+                <input type="checkbox" id="gTerms">
+                <span>
+                  <span data-i18n="terms_pre">Kayıt olarak</span>
+                  <a href="./kullanim-sartlari.html" target="_blank" rel="noopener" data-i18n="terms_link">Kullanım Şartları</a>
+                  <span data-i18n="terms_and">ve</span>
+                  <a href="./gizlilik.html" target="_blank" rel="noopener" data-i18n="privacy_link">Gizlilik Politikası</a>
+                  <span data-i18n="terms_post">metinlerini kabul etmiş olursun.</span>
+                </span>
+              </label>
               <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giriş yap</span></button>
+              <!-- Sifre sifirlama fonksiyonu vardi ama YALNIZCA ayarlardan
+                   ulasilabiliyordu: sifresini unutan kullanici zaten giris
+                   yapamadigi icin oraya erisemiyordu. -->
+              <button type="button" class="gForgot hide" id="gForgot" data-i18n="forgot_pw">Şifremi unuttum</button>
               <div class="gmsg" id="gMsg"></div>
               <p style="text-align:center;font-size:12px;color:var(--t3);margin-top:12px">
                 <button type="button" id="gsBack" style="background:none;border:0;color:var(--t3);font-weight:600;font-size:12px;font-family:inherit;cursor:pointer;padding:0" data-i18n="back">Geri</button>
@@ -18432,6 +18743,23 @@ function renderSettings(){
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
     t("s_pass_change"),t("s_pass_sub"),
     ()=>resetPassword() ));
+  /* Yasal metinler — uygulama disinda barinir, guncellemek icin
+     yeni surum yayinlamak gerekmez. */
+  g3.appendChild(settingsRow(
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2l7.4 3v5.1c0 4.4-3 8.2-7.4 9.5-4.4-1.3-7.4-5.1-7.4-9.5V6.2z"/></svg>',
+    t("s_privacy"), t("s_privacy_sub"),
+    ()=>{ try{ window.open("./gizlilik.html","_blank","noopener"); }catch(e){} } ));
+  g3.appendChild(settingsRow(
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 3.4h8l4.2 4.2v13H6.4z"/><path d="M14.2 3.4v4.4h4.4M9.2 12.4h6M9.2 15.8h6"/></svg>',
+    t("s_terms"), t("s_terms_sub"),
+    ()=>{ try{ window.open("./kullanim-sartlari.html","_blank","noopener"); }catch(e){} } ));
+  /* Hesap silme en altta ve kirmizi: yanlislikla basilmasin */
+  const silSatir = settingsRow(
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 11.4A1.6 1.6 0 0 0 8.9 20h6.2a1.6 1.6 0 0 0 1.6-1.6L17.5 7"/></svg>',
+    t("s_delete"), t("s_delete_sub"),
+    ()=>hesabiSil() );
+  silSatir.classList.add("setTehlike");
+  g3.appendChild(silSatir);
   box.appendChild(g3);
 
   // HAKKINDA
@@ -18472,6 +18800,36 @@ async function changeUsername(){
   if(error){ toast(error.message||t("err_change")); return; }
   toast(t("ok_username_changed"));
   setTimeout(()=>{ if(window.__logout) window.__logout(); }, 1400);
+}
+
+/* ══════════════════ HESAP SILME ══════════════════
+   Mağazalar hesabin uygulama icinden silinebilmesini ZORUNLU tutuyor.
+   Sunucudaki hesabimi_sil() fonksiyonu icerikleri kaldirilmis
+   isaretler, profili anonimlestirir ve kimlik kaydini siler.
+   Geri donusu yok; bu yuzden iki asamali onay istenir. */
+async function hesabiSil(){
+  const onay1 = confirm(t("del_confirm1"));
+  if(!onay1) return;
+  const yazilan = prompt(t("del_confirm2"));
+  if(!yazilan || yazilan.trim().toUpperCase() !== t("del_word").toUpperCase()){
+    toast(t("del_cancel"));
+    return;
+  }
+  try{
+    toast(t("del_running"));
+    const sb=window.__sb;
+    if(!sb) throw new Error("baglanti yok");
+    const { error } = await sb.rpc("hesabimi_sil");
+    if(error) throw error;
+    /* Cihazdaki her sey temizlenir */
+    try{ localStorage.clear(); }catch(e){}
+    try{ await sb.auth.signOut({ scope:"local" }); }catch(e){}
+    try{ indexedDB.deleteDatabase("klipsy_taslak"); }catch(e){}
+    location.reload();
+  }catch(e){
+    console.warn("hesap silme:", e && e.message);
+    toast(t("del_fail"));
+  }
 }
 
 async function resetPassword(){
@@ -25712,6 +26070,12 @@ function setMode(m){
   const adAlan=$('#gfName');
   if(adAlan) adAlan.style.display=su?'flex':'none';
   $('#gSubmitText').textContent=su?t("signup2"):t("login2");
+  /* Kayit kipinde anlamsiz; yalnizca giriste gosterilir */
+  try{ const f=$("#gForgot"); if(f) f.classList.toggle("hide", !!su); }catch(e){}
+  /* Dogum tarihi ve sartlar yalnizca KAYIT kipinde */
+  try{
+    document.querySelectorAll(".suOnly").forEach(el=>el.classList.toggle("hide", !su));
+  }catch(e){}
   gclearMsg();
 }
 $('#gTabLogin').addEventListener('click',()=>setMode('login'));
@@ -25740,12 +26104,34 @@ async function submit(){
   if(!email||!password){gmsg('E-posta ve parola gerekli.','err');return;}
   if(password.length<6){gmsg('Parola en az 6 karakter olmali.','err');return;}
   if(mode==='signup'&&username.length<3){gmsg('Gecerli bir kullanici adi sec.','err');return;}
+  /* ══════════ YAS SINIRI VE SARTLAR ══════════
+     Konum, kamera ve mikrofon izni isteyen bir sosyal uygulamada
+     13 yas alti koruması ve sartlarin acik onayi zorunlu. */
+  let dogum=null;
+  if(mode==='signup'){
+    const dt=($("#gBirth")||{}).value||"";
+    if(!dt){ gmsg(t("birth_need"),"err"); return; }
+    dogum=dt;
+    const d2=new Date(dt+"T12:00:00");
+    if(isNaN(d2.getTime())){ gmsg(t("birth_need"),"err"); return; }
+    const simdi=new Date();
+    let yas=simdi.getFullYear()-d2.getFullYear();
+    const ayFark=simdi.getMonth()-d2.getMonth();
+    if(ayFark<0 || (ayFark===0 && simdi.getDate()<d2.getDate())) yas--;
+    if(yas<13){ gmsg(t("birth_too_young"),"err"); return; }
+    if(yas>120){ gmsg(t("birth_need"),"err"); return; }
+    const kb=$("#gTerms");
+    if(kb && !kb.checked){ gmsg(t("terms_need"),"err"); return; }
+  }
   busy=true;const btn=$('#gSubmit');const txt=$('#gSubmitText').textContent;
   btn.disabled=true;btn.innerHTML='<span class="gspin"></span>';
   try{
     if(mode==='signup'){
       const {data:av}=await sb.rpc('username_available',{candidate:username});
       if(!av)throw new Error('Bu kullanici adi alinmis.');
+      /* Dogum tarihi ve sart onayi kayitla birlikte saklanir */
+      window.__kayitDogum = dogum;
+      window.__kayitSart  = new Date().toISOString();
       /* Ad soyad kayıtla birlikte gider; sonraki adımda tekrar
          sorulmasın diye. Boşsa sorun değil, orada doldurulur. */
       const ad=($('#gFirst').value||'').trim();
@@ -25766,6 +26152,38 @@ async function submit(){
   }catch(e){rb(btn,txt);gmsg(cevir(e.message||'Bir hata olustu.'),'err');}
   finally{busy=false;}
 }
+/* Giris ekranindan sifre sifirlama */
+try{
+  document.addEventListener("click",(e)=>{
+    const b=e.target && e.target.closest && e.target.closest("#gForgot");
+    if(!b) return;
+    e.preventDefault();
+    const posta=(document.getElementById("gEmail")||{}).value||"";
+    if(!posta.trim()){
+      const m=document.getElementById("gMsg");
+      if(m){ m.textContent=t("forgot_need_mail"); m.className="gmsg err"; }
+      return;
+    }
+    sifreSifirla(posta.trim());
+  });
+}catch(e){}
+
+async function sifreSifirla(posta){
+  const m=document.getElementById("gMsg");
+  const yaz=(metin,sinif)=>{ if(m){ m.textContent=metin; m.className="gmsg "+(sinif||""); } };
+  yaz(t("forgot_sending"));
+  try{
+    const sb=window.__sb;
+    if(!sb) throw new Error("baglanti yok");
+    const {error}=await sb.auth.resetPasswordForEmail(posta,{ redirectTo: location.origin });
+    if(error) throw error;
+    yaz(t("forgot_sent"), "ok");
+  }catch(e){
+    console.warn("sifre sifirlama:", e && e.message);
+    yaz(t("forgot_fail"), "err");
+  }
+}
+
 function rb(btn,txt){btn.disabled=false;btn.innerHTML='<span id="gSubmitText">'+txt+'</span>';}
 function cevir(m){
   if(/invalid login/i.test(m))return'E-posta veya parola hatali.';

@@ -5,97 +5,183 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Klipsy — Kullanım Şartları</title>
 <style>
-:root{--bg:#0B0B10;--t1:#F2F2F5;--t2:#B8B8C4;--t3:#8A8A97;--edge:rgba(255,255,255,.1);--ak:#FF3B6B;--mor:#7B5BFF}
+:root{--bg:#0B0B10;--kart:#131319;--t1:#F2F2F5;--t2:#B8B8C4;--t3:#8A8A97;
+  --edge:rgba(255,255,255,.1);--ak:#FF3B6B;--mor:#7B5BFF}
 @media (prefers-color-scheme: light){
-  :root{--bg:#FFFFFF;--t1:#16161C;--t2:#44444E;--t3:#70707C;--edge:rgba(0,0,0,.1)}
+  :root{--bg:#FFFFFF;--kart:#F6F6F9;--t1:#16161C;--t2:#44444E;--t3:#70707C;--edge:rgba(0,0,0,.1)}
 }
 *{box-sizing:border-box}
 body{margin:0;padding:0 0 4rem;background:var(--bg);color:var(--t1);
   font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   -webkit-font-smoothing:antialiased}
-header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--edge);
-  padding:calc(env(safe-area-inset-top) + 1rem) 1.25rem 0.875rem}
-header h1{margin:0;font-size:1.0625rem;font-weight:700;letter-spacing:-.022em}
-header p{margin:.25rem 0 0;font-size:.75rem;color:var(--t3)}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--edge);
+  padding:calc(env(safe-area-inset-top) + .75rem) 1rem .75rem;
+  display:flex;align-items:center;gap:.75rem}
+.geri{flex:none;width:2.25rem;height:2.25rem;border:0;border-radius:99px;background:none;
+  color:var(--t1);display:grid;place-items:center;cursor:pointer}
+.geri:active{background:var(--kart)}
+.geri svg{width:1.25rem;height:1.25rem}
+header h1{margin:0;font-size:1rem;font-weight:700;letter-spacing:-.022em}
+header p{margin:.125rem 0 0;font-size:.6875rem;color:var(--t3)}
 main{padding:1.25rem 1.25rem 0;max-width:44rem;margin:0 auto}
 h2{margin:1.75rem 0 .5rem;font-size:.9375rem;font-weight:700;letter-spacing:-.018em}
-h2:first-of-type{margin-top:.5rem}
-p,li{font-size:.875rem;line-height:1.7;color:var(--t2)}
+h2:first-of-type{margin-top:.25rem}
+p,li,td{font-size:.8438rem;line-height:1.7;color:var(--t2)}
 ul{padding-left:1.125rem;margin:.5rem 0}
 li{margin:.3125rem 0}
 strong{color:var(--t1);font-weight:600}
 .ozet{padding:1rem 1.125rem;border-radius:1rem;border:1px solid var(--edge);
-  background:linear-gradient(135deg,rgba(255,59,107,.07),rgba(123,91,255,.07));margin:0 0 1.25rem}
+  background:linear-gradient(135deg,rgba(255,59,107,.07),rgba(123,91,255,.07));margin:0 0 1.5rem}
 .ozet p{margin:0;color:var(--t1)}
-.not{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--edge);
-  font-size:.75rem;color:var(--t3)}
+table{width:100%;border-collapse:collapse;margin:.625rem 0;font-size:.8125rem}
+td{padding:.625rem .5rem .625rem 0;border-bottom:1px solid var(--edge);vertical-align:top}
+td:first-child{color:var(--t1);font-weight:600;width:34%}
+.uyari{margin-top:2rem;padding:1rem 1.125rem;border-radius:1rem;
+  border:1px solid var(--edge);background:var(--kart);font-size:.75rem;color:var(--t3)}
+.uyari strong{color:var(--t2)}
 a{color:var(--mor)}
+.doldur{color:var(--ak);font-weight:600}
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Kullanım Şartları</h1>
-  <p>Son güncelleme: 14 Eylül 2026</p>
+  <button class="geri" id="geri" aria-label="Geri">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <div>
+    <h1>Kullanım Şartları</h1>
+    <p>Yürürlük tarihi: 14 Eylül 2026</p>
+  </div>
 </header>
+
 <main>
 
 <div class="ozet">
-  <p><strong>Kısaca:</strong> Klipsy anı yakalamak için var. Paylaştığın içerik senin, sorumluluğu da sana ait. Başkasına zarar veren, yasa dışı ya da rahatsız edici içerik paylaşma. 13 yaşından büyük olmalısın.</p>
+  <p><strong>Özetle:</strong> Klipsy anı yakalamak için var. Paylaştığın içerik senin, sorumluluğu da sana ait. Başkasına zarar veren, hukuka aykırı ya da rızası alınmamış içerik paylaşamazsın. Hesap açmak için 13 yaşından büyük olman gerekir.</p>
 </div>
 
-<h2>Klipsy nedir</h2>
-<p>Klipsy, o anda çektiğin fotoğraf ve videoları paylaştığın bir uygulamadır. Galeriden yükleme yoktur; paylaşılan her an o anda çekilir. Anlar akışta yaşar, profilde birikmez.</p>
+<h2>1. Taraflar ve sözleşmenin konusu</h2>
+<p>Bu Kullanım Şartları, <span class="doldur">[Şirket / şahıs unvanı]</span> ("Klipsy", "biz") ile Klipsy mobil ve web uygulamasını kullanan kişi ("kullanıcı", "sen") arasında kurulan sözleşmenin koşullarını belirler.</p>
+<p>Uygulamayı indirerek, hesap açarak veya kullanarak bu şartları kabul etmiş olursun. Kabul etmiyorsan uygulamayı kullanmamalısın.</p>
+<table>
+  <tr><td>Unvan</td><td class="doldur">[Şirket / şahıs unvanı yazılacak]</td></tr>
+  <tr><td>Adres</td><td class="doldur">[Açık adres yazılacak]</td></tr>
+  <tr><td>E-posta</td><td class="doldur">[İletişim e-postası yazılacak]</td></tr>
+</table>
 
-<h2>Hesap açma</h2>
+<h2>2. Hizmetin tanımı</h2>
+<p>Klipsy, kullanıcıların o anda çektikleri fotoğraf ve videoları diğer kullanıcılarla paylaştıkları bir sosyal paylaşım hizmetidir. Galeriden içerik yüklenemez; paylaşılan her içerik uygulama içinden anlık olarak üretilir. İçerikler akışta görüntülenir, profilde arşivlenmez.</p>
+<p>Hizmet ücretsiz sunulmaktadır. İleride ücretli özellikler eklenmesi hâlinde koşulları ayrıca duyurulur.</p>
+
+<h2>3. Hesap açma koşulları</h2>
 <ul>
-  <li><strong>13 yaşından büyük</strong> olmalısın. Bulunduğun ülkede daha yüksek bir yaş sınırı varsa ona uymalısın.</li>
-  <li>Verdiğin bilgilerin doğru olması gerekir.</li>
-  <li>Hesabının güvenliğinden sen sorumlusun. Parolanı kimseyle paylaşma.</li>
-  <li>Bir kişi için bir hesap. Başkası adına hesap açamazsın.</li>
+  <li><strong>13 yaşından büyük</strong> olmalısın. Bulunduğun ülke daha yüksek bir yaş sınırı öngörüyorsa ona uymalısın.</li>
+  <li>13-18 yaş aralığındaysan, velinin bilgisi ve izni dâhilinde kullanmalısın.</li>
+  <li>Kayıt sırasında verdiğin bilgilerin doğru ve güncel olması gerekir.</li>
+  <li>Her kişi için tek hesap açılabilir. Başkası adına veya sahte kimlikle hesap açamazsın.</li>
+  <li>Hesabının ve parolanın güvenliğinden sen sorumlusun. Yetkisiz kullanım fark edersen derhâl bize bildirmelisin.</li>
 </ul>
 
-<h2>İçeriğin sana aittir</h2>
-<p>Paylaştığın fotoğraf, video ve yazıların <strong>mülkiyeti sende kalır</strong>. Bize yalnızca uygulamayı çalıştırabilmek için gereken izni vermiş olursun: içeriği saklamak, diğer kullanıcılara göstermek ve gerektiğinde teknik olarak işlemek.</p>
-<p>İçeriğini sildiğinde bu izin de sona erer.</p>
-
-<h2>Paylaşmaman gerekenler</h2>
+<h2>4. İçerik üzerindeki haklar</h2>
+<p>Paylaştığın fotoğraf, video, yazı ve diğer içeriklerin <strong>fikri mülkiyet hakları sende kalır</strong>. Bu şartları kabul ederek bize, yalnızca hizmeti sunabilmemiz için gerekli olan; <strong>dünya çapında, telifsiz, münhasır olmayan, devredilebilir olmayan</strong> bir kullanım hakkı vermiş olursun. Bu hak şunları kapsar:</p>
 <ul>
-  <li>Şiddet, nefret söylemi, taciz ya da tehdit içeren içerik.</li>
-  <li>Cinsel içerik, çıplaklık.</li>
-  <li>Çocukları tehlikeye atan ya da istismar eden her türlü içerik.</li>
-  <li>Başkasının izni olmadan çekilmiş özel görüntüler.</li>
-  <li>Telif hakkı sana ait olmayan içerik.</li>
-  <li>Yanıltıcı bilgi, dolandırıcılık, spam.</li>
-  <li>Yasa dışı ürün ya da hizmet tanıtımı.</li>
+  <li>İçeriğin sunucularda saklanması ve yedeklenmesi.</li>
+  <li>Belirlediğin gizlilik ayarı çerçevesinde diğer kullanıcılara gösterilmesi.</li>
+  <li>Teknik zorunluluk gereği biçim, boyut ve sıkıştırma düzeyinin değiştirilmesi.</li>
 </ul>
-<p>Bu kurallara uymayan içerikleri kaldırabilir, hesabı askıya alabilir ya da kapatabiliriz.</p>
+<p>İçeriğini sildiğinde bu hak sona erer. Silme işleminden önce başka kullanıcılar tarafından kaydedilmiş kopyalar üzerinde denetimimiz bulunmamaktadır.</p>
 
-<h2>Başkalarının gizliliği</h2>
-<p>Başkalarının göründüğü anları paylaşırken onların rızasını almak senin sorumluluğundadır. Birinin konumunu, kimliğini ya da özel bilgilerini rızası olmadan ifşa etmek yasaktır.</p>
-
-<h2>Şikayet ve engelleme</h2>
-<p>Rahatsız edici bir içerikle karşılaşırsan şikayet edebilirsin. Dilediğin kullanıcıyı engelleyebilirsin; engellediğin kişi seninle iletişim kuramaz.</p>
-
-<h2>Hizmetin sürekliliği</h2>
-<p>Uygulamayı geliştirmeye devam ediyoruz. Özellikler değişebilir, eklenebilir ya da kaldırılabilir. Teknik bakım nedeniyle kesintiler olabilir.</p>
-
-<h2>Hesabın kapatılması</h2>
+<h2>5. Yasaklı içerik ve davranışlar</h2>
+<p>Aşağıdaki içerikleri paylaşman ve davranışlarda bulunman yasaktır:</p>
 <ul>
-  <li>Hesabını istediğin an ayarlardan silebilirsin. Bu işlem <strong>geri alınamaz</strong>.</li>
-  <li>Bu şartları ihlal etmen hâlinde hesabını askıya alabilir ya da kapatabiliriz.</li>
+  <li>Çocukların cinsel istismarına ilişkin her türlü içerik. Bu tür içerik tespit edildiğinde hesap derhâl kapatılır ve yetkili makamlara bildirim yapılır.</li>
+  <li>Şiddet, işkence, kendine zarar verme ya da intiharı özendiren görüntüler.</li>
+  <li>Nefret söylemi; ırk, etnik köken, din, cinsiyet, cinsel yönelim, engellilik temelli ayrımcılık.</li>
+  <li>Taciz, tehdit, hedef gösterme, ısrarlı takip.</li>
+  <li>Cinsel içerik ve çıplaklık.</li>
+  <li>Başkasının rızası olmadan çekilmiş özel görüntüler; kişilerin konumunu, kimlik bilgilerini veya özel yaşamına ilişkin bilgileri rızası dışında ifşa etmek.</li>
+  <li>Telif hakkı, marka veya diğer fikri mülkiyet haklarını ihlal eden içerik.</li>
+  <li>Yanıltıcı bilgi, dolandırıcılık, kimlik taklidi.</li>
+  <li>İstenmeyen toplu ileti, otomatik hesap kullanımı, sistemin işleyişini bozmaya yönelik girişimler.</li>
+  <li>Uyuşturucu, silah, kaçak ürün ve benzeri yasa dışı mal veya hizmet tanıtımı.</li>
 </ul>
 
-<h2>Sorumluluk sınırı</h2>
-<p>Klipsy "olduğu gibi" sunulur. Diğer kullanıcıların paylaştığı içerikten sorumlu değiliz. Uygulamanın kesintisiz ya da hatasız çalışacağını garanti edemeyiz.</p>
+<h2>6. Takip, gözetleme ve konum kötüye kullanımı</h2>
+<p>Uygulamanın, bir kişiyi izlemek, bulunduğu yeri tespit etmek veya hareketlerini takip etmek amacıyla kullanılması <strong>kesinlikle yasaktır</strong>. Aşağıdaki davranışlar tespit edildiğinde hesap uyarı yapılmaksızın kalıcı olarak kapatılır ve gerekli hâllerde yetkili makamlara bildirimde bulunulur:</p>
+<ul>
+  <li>Bir kullanıcının konum etiketlerini derleyerek nerede yaşadığını, çalıştığını veya bulunduğunu tespit etmeye çalışmak.</li>
+  <li>Bir kullanıcının paylaşımlarını takip ederek fiziksel olarak yanına gitmek veya buna teşebbüs etmek.</li>
+  <li>Engellendiği hâlde yeni hesap açarak aynı kişiye ulaşmaya çalışmak.</li>
+  <li>Otomatik araçlarla içerik veya konum bilgisi toplamak, arşivlemek ya da başka platformlara aktarmak.</li>
+  <li>Bir kişinin konumunu, adresini veya bulunduğu yeri rızası dışında üçüncü kişilerle paylaşmak.</li>
+</ul>
+<p>Israrlı takip mağduru olduğunu düşünüyorsan uygulama içindeki şikâyet aracını kullanabilir, ilgili kullanıcıyı engelleyebilir ve kolluk kuvvetlerine başvurabilirsin. Yetkili makamlardan gelen taleplerde gerekli kayıtlar mevzuat çerçevesinde sağlanır.</p>
 
-<h2>Değişiklikler</h2>
-<p>Bu şartları güncellediğimizde yukarıdaki tarih değişir. Önemli değişikliklerde uygulama içinden bilgilendirme yaparız. Kullanmaya devam etmen güncel şartları kabul ettiğin anlamına gelir.</p>
+<h2>7. Başkalarının hakları</h2>
+<p>Başka kişilerin göründüğü içerikleri paylaşmadan önce <strong>rızalarını almak senin sorumluluğundadır</strong>. Türk Ceza Kanunu ve KVKK kapsamında, kişilerin görüntülerinin izinsiz kaydedilmesi ve yayılması suç oluşturabilir.</p>
 
-<h2>İletişim</h2>
-<p>Sorularını uygulama içindeki iletişim bölümünden iletebilirsin.</p>
+<h2>8. İçerik denetimi ve yaptırımlar</h2>
+<p>Kullanıcı şikâyetleri ve otomatik kontroller yoluyla içerik denetimi yapılır. Bu şartlara aykırılık hâlinde ihlalin ağırlığına göre şu tedbirler uygulanabilir:</p>
+<ul>
+  <li>İçeriğin yayından kaldırılması.</li>
+  <li>Hesabın geçici olarak askıya alınması.</li>
+  <li>Hesabın kalıcı olarak kapatılması.</li>
+  <li>Suç teşkil eden hâllerde yetkili makamlara bildirim.</li>
+</ul>
+<p>Kararın hatalı olduğunu düşünüyorsan iletişim adresinden itiraz edebilirsin.</p>
 
-<p class="not">Bu metin bilgilendirme amaçlıdır ve hukuki danışmanlık yerine geçmez. Yayına çıkmadan önce bir avukata gözden geçirtmen önerilir.</p>
+<h2>9. Şikâyet ve engelleme</h2>
+<p>Rahatsız edici içerik veya davranışla karşılaştığında uygulama içindeki şikâyet aracını kullanabilirsin. Ayrıca istediğin kullanıcıyı engelleyebilirsin; engellediğin kişi seninle iletişim kuramaz ve içeriklerine erişemez.</p>
+
+<h2>10. Hizmetin sürekliliği ve değişiklikler</h2>
+<p>Uygulamanın özellikleri geliştirilebilir, değiştirilebilir veya kaldırılabilir. Bakım, güncelleme ya da teknik nedenlerle geçici kesintiler yaşanabilir. Hizmetin kesintisiz ve hatasız sunulacağı taahhüt edilmez.</p>
+
+<h2>11. Hesabın sona ermesi</h2>
+<ul>
+  <li>Hesabını <strong>Ayarlar › Hesabı sil</strong> yolundan istediğin an kapatabilirsin. Bu işlem geri alınamaz.</li>
+  <li>Bu şartların ihlali hâlinde hesabın tarafımızca askıya alınabilir veya kapatılabilir.</li>
+  <li>Hesap kapandığında içeriklerin yayından kaldırılır ve profil bilgilerin anonimleştirilir.</li>
+</ul>
+
+<h2>12. Sorumluluğun sınırlandırılması</h2>
+<p>Hizmet "olduğu gibi" sunulmaktadır. Kullanıcıların paylaştığı içeriklerden ve bu içeriklerin doğruluğundan sorumlu değiliz. 5651 sayılı Kanun kapsamında <strong>yer sağlayıcı</strong> sıfatıyla, hukuka aykırı içeriği bildirim üzerine yayından kaldırmakla yükümlüyüz; içeriği önceden denetleme yükümlülüğümüz bulunmamaktadır.</p>
+<p>Kanunun izin verdiği azami ölçüde, dolaylı zararlardan, veri kaybından ve kâr kaybından sorumlu tutulamayız. Bu sınırlama, kasıt ve ağır ihmal hâllerinde uygulanmaz.</p>
+
+<h2>13. Uygulanacak hukuk ve yetkili mahkeme</h2>
+<p>Bu şartlara Türkiye Cumhuriyeti hukuku uygulanır. Uyuşmazlıklarda <span class="doldur">[il adı]</span> Mahkemeleri ve İcra Daireleri yetkilidir. Tüketici sıfatını taşıyan kullanıcılar bakımından, tüketici hakem heyetlerine ve tüketici mahkemelerine başvuru hakkı saklıdır.</p>
+
+<h2>14. Şartlarda değişiklik</h2>
+<p>Bu şartlar güncellendiğinde yürürlük tarihi değişir. Esaslı değişikliklerde uygulama içinden bildirim yapılır. Bildirimden sonra kullanmaya devam etmen güncel şartları kabul ettiğin anlamına gelir.</p>
+
+<h2>15. İletişim</h2>
+<p>Soru, talep ve bildirimlerini yukarıdaki e-posta adresine iletebilirsin.</p>
+
+<h2>16. Bildirim ve kaldırma usulü</h2>
+<p>Telif hakkı, marka veya kişilik hakkı ihlali iddiasıyla yapılacak başvurularda; hak sahibinin kimliği, ihlale konu içeriğin uygulama içindeki konumu, hak sahipliğini gösteren bilgi ve beyanın doğruluğuna ilişkin taahhüt yer almalıdır. Usulüne uygun başvurular <strong>en geç kırk sekiz saat içinde</strong> değerlendirilir. Kötü niyetli veya asılsız bildirimde bulunanlar hakkında hukuki yollara başvurulabilir.</p>
+
+<h2>17. Kullanıcının tazmin yükümlülüğü</h2>
+<p>Bu şartlara aykırı davranışın nedeniyle üçüncü kişiler tarafından tarafımıza yöneltilen talep, dava ve idari yaptırımlardan doğan zararı, yargılama giderleri ve avukatlık ücreti dâhil olmak üzere <strong>karşılamakla yükümlüsün</strong>. Bu yükümlülük hesabının kapanmasından sonra da devam eder.</p>
+
+<h2>18. Mücbir sebep</h2>
+<p>Doğal afet, savaş, salgın, siber saldırı, altyapı sağlayıcılarından kaynaklanan kesinti, mevzuat değişikliği ve benzeri öngörülemeyen hâllerde hizmetin sunulamamasından sorumlu tutulamayız.</p>
+
+<h2>19. Devir</h2>
+<p>Bu sözleşmeden doğan hak ve yükümlülükleri, işletmenin devri veya birleşme hâlinde üçüncü kişilere devredebiliriz. Kullanıcı, önceden yazılı izin almaksızın haklarını devredemez.</p>
+
+<h2>20. Bölünebilirlik ve feragat</h2>
+<p>Bu şartların herhangi bir hükmünün geçersiz sayılması, diğer hükümlerin geçerliliğini etkilemez. Bir hakkın kullanılmamış olması o haktan feragat edildiği anlamına gelmez.</p>
+
+<h2>21. Bütünlük</h2>
+<p>Bu Kullanım Şartları ve Gizlilik Politikası, taraflar arasındaki sözleşmenin tamamını oluşturur ve önceki tüm beyan ve anlaşmaların yerine geçer.</p>
 
 </main>
+
+<script>
+document.getElementById("geri").addEventListener("click", function(){
+  if (history.length > 1) history.back();
+  else location.href = "./index.html";
+});
+</script>
 </body>
 </html>

@@ -3,106 +3,218 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Klipsy — Gizlilik Politikası</title>
+<title>Klipsy — Gizlilik Politikası ve Aydınlatma Metni</title>
 <style>
-:root{--bg:#0B0B10;--t1:#F2F2F5;--t2:#B8B8C4;--t3:#8A8A97;--edge:rgba(255,255,255,.1);--ak:#FF3B6B;--mor:#7B5BFF}
+:root{--bg:#0B0B10;--kart:#131319;--t1:#F2F2F5;--t2:#B8B8C4;--t3:#8A8A97;
+  --edge:rgba(255,255,255,.1);--ak:#FF3B6B;--mor:#7B5BFF}
 @media (prefers-color-scheme: light){
-  :root{--bg:#FFFFFF;--t1:#16161C;--t2:#44444E;--t3:#70707C;--edge:rgba(0,0,0,.1)}
+  :root{--bg:#FFFFFF;--kart:#F6F6F9;--t1:#16161C;--t2:#44444E;--t3:#70707C;--edge:rgba(0,0,0,.1)}
 }
 *{box-sizing:border-box}
 body{margin:0;padding:0 0 4rem;background:var(--bg);color:var(--t1);
   font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   -webkit-font-smoothing:antialiased}
-header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--edge);
-  padding:calc(env(safe-area-inset-top) + 1rem) 1.25rem 0.875rem}
-header h1{margin:0;font-size:1.0625rem;font-weight:700;letter-spacing:-.022em}
-header p{margin:.25rem 0 0;font-size:.75rem;color:var(--t3)}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--edge);
+  padding:calc(env(safe-area-inset-top) + .75rem) 1rem .75rem;
+  display:flex;align-items:center;gap:.75rem}
+.geri{flex:none;width:2.25rem;height:2.25rem;border:0;border-radius:99px;background:none;
+  color:var(--t1);display:grid;place-items:center;cursor:pointer}
+.geri:active{background:var(--kart)}
+.geri svg{width:1.25rem;height:1.25rem}
+header h1{margin:0;font-size:1rem;font-weight:700;letter-spacing:-.022em}
+header p{margin:.125rem 0 0;font-size:.6875rem;color:var(--t3)}
 main{padding:1.25rem 1.25rem 0;max-width:44rem;margin:0 auto}
 h2{margin:1.75rem 0 .5rem;font-size:.9375rem;font-weight:700;letter-spacing:-.018em}
-h2:first-of-type{margin-top:.5rem}
-p,li{font-size:.875rem;line-height:1.7;color:var(--t2)}
+h2:first-of-type{margin-top:.25rem}
+h3{margin:1rem 0 .375rem;font-size:.8125rem;font-weight:700;color:var(--t1)}
+p,li,td{font-size:.8438rem;line-height:1.7;color:var(--t2)}
 ul{padding-left:1.125rem;margin:.5rem 0}
 li{margin:.3125rem 0}
 strong{color:var(--t1);font-weight:600}
 .ozet{padding:1rem 1.125rem;border-radius:1rem;border:1px solid var(--edge);
-  background:linear-gradient(135deg,rgba(255,59,107,.07),rgba(123,91,255,.07));margin:0 0 1.25rem}
+  background:linear-gradient(135deg,rgba(255,59,107,.07),rgba(123,91,255,.07));margin:0 0 1.5rem}
 .ozet p{margin:0;color:var(--t1)}
-.not{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--edge);
-  font-size:.75rem;color:var(--t3)}
+table{width:100%;border-collapse:collapse;margin:.625rem 0;font-size:.8125rem}
+th{text-align:left;font-size:.6875rem;font-weight:700;color:var(--t3);
+  text-transform:uppercase;letter-spacing:.03em;padding:.5rem .5rem .375rem 0;
+  border-bottom:1px solid var(--edge);vertical-align:bottom}
+td{padding:.625rem .5rem .625rem 0;border-bottom:1px solid var(--edge);vertical-align:top}
+td:first-child{color:var(--t1);font-weight:600;width:34%}
+.uyari{margin-top:2rem;padding:1rem 1.125rem;border-radius:1rem;
+  border:1px solid var(--edge);background:var(--kart);font-size:.75rem;color:var(--t3)}
+.uyari strong{color:var(--t2)}
 a{color:var(--mor)}
+.doldur{color:var(--ak);font-weight:600}
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Gizlilik Politikası</h1>
-  <p>Son güncelleme: 14 Eylül 2026</p>
+  <button class="geri" id="geri" aria-label="Geri">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <div>
+    <h1>Gizlilik Politikası ve Aydınlatma Metni</h1>
+    <p>Yürürlük tarihi: 14 Eylül 2026</p>
+  </div>
 </header>
+
 <main>
 
 <div class="ozet">
-  <p><strong>Kısaca:</strong> Anlarını paylaşman için gereken en az veriyi topluyoruz. Konumunu kabaca saklıyoruz, tam adresini değil. Verilerini satmıyoruz. Hesabını istediğin an silebilirsin, sildiğinde geri getirilemez.</p>
+  <p><strong>Özetle:</strong> Anını paylaşabilmen için gereken en az veriyi işliyoruz. Konumunu kaba bir alan olarak saklıyoruz; tam koordinatların hiçbir zaman kaydedilmez. Kişisel verilerini satmıyoruz. Günlük notların ve taslakların yalnızca sana açıktır. Hesabını uygulama içinden kalıcı olarak silebilirsin.</p>
 </div>
 
-<h2>Hangi verileri topluyoruz</h2>
-<p>Klipsy'yi kullanabilmen için şunları saklıyoruz:</p>
+<p>Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun ("KVKK") 10. maddesi ve Aydınlatma Yükümlülüğünün Yerine Getirilmesinde Uyulacak Usul ve Esaslar Hakkında Tebliğ uyarınca hazırlanmıştır. Avrupa Birliği'nde bulunan kullanıcılar bakımından Genel Veri Koruma Tüzüğü'nün ("GDPR") 13. ve 14. maddeleri de gözetilmiştir.</p>
+
+<h2>1. Veri sorumlusunun kimliği</h2>
+<p>KVKK kapsamında veri sorumlusu sıfatını taşıyan taraf:</p>
+<table>
+  <tr><td>Unvan</td><td class="doldur">[Şirket / şahıs unvanı yazılacak]</td></tr>
+  <tr><td>Adres</td><td class="doldur">[Açık adres yazılacak]</td></tr>
+  <tr><td>E-posta</td><td class="doldur">[İletişim e-postası yazılacak]</td></tr>
+  <tr><td>Uygulama</td><td>Klipsy</td></tr>
+</table>
+
+<h2>2. İşlenen kişisel veriler, amaçları ve hukuki sebepleri</h2>
+<p>Aşağıdaki tablo, işlenen her veri kategorisi için amacı ve KVKK 5. maddesindeki hukuki sebebi göstermektedir.</p>
+
+<table>
+  <tr><th>Veri</th><th>Amaç ve hukuki sebep</th></tr>
+  <tr>
+    <td>Kimlik ve iletişim<br><span style="font-weight:400;color:var(--t3)">e-posta, kullanıcı adı, görünen ad</span></td>
+    <td>Hesabın oluşturulması ve oturum açılması. <strong>Hukuki sebep:</strong> Sözleşmenin kurulması ve ifası için gerekli olması (m.5/2-c).</td>
+  </tr>
+  <tr>
+    <td>Doğum tarihi</td>
+    <td>13 yaş sınırının denetlenmesi ve çocukların korunması. <strong>Hukuki sebep:</strong> Veri sorumlusunun hukuki yükümlülüğünü yerine getirmesi (m.5/2-ç) ve meşru menfaat (m.5/2-f).</td>
+  </tr>
+  <tr>
+    <td>Görsel ve işitsel kayıtlar<br><span style="font-weight:400;color:var(--t3)">paylaştığın fotoğraf ve videolar</span></td>
+    <td>İçeriğin diğer kullanıcılara sunulması. <strong>Hukuki sebep:</strong> Sözleşmenin ifası (m.5/2-c).</td>
+  </tr>
+  <tr>
+    <td>Konum<br><span style="font-weight:400;color:var(--t3)">yaklaşık koordinat, yer etiketi</span></td>
+    <td>Anın nerede yaşandığının gösterilmesi ve harita üzerinde konumlandırılması. <strong>Hukuki sebep:</strong> Açık rıza (m.5/1). İzni her an geri alabilirsin.</td>
+  </tr>
+  <tr>
+    <td>İletişim içeriği<br><span style="font-weight:400;color:var(--t3)">özel mesajlar</span></td>
+    <td>Kullanıcılar arası yazışmanın iletilmesi. <strong>Hukuki sebep:</strong> Sözleşmenin ifası (m.5/2-c).</td>
+  </tr>
+  <tr>
+    <td>Günlük notları</td>
+    <td>Kullanıcının kendi anlarına özel not tutması. Yalnızca not sahibine görünür. <strong>Hukuki sebep:</strong> Sözleşmenin ifası (m.5/2-c).</td>
+  </tr>
+  <tr>
+    <td>İşlem güvenliği<br><span style="font-weight:400;color:var(--t3)">oturum kayıtları, cihaz belirteci</span></td>
+    <td>Hesabın güvenliği, kötüye kullanımın önlenmesi, bildirim gönderimi. <strong>Hukuki sebep:</strong> Meşru menfaat (m.5/2-f) ve hukuki yükümlülük (m.5/2-ç).</td>
+  </tr>
+  <tr>
+    <td>Kullanım verisi<br><span style="font-weight:400;color:var(--t3)">beğeni, yorum, görüntülenme</span></td>
+    <td>Uygulamanın işleyişi ve içeriğin sıralanması. <strong>Hukuki sebep:</strong> Sözleşmenin ifası (m.5/2-c).</td>
+  </tr>
+</table>
+
+<h3>Özel nitelikli veri işlemiyoruz</h3>
+<p>Sağlık, din, siyasi görüş, ırk gibi KVKK 6. maddesinde sayılan özel nitelikli kişisel verileri talep etmiyoruz ve işlemiyoruz. Paylaştığın içeriklerde bu tür bilgilere yer vermemeni öneririz.</p>
+
+<h2>3. Kişisel verilerin toplanma yöntemi</h2>
 <ul>
-  <li><strong>Hesap bilgileri:</strong> E-posta adresin, kullanıcı adın, görünen adın, doğum tarihin ve varsa profil fotoğrafın.</li>
-  <li><strong>Paylaştığın içerikler:</strong> Fotoğraf ve videoların, notların, seçtiğin duygu ve şarkı bilgisi.</li>
-  <li><strong>Konum:</strong> Yalnızca bir an paylaşırken ve izin verdiysen. Koordinatlar yaklaşık bir kilometrelik alana yuvarlanarak saklanır; tam adresin hiçbir zaman kaydedilmez.</li>
-  <li><strong>Mesajlar:</strong> Diğer kullanıcılarla yazışmaların.</li>
-  <li><strong>Kullanım bilgisi:</strong> Beğeni, yorum, kaydetme gibi eylemlerin ve görüntülenme sayıları.</li>
+  <li>Kayıt ve profil formları aracılığıyla <strong>doğrudan senden</strong>.</li>
+  <li>Uygulama içindeki kamera, mikrofon ve konum erişimi ile <strong>izin verdiğin ölçüde</strong>.</li>
+  <li>Uygulamayı kullanman sırasında <strong>otomatik yollarla</strong> (oturum bilgisi, etkileşim kayıtları).</li>
 </ul>
 
-<h2>Cihaz izinleri</h2>
+<h2>4. Cihaz izinleri</h2>
+<table>
+  <tr><td>Kamera</td><td>Yalnızca an çekerken. Arka planda erişim yoktur.</td></tr>
+  <tr><td>Mikrofon</td><td>Yalnızca video kaydı sırasında.</td></tr>
+  <tr><td>Konum</td><td>Yalnızca uygulama açıkken ve an paylaşırken. Reddedebilirsin.</td></tr>
+  <tr><td>Depolama</td><td>Taslakların ve indirdiğin anlar için cihazında.</td></tr>
+  <tr><td>Bildirim</td><td>Beğeni, yorum ve mesaj bildirimleri için.</td></tr>
+</table>
+<p>İzinlerin hiçbiri zorunlu değildir. Vermediğinde yalnızca ilgili özellik çalışmaz, uygulamanın geri kalanı kullanılabilir. İzinleri cihaz ayarlarından istediğin an geri alabilirsin.</p>
+
+<h2>5. Konum verisi ve güvenlik önlemleri</h2>
+<p>Konum paylaşımı <strong>tamamen isteğe bağlıdır</strong> ve varsayılan olarak kapalıdır. İzin verdiğinde uygulanan koruma önlemleri şunlardır:</p>
 <ul>
-  <li><strong>Kamera ve mikrofon:</strong> Yalnızca an çekerken kullanılır. Arka planda erişim yoktur.</li>
-  <li><strong>Konum:</strong> Yalnızca uygulama açıkken ve an paylaşırken istenir. Reddedebilirsin; uygulama konum olmadan da çalışır.</li>
-  <li><strong>Depolama:</strong> Taslakların ve indirdiğin anlar cihazında saklanır.</li>
+  <li>Cihazın bildirdiği tam koordinatlar <strong>hiçbir zaman kaydedilmez</strong>; kayıt öncesinde kaba bir alana indirgenir.</li>
+  <li>Konum yalnızca an paylaşıldığı sırada alınır. Arka planda, uygulama kapalıyken veya sürekli konum takibi <strong>yapılmaz</strong>.</li>
+  <li>Kullanıcıların geçmiş konumları profilde, takvimde veya başka bir yerde <strong>başkalarına gösterilmez</strong>. Bir kişinin nerelere gittiğini gösteren bir görünüm bulunmamaktadır.</li>
+  <li>Konum verisi üzerinden kullanıcı arama, filtreleme veya takip özelliği <strong>sunulmaz</strong>.</li>
+  <li>Konum paylaşımını kapattığında yalnızca şehir düzeyinde bir etiket tutulur.</li>
+  <li>Engellediğin kullanıcılar içeriklerine ve dolayısıyla konum etiketlerine erişemez.</li>
 </ul>
-<p>Bu izinlerin hiçbiri zorunlu değildir. Vermezsen yalnızca ilgili özellik çalışmaz.</p>
+<p>Uygulanan indirgeme oranı, kötüye kullanımı zorlaştırmak amacıyla kamuya açıklanmamakta ve güvenlik gereksinimlerine göre güncellenebilmektedir.</p>
 
-<h2>Verilerini kimler görebilir</h2>
+<h2>6. Kişisel verilerin aktarılması</h2>
+<p>Kişisel verilerin <strong>satılmaz</strong> ve pazarlama amacıyla üçüncü kişilere aktarılmaz. Yalnızca hizmetin sunulabilmesi için zorunlu olan aşağıdaki alıcı gruplarına aktarım yapılır:</p>
+<table>
+  <tr><th>Alıcı</th><th>Aktarım amacı ve ülke</th></tr>
+  <tr><td>Supabase Inc.</td><td>Veritabanı, kimlik doğrulama ve dosya depolama hizmeti. Sunucu konumu: Avrupa Birliği.</td></tr>
+  <tr><td>Google LLC</td><td>Bildirim iletimi (Firebase Cloud Messaging). Yurt dışı.</td></tr>
+  <tr><td>CARTO / OpenStreetMap</td><td>Harita görselleri. Bu servislere konum bilgin <strong>gönderilmez</strong>; yalnızca harita karoları indirilir.</td></tr>
+  <tr><td>Yetkili kamu kurumları</td><td>Kanunen zorunlu hâllerde, talep kapsamıyla sınırlı olarak.</td></tr>
+</table>
+<p>Yurt dışına aktarım, KVKK 9. maddesi çerçevesinde ve gerekli güvenlik tedbirleri alınarak yapılır.</p>
+
+<h2>7. Saklama süresi</h2>
 <ul>
-  <li><strong>Paylaştığın anlar</strong> seçtiğin gizlilik ayarına göre görünür.</li>
-  <li><strong>Günlük notların</strong> yalnızca sana açıktır. Sunucu tarafında da kimsenin erişemeyeceği şekilde korunur.</li>
-  <li><strong>Taslakların</strong> sen paylaşana kadar yalnızca cihazındadır.</li>
-  <li><strong>Mesajların</strong> yalnızca yazıştığın kişiyle aranızdadır.</li>
-  <li><strong>Takvimin</strong> yalnızca sana görünür, başkaları erişemez.</li>
+  <li><strong>Hesap ve içerik verileri:</strong> Hesabın açık kaldığı sürece.</li>
+  <li><strong>Hesap silindiğinde:</strong> İçerikler yayından kaldırılır, profil bilgileri anonimleştirilir, kimlik kaydı silinir.</li>
+  <li><strong>Yasal saklama yükümlülüğü bulunan kayıtlar:</strong> İlgili mevzuatta öngörülen süre boyunca.</li>
+  <li><strong>Cihazındaki taslaklar:</strong> Sen silene kadar, yalnızca cihazında.</li>
 </ul>
 
-<h2>Verilerini kimlere veriyoruz</h2>
-<p>Verilerini <strong>satmıyoruz</strong> ve pazarlama amacıyla üçüncü taraflarla paylaşmıyoruz. Yalnızca uygulamanın çalışması için gereken hizmet sağlayıcıları kullanıyoruz:</p>
+<h2>8. Haklarını nasıl kullanırsın (KVKK m.11)</h2>
+<p>Veri sorumlusuna başvurarak şu haklara sahipsin:</p>
 <ul>
-  <li><strong>Supabase:</strong> Veritabanı, kimlik doğrulama ve dosya depolama.</li>
-  <li><strong>Google Play Hizmetleri:</strong> Bildirim gönderimi.</li>
-  <li><strong>CARTO ve OpenStreetMap:</strong> Harita görselleri. Bu servislere konumun gönderilmez, yalnızca harita karoları indirilir.</li>
+  <li>Kişisel verilerinin işlenip işlenmediğini öğrenme.</li>
+  <li>İşlenmişse buna ilişkin bilgi talep etme.</li>
+  <li>İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme.</li>
+  <li>Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme.</li>
+  <li>Eksik veya yanlış işlenmişse düzeltilmesini isteme.</li>
+  <li>KVKK 7. maddesindeki şartlar çerçevesinde silinmesini veya yok edilmesini isteme.</li>
+  <li>Düzeltme, silme ve yok etme işlemlerinin aktarıldığı üçüncü kişilere bildirilmesini isteme.</li>
+  <li>Münhasıran otomatik sistemlerle analiz edilmesi suretiyle aleyhine bir sonuç çıkmasına itiraz etme.</li>
+  <li>Kanuna aykırı işlenmesi sebebiyle zarara uğraman hâlinde zararın giderilmesini talep etme.</li>
 </ul>
-<p>Yasal bir zorunluluk olması hâlinde yetkili makamlara veri sağlanabilir.</p>
+<p>Taleplerini yukarıdaki iletişim adresine iletebilirsin. Başvurun <strong>en geç otuz gün</strong> içinde sonuçlandırılır. Yanıtı yeterli bulmazsan Kişisel Verileri Koruma Kurulu'na şikâyette bulunabilirsin.</p>
+<p>Ayrıca profil bilgilerini uygulama içinden düzeltebilir, paylaştığın anları tek tek silebilir ve <strong>Ayarlar › Hesabı sil</strong> ile hesabını kalıcı olarak kapatabilirsin.</p>
 
-<h2>Ne kadar süre saklıyoruz</h2>
-<p>Paylaştığın anlar ve hesap bilgilerin, sen silene ya da hesabını kapatana kadar saklanır. Hesabını sildiğinde içeriklerin yayından kaldırılır ve profil bilgilerin anonimleştirilir.</p>
+<h2>9. Çocukların korunması</h2>
+<p>Klipsy 13 yaşından küçükler için tasarlanmamıştır. Kayıt sırasında doğum tarihi istenir ve 13 yaşından küçük olduğu anlaşılan başvurular reddedilir. 13 yaşından küçük bir kullanıcıya ait hesap tespit edilmesi hâlinde hesap kapatılır ve ilgili veriler silinir. Bu durumu fark eden veliler yukarıdaki iletişim adresinden bize ulaşabilir.</p>
 
-<h2>Yaş sınırı</h2>
-<p>Klipsy <strong>13 yaşından küçükler</strong> için tasarlanmamıştır. Kayıt sırasında doğum tarihi istenir. 13 yaşından küçük birine ait bir hesap tespit edersek kapatırız.</p>
-
-<h2>Haklarını nasıl kullanırsın</h2>
+<h2>10. Veri güvenliği</h2>
 <ul>
-  <li><strong>Erişim ve düzeltme:</strong> Profil bilgilerini uygulama içinden değiştirebilirsin.</li>
-  <li><strong>Silme:</strong> Ayarlar bölümündeki "Hesabı sil" ile hesabını kalıcı olarak silebilirsin.</li>
-  <li><strong>İçerik kaldırma:</strong> Paylaştığın anları tek tek silebilirsin.</li>
+  <li>Tüm veri aktarımı şifreli bağlantı (TLS) üzerinden yapılır.</li>
+  <li>Veritabanında satır düzeyinde güvenlik kuralları uygulanır; her kullanıcı yalnızca erişim hakkı olan kayıtları görebilir.</li>
+  <li>Günlük notlarına ve taslaklara yalnızca sahibi erişebilir; bu kısıt sunucu tarafında uygulanır.</li>
+  <li>Parolalar geri döndürülemez biçimde saklanır.</li>
 </ul>
 
-<h2>Güvenlik</h2>
-<p>Veriler şifreli bağlantı üzerinden iletilir. Sunucu tarafında satır düzeyinde güvenlik kuralları uygulanır; her kullanıcı yalnızca erişim hakkı olan verileri görebilir.</p>
+<h2>11. Değişiklikler</h2>
+<p>Bu metin güncellendiğinde yürürlük tarihi değişir. Kapsamlı değişikliklerde uygulama içinden bilgilendirme yapılır.</p>
 
-<h2>Değişiklikler</h2>
-<p>Bu metni güncellediğimizde yukarıdaki tarih değişir. Önemli değişikliklerde uygulama içinden bilgilendirme yaparız.</p>
+<h2>12. Veri ihlali bildirimi</h2>
+<p>Kişisel verilerin hukuka aykırı olarak başkaları tarafından elde edilmesi hâlinde, durum en kısa sürede ve her hâlükârda <strong>yetmiş iki saat içinde</strong> Kişisel Verileri Koruma Kurulu'na bildirilir. İhlalin ilgili kişiler bakımından yüksek risk taşıması hâlinde, etkilenen kullanıcılara uygulama içinden ve kayıtlı e-posta adresleri üzerinden ayrıca bildirim yapılır.</p>
 
-<h2>İletişim</h2>
-<p>Sorularını ve taleplerini uygulama içindeki iletişim bölümünden iletebilirsin.</p>
+<h2>13. Otomatik karar ve profilleme</h2>
+<p>İçerik denetimi kapsamında otomatik sistemler kullanılabilir. Ancak hesabın askıya alınması veya kapatılması gibi <strong>hukuki sonuç doğuran kararlar münhasıran otomatik sistemlere bırakılmaz</strong>; itiraz hâlinde insan incelemesi yapılır. Reklam amaçlı profilleme yapılmaz.</p>
 
-<p class="not">Bu metin bilgilendirme amaçlıdır ve hukuki danışmanlık yerine geçmez. Yayına çıkmadan önce bir avukata gözden geçirtmen önerilir.</p>
+<h2>14. Çerezler ve benzeri teknolojiler</h2>
+<p>Uygulama, oturumun sürdürülmesi ve tercihlerinin hatırlanması için cihazında yerel depolama alanı kullanır. Bu kayıtlar reklam veya izleme amacı taşımaz, üçüncü taraflarla paylaşılmaz. Uygulamayı kaldırdığında ya da hesabını sildiğinde temizlenir.</p>
+
+<h2>15. Uluslararası kullanıcılar</h2>
+<p>Avrupa Ekonomik Alanı'nda bulunan kullanıcılar, GDPR kapsamında erişim, düzeltme, silme, işlemenin kısıtlanması, veri taşınabilirliği ve işlemeye itiraz haklarına sahiptir. Bu talepler yukarıdaki iletişim adresine iletilebilir ve bir ay içinde sonuçlandırılır.</p>
 
 </main>
+
+<script>
+document.getElementById("geri").addEventListener("click", function(){
+  if (history.length > 1) history.back();
+  else location.href = "./index.html";
+});
+</script>
 </body>
 </html>

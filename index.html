@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.23.2";
+window.KLIPSY_SURUM = "3.24.0";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      terms_ok:"metnini okudum ve kabul ediyorum.",
+      privacy_ok:"okudum; kişisel verilerimin burada açıklandığı şekilde işlenmesini kabul ediyorum.",
+      privacy_need:"Gizlilik Politikasını kabul etmelisin",
       s_privacy:"Gizlilik Politikası",
       s_privacy_sub:"Verilerin nasıl kullanılıyor",
       s_terms:"Kullanım Şartları",
@@ -768,6 +771,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      terms_ok:"— I have read and accept these terms.",
+      privacy_ok:"— I have read this and consent to the processing of my personal data as described.",
+      privacy_need:"You must accept the Privacy Policy",
       s_privacy:"Privacy Policy",
       s_privacy_sub:"How your data is used",
       s_terms:"Terms of Use",
@@ -1368,6 +1374,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      terms_ok:"— He leído y acepto estos términos.",
+      privacy_ok:"— He leído y acepto el tratamiento de mis datos como se describe.",
+      privacy_need:"Debes aceptar la Política de privacidad",
       s_privacy:"Política de privacidad",
       s_privacy_sub:"Cómo se usan tus datos",
       s_terms:"Términos de uso",
@@ -1965,6 +1974,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      terms_ok:"— قرأت الشروط وأوافق عليها.",
+      privacy_ok:"— قرأتها وأوافق على معالجة بياناتي كما هو موضح.",
+      privacy_need:"يجب قبول سياسة الخصوصية",
       s_privacy:"سياسة الخصوصية",
       s_privacy_sub:"كيف تُستخدم بياناتك",
       s_terms:"شروط الاستخدام",
@@ -2562,6 +2574,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      terms_ok:"— J’ai lu et j’accepte ces conditions.",
+      privacy_ok:"— J’ai lu et j’accepte le traitement de mes données tel que décrit.",
+      privacy_need:"Tu dois accepter la Politique de confidentialité",
       s_privacy:"Politique de confidentialité",
       s_privacy_sub:"Comment tes données sont utilisées",
       s_terms:"Conditions d’utilisation",
@@ -3159,6 +3174,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      terms_ok:"— Ich habe die Bedingungen gelesen und akzeptiere sie.",
+      privacy_ok:"— Ich habe dies gelesen und willige in die beschriebene Verarbeitung ein.",
+      privacy_need:"Du musst die Datenschutzerklärung akzeptieren",
       s_privacy:"Datenschutzerklärung",
       s_privacy_sub:"Wie deine Daten genutzt werden",
       s_terms:"Nutzungsbedingungen",
@@ -3756,6 +3774,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      terms_ok:"— Я прочитал(а) и принимаю эти условия.",
+      privacy_ok:"— Я прочитал(а) и согласен(на) на обработку данных, как описано.",
+      privacy_need:"Нужно принять Политику конфиденциальности",
       s_privacy:"Политика конфиденциальности",
       s_privacy_sub:"Как используются ваши данные",
       s_terms:"Условия использования",
@@ -4353,6 +4374,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      terms_ok:"— Li e aceito estes termos.",
+      privacy_ok:"— Li e aceito o tratamento dos meus dados conforme descrito.",
+      privacy_need:"Tens de aceitar a Política de Privacidade",
       s_privacy:"Política de Privacidade",
       s_privacy_sub:"Como os teus dados são usados",
       s_terms:"Termos de Utilização",
@@ -4950,6 +4974,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      terms_ok:"— मैंने पढ़ा और स्वीकार करता/करती हूँ।",
+      privacy_ok:"— मैंने पढ़ा और वर्णित प्रसंस्करण से सहमत हूँ।",
+      privacy_need:"गोपनीयता नीति स्वीकार करें",
       s_privacy:"गोपनीयता नीति",
       s_privacy_sub:"आपका डेटा कैसे उपयोग होता है",
       s_terms:"उपयोग की शर्तें",
@@ -5547,6 +5574,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      terms_ok:"— Saya telah membaca dan menyetujui ketentuan ini.",
+      privacy_ok:"— Saya telah membaca dan menyetujui pemrosesan data saya.",
+      privacy_need:"Kamu harus menyetujui Kebijakan Privasi",
       s_privacy:"Kebijakan Privasi",
       s_privacy_sub:"Bagaimana datamu digunakan",
       s_terms:"Ketentuan Penggunaan",
@@ -10418,14 +10448,21 @@ html.sb-white #userSearch::before{
                 <label>Parola</label>
                 <div class="ginwrap"><input id="gPassword" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
               </div>
+              <!-- Iki metin AYRI onaylanir: KVKK acik riza belirli konuya
+                   iliskin olmalidir, tek kutuda toplamak gecerliligini
+                   tartismaya acar. -->
               <label class="gTerms suOnly hide" id="gfTerms">
                 <input type="checkbox" id="gTerms">
                 <span>
-                  <span data-i18n="terms_pre">Kayıt olarak</span>
                   <a href="./kullanim-sartlari.html" target="_blank" rel="noopener" data-i18n="terms_link">Kullanım Şartları</a>
-                  <span data-i18n="terms_and">ve</span>
-                  <a href="./gizlilik.html" target="_blank" rel="noopener" data-i18n="privacy_link">Gizlilik Politikası</a>
-                  <span data-i18n="terms_post">metinlerini kabul etmiş olursun.</span>
+                  <span data-i18n="terms_ok">metnini okudum ve kabul ediyorum.</span>
+                </span>
+              </label>
+              <label class="gTerms suOnly hide" id="gfPrivacy">
+                <input type="checkbox" id="gPrivacy">
+                <span>
+                  <a href="./gizlilik.html" target="_blank" rel="noopener" data-i18n="privacy_link">Gizlilik Politikası ve Aydınlatma Metni</a>
+                  <span data-i18n="privacy_ok">okudum; kişisel verilerimin burada açıklandığı şekilde işlenmesini kabul ediyorum.</span>
                 </span>
               </label>
               <button class="gprimary" id="gSubmit"><span id="gSubmitText">Giriş yap</span></button>
@@ -26122,6 +26159,8 @@ async function submit(){
     if(yas>120){ gmsg(t("birth_need"),"err"); return; }
     const kb=$("#gTerms");
     if(kb && !kb.checked){ gmsg(t("terms_need"),"err"); return; }
+    const kg=$("#gPrivacy");
+    if(kg && !kg.checked){ gmsg(t("privacy_need"),"err"); return; }
   }
   busy=true;const btn=$('#gSubmit');const txt=$('#gSubmitText').textContent;
   btn.disabled=true;btn.innerHTML='<span class="gspin"></span>';

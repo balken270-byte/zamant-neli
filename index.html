@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.24.0";
+window.KLIPSY_SURUM = "3.26.0";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      birth_locked:"Değiştirilemez. Hatalı olduğunu düşünüyorsan destek ile iletişime geç.",
+      n_types:"Bildirim türleri",
+      n_types_sub:"Hangi bildirimleri alacağını seç",
+      n_types_note:"Kapattığın bildirimler telefonuna düşmez. Uygulama içindeki bildirimler sekmesinde görünmeye devam eder.",
+      n_like_sub:"Anına beğeni geldiğinde",
+      n_comment_sub:"Yorum ve yanıtlar",
+      n_follow_sub:"Biri seni takip ettiğinde",
+      n_message_sub:"Yeni mesajlar",
+      n_like:"Beğeniler",
+      n_comment:"Yorumlar",
+      n_follow:"Yeni takipçiler",
+      n_message:"Mesajlar",
       terms_ok:"metnini okudum ve kabul ediyorum.",
       privacy_ok:"okudum; kişisel verilerimin burada açıklandığı şekilde işlenmesini kabul ediyorum.",
       privacy_need:"Gizlilik Politikasını kabul etmelisin",
@@ -771,6 +783,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      birth_locked:"Cannot be changed. Contact support if this is incorrect.",
+      n_types:"Notification types",
+      n_types_sub:"Choose what you get notified about",
+      n_types_note:"Turned-off notifications won’t reach your phone. They still appear in the in-app notifications tab.",
+      n_like_sub:"When someone likes your moment",
+      n_comment_sub:"Comments and replies",
+      n_follow_sub:"When someone follows you",
+      n_message_sub:"New messages",
+      n_like:"Likes",
+      n_comment:"Comments",
+      n_follow:"New followers",
+      n_message:"Messages",
       terms_ok:"— I have read and accept these terms.",
       privacy_ok:"— I have read this and consent to the processing of my personal data as described.",
       privacy_need:"You must accept the Privacy Policy",
@@ -1374,6 +1398,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      birth_locked:"No se puede cambiar. Contacta con soporte si es incorrecto.",
+      n_types:"Tipos de notificación",
+      n_types_sub:"Elige qué quieres recibir",
+      n_types_note:"Las notificaciones desactivadas no llegan a tu teléfono, pero siguen apareciendo en la app.",
+      n_like_sub:"Cuando alguien da me gusta",
+      n_comment_sub:"Comentarios y respuestas",
+      n_follow_sub:"Cuando alguien te sigue",
+      n_message_sub:"Mensajes nuevos",
+      n_like:"Me gusta",
+      n_comment:"Comentarios",
+      n_follow:"Nuevos seguidores",
+      n_message:"Mensajes",
       terms_ok:"— He leído y acepto estos términos.",
       privacy_ok:"— He leído y acepto el tratamiento de mis datos como se describe.",
       privacy_need:"Debes aceptar la Política de privacidad",
@@ -1974,6 +2010,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      birth_locked:"لا يمكن تغييره. تواصل مع الدعم إذا كان غير صحيح.",
+      n_types:"أنواع الإشعارات",
+      n_types_sub:"اختر ما تريد تلقّيه",
+      n_types_note:"الإشعارات المغلقة لا تصل إلى هاتفك، لكنها تبقى داخل التطبيق.",
+      n_like_sub:"عند الإعجاب بلحظتك",
+      n_comment_sub:"التعليقات والردود",
+      n_follow_sub:"عند متابعتك",
+      n_message_sub:"الرسائل الجديدة",
+      n_like:"الإعجابات",
+      n_comment:"التعليقات",
+      n_follow:"متابعون جدد",
+      n_message:"الرسائل",
       terms_ok:"— قرأت الشروط وأوافق عليها.",
       privacy_ok:"— قرأتها وأوافق على معالجة بياناتي كما هو موضح.",
       privacy_need:"يجب قبول سياسة الخصوصية",
@@ -2574,6 +2622,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      birth_locked:"Non modifiable. Contacte le support si c’est incorrect.",
+      n_types:"Types de notifications",
+      n_types_sub:"Choisis ce que tu reçois",
+      n_types_note:"Les notifications désactivées n’arrivent pas sur ton téléphone mais restent dans l’app.",
+      n_like_sub:"Quand on aime ton moment",
+      n_comment_sub:"Commentaires et réponses",
+      n_follow_sub:"Quand on t’abonne",
+      n_message_sub:"Nouveaux messages",
+      n_like:"J’aime",
+      n_comment:"Commentaires",
+      n_follow:"Nouveaux abonnés",
+      n_message:"Messages",
       terms_ok:"— J’ai lu et j’accepte ces conditions.",
       privacy_ok:"— J’ai lu et j’accepte le traitement de mes données tel que décrit.",
       privacy_need:"Tu dois accepter la Politique de confidentialité",
@@ -3174,6 +3234,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      birth_locked:"Nicht änderbar. Wende dich an den Support, falls es falsch ist.",
+      n_types:"Benachrichtigungsarten",
+      n_types_sub:"Wähle, worüber du informiert wirst",
+      n_types_note:"Deaktivierte Benachrichtigungen erreichen dein Telefon nicht, bleiben aber in der App sichtbar.",
+      n_like_sub:"Wenn jemand deinen Moment liked",
+      n_comment_sub:"Kommentare und Antworten",
+      n_follow_sub:"Wenn dir jemand folgt",
+      n_message_sub:"Neue Nachrichten",
+      n_like:"Likes",
+      n_comment:"Kommentare",
+      n_follow:"Neue Follower",
+      n_message:"Nachrichten",
       terms_ok:"— Ich habe die Bedingungen gelesen und akzeptiere sie.",
       privacy_ok:"— Ich habe dies gelesen und willige in die beschriebene Verarbeitung ein.",
       privacy_need:"Du musst die Datenschutzerklärung akzeptieren",
@@ -3774,6 +3846,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      birth_locked:"Изменить нельзя. Свяжитесь с поддержкой, если это неверно.",
+      n_types:"Типы уведомлений",
+      n_types_sub:"Выберите, что получать",
+      n_types_note:"Отключённые уведомления не приходят на телефон, но остаются в приложении.",
+      n_like_sub:"Когда лайкают ваш момент",
+      n_comment_sub:"Комментарии и ответы",
+      n_follow_sub:"Когда на вас подписываются",
+      n_message_sub:"Новые сообщения",
+      n_like:"Лайки",
+      n_comment:"Комментарии",
+      n_follow:"Новые подписчики",
+      n_message:"Сообщения",
       terms_ok:"— Я прочитал(а) и принимаю эти условия.",
       privacy_ok:"— Я прочитал(а) и согласен(на) на обработку данных, как описано.",
       privacy_need:"Нужно принять Политику конфиденциальности",
@@ -4374,6 +4458,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      birth_locked:"Não pode ser alterado. Contacta o suporte se estiver incorreto.",
+      n_types:"Tipos de notificação",
+      n_types_sub:"Escolhe o que queres receber",
+      n_types_note:"As notificações desligadas não chegam ao telemóvel, mas continuam na app.",
+      n_like_sub:"Quando gostam do teu momento",
+      n_comment_sub:"Comentários e respostas",
+      n_follow_sub:"Quando te seguem",
+      n_message_sub:"Novas mensagens",
+      n_like:"Gostos",
+      n_comment:"Comentários",
+      n_follow:"Novos seguidores",
+      n_message:"Mensagens",
       terms_ok:"— Li e aceito estes termos.",
       privacy_ok:"— Li e aceito o tratamento dos meus dados conforme descrito.",
       privacy_need:"Tens de aceitar a Política de Privacidade",
@@ -4974,6 +5070,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      birth_locked:"बदला नहीं जा सकता। गलत हो तो सहायता से संपर्क करें।",
+      n_types:"सूचना प्रकार",
+      n_types_sub:"चुनें कि क्या पाना है",
+      n_types_note:"बंद सूचनाएँ फ़ोन पर नहीं आतीं, पर ऐप में दिखती रहती हैं।",
+      n_like_sub:"जब कोई पसंद करे",
+      n_comment_sub:"टिप्पणियाँ और उत्तर",
+      n_follow_sub:"जब कोई फ़ॉलो करे",
+      n_message_sub:"नए संदेश",
+      n_like:"पसंद",
+      n_comment:"टिप्पणियाँ",
+      n_follow:"नए फ़ॉलोअर",
+      n_message:"संदेश",
       terms_ok:"— मैंने पढ़ा और स्वीकार करता/करती हूँ।",
       privacy_ok:"— मैंने पढ़ा और वर्णित प्रसंस्करण से सहमत हूँ।",
       privacy_need:"गोपनीयता नीति स्वीकार करें",
@@ -5574,6 +5682,18 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      birth_locked:"Tidak dapat diubah. Hubungi dukungan jika keliru.",
+      n_types:"Jenis notifikasi",
+      n_types_sub:"Pilih yang ingin kamu terima",
+      n_types_note:"Notifikasi yang dimatikan tidak sampai ke ponsel, tapi tetap ada di aplikasi.",
+      n_like_sub:"Saat momenmu disukai",
+      n_comment_sub:"Komentar dan balasan",
+      n_follow_sub:"Saat seseorang mengikutimu",
+      n_message_sub:"Pesan baru",
+      n_like:"Suka",
+      n_comment:"Komentar",
+      n_follow:"Pengikut baru",
+      n_message:"Pesan",
       terms_ok:"— Saya telah membaca dan menyetujui ketentuan ini.",
       privacy_ok:"— Saya telah membaca dan menyetujui pemrosesan data saya.",
       privacy_need:"Kamu harus menyetujui Kebijakan Privasi",
@@ -6245,6 +6365,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
 [data-theme="light"] #placeLayers,
 [data-theme="light"] #zodiacSheet,
 [data-theme="light"] #followSheet,
+[data-theme="light"] #notifSheet,
+[data-theme="light"] #delSheet,
 /* Bu oturumda eklenen paneller — açık temada da doğru renkler.
    Listeye eklenmeyince koyu tema renkleriyle kalıyor ve okunmuyorlar. */
 [data-theme="light"] #onayPanel .onayKart,
@@ -6934,11 +7056,72 @@ svg{display:block}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Giris ekrani: sifremi unuttum */
-.gForgot{display:block;width:100%;margin-top:0.625rem;padding:0.375rem 0;
-  border:0;background:none;color:var(--t3);
-  font-size:0.75rem;font-weight:600;letter-spacing:-.01em;text-align:center}
-.gForgot.hide{display:none}
-.gForgot:active{color:var(--t1)}
+/* Giris ekrani alt satiri: Geri | Sifremi unuttum */
+.gAlt{display:flex;align-items:center;justify-content:center;gap:0.875rem;
+  margin-top:0.875rem}
+.gAlt button{border:0;background:none;padding:0.25rem 0;
+  color:var(--t3);font:inherit;font-size:0.75rem;font-weight:600;
+  letter-spacing:-.01em;cursor:pointer}
+.gAlt button:active{color:var(--t1)}
+.gAlt .gForgot.hide{display:none}
+/* Tek dugme kalirsa ayirici gorunmesin */
+.gAlt button + button:not(.hide)::before{content:"";display:inline-block;
+  width:1px;height:0.75rem;margin-right:0.875rem;
+  background:var(--edge-soft);vertical-align:-0.125rem}
+
+/* Profil duzenleme: salt okunur alan */
+.epField.epKilitli .epOku{display:flex;align-items:center;justify-content:space-between;
+  gap:0.625rem;height:2.75rem;padding:0 0.875rem;border-radius:0.875rem;
+  background:var(--surf1);border:1px solid var(--edge-soft);
+  color:var(--t2);font-size:0.875rem}
+.epField.epKilitli .epOku svg{width:1rem;height:1rem;flex:none;opacity:.5}
+
+/* Hesap silme onay paneli */
+#delSheet{z-index:60}
+#delSheet .delBox{position:absolute;left:1rem;right:1rem;top:50%;z-index:2;
+  transform:translateY(-50%);max-width:22rem;margin:0 auto;
+  padding:1.5rem 1.25rem 1.25rem;border-radius:1.5rem;
+  background:var(--panelbg);color:var(--t1);
+  border:1px solid var(--edge-soft);
+  box-shadow:0 1.5rem 3rem -1rem rgba(0,0,0,.5)}
+#delSheet .delIc{display:grid;place-items:center;width:3rem;height:3rem;
+  margin:0 auto 0.75rem;border-radius:6.1875rem;
+  background:rgba(255,59,107,.14);color:#FF3B6B}
+#delSheet .delIc svg{width:1.5rem;height:1.5rem}
+#delSheet h3{margin:0;text-align:center;font-size:1rem;font-weight:700;
+  letter-spacing:-.022em}
+#delSheet p{margin:0.5rem 0 1rem;text-align:center;font-size:0.8125rem;
+  line-height:1.55;color:var(--t3)}
+#delSheet .delEtiket{display:block;font-size:0.75rem;font-weight:600;
+  color:var(--t2);margin-bottom:0.375rem}
+#delSheet input{width:100%;height:2.75rem;padding:0 0.875rem;
+  border-radius:0.875rem;border:1px solid var(--edge-soft);
+  background:var(--surf1);color:var(--t1);
+  font:inherit;font-size:0.875rem;font-weight:700;letter-spacing:.04em}
+#delSheet input:focus{outline:none;border-color:rgba(255,59,107,.6)}
+#delSheet .delBtnler{display:flex;gap:0.5rem;margin-top:1rem}
+#delSheet .delBtnler button{flex:1;height:2.75rem;border:0;border-radius:6.1875rem;
+  font:inherit;font-size:0.875rem;font-weight:700;letter-spacing:-.01em}
+#delSheet .delVaz{background:var(--surf2);color:var(--t1)}
+#delSheet .delOnay{background:#FF3B6B;color:#fff}
+#delSheet .delOnay:disabled{opacity:.4}
+
+/* Bildirim turleri sayfasi */
+/* .sheet katmani ayarlarin (z-index 55) USTUNDE olmali, yoksa
+   arkasinda kaliyordu. Zemin degiskenden gelir: her iki temada dogru. */
+#notifSheet{z-index:58}
+#notifSheet .sheetBody{position:absolute;inset:0;z-index:2;
+  background:var(--panelbg);color:var(--t1);overflow-y:auto;
+  padding:calc(var(--sat-root,0px) + 0.5rem) 0.875rem calc(var(--sab) + 1.5rem)}
+#notifSheet .sheetTop{display:flex;align-items:center;gap:0.5rem;
+  margin-bottom:0.25rem}
+#notifSheet .sheetTop h3{margin:0;font-size:1rem;font-weight:700;
+  letter-spacing:-.022em}
+#notifSheet .sheetBack{width:2.25rem;height:2.25rem;border:0;border-radius:6.1875rem;
+  background:none;color:var(--t1);display:grid;place-items:center}
+#notifSheet .sheetBack svg{width:1.25rem;height:1.25rem}
+#notifSheet .sheetNot{margin:0.25rem 0.25rem 1rem;font-size:0.8125rem;
+  line-height:1.5;color:var(--t3)}
 
 /* Hesap silme satiri: geri donusu olmayan islem */
 .setRow.setTehlike{color:#FF3B6B}
@@ -10469,9 +10652,14 @@ html.sb-white #userSearch::before{
               <!-- Sifre sifirlama fonksiyonu vardi ama YALNIZCA ayarlardan
                    ulasilabiliyordu: sifresini unutan kullanici zaten giris
                    yapamadigi icin oraya erisemiyordu. -->
-              <button type="button" class="gForgot hide" id="gForgot" data-i18n="forgot_pw">Şifremi unuttum</button>
               <div class="gmsg" id="gMsg"></div>
-              <p style="text-align:center;font-size:12px;color:var(--t3);margin-top:12px">
+              <!-- Geri ve Sifremi unuttum alt alta duruyordu; ayni satira
+                   alindi: iki kisa baglanti icin iki satir israfti. -->
+              <div class="gAlt">
+                <button type="button" id="gsBack2" data-i18n="back">Geri</button>
+                <button type="button" class="gForgot hide" id="gForgot" data-i18n="forgot_pw">Şifremi unuttum</button>
+              </div>
+              <p class="hide" style="text-align:center;font-size:12px;color:var(--t3);margin-top:12px">
                 <button type="button" id="gsBack" style="background:none;border:0;color:var(--t3);font-weight:600;font-size:12px;font-family:inherit;cursor:pointer;padding:0" data-i18n="back">Geri</button>
               </p>
             </div>
@@ -18258,6 +18446,37 @@ function openEditProfile(){
   _epVals._soyad = parcalar.slice(1).join(" ");
   const box=$("#epBody");box.innerHTML="";
 
+  /* ══════════ DOGUM TARIHI (SALT OKUNUR) ══════════
+     Degistirilemez: yas siniri denetiminin anlami kalmazdi.
+     Gorunur olmasi kullaniciya da bize de fayda saglar; bir
+     uyusmazlikta ya da hatali kayitta hizli teyit imkani verir.
+     Degisiklik talebi destek uzerinden yurutulur. */
+  (async ()=>{
+    try{
+      const sb=window.__sb, me=window.__me;
+      if(!sb||!me) return;
+      const r=await sb.from("profiles")
+        .select("birth_date, terms_accepted_at")
+        .eq("id", me.id).maybeSingle();
+      if(r.error || !r.data) return;
+      const dt=r.data.birth_date;
+      if(!dt) return;
+
+      const satir=document.createElement("div");
+      satir.className="epField epKilitli";
+      const metin=new Date(dt+"T12:00:00")
+        .toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});
+      satir.innerHTML=
+        '<label>'+t("birth_label")+'</label>'+
+        '<div class="epOku">'+
+          '<span>'+metin+'</span>'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.6" y="10.6" width="14.8" height="9.6" rx="2.4"/><path d="M8.2 10.6V7.8a3.8 3.8 0 0 1 7.6 0v2.8"/></svg>'+
+        '</div>'+
+        '<div class="epHint">'+t("birth_locked")+'</div>';
+      box.insertBefore(satir, box.firstChild);
+    }catch(e){ console.warn("dogum tarihi:", e && e.message); }
+  })();
+
   /* --- BİYOGRAFİ ---
      Önceden profil sayfasındaki ayrı bir düğmeyle düzenleniyordu.
      Artık diğer bilgilerle birlikte burada. */
@@ -18578,6 +18797,12 @@ function themeRow(){
    kayıt gözle görülür şekilde donuyor. İsteyen ayarlardan açabilir. */
 let prefFlipWhileRec = (()=>{ try{ return localStorage.getItem('klipsy_flip_rec')==='1'; }catch(e){ return false; } })();
 let prefNotif=true, prefLocation=true;
+/* ══════════ BILDIRIM TURLERI ══════════
+   Tek acik/kapali anahtari vardi: kullanici ya hepsini aliyor ya
+   hicbirini. Tur bazinda secim, uygulamayi silmek yerine rahatsiz
+   eden bildirimi kapatmasini saglar. */
+let prefNotifLike=true, prefNotifComment=true,
+    prefNotifFollow=true, prefNotifMessage=true;
 
 /* Konum izni gerçekten var mı? Yoksa istemeyi dener.
    Tarayıcıda izin bir kez reddedilirse JavaScript onu geri açamaz —
@@ -18639,6 +18864,10 @@ async function loadPrefs(){
       const {data}=await window.__sb.from('profiles').select('notif_enabled, share_location').eq('id',window.__me.id).single();
       if(data){
         if(typeof data.notif_enabled==='boolean') prefNotif=data.notif_enabled;
+        if(typeof data.notif_like==='boolean')    prefNotifLike=data.notif_like;
+        if(typeof data.notif_comment==='boolean') prefNotifComment=data.notif_comment;
+        if(typeof data.notif_follow==='boolean')  prefNotifFollow=data.notif_follow;
+        if(typeof data.notif_message==='boolean') prefNotifMessage=data.notif_message;
         if(typeof data.share_location==='boolean') prefLocation=data.share_location;
       }
     }catch(e){}
@@ -18713,7 +18942,20 @@ function renderSettings(){
   g2.appendChild(toggleRow(
     '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
     t("notifs_setting"), t("s_notif_sub"), prefNotif,
-    (on)=>{ prefNotif=on; savePref('notif_enabled',on); toast(on?t("s_notif_on"):t("s_notif_off")); }));
+    (on)=>{
+      prefNotif=on; savePref('notif_enabled',on);
+      toast(on?t("s_notif_on"):t("s_notif_off"));
+      /* Ana anahtar kapaliyken alt secimler anlamsiz */
+      const alt=document.getElementById("notifAlt");
+      if(alt) alt.classList.toggle("kapali", !on);
+    }));
+
+  /* Tur bazinda secim AYRI SAYFADA: ayarlar listesi alt alta
+     anahtarlarla dolunca okunmaz hale geliyordu. */
+  g2.appendChild(settingsRow(
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 9.6a7.6 7.6 0 0 1 15.2 0v4l1.6 3.2H2.8l1.6-3.2z"/><path d="M9.6 20a2.4 2.4 0 0 0 4.8 0"/></svg>',
+    t("n_types"), t("n_types_sub"),
+    ()=>bildirimTurleriAc() ));
 
   // kamera satırı kendi ikonunu kullanır (kamera çevirme)
   g2.appendChild(toggleRow(
@@ -18844,14 +19086,42 @@ async function changeUsername(){
    Sunucudaki hesabimi_sil() fonksiyonu icerikleri kaldirilmis
    isaretler, profili anonimlestirir ve kimlik kaydini siler.
    Geri donusu yok; bu yuzden iki asamali onay istenir. */
-async function hesabiSil(){
-  const onay1 = confirm(t("del_confirm1"));
-  if(!onay1) return;
-  const yazilan = prompt(t("del_confirm2"));
-  if(!yazilan || yazilan.trim().toUpperCase() !== t("del_word").toUpperCase()){
-    toast(t("del_cancel"));
-    return;
-  }
+/* Tarayicinin confirm/prompt kutulari uygulamanin disinda gorunuyor
+   ve temayla uyusmuyordu. Kendi panelimizle sorulur. */
+function hesabiSil(){
+  const eski=document.getElementById("delSheet");
+  if(eski) eski.remove();
+  const ov=document.createElement("div");
+  ov.id="delSheet"; ov.className="sheet open";
+  ov.innerHTML=
+    '<div class="scrim"></div>'+
+    '<div class="delBox">'+
+      '<span class="delIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 11.4A1.6 1.6 0 0 0 8.9 20h6.2a1.6 1.6 0 0 0 1.6-1.6L17.5 7"/></svg></span>'+
+      '<h3>'+t("s_delete")+'</h3>'+
+      '<p>'+t("del_confirm1")+'</p>'+
+      '<label class="delEtiket">'+t("del_confirm2")+'</label>'+
+      '<input type="text" id="delGiris" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="'+t("del_word")+'">'+
+      '<div class="delBtnler">'+
+        '<button class="delVaz" id="delVaz">'+t("cancel")+'</button>'+
+        '<button class="delOnay" id="delOnay" disabled>'+t("s_delete")+'</button>'+
+      '</div>'+
+    '</div>';
+  document.body.appendChild(ov);
+
+  const giris=ov.querySelector("#delGiris");
+  const onay=ov.querySelector("#delOnay");
+  const kapat=()=>ov.remove();
+  /* Dogru kelime yazilana kadar dugme kapali */
+  giris.addEventListener("input",()=>{
+    onay.disabled = giris.value.trim().toUpperCase() !== t("del_word").toUpperCase();
+  });
+  ov.querySelector("#delVaz").addEventListener("click", kapat);
+  ov.querySelector(".scrim").addEventListener("click", kapat);
+  onay.addEventListener("click", ()=>{ kapat(); hesabiSilUygula(); });
+  setTimeout(()=>{ try{ giris.focus(); }catch(e){} }, 120);
+}
+
+async function hesabiSilUygula(){
   try{
     toast(t("del_running"));
     const sb=window.__sb;
@@ -18867,6 +19137,51 @@ async function hesabiSil(){
     console.warn("hesap silme:", e && e.message);
     toast(t("del_fail"));
   }
+}
+
+/* ══════════ BILDIRIM TURLERI SAYFASI ══════════ */
+function bildirimTurleriAc(){
+  const eski=document.getElementById("notifSheet");
+  if(eski) eski.remove();
+
+  const ov=document.createElement("div");
+  ov.id="notifSheet"; ov.className="sheet open";
+  ov.innerHTML=
+    '<div class="scrim"></div>'+
+    '<div class="sheetBody">'+
+      '<div class="sheetTop">'+
+        '<button class="sheetBack" aria-label="Geri">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>'+
+        '<h3>'+t("n_types")+'</h3>'+
+      '</div>'+
+      '<p class="sheetNot">'+t("n_types_note")+'</p>'+
+      '<div class="setGroup" id="notifTurler"></div>'+
+    '</div>';
+  document.body.appendChild(ov);
+
+  const kap=ov.querySelector("#notifTurler");
+  const turler=[
+    ["like",    ()=>prefNotifLike,    "n_like",    "n_like_sub",    '<path d="M12 20.5s-7.8-4.7-7.8-9.9A4.5 4.5 0 0 1 12 7.4a4.5 4.5 0 0 1 7.8 3.2c0 5.2-7.8 9.9-7.8 9.9Z"/>'],
+    ["comment", ()=>prefNotifComment, "n_comment", "n_comment_sub", '<path d="M20.4 11.6a7.9 7.9 0 0 1-8.5 7.9 8.5 8.5 0 0 1-3-.6L4.2 20.8l1.6-4.4a7.9 7.9 0 1 1 14.6-4.8Z"/>'],
+    ["follow",  ()=>prefNotifFollow,  "n_follow",  "n_follow_sub",  '<path d="M9 11.4a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2ZM3.4 20.2c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6M18 8.4v5.2M20.6 11h-5.2"/>'],
+    ["message", ()=>prefNotifMessage, "n_message", "n_message_sub", '<path d="M3.6 6.6h16.8v11.2H8.4L3.6 21V6.6Z"/>']
+  ];
+  turler.forEach(([anahtar, oku, etiket, altEtiket, yol])=>{
+    kap.appendChild(toggleRow(
+      '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+yol+'</svg>',
+      t(etiket), t(altEtiket), oku(),
+      (on)=>{
+        if(anahtar==="like")    prefNotifLike=on;
+        if(anahtar==="comment") prefNotifComment=on;
+        if(anahtar==="follow")  prefNotifFollow=on;
+        if(anahtar==="message") prefNotifMessage=on;
+        savePref("notif_"+anahtar, on);
+      }));
+  });
+
+  const kapat=()=>ov.remove();
+  ov.querySelector(".sheetBack").addEventListener("click", kapat);
+  ov.querySelector(".scrim").addEventListener("click", kapat);
 }
 
 async function resetPassword(){
@@ -26179,9 +26494,26 @@ async function submit(){
 
       const {data,error}=await sb.auth.signUp({
         email, password,
-        options:{ data: tamAd ? {username, full_name:tamAd} : {username} }
+        /* Dogum tarihi ve sart onayi kullanici ustverisine yazilir:
+           hesap olusturulurken profil satirina da tasinir. Eskiden
+           yalnizca dogrulaniyor, sonra kayboluyordu. */
+        options:{ data: Object.assign(
+          tamAd ? {username, full_name:tamAd} : {username},
+          { birth_date: dogum, terms_accepted_at: new Date().toISOString() }
+        )}
       });
       if(error)throw error;
+      /* Profil satirina da yaz: tetikleyici ustveriyi tasimiyorsa
+         burada garanti altina alinir. */
+      try{
+        const kid = data && data.user && data.user.id;
+        if(kid){
+          await sb.from("profiles").update({
+            birth_date: dogum,
+            terms_accepted_at: new Date().toISOString()
+          }).eq("id", kid);
+        }
+      }catch(e){ console.warn("dogum tarihi yazilamadi:", e && e.message); }
       if(data.session){enterApp();}
       else{rb(btn,txt);gmsg('Kayit alindi. E-posta dogrulamasi gerekiyorsa gelen kutunu kontrol et.','ok');setMode('login');}
     }else{
@@ -26204,6 +26536,17 @@ try{
       return;
     }
     sifreSifirla(posta.trim());
+  });
+}catch(e){}
+
+/* Yeni konumdaki Geri dugmesi eskisiyle ayni isi yapar */
+try{
+  document.addEventListener("click",(e)=>{
+    const b=e.target && e.target.closest && e.target.closest("#gsBack2");
+    if(!b) return;
+    e.preventDefault();
+    const eski=document.getElementById("gsBack");
+    if(eski) eski.click();
   });
 }catch(e){}
 

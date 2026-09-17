@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.26.0";
+window.KLIPSY_SURUM = "3.28.1";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      n_partner:"seni bir ana ekledi",
+      co_and:"ve",
+      co_accept:"Kabul et",
+      co_decline:"Reddet",
+      co_accepted:"Kabul edildi",
+      co_declined:"Reddedildi",
+      co_fail:"İşlem tamamlanamadı",
+      co_add:"Ortak",
+      co_title:"Bu anı kiminle yaşadın?",
+      co_note:"Seçtiğin kişiye onay bildirimi gider. Onaylarsa an ikinizin profilinde görünür.",
+      co_search:"Arkadaş ara…",
+      co_empty:"Karşılıklı takipleştiğin kimse yok",
+      song_added:"Şarkı eklendi",
+      s_add:"Ekle",
+      s_play:"Oynat",
       birth_locked:"Değiştirilemez. Hatalı olduğunu düşünüyorsan destek ile iletişime geç.",
       n_types:"Bildirim türleri",
       n_types_sub:"Hangi bildirimleri alacağını seç",
@@ -783,6 +798,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      n_partner:"added you to a moment",
+      co_and:"and",
+      co_accept:"Accept",
+      co_decline:"Decline",
+      co_accepted:"Accepted",
+      co_declined:"Declined",
+      co_fail:"Could not complete",
+      co_add:"Together",
+      co_title:"Who were you with?",
+      co_note:"They get a request. Once accepted, the moment appears on both profiles.",
+      co_search:"Search friends…",
+      co_empty:"No mutual follows yet",
+      song_added:"Song added",
+      s_add:"Add",
+      s_play:"Play",
       birth_locked:"Cannot be changed. Contact support if this is incorrect.",
       n_types:"Notification types",
       n_types_sub:"Choose what you get notified about",
@@ -1398,6 +1428,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      n_partner:"te añadió a un momento",
+      co_and:"y",
+      co_accept:"Aceptar",
+      co_decline:"Rechazar",
+      co_accepted:"Aceptado",
+      co_declined:"Rechazado",
+      co_fail:"No se pudo completar",
+      co_add:"Juntos",
+      co_title:"¿Con quién viviste este momento?",
+      co_note:"Recibirá una solicitud. Al aceptar, el momento aparece en ambos perfiles.",
+      co_search:"Buscar amigos…",
+      co_empty:"Aún no hay seguidores mutuos",
+      song_added:"Canción añadida",
+      s_add:"Añadir",
+      s_play:"Reproducir",
       birth_locked:"No se puede cambiar. Contacta con soporte si es incorrecto.",
       n_types:"Tipos de notificación",
       n_types_sub:"Elige qué quieres recibir",
@@ -2010,6 +2055,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      n_partner:"أضافك إلى لحظة",
+      co_and:"و",
+      co_accept:"قبول",
+      co_decline:"رفض",
+      co_accepted:"تم القبول",
+      co_declined:"تم الرفض",
+      co_fail:"تعذّر إتمام العملية",
+      co_add:"معًا",
+      co_title:"مع من عشت هذه اللحظة؟",
+      co_note:"سيصله طلب. عند القبول تظهر اللحظة في الملفين.",
+      co_search:"ابحث عن صديق…",
+      co_empty:"لا متابعات متبادلة",
+      song_added:"أُضيفت الأغنية",
+      s_add:"إضافة",
+      s_play:"تشغيل",
       birth_locked:"لا يمكن تغييره. تواصل مع الدعم إذا كان غير صحيح.",
       n_types:"أنواع الإشعارات",
       n_types_sub:"اختر ما تريد تلقّيه",
@@ -2622,6 +2682,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      n_partner:"t’a ajouté à un moment",
+      co_and:"et",
+      co_accept:"Accepter",
+      co_decline:"Refuser",
+      co_accepted:"Accepté",
+      co_declined:"Refusé",
+      co_fail:"Opération impossible",
+      co_add:"Ensemble",
+      co_title:"Avec qui as-tu vécu ce moment ?",
+      co_note:"Une demande lui est envoyée. Après acceptation, le moment apparaît sur les deux profils.",
+      co_search:"Chercher un ami…",
+      co_empty:"Aucun abonnement mutuel",
+      song_added:"Morceau ajouté",
+      s_add:"Ajouter",
+      s_play:"Lire",
       birth_locked:"Non modifiable. Contacte le support si c’est incorrect.",
       n_types:"Types de notifications",
       n_types_sub:"Choisis ce que tu reçois",
@@ -3234,6 +3309,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      n_partner:"hat dich zu einem Moment hinzugefügt",
+      co_and:"und",
+      co_accept:"Annehmen",
+      co_decline:"Ablehnen",
+      co_accepted:"Angenommen",
+      co_declined:"Abgelehnt",
+      co_fail:"Nicht abgeschlossen",
+      co_add:"Gemeinsam",
+      co_title:"Mit wem hast du das erlebt?",
+      co_note:"Die Person erhält eine Anfrage. Nach Bestätigung erscheint der Moment in beiden Profilen.",
+      co_search:"Freunde suchen…",
+      co_empty:"Noch keine gegenseitigen Follows",
+      song_added:"Song hinzugefügt",
+      s_add:"Hinzufügen",
+      s_play:"Abspielen",
       birth_locked:"Nicht änderbar. Wende dich an den Support, falls es falsch ist.",
       n_types:"Benachrichtigungsarten",
       n_types_sub:"Wähle, worüber du informiert wirst",
@@ -3846,6 +3936,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      n_partner:"добавил(а) вас в момент",
+      co_and:"и",
+      co_accept:"Принять",
+      co_decline:"Отклонить",
+      co_accepted:"Принято",
+      co_declined:"Отклонено",
+      co_fail:"Не удалось выполнить",
+      co_add:"Вместе",
+      co_title:"С кем вы это пережили?",
+      co_note:"Человек получит запрос. После принятия момент появится в обоих профилях.",
+      co_search:"Поиск друзей…",
+      co_empty:"Нет взаимных подписок",
+      song_added:"Песня добавлена",
+      s_add:"Добавить",
+      s_play:"Воспроизвести",
       birth_locked:"Изменить нельзя. Свяжитесь с поддержкой, если это неверно.",
       n_types:"Типы уведомлений",
       n_types_sub:"Выберите, что получать",
@@ -4458,6 +4563,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      n_partner:"adicionou-te a um momento",
+      co_and:"e",
+      co_accept:"Aceitar",
+      co_decline:"Recusar",
+      co_accepted:"Aceite",
+      co_declined:"Recusado",
+      co_fail:"Não foi possível concluir",
+      co_add:"Juntos",
+      co_title:"Com quem viveste este momento?",
+      co_note:"Recebe um pedido. Após aceitar, o momento aparece nos dois perfis.",
+      co_search:"Procurar amigos…",
+      co_empty:"Ainda sem seguidores mútuos",
+      song_added:"Música adicionada",
+      s_add:"Adicionar",
+      s_play:"Reproduzir",
       birth_locked:"Não pode ser alterado. Contacta o suporte se estiver incorreto.",
       n_types:"Tipos de notificação",
       n_types_sub:"Escolhe o que queres receber",
@@ -5070,6 +5190,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      n_partner:"ने आपको एक पल में जोड़ा",
+      co_and:"और",
+      co_accept:"स्वीकारें",
+      co_decline:"अस्वीकारें",
+      co_accepted:"स्वीकृत",
+      co_declined:"अस्वीकृत",
+      co_fail:"पूरा नहीं हो सका",
+      co_add:"साथ",
+      co_title:"यह पल किसके साथ जिया?",
+      co_note:"उन्हें अनुरोध जाएगा। स्वीकार करने पर पल दोनों प्रोफ़ाइल में दिखेगा।",
+      co_search:"मित्र खोजें…",
+      co_empty:"कोई पारस्परिक फ़ॉलो नहीं",
+      song_added:"गाना जोड़ा गया",
+      s_add:"जोड़ें",
+      s_play:"चलाएँ",
       birth_locked:"बदला नहीं जा सकता। गलत हो तो सहायता से संपर्क करें।",
       n_types:"सूचना प्रकार",
       n_types_sub:"चुनें कि क्या पाना है",
@@ -5682,6 +5817,21 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      n_partner:"menambahkanmu ke sebuah momen",
+      co_and:"dan",
+      co_accept:"Terima",
+      co_decline:"Tolak",
+      co_accepted:"Diterima",
+      co_declined:"Ditolak",
+      co_fail:"Tidak dapat diselesaikan",
+      co_add:"Bersama",
+      co_title:"Dengan siapa kamu di sana?",
+      co_note:"Dia akan menerima permintaan. Setelah disetujui, momen tampil di dua profil.",
+      co_search:"Cari teman…",
+      co_empty:"Belum ada saling mengikuti",
+      song_added:"Lagu ditambahkan",
+      s_add:"Tambah",
+      s_play:"Putar",
       birth_locked:"Tidak dapat diubah. Hubungi dukungan jika keliru.",
       n_types:"Jenis notifikasi",
       n_types_sub:"Pilih yang ingin kamu terima",
@@ -7076,6 +7226,57 @@ svg{display:block}
   color:var(--t2);font-size:0.875rem}
 .epField.epKilitli .epOku svg{width:1rem;height:1rem;flex:none;opacity:.5}
 
+/* Akis karti: ikinci avatar ve iki isim */
+.pauthor.ortakAn .pav2{margin-left:-0.875rem;
+  box-shadow:0 0 0 0.125rem #111116}
+.pauthor.ortakAn .pident{margin-left:0.25rem}
+/* Bildirimdeki kabul / ret */
+.nPartner{display:flex;gap:0.375rem;margin-top:0.5rem}
+.nPartner button{height:1.875rem;padding:0 0.75rem;border:0;border-radius:6.1875rem;
+  font:inherit;font-size:0.7188rem;font-weight:700;letter-spacing:-.01em}
+.nPartner .npKabul{background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff}
+.nPartner .npRet{background:var(--surf2);color:var(--t2)}
+.nPartner button:disabled{opacity:.5}
+.npSonuc{font-size:0.75rem;font-weight:600;color:var(--t3)}
+
+/* ═══ ORTAK AN ═══ */
+#cpOrtakBtn.secili .sIc{background:linear-gradient(135deg,rgba(255,59,107,.3),rgba(123,91,255,.26));
+  color:#fff}
+#cpOrtakBtn.secili .sLb{color:#fff;max-width:4.5rem;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+#ortakSheet{z-index:57}
+#ortakSheet .shbox{position:absolute;left:0;right:0;bottom:0;top:auto;
+  max-height:60vh;border-radius:1.375rem 1.375rem 0 0;
+  background:var(--panelbg);color:var(--t1);
+  border:0;border-top:1px solid var(--edge-soft);
+  padding:0.625rem 0.875rem calc(var(--sab) + 0.875rem);
+  display:flex;flex-direction:column}
+#ortakSheet .grip{flex:none;width:2.125rem;height:0.25rem;border-radius:6.1875rem;
+  background:var(--edge);margin:0 auto 0.5rem}
+.ortakUst{flex:none;padding:0 0.25rem 0.625rem}
+.ortakUst h3{margin:0;font-size:0.9375rem;font-weight:700;letter-spacing:-.022em}
+.ortakUst p{margin:0.25rem 0 0;font-size:0.75rem;line-height:1.5;color:var(--t3)}
+.ortakAra{flex:none;display:flex;align-items:center;gap:0.5rem;height:2.5rem;
+  padding:0 0.75rem;border-radius:6.1875rem;
+  background:var(--surf1);border:1px solid var(--edge-soft)}
+.ortakAra svg{width:1rem;height:1rem;flex:none;color:var(--t3)}
+.ortakAra input{flex:1;min-width:0;border:0;background:none;color:var(--t1);
+  font:inherit;font-size:0.8125rem}
+.ortakAra input:focus{outline:none}
+.ortakListe{flex:1;min-height:0;overflow-y:auto;margin-top:0.625rem;
+  scrollbar-width:none}
+.ortakListe::-webkit-scrollbar{display:none}
+.ortakSat{display:flex;align-items:center;gap:0.625rem;width:100%;
+  padding:0.5rem 0.375rem;border:0;background:none;border-radius:0.875rem;
+  text-align:left;color:var(--t1)}
+.ortakSat.secili{background:var(--surf1)}
+.ortakSat .av{width:2.375rem;height:2.375rem;flex:none;border-radius:6.1875rem}
+.ortakTx{flex:1;min-width:0}
+.ortakTx b{display:block;font-size:0.8438rem;font-weight:600;letter-spacing:-.015em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ortakTx span{font-size:0.75rem;color:var(--t3)}
+.ortakBos{padding:1.5rem 0.5rem;text-align:center;font-size:0.8125rem;color:var(--t3)}
+
 /* Hesap silme onay paneli */
 #delSheet{z-index:60}
 #delSheet .delBox{position:absolute;left:1rem;right:1rem;top:50%;z-index:2;
@@ -8467,7 +8668,9 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .songTopHead .stFlame{font-size:0.8125rem}
 .songRank{width:1.25rem;flex:none;text-align:center;font-size:0.75rem;font-weight:700;
   color:var(--t3);font-variant-numeric:tabular-nums}
-.songRow{direction:rtl}
+/* Eskiden satir ters cevriliyordu (direction:rtl) ve plak saga,
+   Ekle dugmesi sola dusuyordu. Normal yone alindi. */
+.songRow{direction:ltr}
 [dir="rtl"] .setTxt,[dir="rtl"] .crow2 .mid,[dir="rtl"] .songTx{text-align:right}
 [dir="rtl"] .cpBody,[dir="rtl"] .profbody{direction:rtl}
 [dir="rtl"] .cpnote,[dir="rtl"] .msgbar input,[dir="rtl"] .cbar input{text-align:right}
@@ -9645,20 +9848,42 @@ html.native button,html.native .tab{touch-action:manipulation}
 
 /* ===== KLIPSY SİNEMA şarkı paneli ===== */
 #songSheet .shbox{
-  position:absolute;left:0.625rem;right:0.625rem;top:auto;
-  bottom:max(0.625rem, var(--sab));
-  max-height:70vh;height:auto;
-  background:linear-gradient(180deg,#2a1020 0%,#120814 42%,#0c0a10 100%);
-  color:#fff;border:1px solid rgba(255,59,107,.22);
-  box-shadow:0 1.75rem 4.375rem -1.25rem rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.08);
+  position:absolute;left:0;right:0;top:auto;bottom:0;
+  /* ══════════ SADE PANEL ══════════
+     70vh yuksek kaliyordu; %25 kisaltilip 52vh yapildi ve liste
+     kendi icinde kayiyor. Zemin temadan bagimsiz SABIT SIYAH:
+     kapak gorselleri ve plaklar koyu zeminde okunuyor. */
+  max-height:52vh;height:auto;
+  border-radius:1.375rem 1.375rem 0 0;
+  background:#0A0A0E;
+  color:#F2F2F5;border:0;border-top:1px solid rgba(255,255,255,.1);
+  box-shadow:0 -0.75rem 2.5rem -0.5rem rgba(0,0,0,.7);
+  padding:0.625rem 0.875rem calc(var(--sab) + 0.875rem);
+  display:flex;flex-direction:column;
 }
-.songStageBg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
-  background-position:center;background-size:cover;opacity:0;
-  transform:scale(1.12);filter:blur(1.125rem) saturate(1.15);
-  transition:opacity .45s ease, background-image .45s ease}
-.songStageBg.on{opacity:1}
-.songStageBg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(20,8,14,.55) 0%,rgba(12,8,14,.78) 45%,rgba(8,6,10,.92) 100%)}
+/* Acik temada da siyah kalir */
+[data-theme="light"] #songSheet .shbox{background:#0A0A0E;color:#F2F2F5}
+/* Liste kendi icinde kayar: kutu uzamaz */
+#songSheet .shlist{flex:1;min-height:0;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:0.625rem}
+#songSheet .shlist::-webkit-scrollbar{display:none}
+/* Konsepteki arama kutusu */
+#songSheet .songSearchWrap{flex:none;display:flex;align-items:center;gap:0.5rem;
+  height:2.5rem;padding:0 0.75rem;border-radius:6.1875rem;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1)}
+#songSheet .songSearchWrap svg{width:1rem;height:1rem;flex:none;color:rgba(255,255,255,.44)}
+#songSheet .songSearchWrap input{flex:1;min-width:0;border:0;background:none;
+  color:#F2F2F5;font:inherit;font-size:0.8125rem}
+#songSheet .songSearchWrap input:focus{outline:none}
+#songSheet .songSearchWrap input::placeholder{color:rgba(255,255,255,.44)}
+#songSheet .grip{flex:none;width:2.125rem;height:0.25rem;border-radius:6.1875rem;
+  background:rgba(255,255,255,.18);margin:0 auto 0.125rem}
+/* Satir renkleri sabit koyu zemine gore */
+#songSheet .songRow{background:none;padding:0.5rem 0.25rem;border-radius:0.75rem}
+#songSheet .songRow.playing{background:rgba(255,255,255,.055)}
+#songSheet .songRow b{color:#F2F2F5}
+#songSheet .songRow .songTx span{color:rgba(255,255,255,.44)}
+#songSheet .songOyn{background:rgba(255,255,255,.055);color:#F2F2F5}
 #songSheet .grip,#songSheet .songCinemaHead,#songSheet .songSearchWrap,
 #songSheet .shlist,#songSheet .songNow{position:relative;z-index:1}
 #songSheet .grip{background:rgba(255,255,255,.28)}
@@ -9704,7 +9929,38 @@ html.native button,html.native .tab{touch-action:manipulation}
   font-size:0.6875rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
 .songTopHead .stFlame{font-size:0.875rem}
 
-.songRow{display:flex;align-items:center;gap:0.8125rem;width:100%;text-align:left;
+/* ══════════ PLAK ══════════ */
+.songPlak{position:relative;width:2.875rem;height:2.875rem;flex:none;
+  border-radius:6.1875rem;
+  background:conic-gradient(from 0deg,#2A2A34,#15151C,#2A2A34,#15151C,#2A2A34);
+  display:grid;place-items:center;
+  box-shadow:0 0.125rem 0.5rem -0.125rem rgba(0,0,0,.5)}
+.songPlak .spIc{position:absolute;inset:0.375rem;border-radius:6.1875rem;
+  background:var(--avatar-bg) center/cover no-repeat;
+  box-shadow:inset 0 0 0 0.0625rem rgba(255,255,255,.12)}
+/* Calan sarkinin plagi doner */
+.songRow.playing .songPlak{animation:plakDon 3s linear infinite}
+@keyframes plakDon{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){
+  .songRow.playing .songPlak{animation:none}
+}
+/* Oynat / durdur */
+.songOyn{flex:none;width:2rem;height:2rem;border:0;border-radius:6.1875rem;
+  background:var(--surf2);color:var(--t1);display:grid;place-items:center;
+  transition:transform .12s}
+.songOyn:active{transform:scale(.88)}
+.songOyn svg{width:0.875rem;height:0.875rem}
+.songOyn .durIk{display:none}
+.songRow.playing .songOyn .oynIk{display:none}
+.songRow.playing .songOyn .durIk{display:block}
+/* Ekleme dugmesi satirin icinde */
+.songEkle{flex:none;height:2rem;padding:0 0.8125rem;border:0;border-radius:6.1875rem;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  font:inherit;font-size:0.7188rem;font-weight:700;letter-spacing:-.01em;
+  transition:transform .12s}
+.songEkle:active{transform:scale(.9)}
+
+.songRow{display:flex;align-items:center;gap:0.625rem;width:100%;text-align:left;
   padding:0.5rem 0.75rem;border-radius:1rem;transition:background .16s;position:relative}
 .songRow:active{background:var(--surf1)}
 
@@ -10659,7 +10915,10 @@ html.sb-white #userSearch::before{
                 <button type="button" id="gsBack2" data-i18n="back">Geri</button>
                 <button type="button" class="gForgot hide" id="gForgot" data-i18n="forgot_pw">Şifremi unuttum</button>
               </div>
-              <p class="hide" style="text-align:center;font-size:12px;color:var(--t3);margin-top:12px">
+              <!-- Eski Geri satiri: yeni alt satira tasindi. Isaret
+                   duruyor cunku gsBack2 tiklamayi buraya yonlendiriyor;
+                   gorunmez olmasi yeterli. -->
+              <p style="display:none">
                 <button type="button" id="gsBack" style="background:none;border:0;color:var(--t3);font-weight:600;font-size:12px;font-family:inherit;cursor:pointer;padding:0" data-i18n="back">Geri</button>
               </p>
             </div>
@@ -10998,12 +11257,9 @@ html.sb-white #userSearch::before{
   <section class="sheet" id="songSheet" aria-hidden="true">
     <div class="scrim" data-close="songSheet"></div>
     <div class="shbox" id="songBox">
-      <div class="songStageBg" id="songStageBg" aria-hidden="true"></div>
+      <!-- Marka satiri, buyuk baslik ve bulanik zemin kaldirildi:
+           panelin isi sarki secmek, kendini tanitmak degil. -->
       <div class="grip"></div>
-      <div class="songCinemaHead">
-        <span class="songCinemaBrand">KLIPSY · AN</span>
-        <h3 data-i18n="song_cinema">Bu ana bir şarkı bağla</h3>
-      </div>
       <div class="songSearchWrap">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <input id="songSearchInput" type="text" placeholder="Şarkı ya da sanatçı ara…" data-i18n-ph="song_search" autocomplete="off">
@@ -11013,8 +11269,9 @@ html.sb-white #userSearch::before{
       </div>
       <div class="shlist" id="songResults"></div>
 
-      <!-- mini oynatıcı: dinlenen şarkı burada, ekleme buradan yapılır -->
-      <div class="songNow" id="songNow" hidden>
+      <!-- Mini oynatici artik gizli: ekleme satirin icinden yapiliyor.
+           Isaret duruyor cunku snPlay ilerleme cubugunu buradan besliyor. -->
+      <div class="songNow" id="songNow" hidden style="display:none">
         <div class="snArt" id="snArt"></div>
         <div class="snTx">
           <b id="snTitle"></b>
@@ -11287,6 +11544,13 @@ html.sb-white #userSearch::before{
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></svg>
         </span>
         <span class="sLb" id="cpSaveLb" data-i18n="save" data-i18n="save">Kaydet</span>
+      </button>
+      <!-- Ortak an: arkadasini bu ana ekle -->
+      <button class="cpSideBtn" id="cpOrtakBtn" aria-label="Ortak an" data-i18n-aria="co_add">
+        <span class="sIc" id="cpOrtakIcon">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.4" r="3.6"/><path d="M3 20.2c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17.4 8.4v4.4M19.6 10.6h-4.4"/></svg>
+        </span>
+        <span class="sLb" data-i18n="co_add">Ortak</span>
       </button>
       <button class="cpSideBtn" id="cpSettingsBtn" aria-label="Paylaşım ayarları" data-i18n-aria="share_settings">
         <span class="sIc" id="cpSettingsIcon">
@@ -11801,6 +12065,9 @@ function _mapFeedRow(r, me, sb){
     mood:MOOD_BY_KEY[r.mood]||MOODS[7],
     note:r.note||"",
     kind:r.media_kind,
+    /* Ortak an: ad ve avatar icin ikinci kisi tasinir */
+    partnerId:     r.partner_id || null,
+    partnerStatus: r.partner_status || "none",
     mediaPath:r.media_path||null,
     src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
     poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
@@ -11835,7 +12102,7 @@ async function _fetchMomentsPage(beforeTs, limit){
   const sb=window.__sb; if(!sb) return [];
   try{
     let q = sb.from('moments')
-      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility')
+      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility, partner_id, partner_status')
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
       .limit(limit || FEED_PAGE);
@@ -13999,7 +14266,13 @@ function wireSheetSwipeOn(sheet, boxSel, closeFn){
   function canStart(e){
     if(e.target.closest(".grip, .fpGrip, .plGrip, .glsGrip, .glsHead, h3, .chead, .fpHead, p")) return true;
     const scrollEl = box.querySelector(".shlist, .commlist, .fpList, .cvStrip, .plList, .glsList");
-    if(scrollEl && scrollEl.contains(e.target)) return scrollEl.scrollTop <= 2;
+    if(scrollEl && scrollEl.contains(e.target)){
+      /* Liste en usteyse kaydirmayla kapatma baslayabilir.
+         BUTON KONTROLUNDEN ONCE bakilir: satirlarin icinde dugme
+         oldugu icin asagidaki kural her dokunusta engelliyordu ve
+         sarki panelinde kaydirarak kapatma hic calismiyordu. */
+      return scrollEl.scrollTop <= 2;
+    }
     if(e.target.closest("input, textarea, button, a, select, canvas, video")) return false;
     return true;
   }
@@ -17197,6 +17470,7 @@ function paintSnPlayIcon(playing){
 }
 
 function paintSongStage(song){
+  /* songStageBg kaldirildi; bulunamazsa sessizce gecilir */
   const bg=document.getElementById("songStageBg");
   if(!bg) return;
   let url=song && song.art ? String(song.art) : "";
@@ -17295,18 +17569,171 @@ async function snPlay(song, rowEl){
 // Liste satırı üret (hem popüler hem arama için tek fonksiyon)
 function songRowEl(song, rank){
   const b=document.createElement("button");
+  /* ══════════ PLAK DUZENI ══════════
+     Eskiden secim listede, ekleme ise alttaki ayri mini oynaticida
+     yapiliyordu: iki adim, iki farkli yere bakmak gerekiyordu.
+     Artik kapak donen bir plagin ortasinda — hangi sarkinin
+     onizlendigi bir bakista belli — ve ekleme dugmesi ayni satirda. */
   b.className="songRow";
   b.innerHTML =
     (rank ? '<span class="songRank">'+rank+'</span>' : '') +
-    '<span class="songArt"'+(song.art?' style="background-image:url(\''+song.art+'\')"':'')+'>'+
-      '<span class="saWave"><i></i><i></i><i></i></span>'+
+    '<span class="songPlak">'+
+      '<span class="spIc"'+(song.art?' style="background-image:url(\''+song.art+'\')"':'')+'></span>'+
     '</span>'+
     '<span class="songTx"><b>'+esc(song.title)+'</b><span>'+esc(song.artist)+'</span></span>'+
-    '<span class="songGo">'+
-      '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'+
-    '</span>';
-  b.addEventListener("click",()=>snPlay(song, b));
+    '<button type="button" class="songOyn" aria-label="'+esc(t("s_play"))+'">'+
+      '<svg class="oynIk" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6L19 12z"/></svg>'+
+      '<svg class="durIk" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="4" height="14" rx="1"/><rect x="13" y="5" width="4" height="14" rx="1"/></svg>'+
+    '</button>'+
+    '<button type="button" class="songEkle">'+esc(t("s_add"))+'</button>';
+
+  /* Oynat/durdur ve satira dokunma ayni isi yapar */
+  const oynat = (ev)=>{ if(ev) ev.stopPropagation(); snPlay(song, b); };
+  b.addEventListener("click", oynat);
+  b.querySelector(".songOyn").addEventListener("click", oynat);
+  /* Ekleme dogrudan satirdan: alttaki oynaticiya inmeye gerek yok */
+  b.querySelector(".songEkle").addEventListener("click",(ev)=>{
+    ev.stopPropagation();
+    try{ sarkiSec(song); }catch(e){ console.warn("sarki ekle:", e && e.message); }
+  });
   return b;
+}
+
+/* Satirdan dogrudan ekleme — mini oynaticidaki davranisin aynisi */
+/* ══════════════════ ORTAK AN ══════════════════
+   Ayni ani birlikte yasayan iki kisi tek an paylasir. Secilen kisi
+   ONAYLAYANA KADAR an normal bir paylasim gibi gorunur: onay
+   gerceklesmeden kimse bir konuma ve saate baglanmaz. */
+let ortakKisi = null;
+
+function ortakPaneliAc(){
+  const eski=document.getElementById("ortakSheet");
+  if(eski) eski.remove();
+
+  const ov=document.createElement("div");
+  ov.id="ortakSheet"; ov.className="sheet open";
+  ov.innerHTML=
+    '<div class="scrim"></div>'+
+    '<div class="shbox">'+
+      '<div class="grip"></div>'+
+      '<div class="ortakUst">'+
+        '<h3>'+t("co_title")+'</h3>'+
+        '<p>'+t("co_note")+'</p>'+
+      '</div>'+
+      '<div class="ortakAra">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
+        '<input type="text" id="ortakInput" placeholder="'+esc(t("co_search"))+'" autocapitalize="none" spellcheck="false">'+
+      '</div>'+
+      '<div class="ortakListe" id="ortakListe"></div>'+
+    '</div>';
+  document.body.appendChild(ov);
+
+  const kapat=()=>ov.remove();
+  ov.querySelector(".scrim").addEventListener("click", kapat);
+  try{ wireSheetSwipeOn(ov, ".shbox", kapat); }catch(e){}
+
+  const kutu=ov.querySelector("#ortakListe");
+  const inp=ov.querySelector("#ortakInput");
+
+  function ciz(liste){
+    if(!liste.length){
+      kutu.innerHTML='<div class="ortakBos">'+t("co_empty")+'</div>';
+      return;
+    }
+    kutu.innerHTML="";
+    liste.forEach(k=>{
+      const sat=document.createElement("button");
+      sat.type="button"; sat.className="ortakSat";
+      const av=document.createElement("span"); av.className="av";
+      sat.appendChild(av);
+      try{ paintAv(av, k.username); }catch(e){}
+      const tx=document.createElement("span"); tx.className="ortakTx";
+      tx.innerHTML='<b></b><span></span>';
+      tx.querySelector("b").textContent = k.display_name || k.username;
+      tx.querySelector("span").textContent = "@"+k.username;
+      sat.appendChild(tx);
+      if(ortakKisi && ortakKisi.id===k.id) sat.classList.add("secili");
+      sat.addEventListener("click",()=>{
+        /* Ayni kisiye tekrar dokunmak secimi kaldirir */
+        ortakKisi = (ortakKisi && ortakKisi.id===k.id) ? null : k;
+        ortakBtnCiz();
+        kapat();
+      });
+      kutu.appendChild(sat);
+    });
+  }
+
+  /* Yalnizca KARSILIKLI takiplesilen kisiler: rastgele birini
+     bir konuma baglamak mumkun olmamali. */
+  (async ()=>{
+    kutu.innerHTML='<div class="ortakBos">'+t("loading")+'</div>';
+    try{
+      const sb=window.__sb, me=window.__me;
+      if(!sb||!me) throw new Error("oturum yok");
+      const r=await sb.rpc("mutual_follows");
+      if(r.error) throw r.error;
+      ov._liste = r.data || [];
+      ciz(ov._liste);
+    }catch(e){
+      /* RPC yoksa takip ettiklerimden turetilir */
+      try{
+        const yedek=[...(typeof following!=="undefined" ? following : [])]
+          .map(u=>({ id:(USERS[u]&&USERS[u].id)||null, username:u,
+                     display_name:(USERS[u]&&USERS[u].display_name)||u }))
+          .filter(x=>x.id);
+        ov._liste=yedek; ciz(yedek);
+      }catch(e2){
+        kutu.innerHTML='<div class="ortakBos">'+t("co_empty")+'</div>';
+      }
+    }
+  })();
+
+  inp.addEventListener("input",()=>{
+    const q=inp.value.trim().toLowerCase();
+    const hepsi=ov._liste||[];
+    if(!q){ ciz(hepsi); return; }
+    ciz(hepsi.filter(k=>
+      (k.username||"").toLowerCase().includes(q) ||
+      (k.display_name||"").toLowerCase().includes(q)));
+  });
+}
+
+/* Dugmenin secili gorunumu */
+function ortakBtnCiz(){
+  const b=document.getElementById("cpOrtakBtn");
+  if(!b) return;
+  const et=b.querySelector(".sLb");
+  b.classList.toggle("secili", !!ortakKisi);
+  if(et) et.textContent = ortakKisi
+    ? (ortakKisi.display_name || ortakKisi.username)
+    : t("co_add");
+}
+
+try{
+  document.addEventListener("click",(e)=>{
+    const b=e.target && e.target.closest && e.target.closest("#cpOrtakBtn");
+    if(!b) return;
+    e.preventDefault();
+    ortakPaneliAc();
+  });
+}catch(e){}
+
+function sarkiSec(song){
+  if(!song) return;
+  /* Mini oynaticidaki akisin AYNISI. Once paintSongBtn yazilmisti
+     ama oyle bir fonksiyon yok: sarki seciliyor, paylasim ekraninda
+     gorunmuyor ve onizleme calmiyordu. */
+  pickedSong = {
+    title:   song.title,
+    artist:  song.artist,
+    art:     song.art,
+    preview: song.preview
+  };
+  try{ snStop(); }catch(e){}
+  try{ close("songSheet"); }catch(e){}
+  try{ renderSongRow(); }catch(e){}
+  try{ cpPlayPreview(); }catch(e){}
+  try{ toast(t("ok_song_added")); }catch(e){}
 }
 
 /* ===== POPÜLER ŞARKILAR =====
@@ -17722,7 +18149,7 @@ async function loadMyMoments(){
   try{
     const { data, error } = await sb
       .from('moments')
-      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms, comments_on, downloads_on, visibility')
+      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms, comments_on, downloads_on, visibility, partner_id, partner_status')
       .eq('author_id', me.id)
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
@@ -23983,6 +24410,10 @@ async function post(src,kind,mood,where,note,extra){
         ? ((extra.shareLoc===false) ? Math.round(extra.la*100)/100 : extra.la) : null,
       geo_lng: (extra && extra.lo!=null)
         ? ((extra.shareLoc===false) ? Math.round(extra.lo*100)/100 : extra.lo) : null,
+      /* Ortak an: onay gelene kadar "pending". Bu asamada an
+         normal paylasim gibi gorunur, ikinci isim yazilmaz. */
+      partner_id:     (extra && extra.partnerId) ? extra.partnerId : null,
+      partner_status: (extra && extra.partnerId) ? 'pending' : 'none',
       duration_ms: (extra && extra.durationMs) ? extra.durationMs : null,
       song_title: song ? song.title : null,
       song_artist: song ? song.artist : null,

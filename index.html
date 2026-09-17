@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.28.6";
+window.KLIPSY_SURUM = "3.28.8";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -7240,14 +7240,17 @@ svg{display:block}
 .npSonuc{font-size:0.75rem;font-weight:600;color:var(--t3)}
 
 /* ═══ ORTAK AN ═══ */
-#cpOrtakBtn.secili .sIc{background:linear-gradient(135deg,rgba(255,59,107,.3),rgba(123,91,255,.26));
-  color:#fff}
+/* .sIc temel kuralinda border-radius:0 var. Secili durumda zemin
+   verince avatarin arkasinda KARE bir renk lekesi olusuyordu.
+   Diger yan dugmeler de zemin kullanmiyor; yalnizca renk degisiyor. */
+#cpOrtakBtn.secili .sIc{background:none;color:#fff}
 /* Dugmedeki avatar */
 #cpOrtakBtn .ortakAv{width:1.5rem;height:1.5rem;border-radius:6.1875rem;
   background:var(--avatar-bg) center/cover no-repeat;
   display:grid;place-items:center;
   font-size:0.6875rem;font-weight:700;color:#fff;
-  box-shadow:0 0 0 0.09375rem rgba(255,255,255,.55)}
+  /* Secili oldugu avatarin cevresindeki ince halkayla anlatilir */
+  box-shadow:0 0 0 0.09375rem #FF3B6B, 0 0.0625rem 0.25rem rgba(0,0,0,.5)}
 #cpOrtakBtn.secili .sLb{color:#fff;max-width:4.5rem;overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap}
 /* Paylasim ekrani (#compose) z-index 75 te; panel 57 de kalinca
@@ -17279,6 +17282,8 @@ function openCompose(src,kind,blob,durationMs){
   draft={src,kind,blob:blob||null,durationMs:durationMs||null};
   pickedMood=null;
   pickedSong=null;
+  /* Sonraki an onceki secimi tasimasin */
+  try{ ortakKisi=null; ortakBtnCiz(); }catch(e){}
   pickedCover=null;
   /* Gizlilik ayarları her yeni paylaşımda varsayılana döner. */
   _shareVis="community"; _shareCommentsOn=true; _shareDownloadsOn=true;
@@ -18008,7 +18013,8 @@ $("#cpLater").addEventListener("click", async ()=>{
         durationMs: draft.durationMs || null,
         cover: pickedCover || null,
         visibility: _shareVis || "community",
-        commentsOn: _shareCommentsOn !== false
+        commentsOn: _shareCommentsOn !== false,
+        partnerId: (typeof ortakKisi!=="undefined" && ortakKisi) ? ortakKisi.id : null
       }
     });
     if(ok){
@@ -18050,6 +18056,10 @@ $("#cpShare").addEventListener("click",()=>{
     cover: pickedCover||null,
     visibility: _shareVis||'community',
     commentsOn: _shareCommentsOn!==false,
+    /* Ortak an: secim ortakKisi degiskeninde duruyordu ama extra ya
+       hic tasinmiyordu, bu yuzden partner_id sunucuya bos gidiyor ve
+       davet bildirimi hic olusmuyordu. */
+    partnerId: (typeof ortakKisi!=="undefined" && ortakKisi) ? ortakKisi.id : null,
     downloadsOn: _shareDownloadsOn!==false
   };
   closeCompose(false);

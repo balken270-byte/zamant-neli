@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.28.1";
+window.KLIPSY_SURUM = "3.28.6";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -7242,9 +7242,23 @@ svg{display:block}
 /* ═══ ORTAK AN ═══ */
 #cpOrtakBtn.secili .sIc{background:linear-gradient(135deg,rgba(255,59,107,.3),rgba(123,91,255,.26));
   color:#fff}
+/* Dugmedeki avatar */
+#cpOrtakBtn .ortakAv{width:1.5rem;height:1.5rem;border-radius:6.1875rem;
+  background:var(--avatar-bg) center/cover no-repeat;
+  display:grid;place-items:center;
+  font-size:0.6875rem;font-weight:700;color:#fff;
+  box-shadow:0 0 0 0.09375rem rgba(255,255,255,.55)}
 #cpOrtakBtn.secili .sLb{color:#fff;max-width:4.5rem;overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap}
-#ortakSheet{z-index:57}
+/* Paylasim ekrani (#compose) z-index 75 te; panel 57 de kalinca
+   tamamen altinda kaliyor ve yalnizca hafif bir karti goruluyordu.
+   Ustune cikarilir. */
+#ortakSheet{z-index:78}
+/* .shbox varsayilan olarak ekranin ALTINA itilmis duruyor
+   (translateY(100%)); her panel kendi ".open .shbox" kuraliyla
+   yukari cekiyor. Bu kural eksik oldugu icin kutu ekran disinda
+   kaliyor, yalnizca karartma goruluyordu. */
+#ortakSheet.open .shbox{transform:translateY(0)}
 #ortakSheet .shbox{position:absolute;left:0;right:0;bottom:0;top:auto;
   max-height:60vh;border-radius:1.375rem 1.375rem 0 0;
   background:var(--panelbg);color:var(--t1);
@@ -7270,7 +7284,14 @@ svg{display:block}
   padding:0.5rem 0.375rem;border:0;background:none;border-radius:0.875rem;
   text-align:left;color:var(--t1)}
 .ortakSat.secili{background:var(--surf1)}
-.ortakSat .av{width:2.375rem;height:2.375rem;flex:none;border-radius:6.1875rem}
+/* paintAv arka plan RESMI yaziyor; "center/cover no-repeat" ve
+   zemin verilmezse resim gorunmuyor ve kutu bembeyaz kaliyordu.
+   Bas harf yedegi icin de yerlesim gerekiyor. */
+.ortakSat .av{width:2.375rem;height:2.375rem;flex:none;border-radius:6.1875rem;
+  background:var(--avatar-bg, #22222A) center/cover no-repeat;
+  display:grid;place-items:center;
+  font-size:0.875rem;font-weight:700;color:#fff;
+  box-shadow:inset 0 0 0 0.0625rem var(--edge-soft)}
 .ortakTx{flex:1;min-width:0}
 .ortakTx b{display:block;font-size:0.8438rem;font-weight:600;letter-spacing:-.015em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -17646,6 +17667,9 @@ function ortakPaneliAc(){
       sat.type="button"; sat.className="ortakSat";
       const av=document.createElement("span"); av.className="av";
       sat.appendChild(av);
+      /* RPC den gelen avatar adresi onbellege yazilmazsa paintAv
+         onu bulamiyor ve resim bos kaliyordu. */
+      try{ if(k.avatar_url) setRealAvatar(k.username, k.avatar_url); }catch(e){}
       try{ paintAv(av, k.username); }catch(e){}
       const tx=document.createElement("span"); tx.className="ortakTx";
       tx.innerHTML='<b></b><span></span>';
@@ -17703,19 +17727,42 @@ function ortakBtnCiz(){
   const b=document.getElementById("cpOrtakBtn");
   if(!b) return;
   const et=b.querySelector(".sLb");
+  const ic=b.querySelector(".sIc");
   b.classList.toggle("secili", !!ortakKisi);
   if(et) et.textContent = ortakKisi
     ? (ortakKisi.display_name || ortakKisi.username)
     : t("co_add");
+  /* Secili kisinin avatari ikonun yerini alir: kimi ekledigin
+     paylasim ekranindan cikmadan gorunur. */
+  if(ic){
+    const eskiAv=ic.querySelector(".ortakAv");
+    if(eskiAv) eskiAv.remove();
+    const svg=ic.querySelector("svg");
+    if(ortakKisi){
+      if(svg) svg.style.display="none";
+      const av=document.createElement("span");
+      av.className="ortakAv";
+      ic.appendChild(av);
+      try{ if(ortakKisi.avatar_url) setRealAvatar(ortakKisi.username, ortakKisi.avatar_url); }catch(e){}
+      try{ paintAv(av, ortakKisi.username); }catch(e){}
+    }else if(svg){
+      svg.style.display="";
+    }
+  }
 }
 
+/* Yakalama asamasinda dinlenir: paylasim ekranindaki yan butonlar
+   olayi durdurabiliyor ve kabarma asamasinda dinleyici hic
+   calismiyordu (kamera flasinda da ayni sorun yasanmisti). */
 try{
   document.addEventListener("click",(e)=>{
     const b=e.target && e.target.closest && e.target.closest("#cpOrtakBtn");
     if(!b) return;
     e.preventDefault();
-    ortakPaneliAc();
-  });
+    e.stopPropagation();
+    try{ ortakPaneliAc(); }
+    catch(x){ console.warn("ortak panel:", x && x.message); }
+  }, true);
 }catch(e){}
 
 function sarkiSec(song){

@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.28.8";
+window.KLIPSY_SURUM = "3.32.0";
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -155,6 +155,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Taslaklar",
       draft_too_big:"Dosya taslak için çok büyük",
       draft_sent:"taslak paylaşıldı",
+      co_tab:"Ortak",
+      co_desc:"Birlikte yaşadığın anlar.",
+      co_empty2:"Henüz ortak an yok",
+      co_empty_sub:"Bir an paylaşırken yanındakini ekleyebilirsin.",
       n_partner:"seni bir ana ekledi",
       co_and:"ve",
       co_accept:"Kabul et",
@@ -798,6 +802,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Drafts",
       draft_too_big:"File is too large to save as a draft",
       draft_sent:"drafts published",
+      co_tab:"Together",
+      co_desc:"Moments you lived with someone.",
+      co_empty2:"No shared moments yet",
+      co_empty_sub:"You can add someone while sharing a moment.",
       n_partner:"added you to a moment",
       co_and:"and",
       co_accept:"Accept",
@@ -1428,6 +1436,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Borradores",
       draft_too_big:"El archivo es muy grande para un borrador",
       draft_sent:"borradores publicados",
+      co_tab:"Juntos",
+      co_desc:"Momentos que viviste con alguien.",
+      co_empty2:"Aún no hay momentos compartidos",
+      co_empty_sub:"Puedes añadir a alguien al compartir un momento.",
       n_partner:"te añadió a un momento",
       co_and:"y",
       co_accept:"Aceptar",
@@ -2055,6 +2067,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"المسودات",
       draft_too_big:"الملف كبير جدًا ليُحفظ كمسودة",
       draft_sent:"مسودة نُشرت",
+      co_tab:"معًا",
+      co_desc:"لحظات عشتها مع شخص آخر.",
+      co_empty2:"لا لحظات مشتركة بعد",
+      co_empty_sub:"يمكنك إضافة شخص عند مشاركة لحظة.",
       n_partner:"أضافك إلى لحظة",
       co_and:"و",
       co_accept:"قبول",
@@ -2682,6 +2698,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Brouillons",
       draft_too_big:"Fichier trop volumineux pour un brouillon",
       draft_sent:"brouillons publiés",
+      co_tab:"Ensemble",
+      co_desc:"Les moments vécus à deux.",
+      co_empty2:"Aucun moment partagé",
+      co_empty_sub:"Tu peux ajouter quelqu’un en partageant un moment.",
       n_partner:"t’a ajouté à un moment",
       co_and:"et",
       co_accept:"Accepter",
@@ -3309,6 +3329,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Entwürfe",
       draft_too_big:"Datei zu groß für einen Entwurf",
       draft_sent:"Entwürfe veröffentlicht",
+      co_tab:"Gemeinsam",
+      co_desc:"Momente, die du mit jemandem erlebt hast.",
+      co_empty2:"Noch keine gemeinsamen Momente",
+      co_empty_sub:"Du kannst jemanden beim Teilen hinzufügen.",
       n_partner:"hat dich zu einem Moment hinzugefügt",
       co_and:"und",
       co_accept:"Annehmen",
@@ -3936,6 +3960,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Черновики",
       draft_too_big:"Файл слишком большой для черновика",
       draft_sent:"черновиков опубликовано",
+      co_tab:"Вместе",
+      co_desc:"Моменты, прожитые вдвоём.",
+      co_empty2:"Пока нет совместных моментов",
+      co_empty_sub:"Можно добавить человека при публикации.",
       n_partner:"добавил(а) вас в момент",
       co_and:"и",
       co_accept:"Принять",
@@ -4563,6 +4591,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Rascunhos",
       draft_too_big:"Arquivo grande demais para rascunho",
       draft_sent:"rascunhos publicados",
+      co_tab:"Juntos",
+      co_desc:"Momentos vividos a dois.",
+      co_empty2:"Ainda sem momentos partilhados",
+      co_empty_sub:"Podes adicionar alguém ao partilhar um momento.",
       n_partner:"adicionou-te a um momento",
       co_and:"e",
       co_accept:"Aceitar",
@@ -5190,6 +5222,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"ड्राफ़्ट",
       draft_too_big:"ड्राफ़्ट के लिए फ़ाइल बहुत बड़ी",
       draft_sent:"ड्राफ़्ट प्रकाशित",
+      co_tab:"साथ",
+      co_desc:"किसी के साथ जिए पल।",
+      co_empty2:"अभी कोई साझा पल नहीं",
+      co_empty_sub:"पल साझा करते समय किसी को जोड़ सकते हैं।",
       n_partner:"ने आपको एक पल में जोड़ा",
       co_and:"और",
       co_accept:"स्वीकारें",
@@ -5817,6 +5853,10 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       drafts:"Draf",
       draft_too_big:"Berkas terlalu besar untuk draf",
       draft_sent:"draf dipublikasikan",
+      co_tab:"Bersama",
+      co_desc:"Momen yang kamu jalani bersama.",
+      co_empty2:"Belum ada momen bersama",
+      co_empty_sub:"Kamu bisa menambahkan seseorang saat membagikan momen.",
       n_partner:"menambahkanmu ke sebuah momen",
       co_and:"dan",
       co_accept:"Terima",
@@ -7227,8 +7267,24 @@ svg{display:block}
 .epField.epKilitli .epOku svg{width:1rem;height:1rem;flex:none;opacity:.5}
 
 /* Akis karti: ikinci avatar ve iki isim */
-.pauthor.ortakAn .pav2{margin-left:-0.875rem;
-  box-shadow:0 0 0 0.125rem #111116}
+/* ══════════ BOLUNMUS DAIRE ══════════
+   Tek avatarin yerini alir: sol yarim paylasan, sag yarim ortak.
+   Tek kisilik anlarla ayni yeri kapladigi icin duzen bozulmaz.
+   Duygu halkasi disarida kalir ve anlamini korur. */
+/* overflow:hidden duygu halkasini KIRPIYORDU: halka avatarin
+   disinda (::after, inset:-0.25rem) duruyor. Kirpma yarimlarin
+   kendisine tasindi, halka serbest kaldi. */
+.pav.ortakDaire{position:relative;background:transparent}
+.pav.ortakDaire .oy{position:absolute;top:0;height:100%;width:50%;
+  background:var(--avatar-bg, #22222A) center/cover no-repeat;
+  overflow:hidden}
+/* Yarimlarin dis kenari daireyi tamamlar */
+.pav.ortakDaire .oy1{left:0;
+  border-radius:6.1875rem 0 0 6.1875rem}
+.pav.ortakDaire .oy2{right:0;
+  border-radius:0 6.1875rem 6.1875rem 0}
+/* Ayirici cizgi kaldirildi: iki yarim dogrudan birlesiyor,
+   daire butun duruyor. */
 .pauthor.ortakAn .pident{margin-left:0.25rem}
 /* Bildirimdeki kabul / ret */
 .nPartner{display:flex;gap:0.375rem;margin-top:0.5rem}
@@ -7238,6 +7294,16 @@ svg{display:block}
 .nPartner .npRet{background:var(--surf2);color:var(--t2)}
 .nPartner button:disabled{opacity:.5}
 .npSonuc{font-size:0.75rem;font-weight:600;color:var(--t3)}
+
+/* Arsivdeki ortak an karesi */
+.arcKare{position:relative;aspect-ratio:9/16;border-radius:0.875rem;
+  overflow:hidden;background:var(--surf2) center/cover no-repeat;
+  border:1px solid var(--edge-soft)}
+.arcOrtak{position:absolute;right:0.3125rem;top:0.3125rem;
+  width:1.25rem;height:1.25rem;border-radius:6.1875rem;
+  background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;
+  backdrop-filter:blur(0.25rem);-webkit-backdrop-filter:blur(0.25rem)}
+.arcOrtak svg{width:0.75rem;height:0.75rem}
 
 /* ═══ ORTAK AN ═══ */
 /* .sIc temel kuralinda border-radius:0 var. Secili durumda zemin
@@ -9000,7 +9066,7 @@ html.camNativeOn #cam > .camRoot{z-index:0}
    kaydirilan beyaz kutu kalkti; yerine yalnizca altta ince bir
    gosterge cizgisi var. Sekmeler sayfanin uzerinde duz duruyor. */
 .arcSeg{position:relative;display:flex;gap:0;justify-content:space-between;
-  margin:0 0 0.875rem;padding:0 0 0.5rem;
+  margin:0 0 0.125rem;padding:0 0 0.25rem;
   border-radius:0;background:none;border:0;
   box-shadow:inset 0 -1px 0 var(--edge-soft)}
 .arcInd{position:absolute;left:0;bottom:0;top:auto;
@@ -9020,29 +9086,30 @@ html.camNativeOn #cam > .camRoot{z-index:0}
    En uzun etiket "Kaydedilenler" 12 karakter, 0,65rem de ~62 px.
    Sigiyor — yazi kucultmeye ya da dikey duzene gerek yok.
    Ikon solda, yazi saginda: satir duzeni korunur. */
+/* ══════════ ARSIV SEKMELERI ══════════
+   Bes sekme icin yazi sigmiyordu. Yalnizca IKON gosterilir; etiket
+   secili sekmede belirir. Ayirt edici sinyal dolu/cizgi farki.
+   Secili ikon hafif bir zeminde oturur: serit "dugme dizisi" degil
+   bir sekme cubugu gibi durur. */
 .arcTab{position:relative;
-  /* ══════════ ORANTILI GENISLIK ══════════
-     flex:1 ile hepsi ESIT genisti: "Takvim" alanin yarisini bos
-     birakirken "Kaydedilenler" sikisiyordu. Artik her sekme kendi
-     metnine gore yer aliyor, bos alan uzun basliga gidiyor.
-     Gosterge de aktif sekmenin GERCEK konumuna hizalanir. */
-  /* flex-shrink 1 iken tarayici sekmeleri yine daraltiyor,
-     overflow:hidden de son harfi kesiyordu ("Kaydedilenle_").
-     Olcum: dort sekmenin toplam ihtiyaci ~310 px, kapsayici ~360 px.
-     50 px fazla var; daralmaya gerek yok. */
-  flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;gap:0.25rem;
-  padding:0 0.4375rem;
-  /* 0,6563rem de "Kaydedilenler" sigsa da sikisik duruyordu;
-     bir tik kuculunce pay rahatladi. */
-  font-size:0.625rem;font-weight:600;letter-spacing:-.02em;
-  white-space:nowrap}
-.arcTab .atIc{display:grid;place-items:center;flex:none;opacity:.6;
-  transition:opacity .16s}
-.arcTab .atIc svg{width:0.875rem;height:0.875rem}
-.arcTab{color:var(--t3);transition:color .18s}
-.arcTab.on{color:var(--t1)}
-.arcTab.on .atIc{opacity:1}
+  flex:1 1 auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  /* Ikonla alt/ust cizgiler arasindaki bosluk daraltildi:
+     serit gereksiz yuksek duruyordu. */
+  gap:0.1875rem;padding:0.1875rem 0.125rem 0;
+  font-size:0.5938rem;font-weight:600;letter-spacing:-.015em;
+  white-space:nowrap;color:var(--t3);
+  transition:color .18s}
+.arcTab .atIc{display:grid;place-items:center;flex:none;
+  width:2rem;height:2rem;border-radius:0.75rem;
+  transition:background .2s var(--ease), transform .16s var(--ease)}
+.arcTab.on .atIc{background:var(--surf1)}
+.arcTab:active .atIc{transform:scale(.9)}
+.arcTab .atIc svg{width:1.25rem;height:1.25rem}
+/* Etiket yalnizca secili sekmede */
+.arcTab i{font-style:normal;opacity:0;max-height:0;overflow:hidden;
+  transition:opacity .18s}
+.arcTab.on i{opacity:.85;max-height:1rem}
 /* Taslak sayaci: yaziyi itmesin diye ikonun ust kosesinde durur */
 .arcTab .arcSay{position:absolute;top:0.375rem;left:calc(50% - 1.75rem);
   margin:0;min-width:0.875rem;height:0.875rem;padding:0 0.1875rem;
@@ -12090,7 +12157,17 @@ function _mapFeedRow(r, me, sb){
     note:r.note||"",
     kind:r.media_kind,
     /* Ortak an: ad ve avatar icin ikinci kisi tasinir */
-    partnerId:     r.partner_id || null,
+    /* Ortak an: RPC ad ve avatari da donduruyor, ayri profil
+       sorgusuna gerek yok. Sunucu yalnizca ONAYLANMIS anlarda
+       bu alanlari doluduruyor. */
+    partnerId:      r.partner_id || null,
+    partnerStatus:  r.partner_status || "none",
+    /* RPC duz sutun dondurur; dogrudan tablo yolu ic ice nesne
+       dondurur. Iki yol da ayni alanlara eslenir. */
+    partnerName:    r.partner_username || (r.partner && r.partner.username) || null,
+    partnerDisplay: r.partner_display_name ||
+                    (r.partner && (r.partner.display_name || r.partner.username)) || null,
+    partnerAvatar:  r.partner_avatar || (r.partner && r.partner.avatar_url) || null,
     partnerStatus: r.partner_status || "none",
     mediaPath:r.media_path||null,
     src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
@@ -12126,7 +12203,7 @@ async function _fetchMomentsPage(beforeTs, limit){
   const sb=window.__sb; if(!sb) return [];
   try{
     let q = sb.from('moments')
-      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility, partner_id, partner_status')
+      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility, partner_id, partner_status, partner:profiles!moments_partner_id_fkey(username, display_name, avatar_url)')
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
       .limit(limit || FEED_PAGE);
@@ -12351,6 +12428,9 @@ async function _fetchFeedPage(opts){
 
   // Doğrudan tabloya geçilmişse orada kal
   if(_feedUseDirect){
+    /* Hangi yol kullaniliyor: RPC ile dogrudan tablo farkli sutunlar
+       donduruyor. Sorun cikarsa sebebi buradan gorulur. */
+    console.log("[Klipsy] akis yolu: dogrudan tablo");
     return _fetchMomentsPage(beforeTs, limit);
   }
 
@@ -12478,6 +12558,7 @@ async function loadFeed(opts){
     const serverItems = (data||[]).map(r=>_mapFeedRow(r, me, sb));
     // Dolu sayfa geldiyse devamı vardır; az geldiyse bitti olabilir
     _feedHasMore = serverItems.length >= istenen;
+
 
     /* Ilk kucuk sayfa ekrana basildiktan SONRA gerisi sessizce alinir.
        Kullanici bu sirada zaten ilk kartlari izliyor. */
@@ -12614,13 +12695,27 @@ async function loadMoreFeed(){
   finally{ _feedLoadMoreBusy=false; }
 }
 
+/* Ortak anda iki kisi yan yana yazildigi icin yalnizca adlar
+   kullanilir: "Ali Altunbas ve Yusuf Korkmaz" satira sigmiyordu. */
+function ilkAd(tam){
+  if(!tam) return "";
+  return String(tam).trim().split(/\s+/)[0];
+}
+
 // akışta görünen isimleri (ad soyad) tazele
 function paintFeedNames(){
   list.querySelectorAll(".post").forEach(el=>{
     const nmeEl=el.querySelector(".pname");
     if(nmeEl && el._who){
       const uu=USERS[el._who];
-      nmeEl.textContent=(uu&&uu.display_name)?uu.display_name:el._who;
+      const adi=(uu&&uu.display_name)?uu.display_name:el._who;
+      /* Ortak anlarda iki isim yazilir. Bu fonksiyon isimleri
+         tazelerken ikinci kisiyi siliyor ve satir tek isme
+         donuyordu. */
+      const ok=el._ortak;
+      nmeEl.textContent = ok
+        ? (ilkAd(adi)+" "+t("co_and")+" "+ilkAd(ok))
+        : adi;
     }
   });
 }
@@ -12994,6 +13089,7 @@ function notifRow(n){
   else if(n.type==="reply")       rest.textContent=" "+t("n_replied");
   else if(n.type==="comment_like")rest.textContent=" "+t("n_comment_liked");
   else if(n.type==="message")     rest.textContent=" "+t("n_messaged");
+  else if(n.type==="partner")     rest.textContent=" "+t("n_partner");
   else                            rest.textContent=" "+t("n_commented");
   tx.appendChild(strong); tx.appendChild(rest);
 
@@ -13003,6 +13099,52 @@ function notifRow(n){
   }
   const tm=document.createElement("span");tm.className="ntime";tm.textContent=rel(n.ts);
   tx.appendChild(tm);
+
+  /* ══════════ ORTAK AN DAVETI ══════════
+     Karar verilene kadar an ikinci kisiye baglanmaz; bu yuzden
+     kabul/ret bildirimin icinde. */
+  if(n.type==="partner" && n.postId){
+    const dg=document.createElement("div"); dg.className="nPartner";
+    /* ══════════ CEVAPLANMIS DAVET ══════════
+       Bildirim satiri cevabin verilip verilmedigini bilmiyordu:
+       uygulama yeniden acilinca dugmeler geri geliyor, ikinci
+       basista "pending" satir kalmadigi icin hata veriyordu.
+       Durum sunucudan okunur; karar verilmisse dugme gosterilmez. */
+    (async ()=>{
+      try{
+        const r=await window.__sb.from("moments")
+          .select("partner_status").eq("id", n.postId).maybeSingle();
+        const du = r && r.data && r.data.partner_status;
+        if(du==="accepted" || du==="declined"){
+          dg.innerHTML='<span class="npSonuc">'+
+            (du==="accepted" ? t("co_accepted") : t("co_declined"))+'</span>';
+        }
+      }catch(e){}
+    })();
+    const kabul=document.createElement("button"); kabul.className="npKabul";
+    kabul.textContent=t("co_accept");
+    const ret=document.createElement("button"); ret.className="npRet";
+    ret.textContent=t("co_decline");
+    dg.appendChild(kabul); dg.appendChild(ret);
+    tx.appendChild(dg);
+    const yanit=async (kabulMu)=>{
+      kabul.disabled=true; ret.disabled=true;
+      try{
+        const r=await window.__sb.rpc("ortak_an_yanit",
+          { p_moment:n.postId, p_kabul:kabulMu });
+        if(r.error) throw r.error;
+        dg.innerHTML='<span class="npSonuc">'+
+          (kabulMu ? t("co_accepted") : t("co_declined"))+'</span>';
+        try{ if(typeof loadFeed==="function") loadFeed({force:true}); }catch(e){}
+      }catch(e){
+        console.warn("ortak an yanit:", e && e.message);
+        kabul.disabled=false; ret.disabled=false;
+        toast(t("co_fail"));
+      }
+    };
+    kabul.addEventListener("click",(e)=>{ e.stopPropagation(); yanit(true); });
+    ret.addEventListener("click",(e)=>{ e.stopPropagation(); yanit(false); });
+  }
   b.appendChild(tx);
 
   /* Sağ tarafta anın küçük resmi.
@@ -13256,7 +13398,42 @@ function build(it){
   const line=document.createElement("div");line.className="pline";
   const nm=document.createElement("div");nm.className="pname";
   const uu=USERS[it.who];
-  nm.textContent=(uu&&uu.display_name)?uu.display_name:it.who;
+  const adi=(uu&&uu.display_name)?uu.display_name:it.who;
+
+  /* ══════════ ORTAK AN ══════════
+     Yalnizca ONAYLANMIS anlarda ikinci kisi gosterilir. */
+  let _ortakAv2 = null;
+  if(it.partnerName && it.partnerStatus==="accepted"){
+    auth.classList.add("ortakAn");
+    try{ if(it.partnerAvatar) setRealAvatar(it.partnerName, it.partnerAvatar); }catch(e){}
+    /* av bu asamada henuz DOM a eklenmedi; after() ebeveyni olmayan
+       dugumde hicbir sey yapmiyordu. Ekleme auth.append sonrasina
+       birakilir. */
+    /* Bolunmus daire: tek avatarin yerini alir, iki yarim gosterir.
+       Dis halka anin duygusunu tasimaya devam eder — duygu paylasan
+       kisiye ait, ortaklikla cakismaz. */
+    av.classList.add("ortakDaire");
+    const y1=document.createElement("span"); y1.className="oy oy1";
+    const y2=document.createElement("span"); y2.className="oy oy2";
+    try{
+      const s1=avSrc(it.who);       if(s1) y1.style.backgroundImage='url("'+s1+'")';
+      const s2=avSrc(it.partnerName); if(s2) y2.style.backgroundImage='url("'+s2+'")';
+    }catch(e){}
+    av.textContent="";
+    av.appendChild(y1); av.appendChild(y2);
+    y2.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      try{ openProfile(it.partnerName); }catch(x){}
+    });
+    _ortakAv2 = null;
+    const ortakAdi = it.partnerDisplay || it.partnerName;
+    /* paintFeedNames sonradan ismi tazeliyor; ikinci adi kartta
+       saklayip orada da kullaniyoruz. */
+    try{ el._ortak = ortakAdi; }catch(e){}
+    nm.textContent = ilkAd(adi) + " " + t("co_and") + " " + ilkAd(ortakAdi);
+  }else{
+    nm.textContent = adi;
+  }
   line.appendChild(nm);
   /* CANLI etiketi ad satırında — özgün yeri burası.
      SEN etiketi kaldırıldı: kendi anımı gördüğümü zaten biliyorum. */
@@ -13280,6 +13457,8 @@ function build(it){
   }
   ident.append(line,wh);
   auth.append(av,ident);
+  /* Ikinci avatar: av artik DOM da, yanina eklenebilir */
+  if(_ortakAv2) av.after(_ortakAv2);
   plate.appendChild(auth);
 
   /* sağ üstte seçenekler menüsü — herkes için: Paylaş (+ başkasınınsa Şikayet et) */
@@ -18206,7 +18385,7 @@ async function loadMyMoments(){
   try{
     const { data, error } = await sb
       .from('moments')
-      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms, comments_on, downloads_on, visibility, partner_id, partner_status')
+      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms, comments_on, downloads_on, visibility, partner_id, partner_status, partner:profiles!moments_partner_id_fkey(username, display_name, avatar_url)')
       .eq('author_id', me.id)
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
@@ -20171,7 +20350,7 @@ function renderProfile(){
   /* Arşiv başlığı: sol tarafta bölüm adı, sağda gizlilik rozeti */
   const arcHead=document.createElement("div");arcHead.className="arcHead";
   arcHead.innerHTML=
-    '<span class="arcTitle">'+t("archive")+'</span>'+
+    '<span class="arcTitle" id="arcTitle">'+t("archive")+'</span>'+
     '<span class="arcLock">'+IC.lock+t("private2")+'</span>';
   box.appendChild(arcHead);
 
@@ -20179,10 +20358,11 @@ function renderProfile(){
   const tabs=document.createElement("div");tabs.className="arcSeg";
   tabs.innerHTML=
     '<span class="arcInd"></span>'+
-    '<button class="arcTab on" data-arc="mine"><span class="atIc">'+ARC_IC.mine+'</span>'+t("my_moments2")+'</button>'+
-    '<button class="arcTab" data-arc="cal"><span class="atIc">'+ARC_IC.cal+'</span>'+t("cal_tab")+'</button>'+
-    '<button class="arcTab" data-arc="saved"><span class="atIc">'+ARC_IC.saved+'</span>'+t("saved2")+'</button>'+
-    '<button class="arcTab" data-arc="draft"><span class="atIc">'+ARC_IC.draft+'</span>'+t("d_tab")+'<em class="arcSay" id="arcDraftSay"></em></button>';
+    '<button class="arcTab on" data-arc="mine"><span class="atIc">'+arcIkon("mine",true)+'</span><i>'+t("my_moments2")+'</i></button>'+
+    '<button class="arcTab" data-arc="co"><span class="atIc">'+arcIkon("co",false)+'</span><i>'+t("co_tab")+'</i></button>'+
+    '<button class="arcTab" data-arc="cal"><span class="atIc">'+arcIkon("cal",false)+'</span><i>'+t("cal_tab")+'</i></button>'+
+    '<button class="arcTab" data-arc="saved"><span class="atIc">'+arcIkon("saved",false)+'</span><i>'+t("saved2")+'</i></button>'+
+    '<button class="arcTab" data-arc="draft"><span class="atIc">'+arcIkon("draft",false)+'</span><i>'+t("d_tab")+'</i><em class="arcSay" id="arcDraftSay"></em></button>';
   box.appendChild(tabs);
 
   const pane=document.createElement("div");pane.className="arcPane";
@@ -20191,7 +20371,24 @@ function renderProfile(){
   const arcTabBtns=[...tabs.querySelectorAll(".arcTab")];
   const ind = tabs.querySelector(".arcInd");
   function showArc(which){
-    arcTabBtns.forEach(b=>b.classList.toggle("on", b.dataset.arc===which));
+    arcTabBtns.forEach(b=>{
+      const secili = (b.dataset.arc===which);
+      b.classList.toggle("on", secili);
+      /* Secili ikon dolu, digerleri cizgi */
+      const ic=b.querySelector(".atIc");
+      if(ic) ic.innerHTML = arcIkon(b.dataset.arc, secili);
+    });
+    /* ══════════ BOLUM BASLIGI ══════════
+       Sekmeler yalnizca ikon gosterdigi icin hangi bolumde oldugun
+       seridin altindaki baslikta yazilir. */
+    try{
+      const adlar={ mine:t("my_moments2"), co:t("co_tab"), cal:t("cal_tab"),
+                    saved:t("saved2"), draft:t("d_tab") };
+      /* Ustteki baslik secili bolume gore degisir; altta ayrica
+         baslik gostermeye gerek kalmiyor. */
+      const ust=document.getElementById("arcTitle");
+      if(ust) ust.textContent = adlar[which] || t("archive");
+    }catch(e){}
     if(ind){
       /* Aktif dugmenin gercek konumu ve genisligi olculur */
       const aktif = tabs.querySelector('.arcTab[data-arc="'+which+'"]');
@@ -20204,6 +20401,7 @@ function renderProfile(){
     if(which==="saved"){ renderSaved(pane); }
     else if(which==="draft"){ renderDrafts(pane); }
     else if(which==="cal"){ renderTakvim(pane); }
+    else if(which==="co"){ renderOrtak(pane); }
     else { renderMine(pane); }
   }
   arcTabBtns.forEach(b=>b.addEventListener("click",()=>showArc(b.dataset.arc)));
@@ -20417,7 +20615,41 @@ let _takvimAy = null;
 let _takvimYil = new Date().getFullYear();
 let _takvimGunler = null;      /* "2026-03-14" -> {adet, duygular, yerler} */
 
-/* Arsiv sekmesi ikonlari — duz yazinin soluna kucuk isaret */
+/* ══════════ ARSIV SEKME IKONLARI ══════════
+   Secili sekmenin ikonu DOLU, digerleri cizgi. Etiketler yalnizca
+   secili sekmede gorundugu icin ayirt edici sinyal ikonun kendisi:
+   dolu/cizgi farki renkten daha guclu okunur. */
+const ARC_IC2 = {
+  mine: {
+    cizgi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.4" y="3.4" width="17.2" height="17.2" rx="3.2"/><path d="M3.4 15.6l4.4-4.4 4.6 4.6"/><circle cx="15.4" cy="8.6" r="1.6"/></svg>',
+    dolu: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 3.4h10.8a3.2 3.2 0 0 1 3.2 3.2v10.8a3.2 3.2 0 0 1-3.2 3.2H6.6a3.2 3.2 0 0 1-3.2-3.2V6.6a3.2 3.2 0 0 1 3.2-3.2zm8.8 3.6a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6zM5 17.4l3.6-3.6 5.2 5.2H6.6A1.6 1.6 0 0 1 5 17.4z"/></svg>'
+  },
+  cal: {
+    cizgi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5" width="17.6" height="15.8" rx="3"/><path d="M3.2 10h17.6M8.4 3.2v3.6M15.6 3.2v3.6"/></svg>',
+    dolu: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.4 2.6a.9.9 0 0 1 .9.9v1.5h5.4V3.5a.9.9 0 1 1 1.8 0v1.5h1.3A3 3 0 0 1 20.8 8v1H3.2V8a3 3 0 0 1 3-3h1.3V3.5a.9.9 0 0 1 .9-.9zM3.2 10.8h17.6v7a3 3 0 0 1-3 3H6.2a3 3 0 0 1-3-3z"/></svg>'
+  },
+  saved: {
+    cizgi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 3.4h11.2v17.2L12 17l-5.6 3.6V3.4Z"/></svg>',
+    dolu: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.2 2.8h9.6a2 2 0 0 1 2 2v15.6a.9.9 0 0 1-1.4.8L12 18l-5.4 3.2a.9.9 0 0 1-1.4-.8V4.8a2 2 0 0 1 2-2z"/></svg>'
+  },
+  draft: {
+    cizgi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 19.6h3.2l9.2-9.2a2.2 2.2 0 0 0 0-3.2 2.2 2.2 0 0 0-3.2 0l-9.2 9.2z"/><path d="M13.2 6.6l4.2 4.2"/></svg>',
+    dolu: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.2 4.4a2.6 2.6 0 0 1 3.7 0l1.7 1.7a2.6 2.6 0 0 1 0 3.7l-1.3 1.3-5.4-5.4zM11.6 7l5.4 5.4-6.8 6.8a1.6 1.6 0 0 1-.8.4l-4.2.9a.9.9 0 0 1-1.1-1.1l.9-4.2c.1-.3.2-.6.4-.8z"/></svg>'
+  },
+  /* Kesisen daireler: akis kartindaki bolunmus avatarla ayni dil */
+  /* Iki kisi: onde biri, arkasinda digeri */
+  co: {
+    cizgi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.2" r="3.4"/><path d="M2.8 20.2c0-3.4 2.8-6.2 6.2-6.2s6.2 2.8 6.2 6.2"/><path d="M16.2 5.2a3.4 3.4 0 0 1 0 6"/><path d="M18.4 14.6a6.2 6.2 0 0 1 2.8 5.6"/></svg>',
+    dolu: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8.8" cy="8" r="3.6"/><path d="M8.8 13.4c-3.5 0-6.4 2.9-6.4 6.4a.8.8 0 0 0 .8.8h11.2a.8.8 0 0 0 .8-.8c0-3.5-2.9-6.4-6.4-6.4z"/><path d="M16.4 4.6a3.5 3.5 0 0 1 0 6.8 4.6 4.6 0 0 0 0-6.8z" opacity=".85"/><path d="M17 13.4a6.4 6.4 0 0 1 4.6 6.4.8.8 0 0 1-.8.8h-3.4a8 8 0 0 0-2.6-6.8 6.4 6.4 0 0 1 2.2-.4z" opacity=".85"/></svg>'
+  }
+};
+function arcIkon(k, seciliMi){
+  const g = ARC_IC2[k];
+  if(!g) return "";
+  return seciliMi ? g.dolu : g.cizgi;
+}
+
+/* Eski set — baska yerde kullanilirsa diye biraktim */
 const ARC_IC = {
   mine:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3"/><path d="M3.6 15.2l4.2-4.2 4.4 4.4"/><circle cx="15.2" cy="8.6" r="1.5"/></svg>',
   cal:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.4" y="5.2" width="17.2" height="15.4" rx="2.8"/><path d="M3.4 10h17.2M8.4 3.4v3.4M15.6 3.4v3.4"/></svg>',
@@ -20793,6 +21025,58 @@ async function takvimGunAc(iso, liste){
   }catch(e){
     console.warn("takvim gun:", e && e.message);
     liste.innerHTML='<div class="mcBos">'+t("cal_empty")+'</div>';
+  }
+}
+
+/* ══════════ ORTAK ANLAR ══════════
+   Hem benim paylastigim hem bana eklenip ONAYLADIGIM anlar.
+   Onaylanmamis davetler burada gorunmez. */
+async function renderOrtak(box){
+  const sub=document.createElement("div");sub.className="arcSub";
+  sub.textContent=t("co_desc");
+  box.appendChild(sub);
+
+  const kap=document.createElement("div");kap.className="arc";
+  box.appendChild(kap);
+  kap.innerHTML='<div class="arcEmpty"><span>'+t("loading")+'</span></div>';
+
+  try{
+    const sb=window.__sb, me=window.__me;
+    if(!sb||!me) throw new Error("oturum yok");
+    const r=await sb.from("moments")
+      .select("id, author_id, partner_id, media_path, media_kind, poster_path, thumb_path, created_at")
+      .eq("is_removed", false)
+      .eq("partner_status", "accepted")
+      .or("author_id.eq."+me.id+",partner_id.eq."+me.id)
+      .order("created_at",{ascending:false})
+      .limit(60);
+    if(r.error) throw r.error;
+    const veri=r.data||[];
+    if(!veri.length){
+      kap.innerHTML='<div class="arcEmpty"><b>'+t("co_empty2")+'</b>'+
+        '<span>'+t("co_empty_sub")+'</span></div>';
+      return;
+    }
+    const adr=(p)=>p ? sb.storage.from("moments").getPublicUrl(p).data.publicUrl : null;
+    kap.innerHTML="";
+    veri.forEach(m=>{
+      const g = (m.media_kind==="video")
+        ? (adr(m.poster_path)||adr(m.thumb_path)||adr(m.media_path))
+        : (adr(m.media_path)||adr(m.poster_path));
+      const k=document.createElement("div"); k.className="arcKare";
+      if(g) k.style.backgroundImage='url("'+g+'")';
+      /* Ortak isareti: kesisen daireler, sekme ikonuyla ayni dil */
+      k.innerHTML='<span class="arcOrtak">'+
+        '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8.8" cy="8" r="3.6"/><path d="M8.8 13.4c-3.5 0-6.4 2.9-6.4 6.4a.8.8 0 0 0 .8.8h11.2a.8.8 0 0 0 .8-.8c0-3.5-2.9-6.4-6.4-6.4z"/><path d="M16.4 4.6a3.5 3.5 0 0 1 0 6.8 4.6 4.6 0 0 0 0-6.8z" opacity=".85"/><path d="M17 13.4a6.4 6.4 0 0 1 4.6 6.4.8.8 0 0 1-.8.8h-3.4a8 8 0 0 0-2.6-6.8 6.4 6.4 0 0 1 2.2-.4z" opacity=".85"/></svg>'+
+        '</span>';
+      k.addEventListener("click",()=>{
+        try{ if(typeof openMoment==="function") openMoment(m.id); }catch(e){}
+      });
+      kap.appendChild(k);
+    });
+  }catch(e){
+    console.warn("ortak anlar:", e && e.message);
+    kap.innerHTML='<div class="arcEmpty"><b>'+t("co_empty2")+'</b></div>';
   }
 }
 

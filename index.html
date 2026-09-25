@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.37.0";
+window.KLIPSY_SURUM = "3.37.1";
 
 /* ══════════ MEDYA DEPOSU ══════════
    Medya artik Supabase Storage'da degil Cloudflare R2'de.
@@ -24986,7 +24986,7 @@ async function post(src,kind,mood,where,note,extra){
     }
     // Gerçek tür ve uzantı (mp4 mi webm mi) kaydın kendisinden alınır
     const mt = mediaTipi(blob, kind);
-    const path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
+    let path = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + mt.uzanti;
 
     /* ══════ BOYUT SINIRI ══════
        Depolama kovasinin siniri 25 MB. Asildiginde sunucu yuklemeyi
@@ -25012,6 +25012,14 @@ async function post(src,kind,mood,where,note,extra){
        upload.onprogress calisiyor; kullanici hem yuzdeyi hem hizi gorur. */
     const up = await yukleIlerlemeli(path, blob, mt.tip, kind);
     if(up.error) throw up.error;
+    /* ══════ DOSYA ADINI WORKER BELIRLER ══════
+       Yukaridaki "path" yalnizca bir oneri. Worker dosyayi KENDI
+       urettigi adla sakliyor ve gercek adi yanitta donduruyor.
+       Bu deger kullanilmayip oneri adi veritabanina yazilinca kayit,
+       R2'de var olmayan bir dosyayi gosteriyordu: gonderi siyah
+       kaliyordu ve tasima da kurtaramiyordu, cunku dosya Supabase'de
+       de yoktu. Gercek ad buradan itibaren gecerli. */
+    if(up.yol) path = up.yol;
 
     // 1b) video ise kapak resmi üret ve yükle (ızgarada video yerine bu gösterilecek)
     let posterPath=null;

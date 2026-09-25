@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.36.4";
+window.KLIPSY_SURUM = "3.37.0";
 
 /* ══════════ MEDYA DEPOSU ══════════
    Medya artik Supabase Storage'da degil Cloudflare R2'de.
@@ -216,6 +216,32 @@ window.medyaAdres = function(yol){
   /* Eski dosyaysa arka planda tasinmaya baslar; adres ayni kalir */
   if(eskiDosyaMi(yol)) medyaTasi(tam);
   return tam;
+};
+
+/* ══════════ TEK YUKLEME KAPISI ══════════
+   Okuma tarafi tamamen R2'ye gecmisti ama yazma tarafinda birkac yer
+   Supabase'de kalmisti: video kapaklari, harita kucuk resimleri ve
+   taslaktan gonderilen anlar. Dosya Supabase'e yaziliyor, adres ise
+   R2'den uretiliyordu — yani dosya hicbir zaman bulunamiyordu ve
+   siyah kare olarak kaliyordu. Mesaj fotograflarinda yasanan hatanin
+   aynisi. Artik her yukleme buradan geciyor; ikinci bir yol yok.
+
+   Dosya adini Worker uretir, istemcinin onerisi kullanilmaz. */
+window.r2Yukle = async function(blob, icerikTipi){
+  const sb = window.__sb;
+  if(!sb || !blob) return null;
+  const { data:{ session } } = await sb.auth.getSession();
+  const jeton = session && session.access_token;
+  if(!jeton) return null;
+  const r = await fetch(window.KLIPSY_MEDYA.worker + "/yukle", {
+    method:"PUT",
+    headers:{ "Authorization":"Bearer "+jeton,
+              "Content-Type": icerikTipi || blob.type || "image/jpeg" },
+    body: blob
+  });
+  const c = await r.json().catch(()=>({}));
+  if(!r.ok || !c.yol) throw new Error(c.hata || ("yukleme basarisiz ("+r.status+")"));
+  return c.yol;
 };
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
@@ -13468,6 +13494,20 @@ function build(it){
     mediaEl.setAttribute("playsinline","");mediaEl.preload="none";
     // Yerel oynat ikonunu bastır: kapak varsa onu, yoksa koyu yer tutucuyu koy.
     mediaEl.poster = it.poster || it.thumb || BLANK_POSTER;
+    /* Kapak resmi yuklenemezse <video> hicbir olay uretmez: kart
+       sessizce siyah kalir ve kendini onaran katman hic devreye
+       girmez. Bu yuzden kapagi ayri bir Image ile sinayip, gelmezse
+       tasima isteginden sonra yeniden atiyoruz. */
+    (function(kapak, el){
+      if(!kapak) return;
+      const sinama = new Image();
+      sinama.onerror = async ()=>{
+        try{
+          if(await medyaTasi(kapak)) el.poster = kapak + "?y=" + Date.now();
+        }catch(e){}
+      };
+      sinama.src = kapak;
+    })(it.poster || it.thumb || null, mediaEl);
     mediaEl.controls=false; mediaEl.disablePictureInPicture=true;
     mediaEl.setAttribute("disableremoteplayback","");
 
@@ -20159,11 +20199,8 @@ async function backfillPosters(list){
     try{
       const blob = await makeVideoPoster(it.src);
       if(!blob) continue;
-      const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"_p.jpg";
-      const up = await sb.storage.from('moments').upload(path, blob, {
-        contentType:"image/jpeg", cacheControl:"31536000", upsert:false
-      });
-      if(up.error) continue;
+      const path = await window.r2Yukle(blob, "image/jpeg");
+      if(!path) continue;
       const r = await sb.from('moments').update({poster_path:path}).eq('id',it.id).eq('author_id',me.id);
       if(r.error) continue;
       it.poster = medyaAdres(path);
@@ -24983,11 +25020,8 @@ async function post(src,kind,mood,where,note,extra){
         // kullanıcı kapak seçtiyse onu kullan, yoksa otomatik üret
         const posterBlob = (extra && extra.cover) ? extra.cover : await makeVideoPoster(src);
         if(posterBlob){
-          posterPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_p.jpg";
-          const pu = await sb.storage.from('moments').upload(posterPath, posterBlob, {
-            contentType:"image/jpeg", cacheControl:"31536000", upsert:false
-          });
-          if(pu.error) posterPath=null;
+          /* Kapak da ana medya ile ayni yerde durmali: R2 */
+          posterPath = await window.r2Yukle(posterBlob, "image/jpeg");
         }
       }catch(e){ posterPath=null; }
     }
@@ -25001,11 +25035,7 @@ async function post(src,kind,mood,where,note,extra){
       if(thumbKaynak){
         const tb = await makeThumb(thumbKaynak, 128);
         if(tb){
-          thumbPath = me.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "_t.jpg";
-          const tu = await sb.storage.from('moments').upload(thumbPath, tb, {
-            contentType:"image/jpeg", cacheControl:"31536000", upsert:false
-          });
-          if(tu.error) thumbPath = null;
+          thumbPath = await window.r2Yukle(tb, "image/jpeg");
         }
       }
     }catch(e){ thumbPath = null; }
@@ -25411,11 +25441,9 @@ async function sendDraft(d){
   if(!blob) return false;
   try{
     const mt = mediaTipi(blob, d.kind);
-    const path = me.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+mt.uzanti;
-    const up = await sb.storage.from('moments').upload(path, blob, {
-      contentType: mt.tip, cacheControl:"31536000", upsert:false
-    });
-    if(up.error) throw up.error;
+    /* Taslaktan gonderim de Worker uzerinden R2'ye gider */
+    const path = await window.r2Yukle(blob, mt.tip);
+    if(!path) throw new Error("yukleme basarisiz");
 
     const ex = d.extra||{};
     const row = {

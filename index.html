@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.37.1";
+window.KLIPSY_SURUM = "3.40.0";
 
 /* ══════════ MEDYA DEPOSU ══════════
    Medya artik Supabase Storage'da degil Cloudflare R2'de.
@@ -392,6 +392,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"Bir an paylaşırken yanındakini ekleyebilirsin.",
       n_partner:"seni bir ana ekledi",
       co_and:"ve",
+      co_and_others:"ve diğerleri",
       co_accept:"Kabul et",
       co_decline:"Reddet",
       co_accepted:"Kabul edildi",
@@ -427,6 +428,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Hesabı sil",
       s_delete_sub:"Kalıcı olarak silinir, geri alınamaz",
       birth_label:"Doğum tarihi",
+      yas_onay_t:"Bir şeyi tamamlayalım",
+      yas_onay_p:"Yaş sınırı ve yasal metinler uygulamaya sonradan eklendi. Devam etmek için doğum tarihini gir ve metinleri onayla.",
       birth_hint:"13 yaşından küçükler kayıt olamaz.",
       birth_need:"Doğum tarihini gir",
       birth_too_young:"Kayıt için en az 13 yaşında olmalısın",
@@ -1039,6 +1042,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"You can add someone while sharing a moment.",
       n_partner:"added you to a moment",
       co_and:"and",
+      co_and_others:"and others",
       co_accept:"Accept",
       co_decline:"Decline",
       co_accepted:"Accepted",
@@ -1074,6 +1078,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Delete account",
       s_delete_sub:"Permanent, cannot be undone",
       birth_label:"Date of birth",
+      yas_onay_t:"Let's finish one thing",
+      yas_onay_p:"The age limit and legal texts were added later. Enter your date of birth and accept the texts to continue.",
       birth_hint:"You must be 13 or older to sign up.",
       birth_need:"Enter your date of birth",
       birth_too_young:"You must be at least 13 to sign up",
@@ -1673,6 +1679,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"Puedes añadir a alguien al compartir un momento.",
       n_partner:"te añadió a un momento",
       co_and:"y",
+      co_and_others:"y otros",
       co_accept:"Aceptar",
       co_decline:"Rechazar",
       co_accepted:"Aceptado",
@@ -1708,6 +1715,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Eliminar cuenta",
       s_delete_sub:"Permanente, no se puede deshacer",
       birth_label:"Fecha de nacimiento",
+      yas_onay_t:"Terminemos una cosa",
+      yas_onay_p:"El límite de edad y los textos legales se añadieron después. Introduce tu fecha de nacimiento y acepta los textos para continuar.",
       birth_hint:"Debes tener 13 años o más.",
       birth_need:"Introduce tu fecha de nacimiento",
       birth_too_young:"Debes tener al menos 13 años",
@@ -2304,6 +2313,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"يمكنك إضافة شخص عند مشاركة لحظة.",
       n_partner:"أضافك إلى لحظة",
       co_and:"و",
+      co_and_others:"وآخرون",
       co_accept:"قبول",
       co_decline:"رفض",
       co_accepted:"تم القبول",
@@ -2339,6 +2349,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"حذف الحساب",
       s_delete_sub:"نهائي ولا يمكن التراجع",
       birth_label:"تاريخ الميلاد",
+      yas_onay_t:"لنُكمل أمرًا واحدًا",
+      yas_onay_p:"أُضيف حد العمر والنصوص القانونية لاحقًا. أدخل تاريخ ميلادك ووافق على النصوص للمتابعة.",
       birth_hint:"يجب أن يكون عمرك 13 سنة أو أكثر.",
       birth_need:"أدخل تاريخ ميلادك",
       birth_too_young:"يجب أن يكون عمرك 13 على الأقل",
@@ -2935,6 +2947,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"Tu peux ajouter quelqu’un en partageant un moment.",
       n_partner:"t’a ajouté à un moment",
       co_and:"et",
+      co_and_others:"et d'autres",
       co_accept:"Accepter",
       co_decline:"Refuser",
       co_accepted:"Accepté",
@@ -2970,6 +2983,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Supprimer le compte",
       s_delete_sub:"Définitif, irréversible",
       birth_label:"Date de naissance",
+      yas_onay_t:"Terminons une chose",
+      yas_onay_p:"La limite d'âge et les textes légaux ont été ajoutés ensuite. Saisis ta date de naissance et accepte les textes pour continuer.",
       birth_hint:"Tu dois avoir 13 ans ou plus.",
       birth_need:"Saisis ta date de naissance",
       birth_too_young:"Tu dois avoir au moins 13 ans",
@@ -3566,6 +3581,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"Du kannst jemanden beim Teilen hinzufügen.",
       n_partner:"hat dich zu einem Moment hinzugefügt",
       co_and:"und",
+      co_and_others:"und weitere",
       co_accept:"Annehmen",
       co_decline:"Ablehnen",
       co_accepted:"Angenommen",
@@ -3601,6 +3617,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Konto löschen",
       s_delete_sub:"Dauerhaft, nicht rückgängig",
       birth_label:"Geburtsdatum",
+      yas_onay_t:"Lass uns eine Sache abschließen",
+      yas_onay_p:"Die Altersgrenze und die rechtlichen Texte kamen später dazu. Gib dein Geburtsdatum ein und akzeptiere die Texte, um fortzufahren.",
       birth_hint:"Du musst 13 Jahre oder älter sein.",
       birth_need:"Gib dein Geburtsdatum ein",
       birth_too_young:"Du musst mindestens 13 Jahre alt sein",
@@ -4197,6 +4215,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"Можно добавить человека при публикации.",
       n_partner:"добавил(а) вас в момент",
       co_and:"и",
+      co_and_others:"и другие",
       co_accept:"Принять",
       co_decline:"Отклонить",
       co_accepted:"Принято",
@@ -4232,6 +4251,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Удалить аккаунт",
       s_delete_sub:"Навсегда, без возврата",
       birth_label:"Дата рождения",
+      yas_onay_t:"Завершим одно дело",
+      yas_onay_p:"Возрастное ограничение и юридические тексты добавлены позже. Укажите дату рождения и примите тексты, чтобы продолжить.",
       birth_hint:"Вам должно быть 13 лет или больше.",
       birth_need:"Введите дату рождения",
       birth_too_young:"Регистрация с 13 лет",
@@ -4828,6 +4849,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"Podes adicionar alguém ao partilhar um momento.",
       n_partner:"adicionou-te a um momento",
       co_and:"e",
+      co_and_others:"e outros",
       co_accept:"Aceitar",
       co_decline:"Recusar",
       co_accepted:"Aceite",
@@ -4863,6 +4885,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Eliminar conta",
       s_delete_sub:"Permanente, sem retorno",
       birth_label:"Data de nascimento",
+      yas_onay_t:"Vamos concluir uma coisa",
+      yas_onay_p:"O limite de idade e os textos legais foram adicionados depois. Informe sua data de nascimento e aceite os textos para continuar.",
       birth_hint:"Tens de ter 13 anos ou mais.",
       birth_need:"Introduz a tua data de nascimento",
       birth_too_young:"Tens de ter pelo menos 13 anos",
@@ -5459,6 +5483,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"पल साझा करते समय किसी को जोड़ सकते हैं।",
       n_partner:"ने आपको एक पल में जोड़ा",
       co_and:"और",
+      co_and_others:"और अन्य",
       co_accept:"स्वीकारें",
       co_decline:"अस्वीकारें",
       co_accepted:"स्वीकृत",
@@ -5494,6 +5519,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"खाता हटाएँ",
       s_delete_sub:"स्थायी, वापस नहीं",
       birth_label:"जन्म तिथि",
+      yas_onay_t:"एक काम पूरा कर लें",
+      yas_onay_p:"आयु सीमा और कानूनी दस्तावेज़ बाद में जोड़े गए। जारी रखने के लिए अपनी जन्म तिथि दर्ज करें और दस्तावेज़ स्वीकार करें।",
       birth_hint:"आपकी आयु 13 वर्ष या अधिक होनी चाहिए।",
       birth_need:"जन्म तिथि दर्ज करें",
       birth_too_young:"कम से कम 13 वर्ष के होने चाहिए",
@@ -6090,6 +6117,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       co_empty_sub:"Kamu bisa menambahkan seseorang saat membagikan momen.",
       n_partner:"menambahkanmu ke sebuah momen",
       co_and:"dan",
+      co_and_others:"dan lainnya",
       co_accept:"Terima",
       co_decline:"Tolak",
       co_accepted:"Diterima",
@@ -6125,6 +6153,8 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       s_delete:"Hapus akun",
       s_delete_sub:"Permanen, tidak bisa dibatalkan",
       birth_label:"Tanggal lahir",
+      yas_onay_t:"Selesaikan satu hal",
+      yas_onay_p:"Batas usia dan teks hukum ditambahkan kemudian. Masukkan tanggal lahirmu dan setujui teksnya untuk melanjutkan.",
       birth_hint:"Usia minimal 13 tahun.",
       birth_need:"Masukkan tanggal lahir",
       birth_too_young:"Usia minimal 13 tahun untuk mendaftar",
@@ -6794,6 +6824,9 @@ document.title = "Klipsy " + KLIPSY_SURUM;
 [data-theme="light"] #izinUyari,
 [data-theme="light"] #inAppNotif,
 [data-theme="light"] #avCrop .acBar,
+/* Yas ve onay paneli de tam sayfa: listeye girmezse acik temada
+   koyu kalir ve okunmaz. */
+[data-theme="light"] #yasOnay,
 [data-theme="light"] .apComments .apCBox{
   --bg:#F2F2F5;
   --t1:#0C0C10; --t2:rgba(12,12,16,.62); --t3:rgba(12,12,16,.42);
@@ -7505,17 +7538,20 @@ svg{display:block}
 /* overflow:hidden duygu halkasini KIRPIYORDU: halka avatarin
    disinda (::after, inset:-0.25rem) duruyor. Kirpma yarimlarin
    kendisine tasindi, halka serbest kaldi. */
-.pav.ortakDaire{position:relative;background:transparent}
-.pav.ortakDaire .oy{position:absolute;top:0;height:100%;width:50%;
-  background:var(--avatar-bg, #22222A) center/cover no-repeat;
-  overflow:hidden}
-/* Yarimlarin dis kenari daireyi tamamlar */
-.pav.ortakDaire .oy1{left:0;
-  border-radius:6.1875rem 0 0 6.1875rem}
-.pav.ortakDaire .oy2{right:0;
-  border-radius:0 6.1875rem 6.1875rem 0}
-/* Ayirici cizgi kaldirildi: iki yarim dogrudan birlesiyor,
-   daire butun duruyor. */
+.pav.ortakDaire{position:relative;background:transparent;overflow:visible}
+/* Dilimlerin kabi: daireyi burasi kirpar, rozet disarida kalabilsin */
+.pav.ortakDaire .oyKap{position:absolute;inset:0;border-radius:6.1875rem;
+  overflow:hidden;background:var(--avatar-bg,#22222A)}
+.pav.ortakDaire .oy{position:absolute;inset:0;
+  background:var(--avatar-bg, #22222A) center/cover no-repeat}
+/* Ayirici cizgi yok: dilimler dogrudan birlesiyor, daire butun duruyor. */
+/* Ucten fazla kisi varsa TAM sayi burada yazar. Dilim sayisi ucte
+   kalir ama sayi gizlenmez. */
+.pav.ortakDaire .ortakSay{position:absolute;right:-0.1875rem;bottom:-0.1875rem;
+  min-width:1rem;height:1rem;padding:0 0.1875rem;border-radius:6.1875rem;
+  background:#15151c;border:0.09375rem solid rgba(255,255,255,.92);
+  display:grid;place-items:center;font-size:0.5625rem;font-weight:800;
+  color:#fff;letter-spacing:-.02em;line-height:1}
 .pauthor.ortakAn .pident{margin-left:0.25rem}
 /* Bildirimdeki kabul / ret */
 .nPartner{display:flex;gap:0.375rem;margin-top:0.5rem}
@@ -7583,7 +7619,22 @@ svg{display:block}
 .ortakSat{display:flex;align-items:center;gap:0.625rem;width:100%;
   padding:0.5rem 0.375rem;border:0;background:none;border-radius:0.875rem;
   text-align:left;color:var(--t1)}
-.ortakSat.secili{background:var(--surf1)}
+/* Coklu secimde panel kapanmadigi icin secili satir daha belirgin
+   olmali: kullanici kimi ekledigini listeden takip ediyor. */
+.ortakSat.secili{background:var(--surf1);position:relative}
+.ortakSat.secili::after{content:"";position:absolute;right:0.875rem;top:50%;
+  width:1.125rem;height:1.125rem;margin-top:-0.5625rem;border-radius:6.1875rem;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);
+  -webkit-mask:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='black'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='black'/%3E%3C/svg%3E") center/contain no-repeat}
+.ortakSat.secili::before{content:"";position:absolute;right:1.1875rem;top:50%;
+  width:0.5rem;height:0.3125rem;margin-top:-0.21875rem;z-index:1;
+  border-left:0.125rem solid #fff;border-bottom:0.125rem solid #fff;
+  transform:rotate(-45deg)}
+.ortakBitir{flex:none;height:3rem;margin-top:0.625rem;border:0;border-radius:0.875rem;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;
+  font:inherit;font-size:0.9375rem;font-weight:700;letter-spacing:-.016em}
+.ortakBitir:active{transform:scale(.98)}
 /* paintAv arka plan RESMI yaziyor; "center/cover no-repeat" ve
    zemin verilmezse resim gorunmuyor ve kutu bembeyaz kaliyordu.
    Bas harf yedegi icin de yerlesim gerekiyor. */
@@ -10632,26 +10683,26 @@ html.native button,html.native .tab{touch-action:manipulation}
   100%{left:105%}
 }
 
-#onboard{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem;
+#onboard,.obKapi{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem;
   background:var(--bg);color:var(--t1)}
-#onboard.open{display:flex;animation:fadeIn .25s ease}
-#onboard .obBox{width:100%;max-width:25rem}
-#onboard h2{font-size:1.625rem;font-weight:800;letter-spacing:-.03em;text-align:center;color:var(--t1)}
-#onboard p{font-size:0.875rem;color:var(--t2);text-align:center;margin:0.5rem 0 1.625rem;line-height:1.5}
-#onboard .obField{margin-bottom:1.125rem}
-#onboard .obField label{display:block;font-size:0.7188rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin:0 0.125rem 0.4375rem}
-#onboard .obField input{width:100%;height:3.25rem;border-radius:0.875rem;background:var(--input-bg);border:1px solid var(--edge);padding:0 1rem;font-size:1rem;color:var(--t1);-webkit-text-fill-color:var(--t1);outline:none;font-family:inherit;letter-spacing:-.01em;transition:all .18s}
-#onboard .obField input:focus{border-color:rgba(255,59,107,.55);background:var(--input-bg-focus)}
-#onboard .obUwrap{display:flex;align-items:center;background:var(--input-bg);border:1px solid var(--edge);border-radius:0.875rem;padding-left:1rem;transition:all .18s}
-#onboard .obUwrap:focus-within{border-color:rgba(255,59,107,.55);background:var(--input-bg-focus)}
-#onboard .obUwrap span{font-size:1rem;color:var(--t3);font-weight:500}
-#onboard .obUwrap input{background:transparent;border:0;height:3.25rem;flex:1;padding:0 0.75rem;font-size:1rem;color:var(--t1);-webkit-text-fill-color:var(--t1);outline:none;font-family:inherit}
-#onboard .obHint{font-size:0.75rem;color:var(--t3);margin:0.4375rem 0 0 0.125rem;min-height:0.9375rem}
-#onboard .obHint.ok{color:#5FD69A}
-#onboard .obHint.err{color:#FF6B8A}
-#onboard .obSave{width:100%;height:3.375rem;border-radius:0.875rem;margin-top:0.625rem;border:0;background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;font-size:1rem;font-weight:700;letter-spacing:-.016em;box-shadow:0 0.625rem 1.625rem -0.625rem rgba(255,59,107,.6);transition:transform .12s,opacity .18s}
-#onboard .obSave:active{transform:scale(.98)}
-#onboard .obSave:disabled{opacity:.5}
+#onboard.open,.obKapi.open{display:flex;animation:fadeIn .25s ease}
+#onboard .obBox,.obKapi .obBox{width:100%;max-width:25rem}
+#onboard h2,.obKapi h2{font-size:1.625rem;font-weight:800;letter-spacing:-.03em;text-align:center;color:var(--t1)}
+#onboard p,.obKapi p{font-size:0.875rem;color:var(--t2);text-align:center;margin:0.5rem 0 1.625rem;line-height:1.5}
+#onboard .obField,.obKapi .obField{margin-bottom:1.125rem}
+#onboard .obField label,.obKapi .obField label{display:block;font-size:0.7188rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin:0 0.125rem 0.4375rem}
+#onboard .obField input,.obKapi .obField input{width:100%;height:3.25rem;border-radius:0.875rem;background:var(--input-bg);border:1px solid var(--edge);padding:0 1rem;font-size:1rem;color:var(--t1);-webkit-text-fill-color:var(--t1);outline:none;font-family:inherit;letter-spacing:-.01em;transition:all .18s}
+#onboard .obField input:focus,.obKapi .obField input:focus{border-color:rgba(255,59,107,.55);background:var(--input-bg-focus)}
+#onboard .obUwrap,.obKapi .obUwrap{display:flex;align-items:center;background:var(--input-bg);border:1px solid var(--edge);border-radius:0.875rem;padding-left:1rem;transition:all .18s}
+#onboard .obUwrap:focus-within,.obKapi .obUwrap:focus-within{border-color:rgba(255,59,107,.55);background:var(--input-bg-focus)}
+#onboard .obUwrap span,.obKapi .obUwrap span{font-size:1rem;color:var(--t3);font-weight:500}
+#onboard .obUwrap input,.obKapi .obUwrap input{background:transparent;border:0;height:3.25rem;flex:1;padding:0 0.75rem;font-size:1rem;color:var(--t1);-webkit-text-fill-color:var(--t1);outline:none;font-family:inherit}
+#onboard .obHint,.obKapi .obHint{font-size:0.75rem;color:var(--t3);margin:0.4375rem 0 0 0.125rem;min-height:0.9375rem}
+#onboard .obHint.ok,.obKapi .obHint.ok{color:#5FD69A}
+#onboard .obHint.err,.obKapi .obHint.err{color:#FF6B8A}
+#onboard .obSave,.obKapi .obSave{width:100%;height:3.375rem;border-radius:0.875rem;margin-top:0.625rem;border:0;background:linear-gradient(135deg,#FF3B6B,#7B5BFF);color:#fff;font-size:1rem;font-weight:700;letter-spacing:-.016em;box-shadow:0 0.625rem 1.625rem -0.625rem rgba(255,59,107,.6);transition:transform .12s,opacity .18s}
+#onboard .obSave:active,.obKapi .obSave:active{transform:scale(.98)}
+#onboard .obSave:disabled,.obKapi .obSave:disabled{opacity:.5}
 </style>
 <script>
 (function(){
@@ -12387,19 +12438,28 @@ function _mapFeedRow(r, me, sb){
     mood:MOOD_BY_KEY[r.mood]||MOODS[7],
     note:r.note||"",
     kind:r.media_kind,
-    /* Ortak an: ad ve avatar icin ikinci kisi tasinir */
-    /* Ortak an: RPC ad ve avatari da donduruyor, ayri profil
-       sorgusuna gerek yok. Sunucu yalnizca ONAYLANMIS anlarda
-       bu alanlari doluduruyor. */
-    partnerId:      r.partner_id || null,
-    partnerStatus:  r.partner_status || "none",
-    /* RPC duz sutun dondurur; dogrudan tablo yolu ic ice nesne
-       dondurur. Iki yol da ayni alanlara eslenir. */
-    partnerName:    r.partner_username || (r.partner && r.partner.username) || null,
-    partnerDisplay: r.partner_display_name ||
-                    (r.partner && (r.partner.display_name || r.partner.username)) || null,
-    partnerAvatar:  r.partner_avatar || (r.partner && r.partner.avatar_url) || null,
-    partnerStatus: r.partner_status || "none",
+    /* ══════════ ORTAK AN ══════════
+       Bir anda tek ortak olabiliyordu; artik sayi sinirli degil.
+       Sunucu YALNIZCA onaylayanlari donduruyor, onay bekleyen
+       hicbir yerde gorunmuyor. Eski tek kisilik alanlar da
+       destekleniyor: gecis oncesi acilmis oturumlar bozulmasin. */
+    ortaklar: (function(){
+      if(Array.isArray(r.ortaklar)) return r.ortaklar;
+      if(typeof r.ortaklar === "string"){
+        try{ return JSON.parse(r.ortaklar) || []; }catch(e){ return []; }
+      }
+      /* Eski bicim */
+      if(r.partner_status === "accepted"){
+        const ad = r.partner_username || (r.partner && r.partner.username);
+        if(ad) return [{
+          username: ad,
+          display_name: r.partner_display_name ||
+                        (r.partner && (r.partner.display_name || r.partner.username)) || ad,
+          avatar_url: r.partner_avatar || (r.partner && r.partner.avatar_url) || null
+        }];
+      }
+      return [];
+    })(),
     mediaPath:r.media_path||null,
     src:medyaAdres(r.media_path),
     poster: r.poster_path ? medyaAdres(r.poster_path) : null,
@@ -12434,7 +12494,7 @@ async function _fetchMomentsPage(beforeTs, limit){
   const sb=window.__sb; if(!sb) return [];
   try{
     let q = sb.from('moments')
-      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility, partner_id, partner_status, partner:profiles!moments_partner_id_fkey(username, display_name, avatar_url)')
+      .select('id, author_id, media_path, media_kind, poster_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, comments_on, downloads_on, visibility')
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
       .limit(limit || FEED_PAGE);
@@ -12443,6 +12503,18 @@ async function _fetchMomentsPage(beforeTs, limit){
     }
     const { data, error } = await q;
     if(error || !data || !data.length) return [];
+
+    /* Ortaklar ayri tabloda; tek istekte hepsi cekilir. */
+    let ortakHar = {};
+    try{
+      const _ids = data.map(r=>r.id).filter(Boolean);
+      const _o = await sb.rpc('an_ortaklari', { p_moments: _ids });
+      (_o.data||[]).forEach(x=>{
+        (ortakHar[x.moment_id] = ortakHar[x.moment_id] || []).push({
+          username:x.username, display_name:x.display_name, avatar_url:x.avatar_url
+        });
+      });
+    }catch(e){}
 
     const authorIds = [...new Set(data.map(r=>r.author_id).filter(Boolean))];
     let byAuthor = {};
@@ -12467,6 +12539,7 @@ async function _fetchMomentsPage(beforeTs, limit){
         song_art:r.song_art, song_preview:r.song_preview,
         comments_on:r.comments_on, downloads_on:r.downloads_on,
         visibility:r.visibility||'community',
+        ortaklar: ortakHar[r.id] || [],
         saved:false, liked:false
       };
     });
@@ -12944,11 +13017,78 @@ function paintFeedNames(){
          tazelerken ikinci kisiyi siliyor ve satir tek isme
          donuyordu. */
       const ok=el._ortak;
-      nmeEl.textContent = ok
-        ? (ilkAd(adi)+" "+t("co_and")+" "+ilkAd(ok))
-        : adi;
+      nmeEl.textContent = el._ortakCok
+        ? (ilkAd(adi)+" "+t("co_and_others"))
+        : (ok ? (ilkAd(adi)+" "+t("co_and")+" "+ilkAd(ok)) : adi);
     }
   });
+}
+
+/* ══════════════ BOLUNMUS AVATAR ══════════════
+   Ortak anda tek avatarin yerini bolunmus bir daire alir: her
+   dilim bir kisinin fotografi.
+
+   Kisi sayisi sinirsiz oldugu icin dilim sayisi da sinirsiz
+   olamaz: 38 piksellik bir dairede 5 dilim, yuzu tanimaya
+   yetmeyen bir seride dondu. Uce kadar gercek bolme yapilir;
+   daha kalabalikta uc dilim cizilir ve TAM sayi kosedeki rozette
+   yazar. Boylece hem okunur kalir hem sayi gizlenmez. */
+const ORTAK_EN_COK_DILIM = 3;
+
+function ortakDilimYolu(i, n){
+  if(n <= 1) return "none";
+  const bas = -90 + (360/n) * i;
+  const son = -90 + (360/n) * (i+1);
+  const p = ["50% 50%"];
+  /* Ara noktalar olmadan kiris daireden iceri giriyor ve dilimin
+     dis kenarinda bosluk kaliyor. */
+  const adim = Math.max(2, Math.ceil((son-bas)/30));
+  for(let k=0; k<=adim; k++){
+    const a = (bas + (son-bas)*k/adim) * Math.PI/180;
+    p.push((50 + 80*Math.cos(a)).toFixed(2) + "% " +
+           (50 + 80*Math.sin(a)).toFixed(2) + "%");
+  }
+  return "polygon(" + p.join(",") + ")";
+}
+
+/* adlar[0] her zaman ani paylasan kisi */
+function ortakDaireCiz(av, adlar){
+  if(!av || !adlar || adlar.length < 2) return;
+  const toplam = adlar.length;
+  const dilim  = Math.min(toplam, ORTAK_EN_COK_DILIM);
+
+  av.classList.add("ortakDaire");
+  av.textContent = "";
+  /* Dilimler kendi kabinda kirpilir: rozet daire disina tasabilsin
+     diye kirpma avatarin kendisine verilemiyor. */
+  const kap = document.createElement("span");
+  kap.className = "oyKap";
+  av.appendChild(kap);
+  for(let i=0; i<dilim; i++){
+    const y = document.createElement("span");
+    y.className = "oy";
+    y.style.clipPath = ortakDilimYolu(i, dilim);
+    y.style.webkitClipPath = y.style.clipPath;
+    try{
+      const s = avSrc(adlar[i]);
+      if(s) y.style.backgroundImage = 'url("' + s + '")';
+    }catch(e){}
+    if(i > 0){
+      const kim = adlar[i];
+      y.addEventListener("click",(e)=>{
+        e.stopPropagation();
+        try{ openProfile(kim); }catch(x){}
+      });
+    }
+    kap.appendChild(y);
+  }
+  /* Uc kisiye kadar dilim sayisi zaten kisi sayisi; rozet gereksiz */
+  if(toplam > ORTAK_EN_COK_DILIM){
+    const r = document.createElement("span");
+    r.className = "ortakSay";
+    r.textContent = String(toplam);
+    av.appendChild(r);
+  }
 }
 
 /* İsim bilgisini yerel kayda yaz.
@@ -13343,9 +13483,15 @@ function notifRow(n){
        Durum sunucudan okunur; karar verilmisse dugme gosterilmez. */
     (async ()=>{
       try{
-        const r=await window.__sb.from("moments")
-          .select("partner_status").eq("id", n.postId).maybeSingle();
-        const du = r && r.data && r.data.partner_status;
+        /* Durum artik moments sutununda degil, kisinin kendi
+           ortaklik satirinda. Kendi satirimi okumak icin ek yetki
+           gerekmiyor: kural "user_id = auth.uid()" ile aciyor. */
+        const r=await window.__sb.from("moment_partners")
+          .select("status")
+          .eq("moment_id", n.postId)
+          .eq("user_id", window.__me.id)
+          .maybeSingle();
+        const du = r && r.data && r.data.status;
         if(du==="accepted" || du==="declined"){
           dg.innerHTML='<span class="npSonuc">'+
             (du==="accepted" ? t("co_accepted") : t("co_declined"))+'</span>';
@@ -13646,36 +13792,30 @@ function build(it){
   const adi=(uu&&uu.display_name)?uu.display_name:it.who;
 
   /* ══════════ ORTAK AN ══════════
-     Yalnizca ONAYLANMIS anlarda ikinci kisi gosterilir. */
+     Yalnizca ONAYLAYANLAR gosterilir; sunucu zaten bekleyenleri
+     gondermiyor. Sayi sinirli degil. */
   let _ortakAv2 = null;
-  if(it.partnerName && it.partnerStatus==="accepted"){
+  const _ortaklar = Array.isArray(it.ortaklar) ? it.ortaklar : [];
+  if(_ortaklar.length){
     auth.classList.add("ortakAn");
-    try{ if(it.partnerAvatar) setRealAvatar(it.partnerName, it.partnerAvatar); }catch(e){}
-    /* av bu asamada henuz DOM a eklenmedi; after() ebeveyni olmayan
-       dugumde hicbir sey yapmiyordu. Ekleme auth.append sonrasina
-       birakilir. */
-    /* Bolunmus daire: tek avatarin yerini alir, iki yarim gosterir.
-       Dis halka anin duygusunu tasimaya devam eder — duygu paylasan
-       kisiye ait, ortaklikla cakismaz. */
-    av.classList.add("ortakDaire");
-    const y1=document.createElement("span"); y1.className="oy oy1";
-    const y2=document.createElement("span"); y2.className="oy oy2";
-    try{
-      const s1=avSrc(it.who);       if(s1) y1.style.backgroundImage='url("'+s1+'")';
-      const s2=avSrc(it.partnerName); if(s2) y2.style.backgroundImage='url("'+s2+'")';
-    }catch(e){}
-    av.textContent="";
-    av.appendChild(y1); av.appendChild(y2);
-    y2.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      try{ openProfile(it.partnerName); }catch(x){}
+    /* Avatar adresleri onbellege yazilmazsa avSrc onlari bulamaz */
+    _ortaklar.forEach(o=>{
+      try{ if(o && o.avatar_url) setRealAvatar(o.username, o.avatar_url); }catch(e){}
     });
-    _ortakAv2 = null;
-    const ortakAdi = it.partnerDisplay || it.partnerName;
-    /* paintFeedNames sonradan ismi tazeliyor; ikinci adi kartta
-       saklayip orada da kullaniyoruz. */
-    try{ el._ortak = ortakAdi; }catch(e){}
-    nm.textContent = ilkAd(adi) + " " + t("co_and") + " " + ilkAd(ortakAdi);
+    /* Dis halka anin duygusunu tasimaya devam eder — duygu paylasan
+       kisiye ait, ortaklikla cakismaz. */
+    ortakDaireCiz(av, [it.who].concat(_ortaklar.map(o=>o.username)));
+
+    const adlar = _ortaklar.map(o=>o.display_name || o.username);
+    /* Iki kisi ise ikisinin de adi yazilir; daha kalabalikta isim
+       satiri tasacagi icin "ve digerleri" denir. */
+    const isim = (adlar.length === 1)
+      ? (ilkAd(adi) + " " + t("co_and") + " " + ilkAd(adlar[0]))
+      : (ilkAd(adi) + " " + t("co_and_others"));
+    /* paintFeedNames sonradan ismi tazeliyor; kartta saklanir */
+    try{ el._ortak = (adlar.length===1) ? adlar[0] : null; }catch(e){}
+    try{ el._ortakCok = (adlar.length>1); }catch(e){}
+    nm.textContent = isim;
   }else{
     nm.textContent = adi;
   }
@@ -17707,7 +17847,7 @@ function openCompose(src,kind,blob,durationMs){
   pickedMood=null;
   pickedSong=null;
   /* Sonraki an onceki secimi tasimasin */
-  try{ ortakKisi=null; ortakBtnCiz(); }catch(e){}
+  try{ ortakKisiler=[]; ortakBtnCiz(); }catch(e){}
   pickedCover=null;
   /* Gizlilik ayarları her yeni paylaşımda varsayılana döner. */
   _shareVis="community"; _shareCommentsOn=true; _shareDownloadsOn=true;
@@ -18054,7 +18194,11 @@ function songRowEl(song, rank){
    Ayni ani birlikte yasayan iki kisi tek an paylasir. Secilen kisi
    ONAYLAYANA KADAR an normal bir paylasim gibi gorunur: onay
    gerceklesmeden kimse bir konuma ve saate baglanmaz. */
-let ortakKisi = null;
+/* Bir anda tek ortak olabiliyordu. Topluluk etkinliklerinde bu
+   yetmiyor; artik sayi sinirli degil. Secim paneli her dokunusta
+   kapanmiyor, "Tamam" ile kapaniyor. */
+let ortakKisiler = [];
+function ortakSecili(id){ return ortakKisiler.some(k=>k.id===id); }
 
 function ortakPaneliAc(){
   const eski=document.getElementById("ortakSheet");
@@ -18075,10 +18219,21 @@ function ortakPaneliAc(){
         '<input type="text" id="ortakInput" placeholder="'+esc(t("co_search"))+'" autocapitalize="none" spellcheck="false">'+
       '</div>'+
       '<div class="ortakListe" id="ortakListe"></div>'+
+      /* Coklu secimde panel her dokunusta kapanmadigi icin bitirme
+         dugmesi gerekiyor; kac kisi secildigini de o gosteriyor. */
+      '<button type="button" class="ortakBitir" id="ortakBitir">'+t("done")+'</button>'+
     '</div>';
   document.body.appendChild(ov);
 
   const kapat=()=>ov.remove();
+  const sayiCiz=()=>{
+    const d=ov.querySelector("#ortakBitir");
+    if(!d) return;
+    d.textContent = ortakKisiler.length
+      ? (t("done") + " · " + ortakKisiler.length)
+      : t("done");
+  };
+  ov.querySelector("#ortakBitir").addEventListener("click", kapat);
   ov.querySelector(".scrim").addEventListener("click", kapat);
   try{ wireSheetSwipeOn(ov, ".shbox", kapat); }catch(e){}
 
@@ -18105,19 +18260,22 @@ function ortakPaneliAc(){
       tx.querySelector("b").textContent = k.display_name || k.username;
       tx.querySelector("span").textContent = "@"+k.username;
       sat.appendChild(tx);
-      if(ortakKisi && ortakKisi.id===k.id) sat.classList.add("secili");
+      if(ortakSecili(k.id)) sat.classList.add("secili");
       sat.addEventListener("click",()=>{
-        /* Ayni kisiye tekrar dokunmak secimi kaldirir */
-        ortakKisi = (ortakKisi && ortakKisi.id===k.id) ? null : k;
         /* Kimlik bos gelirse ortak an sunucuya yazilmaz; sessiz
            kalmamasi icin burada yakalanir. */
-        if(ortakKisi && !ortakKisi.id){
-          console.warn("[Klipsy] ortak kisi kimligi yok:", ortakKisi);
+        if(!k.id){
+          console.warn("[Klipsy] ortak kisi kimligi yok:", k);
           toast(t("co_fail"));
-          ortakKisi = null;
+          return;
         }
+        /* Ayni kisiye tekrar dokunmak secimi kaldirir.
+           Panel ACIK kalir: birden fazla kisi eklenebilsin. */
+        if(ortakSecili(k.id)) ortakKisiler = ortakKisiler.filter(x=>x.id!==k.id);
+        else ortakKisiler.push(k);
+        sat.classList.toggle("secili", ortakSecili(k.id));
         ortakBtnCiz();
-        kapat();
+        sayiCiz();
       });
       kutu.appendChild(sat);
     });
@@ -18164,23 +18322,26 @@ function ortakBtnCiz(){
   if(!b) return;
   const et=b.querySelector(".sLb");
   const ic=b.querySelector(".sIc");
-  b.classList.toggle("secili", !!ortakKisi);
-  if(et) et.textContent = ortakKisi
-    ? (ortakKisi.display_name || ortakKisi.username)
-    : t("co_add");
-  /* Secili kisinin avatari ikonun yerini alir: kimi ekledigin
+  const ilk = ortakKisiler[0] || null;
+  const n   = ortakKisiler.length;
+  b.classList.toggle("secili", n>0);
+  /* Tek kisiyse adi, kalabalikta "Ad +N": buton dar, isimler sigmaz */
+  if(et) et.textContent = !n ? t("co_add")
+    : (n===1 ? (ilk.display_name || ilk.username)
+             : (ilkAd(ilk.display_name || ilk.username) + " +" + (n-1)));
+  /* Ilk secilen kisinin avatari ikonun yerini alir: kimi ekledigin
      paylasim ekranindan cikmadan gorunur. */
   if(ic){
     const eskiAv=ic.querySelector(".ortakAv");
     if(eskiAv) eskiAv.remove();
     const svg=ic.querySelector("svg");
-    if(ortakKisi){
+    if(ilk){
       if(svg) svg.style.display="none";
       const av=document.createElement("span");
       av.className="ortakAv";
       ic.appendChild(av);
-      try{ if(ortakKisi.avatar_url) setRealAvatar(ortakKisi.username, ortakKisi.avatar_url); }catch(e){}
-      try{ paintAv(av, ortakKisi.username); }catch(e){}
+      try{ if(ilk.avatar_url) setRealAvatar(ilk.username, ilk.avatar_url); }catch(e){}
+      try{ paintAv(av, ilk.username); }catch(e){}
     }else if(svg){
       svg.style.display="";
     }
@@ -18445,7 +18606,7 @@ $("#cpLater").addEventListener("click", async ()=>{
         cover: pickedCover || null,
         visibility: _shareVis || "community",
         commentsOn: _shareCommentsOn !== false,
-        partnerId: (typeof ortakKisi!=="undefined" && ortakKisi) ? ortakKisi.id : null
+        partnerIds: (typeof ortakKisiler!=="undefined" ? ortakKisiler.map(k=>k.id).filter(Boolean) : [])
       }
     });
     if(ok){
@@ -18487,16 +18648,10 @@ $("#cpShare").addEventListener("click",()=>{
     cover: pickedCover||null,
     visibility: _shareVis||'community',
     commentsOn: _shareCommentsOn!==false,
-    /* Ortak an: secim ortakKisi degiskeninde duruyordu ama extra ya
-       hic tasinmiyordu, bu yuzden partner_id sunucuya bos gidiyor ve
-       davet bildirimi hic olusmuyordu. */
-    partnerId: (function(){
-      const v = (typeof ortakKisi!=="undefined" && ortakKisi) ? ortakKisi.id : null;
-      console.log("[Klipsy] paylasimda ortak:", v || "(yok)",
-                  "| secili kisi:", (typeof ortakKisi!=="undefined" && ortakKisi)
-                    ? (ortakKisi.username||"?") : "(yok)");
-      return v || null;
-    })(),
+    /* Ortak an: secim ortakKisiler dizisinde duruyor. Sayi sinirli
+       degil; kisiler an kaydedildikten SONRA ortak_ekle ile yazilir. */
+    partnerIds: (typeof ortakKisiler!=="undefined"
+                  ? ortakKisiler.map(k=>k.id).filter(Boolean) : []),
     downloadsOn: _shareDownloadsOn!==false
   };
   closeCompose(false);
@@ -18643,7 +18798,7 @@ async function loadMyMoments(){
   try{
     const { data, error } = await sb
       .from('moments')
-      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms, comments_on, downloads_on, visibility, partner_id, partner_status, partner:profiles!moments_partner_id_fkey(username, display_name, avatar_url)')
+      .select('id, media_path, media_kind, poster_path, thumb_path, mood, note, place_label, geo_lat, geo_lng, like_count, comment_count, view_count, created_at, song_title, song_artist, song_art, song_preview, duration_ms, comments_on, downloads_on, visibility')
       .eq('author_id', me.id)
       .eq('is_removed', false)
       .order('created_at', { ascending:false })
@@ -19376,11 +19531,14 @@ function openEditProfile(){
     try{
       const sb=window.__sb, me=window.__me;
       if(!sb||!me) return;
-      const r=await sb.from("profiles")
-        .select("birth_date, terms_accepted_at")
-        .eq("id", me.id).maybeSingle();
-      if(r.error || !r.data) return;
-      const dt=r.data.birth_date;
+      /* Dogum tarihi artik profiles tablosundan dogrudan okunmuyor.
+         O tablo tum kullanicilara acik; dogum tarihi orada kalinca
+         herkesin dogum tarihi disaridan okunabiliyordu. Sutun artik
+         kapali, kendi degerini yalnizca bu fonksiyon donduruyor. */
+      const r=await sb.rpc("kendi_kayit_bilgim");
+      const bilgi = r.data && r.data[0];
+      if(r.error || !bilgi) return;
+      const dt=bilgi.birth_date;
       if(!dt) return;
 
       const satir=document.createElement("div");
@@ -21315,13 +21473,10 @@ async function renderOrtak(box){
   try{
     const sb=window.__sb, me=window.__me;
     if(!sb||!me) throw new Error("oturum yok");
-    const r=await sb.from("moments")
-      .select("id, author_id, partner_id, media_path, media_kind, poster_path, thumb_path, created_at")
-      .eq("is_removed", false)
-      .eq("partner_status", "accepted")
-      .or("author_id.eq."+me.id+",partner_id.eq."+me.id)
-      .order("created_at",{ascending:false})
-      .limit(60);
+    /* Ortaklik artik ayri tabloda ve cok kisili; sorgu sunucudaki
+       fonksiyona tasindi. Hem benim paylastigim (en az bir kisinin
+       onayladigi) anlar, hem bana eklenip ONAYLADIGIM anlar gelir. */
+    const r=await sb.rpc("ortak_anlarim");
     if(r.error) throw r.error;
     const veri=r.data||[];
     if(!veri.length){
@@ -25067,11 +25222,9 @@ async function post(src,kind,mood,where,note,extra){
         ? ((extra.shareLoc===false) ? Math.round(extra.la*100)/100 : extra.la) : null,
       geo_lng: (extra && extra.lo!=null)
         ? ((extra.shareLoc===false) ? Math.round(extra.lo*100)/100 : extra.lo) : null,
-      /* Ortak an: onay gelene kadar "pending". Bu asamada an
-         normal paylasim gibi gorunur, ikinci isim yazilmaz. */
-      /* Ortak an yazilmadiginda sebebi gorunur olsun */
-      partner_id:     (extra && extra.partnerId) ? extra.partnerId : null,
-      partner_status: (extra && extra.partnerId) ? 'pending' : 'none',
+      /* Ortaklik artik ayri bir tabloda: an kaydedildikten sonra
+         ortak_ekle ile yazilir. Tek kisilik partner_id sutunu
+         kullanilmiyor. */
       duration_ms: (extra && extra.durationMs) ? extra.durationMs : null,
       song_title: song ? song.title : null,
       song_artist: song ? song.artist : null,
@@ -25084,6 +25237,27 @@ async function post(src,kind,mood,where,note,extra){
     };
     const ins = await sb.from('moments').insert(row).select('id, created_at').single();
     if(ins.error) throw ins.error;
+
+    /* ══════════ ORTAKLAR ══════════
+       An kaydedildikten SONRA yazilir, cunku her satir anin
+       kimligine bagli. Sunucu karsilikli takip sartini kendisi
+       kontrol ediyor; eklenenler onay verene kadar hicbir yerde
+       gorunmuyor.
+
+       Bu adim basarisiz olursa an yine de paylasilmis olur: kisiyi
+       sonradan eklemek, ani bastan kaybetmekten iyidir. */
+    try{
+      const _ort = (extra && Array.isArray(extra.partnerIds))
+        ? extra.partnerIds.filter(Boolean) : [];
+      if(_ort.length){
+        const _r = await sb.rpc('ortak_ekle',
+          { p_moment: ins.data.id, p_users: _ort });
+        if(_r.error) throw _r.error;
+      }
+    }catch(e){
+      console.warn("ortak eklenemedi:", e && e.message);
+      try{ toast(t("co_fail")); }catch(x){}
+    }
 
     // 3) yerel kaydı gerçek kimlikle güncelle + kalıcı medya adresi
     const pub = medyaAdres(path);
@@ -27797,6 +27971,87 @@ function kullaniciAdiOner(user, prof){
   return taban.slice(0, 20);
 }
 
+/* ══════════════ ESKI HESAPLAR ICIN YAS VE ONAY ══════════════
+   Yas siniri ile kullanim sartlari uygulamaya sonradan eklendi.
+   Onceden acilmis hesaplarda "birth_date" bos; o kullanicilar ne
+   yaslarini bildirdi ne de metinleri onayladi. Kayitli olmayan bir
+   onay, hukuken olmayan bir onaydir — bu yuzden bir kez soruluyor.
+
+   Panel kapatilamaz: devam etmenin tek yolu tarihi girip iki metni
+   de onaylamak, ya da cikis yapmak. Iki kutu AYRI: KVKK'da acik riza
+   belirli bir konuya iliskin olmali, tek kutuda toplanamaz. */
+function showYasOnay(user){
+  let p=document.getElementById("yasOnay");
+  if(!p){
+    p=document.createElement("div");
+    p.id="yasOnay"; p.className="obKapi";
+    p.innerHTML=
+      '<div class="obBox">'+
+      '<h2>'+t("yas_onay_t")+'</h2>'+
+      '<p>'+t("yas_onay_p")+'</p>'+
+      '<div class="obField"><label>'+t("birth_label")+'</label>'+
+        '<input id="yoBirth" type="date" autocomplete="bday">'+
+        '<div class="obHint" id="yoHint">'+t("birth_hint")+'</div>'+
+      '</div>'+
+      '<label class="gTerms" style="margin-bottom:0.25rem">'+
+        '<input type="checkbox" id="yoTerms">'+
+        '<span><a href="./kullanim-sartlari.html" target="_blank" rel="noopener">'+t("terms_link")+'</a> '+
+        t("terms_ok")+'</span>'+
+      '</label>'+
+      '<label class="gTerms" style="margin-bottom:0.75rem">'+
+        '<input type="checkbox" id="yoPrivacy">'+
+        '<span><a href="./gizlilik.html" target="_blank" rel="noopener">'+t("privacy_link")+'</a> '+
+        t("privacy_ok")+'</span>'+
+      '</label>'+
+      '<button class="obSave" id="yoSave">'+t("continue")+'</button>'+
+      /* Yasi tutmayan kullanici panelde kilitli kalmasin */
+      '<button id="yoOut" style="width:100%;margin-top:0.875rem;background:none;border:0;'+
+      'color:var(--t3);font-size:0.8125rem;font-weight:600;font-family:inherit">'+
+      t("logout")+'</button>'+
+      '</div>';
+    document.body.appendChild(p);
+  }
+  p.classList.add("open");
+
+  const ipucu=document.getElementById("yoHint");
+  const kaydet=document.getElementById("yoSave");
+  const uyar=(m)=>{ ipucu.textContent=m; ipucu.className="obHint err"; };
+
+  document.getElementById("yoOut").onclick=()=>{
+    try{ window.__sb.auth.signOut(); }catch(e){}
+    location.reload();
+  };
+
+  kaydet.onclick=async ()=>{
+    const dt=(document.getElementById("yoBirth")||{}).value||"";
+    if(!dt){ uyar(t("birth_need")); return; }
+    const d=new Date(dt+"T12:00:00");
+    if(isNaN(d.getTime())){ uyar(t("birth_need")); return; }
+    const simdi=new Date();
+    let yas=simdi.getFullYear()-d.getFullYear();
+    const ayFark=simdi.getMonth()-d.getMonth();
+    if(ayFark<0 || (ayFark===0 && simdi.getDate()<d.getDate())) yas--;
+    if(yas<13){ uyar(t("birth_too_young")); return; }
+    if(yas>120){ uyar(t("birth_need")); return; }
+    if(!document.getElementById("yoTerms").checked){ uyar(t("terms_need")); return; }
+    if(!document.getElementById("yoPrivacy").checked){ uyar(t("privacy_need")); return; }
+
+    kaydet.disabled=true; kaydet.textContent=t("sending");
+    try{
+      const r=await window.__sb.from("profiles").update({
+        birth_date: dt,
+        terms_accepted_at: new Date().toISOString()
+      }).eq("id", user.id);
+      if(r.error) throw r.error;
+      p.classList.remove("open");
+      enterApp();
+    }catch(e){
+      kaydet.disabled=false; kaydet.textContent=t("continue");
+      uyar(cevir((e && e.message) || ""));
+    }
+  };
+}
+
 function showOnboarding(user, prof){
   let ob=document.getElementById('onboard');
   if(!ob){
@@ -27919,6 +28174,19 @@ async function enterApp(){
     showOnboarding(user, prof);
     return;
   }
+
+  /* Yas siniri ve metin onayi sonradan geldi: eski hesaplarda bos.
+     Bir kez sorulur, sonra bir daha karsimiza cikmaz.
+     Sorgu basarisiz olursa kullaniciyi disarida birakmiyoruz —
+     uygulamaya girer, soru bir sonraki aciliste tekrar sorulur. */
+  try{
+    const yo = await withTimeout(sb.rpc("kendi_kayit_bilgim"), 4000, {data:null});
+    const kayit = yo && yo.data && yo.data[0];
+    if(yo && !yo.error && kayit && !kayit.birth_date){
+      showYasOnay(user);
+      return;
+    }
+  }catch(e){ console.warn("yas onayi:", e && e.message); }
   window.__me = { id:user.id, username: prof?.username||'kullanici', avatar_url: prof?.avatar_url||null, email:user.email||null };
   gate.classList.add('off');
   if(window.__startApp) window.__startApp();

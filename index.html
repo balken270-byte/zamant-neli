@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.36.1";
+window.KLIPSY_SURUM = "3.36.4";
 
 /* ══════════ MEDYA DEPOSU ══════════
    Medya artik Supabase Storage'da degil Cloudflare R2'de.
@@ -155,6 +155,11 @@ async function mesajAdresleri(yollar){
 
   (yollar||[]).forEach(y=>{
     if(!y) return;
+    /* Eski satirlarda media_path tam adres olarak yazilmis olabilir.
+       Boylesi zaten acik bir adres; imzaya gerek yok, oldugu gibi
+       kullanilir. Aksi halde Worker'a gonderilip kovada aranir ve
+       hicbir zaman bulunamaz. */
+    if(/^https?:\/\//.test(y)){ sonuc.set(y, y); return; }
     const k = _mesajAdres.get(y);
     /* Bir dakika pay birakilir: az kalmissa yenilenir */
     if(k && k.bitis - 60 > simdi) sonuc.set(y, k.adres);
@@ -179,6 +184,10 @@ async function mesajAdresleri(yollar){
       console.warn("[Klipsy] mesaj adresi alinamadi:", c.hata || r.status);
       return sonuc;
     }
+    /* Worker yetki sorgusunun eledigi yollari bildiriyor.
+       Bir fotograf gorunmuyorsa once buraya bakilir. */
+    if(c.atlanan && c.atlanan.length)
+      console.warn("[Klipsy] yetki verilmeyen mesaj medyasi:", c.atlanan);
     const bitis = Math.floor(Date.now()/1000) + 3600;
     Object.keys(c.adresler || {}).forEach(y=>{
       _mesajAdres.set(y, { adres:c.adresler[y], bitis });
@@ -20485,12 +20494,17 @@ function renderProfile(){
       chips.push([ic, val]);
     });
   }
-  if(chips.length){
+  /* Sehir, is, egitim, burc, ilgi alanlari: bunlar kendini BASKASINA
+     anlatan bilgiler. Kendi profilinde kisi zaten hepsini biliyor;
+     orada yalnizca yer kapliyor ve anilari asagi itiyorlar. Bu yuzden
+     rozetler sadece baskasinin profilinde cizilir. Kendi bilgilerini
+     gormek ya da degistirmek isteyen "Duzenle" ekranindan ulasir. */
+  if(chips.length && !own){
     const det=document.createElement("div");det.className="profdetail";
     let html='<div class="pdchips">';
     chips.forEach(([ic,val])=>{ html+='<span class="pdchip">'+ic+esc(val)+'</span>'; });
     html+='</div>';
-    det.innerHTML = (own ? '' : '<div class="secTitle">'+t("about_person")+'</div>') + html;
+    det.innerHTML = '<div class="secTitle">'+t("about_person")+'</div>' + html;
     box.appendChild(det);
   }
   const bioWrap=document.createElement("div");bioWrap.className="profbio";
@@ -20849,9 +20863,17 @@ const ARC_IC2 = {
   /* Iki kisi: onde biri, arkasinda digeri */
   co: {
     cizgi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.2" r="3.4"/><path d="M2.8 20.2c0-3.4 2.8-6.2 6.2-6.2s6.2 2.8 6.2 6.2"/><path d="M16.2 5.2a3.4 3.4 0 0 1 0 6"/><path d="M18.4 14.6a6.2 6.2 0 0 1 2.8 5.6"/></svg>',
-    dolu: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8.8" cy="8" r="3.6"/><path d="M8.8 13.4c-3.5 0-6.4 2.9-6.4 6.4a.8.8 0 0 0 .8.8h11.2a.8.8 0 0 0 .8-.8c0-3.5-2.9-6.4-6.4-6.4z"/><path d="M16.4 4.6a3.5 3.5 0 0 1 0 6.8 4.6 4.6 0 0 0 0-6.8z" opacity=".85"/><path d="M17 13.4a6.4 6.4 0 0 1 4.6 6.4.8.8 0 0 1-.8.8h-3.4a8 8 0 0 0-2.6-6.8 6.4 6.4 0 0 1 2.2-.4z" opacity=".85"/></svg>'
+    /* Arkadaki kisi once hilal benzeri iki parcadan cizilmisti; kucuk
+       boyutta bas gibi degil, kopuk bir dilim gibi gorunuyordu. Artik
+       cizgili haliyle ayni kurgu: onde tam bir kisi, arkasinda daha
+       kucuk ikinci kisi — iki bas birbirinden net ayrik. */
+    dolu: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8.6" cy="8" r="3.5"/><circle cx="16.9" cy="8.4" r="2.9"/><path d="M8.6 13.4c-3.4 0-6.2 2.1-6.2 4.7v1.1c0 .6.5 1.1 1.1 1.1h10.2c.6 0 1.1-.5 1.1-1.1v-1.1c0-2.6-2.8-4.7-6.2-4.7z"/><path d="M16.9 13.7c-.6 0-1.2.06-1.7.17 1.4 1.15 2.2 2.7 2.2 4.34v1.1c0 .21-.04.41-.1.6h4.2c.6 0 1.1-.5 1.1-1.1v-.9c0-2.3-2.5-4.2-5.7-4.2z"/></svg>'
   }
 };
+
+/* Izgara karesinin kosesindeki ortak isareti: sekme ikonunun
+   dolu haliyle birebir ayni cizim, tek yerden beslenir. */
+const ORTAK_ROZET = ARC_IC2.co.dolu;
 function arcIkon(k, seciliMi){
   const g = ARC_IC2[k];
   if(!g) return "";
@@ -21245,7 +21267,11 @@ async function renderOrtak(box){
   sub.textContent=t("co_desc");
   box.appendChild(sub);
 
-  const kap=document.createElement("div");kap.className="arc";
+  /* ".arc" TEK bir kareyi anlatiyor, izgarayi degil. Kapsayici olarak
+     kullanilinca kendi "overflow:hidden" kurali ilk kareden sonrasini
+     kirpiyordu: iki ortak an varken yalnizca en yenisi gorunuyordu.
+     Dogru yapi, diger arsiv sekmelerindeki gibi ".arcGrid". */
+  const kap=document.createElement("div");kap.className="arcGrid";
   box.appendChild(kap);
   kap.innerHTML='<div class="arcEmpty"><span>'+t("loading")+'</span></div>';
 
@@ -21268,21 +21294,27 @@ async function renderOrtak(box){
     }
     const adr=(p)=>p ? medyaAdres(p) : null;
     kap.innerHTML="";
+    applyGalleryDensity(kap, veri.length);   /* icerik coğaldikca kareler kuculsun */
     veri.forEach(m=>{
       const g = (m.media_kind==="video")
         ? (adr(m.poster_path)||adr(m.thumb_path)||adr(m.media_path))
         : (adr(m.media_path)||adr(m.poster_path));
-      const k=document.createElement("div"); k.className="arcKare";
-      if(g) k.style.backgroundImage='url("'+g+'")';
-      /* Ortak isareti: kesisen daireler, sekme ikonuyla ayni dil */
-      k.innerHTML='<span class="arcOrtak">'+
-        '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8.8" cy="8" r="3.6"/><path d="M8.8 13.4c-3.5 0-6.4 2.9-6.4 6.4a.8.8 0 0 0 .8.8h11.2a.8.8 0 0 0 .8-.8c0-3.5-2.9-6.4-6.4-6.4z"/><path d="M16.4 4.6a3.5 3.5 0 0 1 0 6.8 4.6 4.6 0 0 0 0-6.8z" opacity=".85"/><path d="M17 13.4a6.4 6.4 0 0 1 4.6 6.4.8.8 0 0 1-.8.8h-3.4a8 8 0 0 0-2.6-6.8 6.4 6.4 0 0 1 2.2-.4z" opacity=".85"/></svg>'+
-        '</span>';
+      const k=document.createElement("div"); k.className="arc";
+      k.setAttribute("role","button");
+      if(m.id) k.setAttribute("data-mid", m.id);
+      /* Tembel yukleme: diger izgaralarla ayni yol */
+      if(g) k.setAttribute("data-bg", g);
+      else if(m.media_kind==="video") k.appendChild(makeArcPlaceholder());
+      /* Ortak isareti: sekme ikonuyla ayni dil */
+      const rz=document.createElement("span"); rz.className="arcOrtak";
+      rz.innerHTML=ORTAK_ROZET;
+      k.appendChild(rz);
       k.addEventListener("click",()=>{
         try{ if(typeof openMoment==="function") openMoment(m.id); }catch(e){}
       });
       kap.appendChild(k);
     });
+    lazyLoadArcImages(kap);
   }catch(e){
     console.warn("ortak anlar:", e && e.message);
     kap.innerHTML='<div class="arcEmpty"><b>'+t("co_empty2")+'</b></div>';

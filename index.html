@@ -11,7 +11,201 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.32.0";
+window.KLIPSY_SURUM = "3.36.0";
+
+/* ══════════ MEDYA DEPOSU ══════════
+   Medya artik Supabase Storage'da degil Cloudflare R2'de.
+   Sebep: Supabase'de cikis trafigi ucretli ve aylik 5 GB sinirini
+   asiyorduk; R2'de cikis trafigi tamamen ucretsiz.
+   Veritabani, kimlik ve realtime Supabase'de kalmaya devam ediyor. */
+window.KLIPSY_MEDYA = {
+  worker: "https://klipsy-medya.tradeviatest.workers.dev",
+  /* Kendi alan adimiz: r2.dev uzerindeki hiz siniri ve engellenme
+     riski kalkti. Cloudflare CDN onbellegi de burada tam calisiyor. */
+  genel:  "https://medya.klipsy.com.tr"
+};
+
+/* Depodaki yoldan tam adres uretir. Eski Supabase yollari da
+   calismaya devam eder: gecis oncesi yuklenen dosyalar kaybolmasin. */
+/* ══════════════════ ESKI MEDYA GECISI ══════════════════
+   R2 ye tasinmadan once yuklenen dosyalar hala Supabase'de.
+   Yeni kod onlari R2 de aradigi icin eski anlar siyah goruluyordu.
+
+   Cozum kendi kendini onaran bir katman: bir gorsel ya da video
+   R2 den gelmezse Worker'a "bu dosyayi tasi" denir, Worker dosyayi
+   Supabase'den cekip R2 ye yazar, sonra ayni adres yeniden denenir.
+   Kullanicilar akista gezindikce icerik kendiliginden tasinir;
+   ayri bir toplu isleme ve bekleme gerekmez.
+
+   Ayni dosya icin istek bir kez gonderilir. Gecis bitince bu blok
+   ve Worker'daki /tasi uc noktasi kaldirilabilir. */
+const _tasindi = new Set();
+const _tasimaBekleyen = new Map();
+
+async function medyaTasi(adres){
+  if(!adres) return false;
+  const kok = window.KLIPSY_MEDYA.genel + "/";
+  if(adres.indexOf(kok) !== 0) return false;          /* bizim adres degil */
+  const yol = adres.slice(kok.length).split("?")[0];
+  if(!yol || _tasindi.has(yol)) return false;
+
+  /* Ayni dosya icin ikinci istek beklemeye alinir */
+  if(_tasimaBekleyen.has(yol)) return _tasimaBekleyen.get(yol);
+
+  const soz = (async ()=>{
+    try{
+      const sb = window.__sb;
+      if(!sb) return false;
+      const { data:{ session } } = await sb.auth.getSession();
+      const jeton = session && session.access_token;
+      if(!jeton) return false;
+      const r = await fetch(window.KLIPSY_MEDYA.worker + "/tasi", {
+        method:"POST",
+        headers:{ "Authorization":"Bearer "+jeton, "Content-Type":"application/json" },
+        body: JSON.stringify({ yol: yol })
+      });
+      const c = await r.json().catch(()=>({}));
+      if(r.ok){ _tasindi.add(yol); return true; }
+      console.warn("[Klipsy] tasima basarisiz:", yol, c.hata || r.status);
+      /* Kaynakta da yoksa bir daha denemeye gerek yok */
+      if(r.status === 404) _tasindi.add(yol);
+      return false;
+    }catch(e){
+      console.warn("[Klipsy] tasima hatasi:", e && e.message);
+      return false;
+    }finally{
+      _tasimaBekleyen.delete(yol);
+    }
+  })();
+  _tasimaBekleyen.set(yol, soz);
+  return soz;
+}
+
+/* Yuklenemeyen gorsel ve videolari yakalar. "error" olayi kabarmaz,
+   bu yuzden yakalama asamasinda dinlenir. */
+try{
+  document.addEventListener("error", async (e)=>{
+    const el = e.target;
+    if(!el || !el.tagName) return;
+    const etiket = el.tagName.toLowerCase();
+    if(etiket !== "img" && etiket !== "video" && etiket !== "source") return;
+    if(el._tasimaDenendi) return;
+    const adres = el.currentSrc || el.src || "";
+    if(!adres) return;
+    el._tasimaDenendi = true;
+    const oldu = await medyaTasi(adres);
+    if(!oldu) return;
+    /* Tasindi: ayni adresi yeniden dene */
+    try{
+      if(etiket === "video"){ el.load(); }
+      else { const a = el.src; el.src = ""; el.src = a; }
+    }catch(x){}
+  }, true);
+}catch(e){}
+
+/* ══════════ ESKI DOSYAYI ADINDAN TANI ══════════
+   Dosya adlari "kullanici/<zaman>_<rastgele>.uzanti" bicimindeydi;
+   basindaki sayi yuklenme ani. R2'ye gecis anindan ONCEKI dosyalar
+   Supabase'de kalmis demektir.
+
+   Boylece yalnizca gercekten eski dosyalar icin tasima istegi
+   gonderilir: yeni dosyalar bosuna sorgulanmaz. Arka plan resmi
+   olarak cizilen yerler (arsiv kareleri, takvim, zaman cizelgesi)
+   error olayi uretmedigi icin bu on kontrol onlari da kapsar. */
+const R2_GECIS_ANI = 1790380800000;   /* 25 Eylul 2026 */
+
+function eskiDosyaMi(yol){
+  /* Iki bicim var:
+       an medyasi   -> kullanici/<zaman>_<rastgele>.jpg
+       mesaj medyasi -> kullanici/dm_<zaman>_<rastgele>.jpg
+     Ikincisi onceki desene uymuyordu ve eski mesaj fotograflari
+     hic tasinmiyordu. */
+  const m = /(?:^|\/)(?:dm_)?(\d{13})_/.exec(yol || "");
+  if(!m) return false;
+  return Number(m[1]) < R2_GECIS_ANI;
+}
+
+window.medyaOnar = function(adres){
+  try{
+    const kok = window.KLIPSY_MEDYA.genel + "/";
+    if(adres && adres.indexOf(kok) === 0){
+      const yol = adres.slice(kok.length).split("?")[0];
+      if(eskiDosyaMi(yol)) medyaTasi(adres);
+    }
+  }catch(e){}
+  return adres;
+};
+
+/* ══════════════════ MESAJ MEDYASI ══════════════════
+   Mesaj fotograflari KAPALI kovada durur: adresi bilmek yetmez,
+   her goruntuleme sureli bir imza ister. Akis medyasindan farki
+   bu — akis zaten herkese acik, mesaj iki kisi arasinda.
+
+   Adresler bir saat gecerli, bellekte tutulur ve suresi dolmadan
+   yeniden istenmez. Sohbet acilisinda tum yollar TEK istekte
+   sorulur; her fotograf icin ayri istek gitmez. */
+const _mesajAdres = new Map();      /* yol -> { adres, bitis } */
+
+async function mesajAdresleri(yollar){
+  const sonuc = new Map();
+  const simdi = Math.floor(Date.now()/1000);
+  const eksik = [];
+
+  (yollar||[]).forEach(y=>{
+    if(!y) return;
+    const k = _mesajAdres.get(y);
+    /* Bir dakika pay birakilir: az kalmissa yenilenir */
+    if(k && k.bitis - 60 > simdi) sonuc.set(y, k.adres);
+    else if(eksik.indexOf(y) < 0) eksik.push(y);
+  });
+  if(!eksik.length) return sonuc;
+
+  try{
+    const sb = window.__sb;
+    if(!sb) return sonuc;
+    const { data:{ session } } = await sb.auth.getSession();
+    const jeton = session && session.access_token;
+    if(!jeton) return sonuc;
+
+    const r = await fetch(window.KLIPSY_MEDYA.worker + "/mesaj-adres", {
+      method:"POST",
+      headers:{ "Authorization":"Bearer "+jeton, "Content-Type":"application/json" },
+      body: JSON.stringify({ yollar: eksik })
+    });
+    const c = await r.json().catch(()=>({}));
+    if(!r.ok){
+      console.warn("[Klipsy] mesaj adresi alinamadi:", c.hata || r.status);
+      return sonuc;
+    }
+    const bitis = Math.floor(Date.now()/1000) + 3600;
+    Object.keys(c.adresler || {}).forEach(y=>{
+      _mesajAdres.set(y, { adres:c.adresler[y], bitis });
+      sonuc.set(y, c.adresler[y]);
+    });
+  }catch(e){ console.warn("[Klipsy] mesaj adresi:", e && e.message); }
+  return sonuc;
+}
+
+async function mesajAdres(yol){
+  if(!yol) return null;
+  const h = await mesajAdresleri([yol]);
+  return h.get(yol) || null;
+}
+
+window.medyaAdres = function(yol){
+  if(!yol) return null;
+  if(/^https?:\/\//.test(yol)) return yol;
+  /* R2'ye tasinmadan once yuklenenler Supabase'de duruyor */
+  if(window.__r2Oncesi && window.__r2Oncesi.has(yol)){
+    try{
+      return window.__sb.storage.from("moments").getPublicUrl(yol).data.publicUrl;
+    }catch(e){}
+  }
+  const tam = window.KLIPSY_MEDYA.genel + "/" + yol;
+  /* Eski dosyaysa arka planda tasinmaya baslar; adres ayni kalir */
+  if(eskiDosyaMi(yol)) medyaTasi(tam);
+  return tam;
+};
 document.title = "Klipsy " + KLIPSY_SURUM;
 </script>
 <script>document.write('<scr'+'ipt src="klipsy-kamera.js?v='+KLIPSY_SURUM+'"><\/scr'+'ipt>');</script>
@@ -12170,12 +12364,12 @@ function _mapFeedRow(r, me, sb){
     partnerAvatar:  r.partner_avatar || (r.partner && r.partner.avatar_url) || null,
     partnerStatus: r.partner_status || "none",
     mediaPath:r.media_path||null,
-    src:sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl,
-    poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
+    src:medyaAdres(r.media_path),
+    poster: r.poster_path ? medyaAdres(r.poster_path) : null,
     /* Kucuk onizleme AKISTA da kullanilir. Eskiden yalnizca an
        sayfasinda vardi; akis karti tam boyut dosya inene kadar bos
        kaliyor, kademeli siyah ekran gorunuyordu. */
-    thumb: r.thumb_path ? sb.storage.from('moments').getPublicUrl(r.thumb_path).data.publicUrl : null,
+    thumb: r.thumb_path ? medyaAdres(r.thumb_path) : null,
     lat: (r.geo_lat!=null) ? Number(r.geo_lat) : null,
     lng: (r.geo_lng!=null) ? Number(r.geo_lng) : null,
     likes:r.like_count, views:r.view_count, cc:r.comment_count,
@@ -13021,7 +13215,7 @@ function anKucukResim(id){
           const yol = d.thumb_path || d.poster_path ||
                       (d.media_kind !== 'video' ? d.media_path : null);
           if(!yol) return;
-          _anKucukResim[id] = sb.storage.from('moments').getPublicUrl(yol).data.publicUrl;
+          _anKucukResim[id] = medyaAdres(yol);
           if($("#notif") && $("#notif").classList.contains("open")) renderNotifs();
         }).catch(()=>{});
     }
@@ -13165,7 +13359,7 @@ function notifRow(n){
         gorsel = /^(https?:|data:|blob:)/.test(ham)
           ? ham
           : (window.__sb
-              ? window.__sb.storage.from('moments').getPublicUrl(ham).data.publicUrl
+              ? medyaAdres(ham)
               : null);
       }
     }catch(e){}
@@ -15982,7 +16176,7 @@ async function anSayfasiAc(id, secenek){
       }
 
       const S = sb.storage.from('moments');
-      const adr = y => { try{ return y ? S.getPublicUrl(y).data.publicUrl : null; }catch(e){ return null; } };
+      const adr = y => { try{ return y ? medyaAdres(y) : null; }catch(e){ return null; } };
 
       it = {
         id:m.id, who:kadi, mine:!!(me && m.author_id===me.id),
@@ -16821,11 +17015,11 @@ async function fetchMomentGeos(){
           let thumb = null, poster = null;
           try{
             const S = window.__sb.storage.from('moments');
-            if(r.thumb_path)  thumb  = S.getPublicUrl(r.thumb_path).data.publicUrl;
-            if(r.poster_path) poster = S.getPublicUrl(r.poster_path).data.publicUrl;
+            if(r.thumb_path)  thumb  = medyaAdres(r.thumb_path);
+            if(r.poster_path) poster = medyaAdres(r.poster_path);
             // fotoğraflarda kapak yoksa asıl görsel panelde kullanılabilir
             if(!poster && r.media_kind !== 'video' && r.media_path){
-              poster = S.getPublicUrl(r.media_path).data.publicUrl;
+              poster = medyaAdres(r.media_path);
             }
           }catch(e){}
           out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,
@@ -16897,10 +17091,10 @@ async function loadMomentsInView(){
         const mo = MOOD_BY_KEY[r.mood];
         let thumb=null, poster=null;
         try{
-          if(r.thumb_path)  thumb  = S.getPublicUrl(r.thumb_path).data.publicUrl;
-          if(r.poster_path) poster = S.getPublicUrl(r.poster_path).data.publicUrl;
+          if(r.thumb_path)  thumb  = medyaAdres(r.thumb_path);
+          if(r.poster_path) poster = medyaAdres(r.poster_path);
           if(!poster && r.media_kind!=='video' && r.media_path)
-            poster = S.getPublicUrl(r.media_path).data.publicUrl;
+            poster = medyaAdres(r.media_path);
         }catch(e){}
         return {
           id:r.id, who:r.username, ts:new Date(r.created_at).getTime(),
@@ -17864,6 +18058,13 @@ function ortakPaneliAc(){
       sat.addEventListener("click",()=>{
         /* Ayni kisiye tekrar dokunmak secimi kaldirir */
         ortakKisi = (ortakKisi && ortakKisi.id===k.id) ? null : k;
+        /* Kimlik bos gelirse ortak an sunucuya yazilmaz; sessiz
+           kalmamasi icin burada yakalanir. */
+        if(ortakKisi && !ortakKisi.id){
+          console.warn("[Klipsy] ortak kisi kimligi yok:", ortakKisi);
+          toast(t("co_fail"));
+          ortakKisi = null;
+        }
         ortakBtnCiz();
         kapat();
       });
@@ -18238,7 +18439,13 @@ $("#cpShare").addEventListener("click",()=>{
     /* Ortak an: secim ortakKisi degiskeninde duruyordu ama extra ya
        hic tasinmiyordu, bu yuzden partner_id sunucuya bos gidiyor ve
        davet bildirimi hic olusmuyordu. */
-    partnerId: (typeof ortakKisi!=="undefined" && ortakKisi) ? ortakKisi.id : null,
+    partnerId: (function(){
+      const v = (typeof ortakKisi!=="undefined" && ortakKisi) ? ortakKisi.id : null;
+      console.log("[Klipsy] paylasimda ortak:", v || "(yok)",
+                  "| secili kisi:", (typeof ortakKisi!=="undefined" && ortakKisi)
+                    ? (ortakKisi.username||"?") : "(yok)");
+      return v || null;
+    })(),
     downloadsOn: _shareDownloadsOn!==false
   };
   closeCompose(false);
@@ -18398,8 +18605,8 @@ async function loadMyMoments(){
       ts:new Date(r.created_at).getTime(),
       kind:r.media_kind,
       mediaPath:r.media_path||null,
-      src: S.getPublicUrl(r.media_path).data.publicUrl,
-      poster: r.poster_path ? S.getPublicUrl(r.poster_path).data.publicUrl : null,
+      src: medyaAdres(r.media_path),
+      poster: r.poster_path ? medyaAdres(r.poster_path) : null,
       mood: MOOD_BY_KEY[r.mood] || null,
       note: r.note || "",
       where: r.place_label || null,
@@ -18902,7 +19109,7 @@ async function statAvatarlari(name){
       const S = sb.storage.from('moments');
       const anGorseller = (mo.data||[]).map(r=>{
         const p = r.thumb_path || r.poster_path || (r.media_kind!=='video' ? r.media_path : null);
-        return p ? S.getPublicUrl(p).data.publicUrl : null;
+        return p ? medyaAdres(p) : null;
       }).filter(Boolean);
       const takipciAv = (fr.data||[]).map(x=>{
         const p = bul(x.follower_id);
@@ -19948,7 +20155,7 @@ async function backfillPosters(list){
       if(up.error) continue;
       const r = await sb.from('moments').update({poster_path:path}).eq('id',it.id).eq('author_id',me.id);
       if(r.error) continue;
-      it.poster = sb.storage.from('moments').getPublicUrl(path).data.publicUrl;
+      it.poster = medyaAdres(path);
     }catch(e){}
   }
   _posterFixBusy = false;
@@ -20980,7 +21187,7 @@ async function takvimGunAc(iso, liste){
       liste.innerHTML='<div class="mcBos">'+t("cal_empty")+'</div>';
       return;
     }
-    const adr=(p)=>p ? sb.storage.from("moments").getPublicUrl(p).data.publicUrl : null;
+    const adr=(p)=>p ? medyaAdres(p) : null;
     let h='<div class="mcBas">'+new Date(iso+"T12:00:00")
       .toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"})+
       ' · '+veri.length+" "+t("map_moments_k")+'</div><div class="mcListe">';
@@ -21057,7 +21264,7 @@ async function renderOrtak(box){
         '<span>'+t("co_empty_sub")+'</span></div>';
       return;
     }
-    const adr=(p)=>p ? sb.storage.from("moments").getPublicUrl(p).data.publicUrl : null;
+    const adr=(p)=>p ? medyaAdres(p) : null;
     kap.innerHTML="";
     veri.forEach(m=>{
       const g = (m.media_kind==="video")
@@ -21256,8 +21463,8 @@ async function loadSaved(){
     if(error){ console.warn('get_saved:',error.message); _savedCache=[]; return _savedCache; }
     _savedCache=(data||[]).map(r=>({
       id:r.id, who:r.author_username,
-      src: r.media_path ? sb.storage.from('moments').getPublicUrl(r.media_path).data.publicUrl : null,
-      poster: r.poster_path ? sb.storage.from('moments').getPublicUrl(r.poster_path).data.publicUrl : null,
+      src: r.media_path ? medyaAdres(r.media_path) : null,
+      poster: r.poster_path ? medyaAdres(r.poster_path) : null,
       kind:r.media_kind, mood:MOOD_BY_KEY[r.mood]||null,
       where:r.place_label||t("no_location"), ts:new Date(r.created_at).getTime(),
       note:r.note||"",
@@ -22521,9 +22728,12 @@ async function loadMessages(who){
     const {data,error}=await sb.rpc('get_messages',{conv:convId});
     if(error){ console.warn('messages:',error.message); return; }
     const c=chatOf(who);
+    /* Tum medya yollari tek istekte imzalanir */
+    const _yollar = (data||[]).map(m=>m.media_path).filter(Boolean);
+    const _adres = await mesajAdresleri(_yollar);
     c.msgs=(data||[]).map(m=>({
       id:m.id, me:m.sender_id===me.id,
-      text:m.body||"", media:m.media_path?sb.storage.from('moments').getPublicUrl(m.media_path).data.publicUrl:null,
+      text:m.body||"", media:m.media_path?(_adres.get(m.media_path)||null):null,
       moment:m.moment_id||null,
       kind:m.kind, ts:new Date(m.created_at).getTime(),
       edited_at:m.edited_at?new Date(m.edited_at).getTime():null,
@@ -22556,7 +22766,7 @@ function mesajAniGetir(id, bitince){
       if(!m || m.is_removed) return;
 
       const S = sb.storage.from('moments');
-      const adr = y => { try{ return y ? S.getPublicUrl(y).data.publicUrl : null; }catch(e){ return null; } };
+      const adr = y => { try{ return y ? medyaAdres(y) : null; }catch(e){ return null; } };
 
       const kayit = {
         id:m.id, kind:m.media_kind||"photo",
@@ -22925,14 +23135,25 @@ async function sendMedia(src, tur, sure){
 
     const uzanti  = video ? "mp4" : "jpg";
     const icerik  = video ? (blob.type || "video/mp4") : "image/jpeg";
-    const path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+uzanti;
+    let path=me.id+"/dm_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+uzanti;
 
     try{ showUploadIndicator(video ? (t("sending")||"Gönderiliyor…") : (t("sending")||"Gönderiliyor…")); }catch(e){}
-    /* CDN onbellegi: dosya adlari benzersiz oldugu icin bir yil guvenli.
-       Verilmezse Supabase 1 saniye koyuyor ve her izleyici dosyayi
-       sunucudan yeniden cekiyor. */
-    const up=await sb.storage.from('moments').upload(path,blob,{contentType:icerik, cacheControl:"31536000"});
-    if(up.error) throw up.error;
+    /* ══════════ MESAJ MEDYASI R2 DE ══════════
+       Yukleme Supabase'de kalmisti ama okuma R2'den yapiliyordu:
+       yeni gonderilen fotograflar hic gorunmuyordu. Artik ikisi de
+       R2. Onbellek basligini Worker ekliyor. */
+    const { data:{ session:_ms } } = await sb.auth.getSession();
+    const _mj = _ms && _ms.access_token;
+    /* "/yukle-mesaj": KAPALI kovaya yazar, adres dondurmez */
+    const _mr = await fetch(window.KLIPSY_MEDYA.worker + "/yukle-mesaj", {
+      method:"PUT",
+      headers:{ "Authorization":"Bearer "+_mj, "Content-Type":icerik },
+      body: blob
+    });
+    const _mc = await _mr.json();
+    if(!_mr.ok || !_mc.yol) throw new Error(_mc.hata || "gonderilemedi");
+    /* Dosya adini Worker uretiyor; veritabanina o yol yazilir */
+    path = _mc.yol;
     const {data,error}=await sb.rpc('send_message',{to_user:uid,msg_kind:'media',msg_media:path});
     if(error){
       localMsg._failed=true;
@@ -22942,7 +23163,7 @@ async function sendMedia(src, tur, sure){
       return;
     }
     localMsg.id=data; localMsg._pending=false;
-    localMsg.media=sb.storage.from('moments').getPublicUrl(path).data.publicUrl;
+    localMsg.media=await mesajAdres(path);
     if(chatWho===who) renderChat();
     if(!_convId[who]) await loadConversations();
     await syncConvRequest(who);
@@ -24558,13 +24779,13 @@ function yukleIlerlemeli(path, blob, contentType, kind){
       if(!jeton || !kok) throw new Error("oturum yok");
 
       const x = new XMLHttpRequest();
-      x.open("POST", kok + "/storage/v1/object/moments/" + path, true);
+      /* ══════════ R2 WORKER ══════════
+         Dosya artik Worker uzerinden R2'ye gidiyor. Worker oturumu
+         dogruluyor, dosya adini kendisi uretiyor ve onbellek
+         basligini ekliyor. Ilerleme gostergesi aynen calisiyor. */
+      x.open("PUT", window.KLIPSY_MEDYA.worker + "/yukle", true);
       x.setRequestHeader("Authorization", "Bearer " + jeton);
       x.setRequestHeader("Content-Type", contentType);
-      /* CDN bir yil saklasin: ayni dosya her izleyici icin sunucudan
-         yeniden cekilmesin. Adlar benzersiz oldugu icin risksiz. */
-      x.setRequestHeader("Cache-Control", "public, max-age=31536000, immutable");
-      x.setRequestHeader("x-upsert", "false");
 
       const t0 = Date.now();
       /* Dosya boyutu etikette gorunur: kullanici ne yukledigini bilsin,
@@ -24585,12 +24806,35 @@ function yukleIlerlemeli(path, blob, contentType, kind){
         else coz({ error:new Error("yukleme hatasi " + x.status) });
       };
       x.onerror = ()=> coz({ error:new Error("baglanti kesildi") });
+      /* Worker dosyanin yolunu donduruyor: adi sunucu uretiyor,
+         istemcinin onerdigi "path" kullanilmiyor. */
+      x.onload = ()=>{
+        try{
+          if(x.status >= 200 && x.status < 300){
+            const c = JSON.parse(x.responseText || "{}");
+            if(c && c.yol){ coz({ data:{ path:c.yol }, error:null, yol:c.yol }); return; }
+            coz({ error:new Error("yanit bos") });
+          }else{
+            let m = "yukleme basarisiz (" + x.status + ")";
+            try{ const c = JSON.parse(x.responseText || "{}"); if(c.hata) m = c.hata; }catch(e){}
+            coz({ error:new Error(m) });
+          }
+        }catch(e){ coz({ error:e }); }
+      };
       x.send(blob);
     }catch(e){
-      /* XHR kurulamadi: eski yola don, yuzde olmadan yukle */
+      /* XHR kurulamadi: Worker'a fetch ile gonder, yuzde olmadan */
       try{
-        const r = await sb.storage.from("moments").upload(path, blob, { contentType, cacheControl:"31536000", upsert:false });
-        coz(r);
+        const { data:{ session } } = await sb.auth.getSession();
+        const jeton2 = session && session.access_token;
+        const r = await fetch(window.KLIPSY_MEDYA.worker + "/yukle", {
+          method:"PUT",
+          headers:{ "Authorization":"Bearer "+jeton2, "Content-Type":contentType },
+          body: blob
+        });
+        const c = await r.json();
+        if(!r.ok || !c.yol) throw new Error(c.hata || "yukleme basarisiz");
+        coz({ data:{ path:c.yol }, error:null, yol:c.yol });
       }catch(e2){ coz({ error:e2 }); }
     }
   });
@@ -24753,6 +24997,7 @@ async function post(src,kind,mood,where,note,extra){
         ? ((extra.shareLoc===false) ? Math.round(extra.lo*100)/100 : extra.lo) : null,
       /* Ortak an: onay gelene kadar "pending". Bu asamada an
          normal paylasim gibi gorunur, ikinci isim yazilmaz. */
+      /* Ortak an yazilmadiginda sebebi gorunur olsun */
       partner_id:     (extra && extra.partnerId) ? extra.partnerId : null,
       partner_status: (extra && extra.partnerId) ? 'pending' : 'none',
       duration_ms: (extra && extra.durationMs) ? extra.durationMs : null,
@@ -24769,12 +25014,12 @@ async function post(src,kind,mood,where,note,extra){
     if(ins.error) throw ins.error;
 
     // 3) yerel kaydı gerçek kimlikle güncelle + kalıcı medya adresi
-    const pub = sb.storage.from('moments').getPublicUrl(path).data.publicUrl;
+    const pub = medyaAdres(path);
     local.id = ins.data.id;
     local.ts = new Date(ins.data.created_at).getTime();
     local.src = pub;
     if(posterPath){
-      try{ local.poster = sb.storage.from('moments').getPublicUrl(posterPath).data.publicUrl; }catch(e){}
+      try{ local.poster = medyaAdres(posterPath); }catch(e){}
     }
     local._pending = false;
     allItems = (allItems||[]).filter((x,i,arr)=> arr.findIndex(y=>y.id===x.id)===i);
@@ -25453,10 +25698,23 @@ async function setAvatar(src){
   toast(t("loading_photo"));
   try{
     const blob=dataURLtoBlob(src);
-    const path=me.id+"/avatar_"+Date.now()+".jpg";
-    const up=await sb.storage.from('avatars').upload(path,blob,{contentType:"image/jpeg",upsert:true});
-    if(up.error) throw up.error;
-    const url=sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+    /* ══════════ AVATAR ARTIK R2 DE ══════════
+       Dosya adi her degisiklikte yenileniyor (avatar_<zaman>.jpg),
+       bu yuzden bir yillik onbellek tamamen guvenli: kullanici
+       fotografini degistirdiginde adres de degisiyor.
+       Eskiden cacheControl verilmedigi icin Supabase varsayilani
+       1 saniye kaliyordu ve akistaki her avatar her acilista
+       yeniden iniyordu. */
+    const { data:{ session:_s } } = await sb.auth.getSession();
+    const _jeton = _s && _s.access_token;
+    const _r = await fetch(window.KLIPSY_MEDYA.worker + "/yukle", {
+      method:"PUT",
+      headers:{ "Authorization":"Bearer "+_jeton, "Content-Type":"image/jpeg" },
+      body: blob
+    });
+    const _c = await _r.json();
+    if(!_r.ok || !_c.yol) throw new Error(_c.hata || "avatar yuklenemedi");
+    const url = window.KLIPSY_MEDYA.genel + "/" + _c.yol;
     const {error}=await sb.from('profiles').update({avatar_url:url, avatar_taken_at:new Date().toISOString()}).eq('id',me.id);
     if(error) throw error;
     myAvatar=url; me.avatar_url=url; setRealAvatar(ME,url);
@@ -26787,12 +27045,18 @@ async function mesajlariTazele(who){
     const varOlan = new Set((c.msgs||[]).map(x=>x.id).filter(Boolean));
     let eklendi = 0;
 
+    /* Gelen mesajlarin medya adresleri tek istekte imzalanir */
+    const _yeniYollar = data.filter(m=>!varOlan.has(m.id))
+                            .map(m=>m.media_path).filter(Boolean);
+    const _yeniAdres = _yeniYollar.length
+      ? await mesajAdresleri(_yeniYollar) : new Map();
+
     data.forEach(m=>{
       if(varOlan.has(m.id)) return;
 
       const yeni = {
         id:m.id, me:(m.sender_id===me.id), text:m.body||"",
-        media:m.media_path ? sb.storage.from('moments').getPublicUrl(m.media_path).data.publicUrl : null,
+        media:m.media_path ? (_yeniAdres.get(m.media_path)||null) : null,
         moment:m.moment_id||null, kind:m.kind,
         ts:new Date(m.created_at).getTime()
       };
@@ -27055,7 +27319,7 @@ async function liveWall(el){
 
   function urlOf(path){
     if(!path) return null;
-    try{ return sb.storage.from('moments').getPublicUrl(path).data.publicUrl || null; }
+    try{ return medyaAdres(path) || null; }
     catch(e){ return null; }
   }
 

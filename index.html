@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.44.0";
+window.KLIPSY_SURUM = "3.51.0";
 
 /* ══════════ MEDYA DEPOSU ══════════
    Medya artik Supabase Storage'da degil Cloudflare R2'de.
@@ -792,9 +792,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Arşivin yeniden gizlendi",
       arc_need_friend:"Arkadaş olunca görünür",
       s_arc_title:"Arşivimi arkadaşlarım görsün",
+      posts_page:"Gönderiler",
+      likes_n:"{n} beğeni",
+      comments_all:"{n} yorumun tümünü gör",
+      comments_one:"1 yorumu gör",
       s_arc_sub:"Karşılıklı takipleştiğin kişiler profilindeki anıları görebilir. Kaydedilenler, taslaklar ve takvim her zaman gizli kalır.",
       arc_need_friend_sub:"Bu kişi anılarını arkadaşlarıyla paylaşıyor. Karşılıklı takipleştiğinizde burada görünecekler.",
-      arc_shared_with_you:"Seninle paylaşıyor",
       req_delete_q:"isteğini silmek istiyor musun?",
       r_sexual:"Cinsel içerik",
       r_violence:"Şiddet",
@@ -1461,9 +1464,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Your archive is private again",
       arc_need_friend:"Visible once you're friends",
       s_arc_title:"Let friends see my archive",
+      posts_page:"Posts",
+      likes_n:"{n} likes",
+      comments_all:"View all {n} comments",
+      comments_one:"View 1 comment",
       s_arc_sub:"People you follow each other with can see your moments on your profile. Saved items, drafts and the calendar always stay private.",
       arc_need_friend_sub:"This person shares their moments with friends. They'll appear here once you follow each other.",
-      arc_shared_with_you:"Shared with you",
       req_delete_q:"Delete this request from",
       r_sexual:"Sexual content",
       r_violence:"Violence",
@@ -2114,9 +2120,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Tu archivo vuelve a ser privado",
       arc_need_friend:"Visible cuando seáis amigos",
       s_arc_title:"Que mis amigos vean mi archivo",
+      posts_page:"Publicaciones",
+      likes_n:"{n} me gusta",
+      comments_all:"Ver los {n} comentarios",
+      comments_one:"Ver 1 comentario",
       s_arc_sub:"Quienes te siguen mutuamente pueden ver tus momentos en tu perfil. Guardados, borradores y calendario siempre quedan privados.",
       arc_need_friend_sub:"Esta persona comparte sus momentos con sus amigos. Aparecerán aquí cuando os sigáis mutuamente.",
-      arc_shared_with_you:"Compartido contigo",
       req_delete_q:"¿Eliminar esta solicitud de",
       r_sexual:"Contenido sexual",
       r_violence:"Violencia",
@@ -2767,9 +2776,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"عاد أرشيفك خاصًا",
       arc_need_friend:"يظهر عندما تصبحان صديقين",
       s_arc_title:"ليرَ أصدقائي أرشيفي",
+      posts_page:"المنشورات",
+      likes_n:"{n} إعجاب",
+      comments_all:"عرض كل التعليقات ({n})",
+      comments_one:"عرض تعليق واحد",
       s_arc_sub:"من تتابعونه بشكل متبادل يمكنهم رؤية لحظاتك في ملفك. المحفوظات والمسودات والتقويم تبقى خاصة دائمًا.",
       arc_need_friend_sub:"يشارك هذا الشخص لحظاته مع أصدقائه. ستظهر هنا عندما تتابعان بعضكما.",
-      arc_shared_with_you:"مشارَك معك",
       req_delete_q:"حذف هذا الطلب من",
       r_sexual:"محتوى جنسي",
       r_violence:"عنف",
@@ -3420,9 +3432,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Ton archive est de nouveau privée",
       arc_need_friend:"Visible une fois amis",
       s_arc_title:"Que mes amis voient mes archives",
+      posts_page:"Publications",
+      likes_n:"{n} j'aime",
+      comments_all:"Voir les {n} commentaires",
+      comments_one:"Voir 1 commentaire",
       s_arc_sub:"Les personnes que vous suivez mutuellement voient tes moments sur ton profil. Enregistrés, brouillons et calendrier restent toujours privés.",
       arc_need_friend_sub:"Cette personne partage ses moments avec ses amis. Ils apparaîtront ici quand vous vous suivrez mutuellement.",
-      arc_shared_with_you:"Partagé avec toi",
       req_delete_q:"Supprimer cette demande de",
       r_sexual:"Contenu sexuel",
       r_violence:"Violence",
@@ -4073,9 +4088,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Dein Archiv ist wieder privat",
       arc_need_friend:"Sichtbar, sobald ihr befreundet seid",
       s_arc_title:"Freunde dürfen mein Archiv sehen",
+      posts_page:"Beiträge",
+      likes_n:"{n} Likes",
+      comments_all:"Alle {n} Kommentare ansehen",
+      comments_one:"1 Kommentar ansehen",
       s_arc_sub:"Wer dir und dem du folgst, sieht deine Momente auf deinem Profil. Gespeichertes, Entwürfe und Kalender bleiben immer privat.",
       arc_need_friend_sub:"Diese Person teilt ihre Momente mit Freunden. Sie erscheinen hier, sobald ihr euch gegenseitig folgt.",
-      arc_shared_with_you:"Mit dir geteilt",
       req_delete_q:"Diese Anfrage löschen von",
       r_sexual:"Sexueller Inhalt",
       r_violence:"Gewalt",
@@ -4726,9 +4744,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Архив снова скрыт",
       arc_need_friend:"Появится, когда станете друзьями",
       s_arc_title:"Пусть друзья видят мой архив",
+      posts_page:"Публикации",
+      likes_n:"{n} отметок нравится",
+      comments_all:"Смотреть все комментарии ({n})",
+      comments_one:"Смотреть 1 комментарий",
       s_arc_sub:"Те, с кем вы подписаны друг на друга, увидят ваши моменты в профиле. Сохранённое, черновики и календарь всегда остаются скрытыми.",
       arc_need_friend_sub:"Этот человек делится моментами с друзьями. Они появятся здесь, когда вы подпишетесь друг на друга.",
-      arc_shared_with_you:"Доступно вам",
       req_delete_q:"Удалить этот запрос от",
       r_sexual:"Сексуальный контент",
       r_violence:"Насилие",
@@ -5379,9 +5400,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Seu arquivo voltou a ser privado",
       arc_need_friend:"Visível quando forem amigos",
       s_arc_title:"Deixar amigos verem meu arquivo",
+      posts_page:"Publicações",
+      likes_n:"{n} curtidas",
+      comments_all:"Ver todos os {n} comentários",
+      comments_one:"Ver 1 comentário",
       s_arc_sub:"Quem se segue mutuamente pode ver seus momentos no seu perfil. Salvos, rascunhos e calendário sempre ficam privados.",
       arc_need_friend_sub:"Esta pessoa compartilha seus momentos com amigos. Aparecerão aqui quando vocês se seguirem.",
-      arc_shared_with_you:"Compartilhado com você",
       req_delete_q:"Excluir este pedido de",
       r_sexual:"Conteúdo sexual",
       r_violence:"Violência",
@@ -6032,9 +6056,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"आपका संग्रह फिर निजी है",
       arc_need_friend:"दोस्त बनने पर दिखेगा",
       s_arc_title:"दोस्त मेरा संग्रह देख सकें",
+      posts_page:"पोस्ट",
+      likes_n:"{n} लाइक",
+      comments_all:"सभी {n} टिप्पणियाँ देखें",
+      comments_one:"1 टिप्पणी देखें",
       s_arc_sub:"जिन्हें आप और वे एक-दूसरे को फ़ॉलो करते हैं, वे आपकी प्रोफ़ाइल पर पल देख सकते हैं। सहेजे गए, ड्राफ़्ट और कैलेंडर हमेशा निजी रहते हैं।",
       arc_need_friend_sub:"यह व्यक्ति अपने पल दोस्तों के साथ साझा करता है। एक-दूसरे को फ़ॉलो करने पर यहाँ दिखेंगे।",
-      arc_shared_with_you:"आपके साथ साझा",
       req_delete_q:"क्या यह अनुरोध हटाएँ",
       r_sexual:"यौन सामग्री",
       r_violence:"हिंसा",
@@ -6685,9 +6712,12 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       arc_closed_done:"Arsipmu privat lagi",
       arc_need_friend:"Terlihat setelah berteman",
       s_arc_title:"Teman boleh lihat arsipku",
+      posts_page:"Postingan",
+      likes_n:"{n} suka",
+      comments_all:"Lihat semua {n} komentar",
+      comments_one:"Lihat 1 komentar",
       s_arc_sub:"Orang yang saling mengikuti denganmu bisa melihat momenmu di profilmu. Tersimpan, draf, dan kalender selalu privat.",
       arc_need_friend_sub:"Orang ini membagikan momennya dengan teman. Akan tampil di sini setelah saling mengikuti.",
-      arc_shared_with_you:"Dibagikan denganmu",
       req_delete_q:"Hapus permintaan ini dari",
       r_sexual:"Konten seksual",
       r_violence:"Kekerasan",
@@ -7017,6 +7047,7 @@ document.title = "Klipsy " + KLIPSY_SURUM;
 /* Yas ve onay paneli de tam sayfa: listeye girmezse acik temada
    koyu kalir ve okunmaz. */
 [data-theme="light"] #yasOnay,
+[data-theme="light"] #gonPage,
 [data-theme="light"] .apComments .apCBox{
   --bg:#F2F2F5;
   --t1:#0C0C10; --t2:rgba(12,12,16,.62); --t3:rgba(12,12,16,.42);
@@ -8515,6 +8546,12 @@ svg{display:block}
 .apFollow.takipte{background:var(--surf1);color:var(--t2)}
 .apFollow.gizli{display:none}
 
+.apKapat{flex:none;width:2.25rem;height:2.25rem;border-radius:6.1875rem;border:0;
+  display:flex;align-items:center;justify-content:center;margin-left:-0.375rem;
+  color:var(--t2);background:var(--surf1);transition:transform .16s}
+.apKapat:active{transform:scale(.9)}
+.apKapat svg{width:1.25rem;height:1.25rem}
+
 .apMore{flex:none;width:2.25rem;height:2.25rem;border-radius:6.1875rem;border:0;
   display:flex;align-items:center;justify-content:center;
   color:var(--t2);background:var(--surf1);transition:transform .16s}
@@ -8573,6 +8610,108 @@ svg{display:block}
 /* EYLEM ŞERİDİ — kartın İÇİNDE, sağda dikey.
    Görselin üstünde durduğu için okunabilirlik gerekiyor: ikonlar
    beyaz ve gölgeli. Başparmağın doğal yayında, alt sağ köşede. */
+/* ══════════════ GONDERILER SAYFASI ══════════════
+   Izgarada bir kareye dokununca acilan dikey liste. Duzen bilerek
+   tanidik: serit ustte, gorsel tam genislikte, eylemler altta
+   yatay. Kullanici hangi anin hangi eyleme ait oldugunu okumadan
+   anlasin diye her gonderi tek blok halinde duruyor. */
+/* anPage 58 kullaniyor; bu sayfa da ayni araliğa girer. Yorumlar
+   (60) ve an menusu (250) USTTE kalmali, yoksa bu sayfadan
+   acildiklarinda arkada kalirlar. */
+.gonPage{position:fixed;inset:0;z-index:57;display:none;
+  background:var(--panelbg);color:var(--t1);flex-direction:column}
+.gonPage.open{display:flex}
+.gonTepe{flex:none;display:flex;align-items:center;gap:0.625rem;
+  padding:calc(var(--sat) + 0.75rem) 0.875rem 0.75rem 0.75rem;
+  background:var(--panelbg);border-bottom:1px solid var(--edge-soft)}
+.gonTepe .gonGeri{width:2rem;height:2rem;display:grid;place-items:center;
+  color:var(--t1);background:none;border:0;transition:transform .16s}
+.gonTepe .gonGeri:active{transform:scale(.88)}
+.gonTepe .gonGeri svg{width:1.3125rem;height:1.3125rem}
+.gonTepe b{font-size:1rem;font-weight:700;letter-spacing:-.02em}
+.gonListe{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding-bottom:calc(var(--sab) + 1.5rem)}
+.gonListe::-webkit-scrollbar{display:none}
+
+.gon{margin-bottom:0.375rem}
+.gonUst{display:flex;align-items:center;gap:0.5625rem;padding:0.5625rem 0.875rem}
+.gonAv{width:2.125rem;height:2.125rem;border-radius:6.1875rem;flex:none;
+  background:var(--avatar-bg) center/cover no-repeat}
+.gonKim{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.0625rem;
+  background:none;border:0;padding:0;text-align:left;color:inherit}
+.gonKim b{font-size:0.8438rem;font-weight:700;letter-spacing:-.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gonKim i{font-style:normal;font-size:0.7188rem;color:var(--t3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gonNok{width:1.625rem;height:1.625rem;display:grid;place-items:center;
+  color:var(--t2);background:none;border:0}
+.gonNok svg{width:1rem;height:1rem}
+
+.gonMedya{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;
+  background:#111117 center/cover no-repeat}
+.gonMedya img,.gonMedya video{width:100%;height:100%;object-fit:cover;display:block}
+.gonSarki{position:absolute;left:0.625rem;bottom:0.625rem;display:block}
+.gonSes{position:absolute;right:0.625rem;bottom:0.625rem;width:2rem;height:2rem;
+  border-radius:6.1875rem;border:0;display:grid;place-items:center;
+  background:rgba(0,0,0,.48);color:#fff;
+  backdrop-filter:blur(0.375rem);-webkit-backdrop-filter:blur(0.375rem)}
+.gonSes svg{width:1.0625rem;height:1.0625rem}
+.gonSes:active{transform:scale(.9)}
+.gonDuygu{position:absolute;left:0.625rem;top:0.625rem;font-size:0.9375rem;
+  filter:drop-shadow(0 1px 0.25rem rgba(0,0,0,.8));pointer-events:none}
+/* Cift dokunusta ucan kalp */
+.gonKalp{position:absolute;left:50%;top:50%;width:5rem;height:5rem;margin:-2.5rem 0 0 -2.5rem;
+  pointer-events:none;opacity:0;transform:scale(.6)}
+.gonKalp.at{animation:gonKalpAt .9s ease forwards}
+@keyframes gonKalpAt{
+  0%{opacity:0;transform:scale(.6)}
+  18%{opacity:1;transform:scale(1.15)}
+  36%{transform:scale(.95)}
+  70%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.1)}
+}
+
+.gonEylem{display:flex;align-items:center;gap:0.875rem;padding:0.625rem 0.875rem 0.25rem}
+.gonEylem .bosluk{flex:1}
+.gonEylem button{width:1.5rem;height:1.5rem;display:grid;place-items:center;
+  color:var(--t1);background:none;border:0;transition:transform .16s}
+.gonEylem button:active{transform:scale(.85)}
+.gonEylem svg{width:1.4375rem;height:1.4375rem}
+.gonEylem .begenildi svg{fill:#FF3B6B;stroke:#FF3B6B}
+.gonEylem .kaydedildi svg{fill:currentColor}
+
+.gonAlt{padding:0.125rem 0.875rem 0.875rem;display:flex;flex-direction:column;gap:0.1875rem}
+.gonAlt .say{font-size:0.8125rem;font-weight:700}
+.gonAlt .not{font-size:0.8125rem;line-height:1.45;color:var(--t1)}
+.gonAlt .not em{font-style:normal;font-weight:700}
+.gonAlt .yorumBag{font-size:0.7812rem;color:var(--t3);background:none;border:0;
+  padding:0;text-align:left}
+.gonBos{padding:3rem 1.25rem;text-align:center;font-size:0.8125rem;color:var(--t3)}
+
+/* ══════════ PROFIL KIPI ══════════
+   Profilden acilan anda ust serit kartin ICINE, sol ust kosesine
+   tasinir: an ekranin tamamini kaplar, kimlik bilgisi karenin
+   uzerinde durur. Bildirimden ya da haritadan acilan anda serit
+   eski yerinde kalir — orada an tek basina bir sayfadir, akis
+   gibi degil.
+
+   Metin her turlu fotografin uzerinde okunmali: bu yuzden ustte
+   koyu bir gecis var ve yazi rengi temadan bagimsiz beyaz. */
+.anPage.profilKipi .apTop{position:absolute;top:0;left:0;right:0;z-index:6;
+  padding:0.75rem 0.75rem 2rem;color:#fff;
+  background:linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.28) 55%, transparent);
+  pointer-events:none}
+.anPage.profilKipi .apTop > *{pointer-events:auto}
+.anPage.profilKipi .apWho{color:#fff}
+.anPage.profilKipi .apWho i{color:rgba(255,255,255,.82)}
+.anPage.profilKipi .apWho b{text-shadow:0 1px 0.5rem rgba(0,0,0,.55)}
+.anPage.profilKipi .apWho i{text-shadow:0 1px 0.5rem rgba(0,0,0,.55)}
+.anPage.profilKipi .apKapat,
+.anPage.profilKipi .apMore{background:rgba(0,0,0,.4);color:#fff;
+  backdrop-filter:blur(0.375rem);-webkit-backdrop-filter:blur(0.375rem)}
+/* Kart, serit disari cikinca bosalan alani kullanabilsin */
+.anPage.profilKipi .apKartAlan{padding-top:0}
+
 .apRail{position:absolute;right:0.625rem;bottom:0.75rem;z-index:5;
   display:flex;flex-direction:column;align-items:center;gap:1rem;
   padding:0;transition:opacity .28s}
@@ -11973,10 +12112,29 @@ html.sb-white #userSearch::before{
        Düzen arşiv görüntüleyiciyle aynı: avatar üstte, görsel 9:16
        kartta, eylemler ve yazılar altta. Hiçbir yazı görselin
        üstüne binmiyor — en okunaklı düzen. -->
+  <!-- ══════════ GONDERILER ══════════
+       Profildeki bir kareye dokununca o profilin anlari dikey bir
+       liste olarak acilir. Izgara neyin oldugunu gosterir; burasi
+       ne olup bittigini: kac begeni, kac yorum, ne yazilmis. -->
+  <section class="panel gonPage" id="gonPage" aria-hidden="true">
+    <div class="gonTepe">
+      <button class="gonGeri" id="gonGeri" aria-label="Geri">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <b id="gonBaslik">Gönderiler</b>
+    </div>
+    <div class="gonListe" id="gonListe"></div>
+  </section>
+
   <section class="panel anPage" id="anPage" aria-hidden="true">
 
     <!-- ÜST: avatar, ad, konum, takip -->
-    <div class="apTop">
+    <div class="apTop" id="apTop">
+      <!-- Kapatma artik bir HAREKETE degil, gorunur bir dugmeye bagli:
+           asagi kaydirma onceki ana gitmek icin kullaniliyor. -->
+      <button class="apKapat" id="apKapat" aria-label="Kapat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
       <button class="apWho" id="apWho">
         <span class="av" id="apAv"></span>
         <span class="tx"><b id="apName"></b><i id="apMeta"></i></span>
@@ -12440,27 +12598,39 @@ function chatDate(ms){
   const mm=String(d.getMonth()+1).padStart(2,"0");
   return dd+"."+mm+"."+d.getFullYear();
 }
+/* ══════════ TARIH BICIMI ══════════
+   "3 hf", "2 ay" gibi yaklasik ifadeler bir anin ne zaman
+   yasandigini soylemiyordu. Artik gun.ay.yil yaziliyor: 23.04.2026.
+
+   Tek istisna BUGUN. Uc dakika once yazilmis bir yoruma bugunun
+   tarihini basmak bilgi vermez, "3 dk" verir. Bu yuzden ayni gun
+   icinde saat bazli kisa gosterim korunuyor. */
+function tarihKisa(ms){
+  const d = new Date(ms);
+  const ik = n => String(n).padStart(2,"0");
+  return ik(d.getDate()) + "." + ik(d.getMonth()+1) + "." + d.getFullYear();
+}
+function ayniGunMu(ms){
+  const a = new Date(ms), b = new Date();
+  return a.getFullYear()===b.getFullYear()
+      && a.getMonth()===b.getMonth()
+      && a.getDate()===b.getDate();
+}
 function rel(ms){
+  if(!ayniGunMu(ms)) return tarihKisa(ms);
   const s=Math.max(0,Math.round((Date.now()-ms)/1000));
   if(s<8) return t("just_now2");
   if(s<60) return s+" sn";
   const d=Math.floor(s/60);    if(d<60) return d+" dk";
-  const h=Math.floor(d/60);    if(h<24) return h+" sa";
-  const g=Math.floor(h/24);    if(g<7)  return g+" g";
-  const w=Math.floor(g/7);     if(g<30) return w+" hf";
-  const a=Math.floor(g/30.44); if(a<12) return a+" ay";
-  return Math.floor(g/365.25)+" yıl";
+  return Math.floor(d/60)+" sa";
 }
 function relLong(ms){
+  if(!ayniGunMu(ms)) return tarihKisa(ms);
   const s=Math.max(0,Math.round((Date.now()-ms)/1000));
   if(s<10) return t("just_now2");
   if(s<60) return s+" "+t("sec_ago");
   const d=Math.floor(s/60);    if(d<60) return d+" "+t("min_ago2");
-  const h=Math.floor(d/60);    if(h<24) return h+" "+t("hour_ago2");
-  const g=Math.floor(h/24);    if(g<7)  return g+" "+t("day_ago2");
-  const w=Math.floor(g/7);     if(g<30) return w+" "+t("week_ago");
-  const a=Math.floor(g/30.44); if(a<12) return a+" "+t("month_ago");
-  return Math.floor(g/365.25)+" "+t("year_ago");
+  return Math.floor(d/60)+" "+t("hour_ago2");
 }
 function dateOf(ms){const d=new Date(ms);return d.getDate()+" "+AY[d.getMonth()]+" "+d.getFullYear();}
 function clockOf(ms){const d=new Date(ms);return pad(d.getHours())+":"+pad(d.getMinutes());}
@@ -16547,6 +16717,30 @@ async function anSayfasiAc(id, secenek){
   secenek = secenek || {};
   if(!id) return;
   _apSonId = id; _apSonSecenek = secenek;
+  _apListe  = (Array.isArray(secenek.liste) && secenek.liste.length)
+              ? secenek.liste.slice() : null;
+  _apIndeks = _apListe ? _apListe.indexOf(id) : -1;
+
+  /* ══════════ UST SERIDIN YERI ══════════
+     Profilden acildiginda kimlik bilgisi karenin ICINE, sol ust
+     kosesine tasinir. Diger girislerde (bildirim, harita) serit
+     kendi yerinde kalir; orada an tek basina bir sayfa. */
+  try{
+    const _ust  = document.getElementById("apTop");
+    const _kart = document.getElementById("apKart");
+    const _sayfa= document.getElementById("anPage");
+    if(_ust && _kart && _sayfa){
+      if(_apListe){
+        if(_ust.parentElement !== _kart) _kart.insertBefore(_ust, _kart.firstChild);
+        _sayfa.classList.add("profilKipi");
+      }else{
+        /* Eski yerine dondur: kart alaninin hemen ustu */
+        const _alan = _sayfa.querySelector(".apKartAlan");
+        if(_alan && _ust.parentElement !== _sayfa) _sayfa.insertBefore(_ust, _alan);
+        _sayfa.classList.remove("profilKipi");
+      }
+    }
+  }catch(e){}
 
   /* ZAMAN AŞIMI KORUMASI
      Sunucu hiç cevap vermezse iskelet sonsuza kadar dönüyordu.
@@ -16695,6 +16889,452 @@ function anSayfasiBos(mesaj){
 
 /* Tekrar deneyebilmek için son isteği hatırla. */
 let _apSonId = null, _apSonSecenek = null, _apZamanAsimi = null;
+
+
+/* ══════════════ GONDERILER SAYFASI ══════════════
+   Profildeki izgarada bir kareye dokununca acilir: o listedeki
+   anlarin tamami dikey bir akis olarak gosterilir.
+
+   Neden ayri bir sayfa: izgara neyin VAR oldugunu gosteriyor ama
+   kac begeni aldigini, kimin yorum yaptigini gostermiyordu. Eski
+   arsiv goruntuleyici de yalnizca gorseli aciyordu.
+
+   Bildirim ve harita bu sayfayi kullanmaz; orada tek an kendi
+   sayfasinda acilmaya devam eder. */
+/* Ince cizgi seti: gorsel agirligi dusuk, kalabalik bir listede
+   goz yormuyor. Kalinlik 1.6 — eylem seridi iceriginin onune
+   gecmemeli. Etkin hal dolgu ile veriliyor, yalnizca renkle degil:
+   renk ayrimini goremeyen biri icin de fark kaliyor. */
+const GON_IC = {
+  kalp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.8 4.2 12.9A4.9 4.9 0 0 1 11.2 6l.8.8.8-.8a4.9 4.9 0 0 1 7 6.9z"/></svg>',
+  yorum:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.7c0 4.5-3.8 8.1-8.5 8.1a9 9 0 0 1-3.4-.65L3.5 20.5l1.45-4.6a7.9 7.9 0 0 1-1.45-4.6c0-4.5 3.8-8.1 8.5-8.1s8.5 3.6 8.5 8.1z"/></svg>',
+  gonder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2.5 10.6 13.4M21.5 2.5l-6.9 19-3.9-8.1-8.1-3.9z"/></svg>',
+  kaydet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.3 3.4h11.4v17.2L12 16.9l-5.7 3.7z"/></svg>',
+  nokta:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.2" cy="12" r="1.55"/><circle cx="12" cy="12" r="1.55"/><circle cx="18.8" cy="12" r="1.55"/></svg>',
+  sesAcik:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="M15.4 8.8a4.4 4.4 0 0 1 0 6.4"/><path d="M18.2 6a8 8 0 0 1 0 12"/></svg>',
+  sesKapali:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="M16.5 9.5 21 14M21 9.5 16.5 14"/></svg>'
+};
+
+let _gonListe = [];
+let _gonIzleyici = null;
+
+/* Videolar yalnizca ekranda goruneni oynar: hepsi birden calisinca
+   hem ses karisiyor hem cihaz isiniyordu. */
+function gonVideoIzle(kok){
+  try{ if(_gonIzleyici) _gonIzleyici.disconnect(); }catch(e){}
+  if(!("IntersectionObserver" in window)) return;
+  _gonIzleyici = new IntersectionObserver(kayitlar=>{
+    kayitlar.forEach(k=>{
+      const v    = k.target.querySelector("video");
+      const kart = k.target.closest(".gon");
+      const ses  = kart && kart._sarki;
+      const gorunur = k.isIntersecting && k.intersectionRatio > 0.6;
+
+      if(gorunur){
+        if(ses){
+          ses.muted = !soundOn;
+          try{ ses.currentTime = 0; }catch(e){}
+          /* Otomatik oynatma engellenirse sessiz baslatilir:
+             sessiz de olsa plak donsun, an eksik gorunmesin. */
+          ses.play().catch(()=>{ ses.muted = true; ses.play().catch(()=>{}); });
+          if(kart._sarkiRozet) kart._sarkiRozet.classList.add("playing");
+        }
+        if(v){
+          if(!v.src && v.dataset.src){ v.src = v.dataset.src; }
+          /* Sarki varsa videonun kendi sesi susar: ikisi ust uste
+             binince ikisi de anlasilmiyor. */
+          v.muted = ses ? true : !soundOn;
+          v.play().catch(()=>{});
+        }
+      }else{
+        if(ses){
+          try{ ses.pause(); }catch(e){}
+          ses.muted = true;
+          if(kart._sarkiRozet) kart._sarkiRozet.classList.remove("playing");
+        }
+        if(v){ try{ v.pause(); }catch(e){} }
+      }
+    });
+  }, { root: kok, threshold:[0, 0.6, 1] });
+  kok.querySelectorAll(".gonMedya").forEach(el=>_gonIzleyici.observe(el));
+}
+
+/* Ses ayari degisince sayfadaki her sey esitlenir: sarki calan
+   kartta video susar, calmayanda videonun kendi sesi acilir. */
+function gonSesiUygula(){
+  const kutu = document.getElementById("gonListe");
+  if(!kutu) return;
+  kutu.querySelectorAll(".gon").forEach(kart=>{
+    const v = kart.querySelector("video");
+    const ses = kart._sarki;
+    const calisiyor = ses && !ses.paused;
+    if(ses && calisiyor) ses.muted = !soundOn;
+    if(v) v.muted = ses ? true : !soundOn;
+  });
+  kutu.querySelectorAll(".gonSes").forEach(dd=>{
+    dd.innerHTML = soundOn ? GON_IC.sesAcik : GON_IC.sesKapali;
+  });
+}
+
+/* Sayfa kapanirken hicbir ses arkada kalmamali */
+function gonSesleriDurdur(){
+  const kutu = document.getElementById("gonListe");
+  if(!kutu) return;
+  kutu.querySelectorAll(".gon").forEach(kart=>{
+    try{ if(kart._sarki){ kart._sarki.pause(); kart._sarki.muted = true; } }catch(e){}
+    const v = kart.querySelector("video");
+    try{ if(v) v.pause(); }catch(e){}
+    if(kart._sarkiRozet) kart._sarkiRozet.classList.remove("playing");
+  });
+}
+
+function gonderiKarti(it){
+  const kart = document.createElement("article");
+  kart.className = "gon";
+  kart.setAttribute("data-gid", it.id);
+
+  /* ── ust serit ── */
+  const ust = document.createElement("div"); ust.className = "gonUst";
+  const av = document.createElement("span"); av.className = "gonAv";
+  try{ paintAv(av, it.who || ME); }catch(e){}
+  const kim = document.createElement("button"); kim.className = "gonKim";
+  kim.innerHTML = "<b></b><i></i>";
+  kim.querySelector("b").textContent = adiniGoster(it.who || ME);
+  const altSatir = [];
+  try{ if(it.ts) altSatir.push(rel(it.ts)); }catch(e){}
+  if(it.where) altSatir.push(it.where);
+  kim.querySelector("i").textContent = altSatir.join(" · ");
+  kim.addEventListener("click", ()=>{
+    if(!it.who || it.who === ME) return;
+    close("gonPage"); openProfile(it.who);
+  });
+  const nok = document.createElement("button"); nok.className = "gonNok";
+  nok.innerHTML = GON_IC.nokta;
+  nok.setAttribute("aria-label", t("act_more"));
+  nok.addEventListener("click", ()=>openPostMenu(it, { archive:true }));
+  ust.append(av, kim, nok);
+
+  /* ── medya ── */
+  const medya = document.createElement("div"); medya.className = "gonMedya";
+  if(it.kind === "video"){
+    const v = document.createElement("video");
+    /* Ses akistaki genel ayari izler; burada sessize almak, ayni
+       videonun akista sesli profilde sessiz olmasina yol aciyordu. */
+    v.muted = !soundOn; v.loop = true; v.playsInline = true;
+    v.setAttribute("playsinline",""); v.preload = "none";
+    if(it.poster) v.poster = it.poster;
+    if(it.src) v.dataset.src = it.src;
+    medya.appendChild(v);
+
+    /* Ses dugmesi: karenin sag alt kosesinde, sayfadaki butun
+       videolar icin ortak ayari degistirir. */
+    const sesDg = document.createElement("button");
+    sesDg.className = "gonSes";
+    const sesCiz = ()=>{ sesDg.innerHTML = soundOn ? GON_IC.sesAcik : GON_IC.sesKapali; };
+    sesCiz();
+    sesDg.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      soundOn = !soundOn;
+      try{ if(typeof applySound === "function") applySound(); }catch(x){}
+      /* Sayfadaki tum videolar ve dugmeler esitlenir */
+      gonSesiUygula();
+    });
+    medya.appendChild(sesDg);
+  }else{
+    const g = document.createElement("img");
+    g.loading = "lazy"; g.decoding = "async";
+    if(it.src) g.src = it.src;
+    medya.appendChild(g);
+  }
+  if(it.mood && it.mood.em){
+    const d = document.createElement("span"); d.className = "gonDuygu";
+    d.textContent = it.mood.em; medya.appendChild(d);
+  }
+  /* ══════════ SARKILI ANLAR ══════════
+     Akista an bir sarkiyla birlikte calisiyordu; bu sayfaya
+     tasinmamisti. Ses nesnesi kart basina kurulur, YALNIZCA ekranda
+     gorunen kartinki calar.
+
+     Baskasinin profilinden gelen listede sarki bilgisi bastan
+     gelmiyor; sayaclarla birlikte sonradan ulasinca bu fonksiyon
+     yeniden cagrilir. */
+  let _sarkiSes = null;
+  kart._sarkiKur = ()=>{
+    if(_sarkiSes || !it.song || !it.song.preview) return;
+    _sarkiSes = new Audio(it.song.preview);
+    _sarkiSes.preload = "none"; _sarkiSes.loop = true; _sarkiSes.muted = true;
+    kart._sarki = _sarkiSes;
+    const rozet = document.createElement("span");
+    rozet.className = "gonSarki abSong";
+    rozet.innerHTML = '<span class="songDisc"' +
+      (it.song.art ? ' style="background-image:url(' + esc(it.song.art) + ')"' : '') + '></span>';
+    rozet.setAttribute("title",
+      (it.song.title || "") + (it.song.artist ? " — " + it.song.artist : ""));
+    medya.appendChild(rozet);
+    kart._sarkiRozet = rozet;
+  };
+  kart._sarkiKur();
+
+  const ucanKalp = document.createElement("span");
+  ucanKalp.className = "gonKalp";
+  ucanKalp.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 20.3 4.6 13a4.7 4.7 0 0 1 6.6-6.7l.8.8.8-.8A4.7 4.7 0 0 1 19.4 13z"/></svg>';
+  medya.appendChild(ucanKalp);
+
+  /* ── eylemler ── */
+  const ey = document.createElement("div"); ey.className = "gonEylem";
+  const dgBegen = document.createElement("button"); dgBegen.innerHTML = GON_IC.kalp;
+  const dgYorum = document.createElement("button"); dgYorum.innerHTML = GON_IC.yorum;
+  const dgGonder= document.createElement("button"); dgGonder.innerHTML = GON_IC.gonder;
+  const bos = document.createElement("span"); bos.className = "bosluk";
+  const dgKaydet= document.createElement("button"); dgKaydet.innerHTML = GON_IC.kaydet;
+  ey.append(dgBegen, dgYorum, dgGonder, bos, dgKaydet);
+
+  /* ── alt bilgi ── */
+  const alt = document.createElement("div"); alt.className = "gonAlt";
+  const say = document.createElement("span"); say.className = "say";
+  const not = document.createElement("p"); not.className = "not";
+  const yorumBag = document.createElement("button"); yorumBag.className = "yorumBag";
+  /* Zaman ust seritte yaziyor; altta tekrar etmek bos yer kapliyordu */
+  alt.append(say, not, yorumBag);
+
+  const ciz = ()=>{
+    dgBegen.classList.toggle("begenildi", !!it.liked);
+    dgKaydet.classList.toggle("kaydedildi", !!it.saved);
+    const n = Math.max(0, Number(it.likes) || 0);
+    say.textContent = t("likes_n").replace("{n}", nf(n));
+    say.style.display = n ? "" : "none";
+    if(it.note){
+      not.innerHTML = "<em></em> ";
+      not.querySelector("em").textContent = ilkAd(adiniGoster(it.who || ME));
+      not.appendChild(document.createTextNode(it.note));
+      not.style.display = "";
+    }else{ not.style.display = "none"; }
+    const y = Math.max(0, Number(it.cc) || 0);
+    yorumBag.textContent = (y === 1) ? t("comments_one")
+                         : t("comments_all").replace("{n}", nf(y));
+    yorumBag.style.display = y ? "" : "none";
+  };
+  kart._sync = ciz;
+  ciz();
+
+  /* ── etkilesim ── */
+  const begen = (zorla)=>{
+    if(zorla && it.liked) return;
+    it.liked = !it.liked;
+    it.likes = Math.max(0, (Number(it.likes)||0) + (it.liked ? 1 : -1));
+    ciz();
+    try{ if(typeof apTitret==="function") apTitret(10); }catch(e){}
+    const sb = window.__sb, me = window.__me;
+    if(!sb || !me || !isReal(it.id)) return;
+    if(it.liked){
+      sb.from("likes").insert({ moment_id:it.id, user_id:me.id }).then(({error})=>{
+        if(error && !/duplicate/i.test(error.message)){
+          it.liked = false; it.likes = Math.max(0,(Number(it.likes)||0)-1); ciz();
+        }
+      });
+    }else{
+      sb.from("likes").delete().eq("moment_id",it.id).eq("user_id",me.id).then(()=>{});
+    }
+    /* Akistaki ayni kart varsa o da esitlensin */
+    try{
+      const fi = (items||[]).find(x=>x && x.id===it.id);
+      if(fi){ fi.liked = it.liked; fi.likes = it.likes;
+        const el = list.querySelector('[data-id="'+it.id+'"]');
+        if(el && el._sync) el._sync(); }
+    }catch(e){}
+  };
+  dgBegen.addEventListener("click", ()=>begen(false));
+
+  dgKaydet.addEventListener("click", ()=>{
+    it.saved = !it.saved; ciz();
+    toast(it.saved ? t("t_saved") : t("ok_unsaved2"));
+    const sb = window.__sb, me = window.__me;
+    if(!sb || !me || !isReal(it.id)) return;
+    if(it.saved){
+      sb.from("saves").insert({ moment_id:it.id, user_id:me.id }).then(({error})=>{
+        if(error && error.code !== "23505"){ it.saved = false; ciz(); }
+      });
+    }else{
+      sb.from("saves").delete().eq("moment_id",it.id).eq("user_id",me.id).then(()=>{});
+    }
+  });
+
+  dgYorum.addEventListener("click", ()=>{ try{ openComments(it); }catch(e){} });
+  yorumBag.addEventListener("click", ()=>{ try{ openComments(it); }catch(e){} });
+  dgGonder.addEventListener("click", ()=>{ try{ openShare(it.id); }catch(e){} });
+
+  /* Cift dokunus -> begen */
+  let sonDokunus = 0;
+  medya.addEventListener("click", ()=>{
+    const simdi = Date.now();
+    if(simdi - sonDokunus < 320){
+      begen(true);
+      ucanKalp.classList.remove("at");
+      void ucanKalp.offsetWidth;
+      ucanKalp.classList.add("at");
+      sonDokunus = 0;
+    }else{ sonDokunus = simdi; }
+  });
+
+  kart.append(ust, medya, ey, alt);
+  return kart;
+}
+
+/* liste: gosterilecek an nesneleri, baslangic: ilk goruneceki kimlik */
+function gonderilerAc(liste, baslangic, baslik){
+  const kutu = document.getElementById("gonListe");
+  if(!kutu) return;
+  _gonListe = (liste || []).filter(Boolean);
+
+  const bsl = document.getElementById("gonBaslik");
+  if(bsl) bsl.textContent = baslik || t("posts_page");
+
+  kutu.innerHTML = "";
+  if(!_gonListe.length){
+    kutu.innerHTML = '<div class="gonBos">' + esc(t("no_moments_own")) + '</div>';
+    open("gonPage");
+    return;
+  }
+  const parca = document.createDocumentFragment();
+  _gonListe.forEach(it=>parca.appendChild(gonderiKarti(it)));
+  kutu.appendChild(parca);
+
+  open("gonPage");
+
+  /* Dokunulan gonderiye git — arayarak degil, dogrudan. */
+  requestAnimationFrame(()=>{
+    try{
+      if(baslangic){
+        const hedef = kutu.querySelector('[data-gid="' + baslangic + '"]');
+        if(hedef) kutu.scrollTop = hedef.offsetTop - kutu.offsetTop;
+      }else{ kutu.scrollTop = 0; }
+    }catch(e){}
+    gonVideoIzle(kutu);
+  });
+
+  /* Begeni ve kaydetme durumu tek istekte gelir */
+  gonDurumCek();
+}
+
+function gonDurumCek(){
+  const sb = window.__sb, me = window.__me;
+  if(!sb || !me || !_gonListe.length) return;
+  const idler = _gonListe.map(x=>x.id).filter(id=>isReal(id));
+  if(!idler.length) return;
+  /* Sayaclar da buradan gelir: baskasinin profilinden gelen
+     listede begeni ve yorum sayisi bilinmiyor, elde yalnizca
+     gorsel var. Ayrica kendi anlarindaki bayat sayaclari da
+     duzeltir. */
+  Promise.all([
+    sb.from("likes").select("moment_id").eq("user_id",me.id).in("moment_id",idler),
+    sb.from("saves").select("moment_id").eq("user_id",me.id).in("moment_id",idler),
+    sb.from("moments")
+      .select("id, like_count, comment_count, song_title, song_artist, song_art, song_preview")
+      .in("id",idler)
+  ]).then(([lk,sv,sy])=>{
+    const be = new Set((lk.data||[]).map(x=>x.moment_id));
+    const ka = new Set((sv.data||[]).map(x=>x.moment_id));
+    const sayac = {};
+    (sy.data||[]).forEach(x=>{ sayac[x.id] = x; });
+    _gonListe.forEach(it=>{
+      it.liked = be.has(it.id); it.saved = ka.has(it.id);
+      const c = sayac[it.id];
+      if(c){
+        if(c.like_count != null)    it.likes = c.like_count;
+        if(c.comment_count != null) it.cc    = c.comment_count;
+        /* Baskasinin profilinden gelen listede sarki bilgisi yoktu */
+        if(!it.song && c.song_preview){
+          it.song = { title:c.song_title, artist:c.song_artist,
+                      art:c.song_art, preview:c.song_preview };
+        }
+      }
+    });
+    const kutu = document.getElementById("gonListe");
+    if(kutu) kutu.querySelectorAll(".gon").forEach(el=>{
+      if(el._sync) el._sync();
+      /* Sarki sonradan geldiyse rozet ve ses simdi kurulur */
+      try{ if(el._sarkiKur) el._sarkiKur(); }catch(e){}
+    });
+  }).catch(()=>{});
+}
+
+/* Betik DOMContentLoaded'dan SONRA da yuklenebiliyor; o durumda
+   olay hic baglanmiyor ve geri dugmesi olu kaliyordu. */
+(function gonGeriBagla(){
+  const gb = document.getElementById("gonGeri");
+  if(gb){
+    gb.addEventListener("click", ()=>{ gonSesleriDurdur(); close("gonPage"); });
+    /* Donanim geri tusu ya da baska bir yol ile kapanirsa da sus */
+    const sayfa = document.getElementById("gonPage");
+    if(sayfa && window.MutationObserver){
+      new MutationObserver(()=>{
+        if(!sayfa.classList.contains("open")) gonSesleriDurdur();
+      }).observe(sayfa, { attributes:true, attributeFilter:["class"] });
+    }
+    return;
+  }
+  document.addEventListener("DOMContentLoaded", gonGeriBagla, { once:true });
+})();
+
+/* ══════════ PROFILDEN GEZINME ══════════
+   Profildeki bir kareye dokununca an kendi sayfasinda acilir ve o
+   profilin DIGER anlari arasinda kaydirilarak gezilebilir.
+   Bildirimden ya da haritadan acildiginda liste yoktur: orada tek
+   an gosterilir, eski davranis aynen surer. */
+let _apListe = null;    /* sirali an kimlikleri */
+let _apIndeks = -1;
+
+function anSayfasiGec(yon){
+  if(!_apListe || _apIndeks < 0) return false;
+  const hedef = _apIndeks + yon;
+  if(hedef < 0 || hedef >= _apListe.length) return false;
+  anSayfasiAc(_apListe[hedef], { liste: _apListe.slice() });
+  return true;
+}
+
+/* ══════════ GECIS ══════════
+   Once kisa ve sonumlu bir itme vardi: sayfa biraz kayiyor, sonra
+   icerik yerinde degisiyordu. Hareketin nereye gittigi anlasilmiyor,
+   an aniden baska bir ana donusuyordu.
+
+   Artik akistaki gibi: mevcut kare gittigi yone dogru ekrandan
+   cikar, yenisi karsi taraftan girer. Yon, parmagin yonuyle ayni. */
+let _apGecisAnimi = false;
+function anSayfasiKaydir(yon){
+  if(_apGecisAnimi) return false;
+  const sayfa = document.getElementById("anPage");
+  if(!sayfa) return false;
+  if(!_apListe || _apIndeks < 0) return false;
+  const hedef = _apIndeks + yon;
+  if(hedef < 0 || hedef >= _apListe.length) return false;
+
+  _apGecisAnimi = true;
+  const boy = sayfa.offsetHeight || window.innerHeight || 800;
+  const cikis = (yon > 0 ? -boy : boy);
+
+  sayfa.classList.remove("suruklenen");
+  sayfa.style.transition = "transform .2s cubic-bezier(.4,0,1,1)";
+  sayfa.style.transform  = "translateY(" + cikis + "px)";
+
+  setTimeout(()=>{
+    /* Yeni an yuklenirken sayfa karsi tarafta bekler */
+    sayfa.style.transition = "none";
+    sayfa.style.transform  = "translateY(" + (-cikis) + "px)";
+    anSayfasiGec(yon);
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        sayfa.style.transition = "transform .28s cubic-bezier(.22,1,.36,1)";
+        sayfa.style.transform  = "translateY(0)";
+        setTimeout(()=>{
+          sayfa.style.transition = "";
+          sayfa.style.transform  = "";
+          _apGecisAnimi = false;
+        }, 300);
+      });
+    });
+  }, 200);
+  return true;
+}
 
 function anSayfasiCiz(){
   const it = _apAn; if(!it) return;
@@ -17082,17 +17722,40 @@ function apHareketleriBagla(){
     if(Math.abs(dy) > 8 || Math.abs(dx) > 8) clearTimeout(basmaZaman);
     if(karar === "sade") return;
 
-    // dikey hareket baskınsa kapatma sürüklemesi
-    if(dy > 0 && Math.abs(dy) > Math.abs(dx)){
+    if(Math.abs(dy) <= Math.abs(dx)) return;   /* yatay hareket bizi ilgilendirmiyor */
+
+    /* ══════════ YON KARARI ══════════
+       Liste varsa yukari kaydirma SONRAKI ana, asagi kaydirma
+       ONCEKI ana gider. Listenin basindayken asagi kaydirma
+       kapatma hareketi olarak kalir — yoksa sayfayi kapatmanin
+       baska yolu kalmiyordu. */
+    if(_apListe){
+      /* Liste varken kapatma hareketi yok: ust koseeki dugme kapatiyor.
+         Sinirlarda kare lastik gibi geri oturuyor. */
+      karar = (dy < 0) ? "sonraki" : "onceki";
+      mesafe = Math.abs(dy);
+    }else if(dy > 0){
       karar = "kapat";
       mesafe = dy;
+    }else{
+      return;
+    }
+
+    apIpucuKapat();
+    sayfa.classList.add("suruklenen");
+
+    if(karar === "kapat"){
       /* Lastik etkisi: uzadıkça direnç artar, sınır hissedilir. */
       const yumusak = Math.pow(mesafe, 0.82);
-      sayfa.classList.add("suruklenen");
       sayfa.style.transform = "translateY(" + yumusak + "px) scale(" +
                               (1 - Math.min(yumusak/2600, 0.06)) + ")";
       sayfa.style.borderRadius = Math.min(yumusak/6, 26) + "px";
-      apIpucuKapat();
+    }else{
+      /* Gezinmede kare parmakla BIRE BIR gider: hareketin nereye
+         gittigi hissedilsin. Sonumleme, parmagin altindaki karenin
+         kaydigini degil "direndigini" hissettiriyordu. */
+      sayfa.style.transform = "translateY(" + dy + "px)";
+      sayfa.style.borderRadius = "";
     }
   });
 
@@ -17100,7 +17763,18 @@ function apHareketleriBagla(){
     clearTimeout(basmaZaman);
     if(sayfa.classList.contains("sade")) sayfa.classList.remove("sade");
 
-    if(karar === "kapat"){
+    if(karar === "sonraki" || karar === "onceki"){
+      sayfa.classList.remove("suruklenen");
+      const gitti = (mesafe > 70) &&
+                    anSayfasiKaydir(karar === "sonraki" ? 1 : -1);
+      if(gitti){ apTitret(8); }
+      else{
+        /* Esik asilmadi ya da liste sinirindayiz: kare yerine otursun */
+        sayfa.style.transition = "transform .22s cubic-bezier(.22,1,.36,1)";
+        sayfa.style.transform = "translateY(0)";
+        setTimeout(()=>{ sayfa.style.transition=""; sayfa.style.transform=""; }, 240);
+      }
+    }else if(karar === "kapat"){
       sayfa.classList.remove("suruklenen");
       if(mesafe > 150){
         apTitret(12);
@@ -17257,6 +17931,7 @@ function apPanelSurukleBagla(){
     if(_apAn && _apAn.who){ close("anPage"); openProfile(_apAn.who); }
   });
   g("apMore").addEventListener("click", ()=>{ if(_apAn) openPostMenu(_apAn); });
+  g("apKapat").addEventListener("click", ()=>{ close("anPage"); });
 
   g("apLike").addEventListener("click", async ()=>{
     apTitret(12);
@@ -20329,11 +21004,8 @@ function renderSettings(){
           if(r.error) throw r.error;
           window.__arsivArkadaslara = on;
           toast(on ? t("arc_open_done") : t("arc_closed_done"));
-          /* Profil aciksa rozet de ayni anda degissin */
-          try{
-            if(document.getElementById("profile").classList.contains("open")
-               && profName===ME) renderProfile();
-          }catch(e){}
+          /* Rozet nerede olursa olsun ayni anda degissin */
+          try{ arsivRozetiCiz(); }catch(e){}
         }catch(e){
           console.warn("arsiv gorunurlugu:", e && e.message);
           /* Yazilamadiysa anahtar geri alinir: kullanici kaydedildigini
@@ -20718,11 +21390,17 @@ function lazyLoadArcVideos(){
 }
 
 // Galeri yoğunluğu: içerik çoğaldıkça kareler küçülür (telefon galerisi mantığı)
+/* ══════════ SABIT IZGARA ══════════
+   Sutun sayisi icerik sayisina gore degisiyordu: iki an varken
+   dev kareler, on iki an varken kucuk kareler. Ayni ekran her
+   paylasimda baska bir olcege atliyor, kullanici nereye
+   bakacagini sasiriyordu. Ustelik an eklendikce izgara kendi
+   kendine kuculuyordu.
+
+   Artik her yerde UC SUTUN. Olcek sabit, dolayisiyla profil
+   tanidik kaliyor. Parametre imza uyumlulugu icin duruyor. */
 function galleryCols(n){
-  if(n <= 4)  return 2;   // az içerik → büyük kareler
-  if(n <= 12) return 3;
-  if(n <= 30) return 4;
-  return 5;               // çok içerik → küçük kareler
+  return 3;
 }
 function applyGalleryDensity(grid, count){
   if(!grid) return;
@@ -20730,6 +21408,20 @@ function applyGalleryDensity(grid, count){
 }
 
 let _profActsRow = null;   // takip/mesaj satırı — en sona eklenir
+
+/* ══════════ ARSIV ROZETI ══════════
+   Rozet, tam profil yeniden cizimine bagli kalmamali: ayarlardan
+   degistirildiginde profil zaten cizilmis oluyor ve eski deger
+   ekranda kaliyordu. Bu fonksiyon rozeti TEK kaynaktan, nerede
+   cagrilirsa cagrilsin dogru cizer. */
+function arsivRozetiCiz(){
+  const dg = document.getElementById("arcLock");
+  if(!dg) return;
+  const acik = !!window.__arsivArkadaslara;
+  const ACIK_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.6"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.3A4 4 0 0 1 16 11"/></svg>';
+  dg.classList.toggle("acik", acik);
+  dg.innerHTML = (acik ? ACIK_IC : IC.lock) + (acik ? t("vis_friends") : t("private2"));
+}
 
 function renderProfile(){
   if(typeof syncStatusBar==="function") syncStatusBar();
@@ -21096,8 +21788,12 @@ function renderProfile(){
         }
         if(c.durum !== "acik") return;
         const anlar = Array.isArray(c.anlar) ? c.anlar : [];
+        /* Rozet burada bir DURUM, bir eylem degil. Degrade hap sahibin
+           kendi anahtarina ait; baskasinin profilinde ayni renkte
+           ikinci bir hap, takip dugmesiyle yarisip ekrani
+           kalabaliklastiriyordu. Sessiz metin yeterli. */
         yer.innerHTML='<div class="arcHead"><span class="arcTitle">'+esc(t("archive"))+'</span>'+
-          '<span class="arcLock acik">'+IC.lock+esc(t("arc_shared_with_you"))+'</span></div>';
+          '<span class="arcLock">'+IC.lock+esc(t("vis_friends"))+'</span></div>';
         if(!anlar.length){
           yer.insertAdjacentHTML("beforeend",
             '<div class="arcEmpty"><b>'+esc(t("no_moments_own"))+'</b></div>');
@@ -21109,6 +21805,19 @@ function renderProfile(){
 
         const grid=document.createElement("div"); grid.className="arcGrid";
         applyGalleryDensity(grid, anlar.length);
+        /* Gonderiler sayfasi icin tam nesneler */
+        const kartlar = anlar.map(m=>({
+          id:m.id, who:profName, mine:false,
+          ts:new Date(m.created_at).getTime(),
+          kind:m.media_kind,
+          src: medyaAdres(m.media_path),
+          poster: medyaAdres(m.poster_path) || medyaAdres(m.thumb_path),
+          mood: MOOD_BY_KEY[m.mood] || null,
+          note: m.note || "",
+          where: m.place_label || null,
+          likes:0, cc:0, liked:false, saved:false,
+          commentsOn:true, downloadsOn:true
+        }));
         anlar.forEach(m=>{
           const g = (m.media_kind==="video")
             ? (medyaAdres(m.poster_path)||medyaAdres(m.thumb_path))
@@ -21122,11 +21831,14 @@ function renderProfile(){
             em.textContent=MOOD_BY_KEY[m.mood].em; k.appendChild(em);
           }
           k.addEventListener("click",()=>{
-            try{ anSayfasiAc(m.id); }catch(e){}
+            try{ gonderilerAc(kartlar, m.id); }catch(e){}
           });
           grid.appendChild(k);
         });
         yer.appendChild(grid);
+        const alt=document.createElement("div");
+        alt.className="profSpacer"; alt.style.minHeight="1.5rem";
+        yer.appendChild(alt);
         lazyLoadArcImages(grid);
       }catch(e){ console.warn("profil arsivi:", e && e.message); }
     })();
@@ -21178,31 +21890,23 @@ function renderProfile(){
   (function(){
     const dg = document.getElementById("arcLock");
     if(!dg) return;
-    const ACIK_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.6"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.3A4 4 0 0 1 16 11"/></svg>';
-    let acik = !!window.__arsivArkadaslara;
-    const ciz = ()=>{
-      dg.classList.toggle("acik", acik);
-      dg.innerHTML = (acik ? ACIK_IC : IC.lock) +
-                     (acik ? t("vis_friends") : t("private2"));
-    };
-    ciz();
     dg.addEventListener("click", async ()=>{
-      const yeniDeger = !acik;
+      const yeniDeger = !window.__arsivArkadaslara;
       dg.disabled = true;
       try{
         const r = await window.__sb.from("profiles")
           .update({ archive_friends: yeniDeger })
           .eq("id", window.__me.id);
         if(r.error) throw r.error;
-        acik = yeniDeger;
-        window.__arsivArkadaslara = acik;
-        ciz();
-        toast(acik ? t("arc_open_done") : t("arc_closed_done"));
+        window.__arsivArkadaslara = yeniDeger;
+        arsivRozetiCiz();
+        toast(yeniDeger ? t("arc_open_done") : t("arc_closed_done"));
       }catch(e){
         console.warn("arsiv gorunurlugu:", e && e.message);
         toast(t("err_generic"));
       }finally{ dg.disabled = false; }
     });
+    arsivRozetiCiz();
   })();
 
   /* Sekmeler: kayan göstergeli segment kutusu */
@@ -21918,8 +22622,9 @@ async function renderOrtak(box){
       return;
     }
     const adr=(p)=>p ? medyaAdres(p) : null;
+    const _ortakKartlar=[];
     kap.innerHTML="";
-    applyGalleryDensity(kap, veri.length);   /* icerik coğaldikca kareler kuculsun */
+    applyGalleryDensity(kap, veri.length);   /* sabit uc sutun */
     veri.forEach(m=>{
       const g = (m.media_kind==="video")
         ? (adr(m.poster_path)||adr(m.thumb_path)||adr(m.media_path))
@@ -21971,8 +22676,12 @@ async function renderOrtak(box){
 
       /* Diger arsiv sekmelerindeki gibi goruntuleme paneli acilir;
          akisa atlamak yerine an burada tam ekran izlenir. */
+      /* Izgara neyin oldugunu gosteriyor; begeni ve yorum icin
+         gonderiler sayfasi acilir. */
+      _ortakKartlar.push(it);
       k.addEventListener("click",()=>{
-        try{ openArchiveView(it); }catch(e){ console.warn("ortak an:", e && e.message); }
+        try{ gonderilerAc(_ortakKartlar, m.id, t("co_tab")); }
+        catch(e){ console.warn("ortak an:", e && e.message); }
       });
       kap.appendChild(k);
     });
@@ -21997,7 +22706,7 @@ function renderMine(box){
     return;
   }
   const grid=document.createElement("div");grid.className="arcGrid";
-  applyGalleryDensity(grid, mine.length);   // içerik çoğaldıkça kareler küçülsün
+  applyGalleryDensity(grid, mine.length);   // sabit üç sütun
   const frag=document.createDocumentFragment();
   mine.forEach(it=>{
     const c=document.createElement("div");c.className="arc";
@@ -22021,7 +22730,9 @@ function renderMine(box){
     more.setAttribute("aria-label", t("act_more"));
     more.addEventListener("click",e=>{e.stopPropagation();openPostMenu(it,{archive:true});});
     c.appendChild(more);
-    c.addEventListener("click",()=>openArchiveView(it));
+    c.addEventListener("click",()=>{
+      try{ gonderilerAc(mine, it.id); }catch(e){}
+    });
     frag.appendChild(c);
   });
   grid.appendChild(frag);
@@ -22229,7 +22940,9 @@ function renderSaved(box){
       toast(t("t_unsaved"));
     });
     c.appendChild(un);
-    c.addEventListener("click",()=>openArchiveView(it));
+    c.addEventListener("click",()=>{
+      try{ gonderilerAc(saved, it.id, t("saved2")); }catch(e){}
+    });
     frag.appendChild(c);
   });
   grid.appendChild(frag);

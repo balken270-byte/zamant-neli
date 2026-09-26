@@ -11,7 +11,7 @@ html[data-theme="light"] body{background:#FFFFFF}</style>
    Surum SADECE burada yazilir. Sayfa basligi, giris ekrani yazisi,
    ayarlar satiri, kamera dosyasi ve service worker onbellegi
    hepsi bu degerden turetilir. Baska hicbir yerde surum yazmaz. */
-window.KLIPSY_SURUM = "3.42.0";
+window.KLIPSY_SURUM = "3.44.0";
 
 /* ══════════ MEDYA DEPOSU ══════════
    Medya artik Supabase Storage'da degil Cloudflare R2'de.
@@ -788,6 +788,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"Sadece karşılıklı takipleştiğin kişilere gönderebilirsin",
       dm_edit:"Mesajı düzenle:",
       klipsy_user:"Klipsy kullanıcısı",
+      arc_open_done:"Anıların artık arkadaşlarının profilinde görünüyor",
+      arc_closed_done:"Arşivin yeniden gizlendi",
+      arc_need_friend:"Arkadaş olunca görünür",
+      s_arc_title:"Arşivimi arkadaşlarım görsün",
+      s_arc_sub:"Karşılıklı takipleştiğin kişiler profilindeki anıları görebilir. Kaydedilenler, taslaklar ve takvim her zaman gizli kalır.",
+      arc_need_friend_sub:"Bu kişi anılarını arkadaşlarıyla paylaşıyor. Karşılıklı takipleştiğinizde burada görünecekler.",
+      arc_shared_with_you:"Seninle paylaşıyor",
       req_delete_q:"isteğini silmek istiyor musun?",
       r_sexual:"Cinsel içerik",
       r_violence:"Şiddet",
@@ -1450,6 +1457,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"You can only send to people who follow you back",
       dm_edit:"Edit message:",
       klipsy_user:"Klipsy user",
+      arc_open_done:"Your moments now appear on your friends' profile view",
+      arc_closed_done:"Your archive is private again",
+      arc_need_friend:"Visible once you're friends",
+      s_arc_title:"Let friends see my archive",
+      s_arc_sub:"People you follow each other with can see your moments on your profile. Saved items, drafts and the calendar always stay private.",
+      arc_need_friend_sub:"This person shares their moments with friends. They'll appear here once you follow each other.",
+      arc_shared_with_you:"Shared with you",
       req_delete_q:"Delete this request from",
       r_sexual:"Sexual content",
       r_violence:"Violence",
@@ -2096,6 +2110,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"Solo puedes enviar a quienes te siguen de vuelta",
       dm_edit:"Editar mensaje:",
       klipsy_user:"Usuario de Klipsy",
+      arc_open_done:"Tus momentos ahora aparecen para tus amigos",
+      arc_closed_done:"Tu archivo vuelve a ser privado",
+      arc_need_friend:"Visible cuando seáis amigos",
+      s_arc_title:"Que mis amigos vean mi archivo",
+      s_arc_sub:"Quienes te siguen mutuamente pueden ver tus momentos en tu perfil. Guardados, borradores y calendario siempre quedan privados.",
+      arc_need_friend_sub:"Esta persona comparte sus momentos con sus amigos. Aparecerán aquí cuando os sigáis mutuamente.",
+      arc_shared_with_you:"Compartido contigo",
       req_delete_q:"¿Eliminar esta solicitud de",
       r_sexual:"Contenido sexual",
       r_violence:"Violencia",
@@ -2742,6 +2763,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"يمكنك الإرسال فقط لمن يتابعونك بالمثل",
       dm_edit:"تعديل الرسالة:",
       klipsy_user:"مستخدم Klipsy",
+      arc_open_done:"لحظاتك تظهر الآن لأصدقائك",
+      arc_closed_done:"عاد أرشيفك خاصًا",
+      arc_need_friend:"يظهر عندما تصبحان صديقين",
+      s_arc_title:"ليرَ أصدقائي أرشيفي",
+      s_arc_sub:"من تتابعونه بشكل متبادل يمكنهم رؤية لحظاتك في ملفك. المحفوظات والمسودات والتقويم تبقى خاصة دائمًا.",
+      arc_need_friend_sub:"يشارك هذا الشخص لحظاته مع أصدقائه. ستظهر هنا عندما تتابعان بعضكما.",
+      arc_shared_with_you:"مشارَك معك",
       req_delete_q:"حذف هذا الطلب من",
       r_sexual:"محتوى جنسي",
       r_violence:"عنف",
@@ -3388,6 +3416,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"Tu peux envoyer uniquement à ceux qui te suivent aussi",
       dm_edit:"Modifier le message :",
       klipsy_user:"Utilisateur Klipsy",
+      arc_open_done:"Tes moments apparaissent maintenant chez tes amis",
+      arc_closed_done:"Ton archive est de nouveau privée",
+      arc_need_friend:"Visible une fois amis",
+      s_arc_title:"Que mes amis voient mes archives",
+      s_arc_sub:"Les personnes que vous suivez mutuellement voient tes moments sur ton profil. Enregistrés, brouillons et calendrier restent toujours privés.",
+      arc_need_friend_sub:"Cette personne partage ses moments avec ses amis. Ils apparaîtront ici quand vous vous suivrez mutuellement.",
+      arc_shared_with_you:"Partagé avec toi",
       req_delete_q:"Supprimer cette demande de",
       r_sexual:"Contenu sexuel",
       r_violence:"Violence",
@@ -4034,6 +4069,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"Du kannst nur an Leute senden, die dir zurückfolgen",
       dm_edit:"Nachricht bearbeiten:",
       klipsy_user:"Klipsy-Nutzer",
+      arc_open_done:"Deine Momente erscheinen jetzt bei deinen Freunden",
+      arc_closed_done:"Dein Archiv ist wieder privat",
+      arc_need_friend:"Sichtbar, sobald ihr befreundet seid",
+      s_arc_title:"Freunde dürfen mein Archiv sehen",
+      s_arc_sub:"Wer dir und dem du folgst, sieht deine Momente auf deinem Profil. Gespeichertes, Entwürfe und Kalender bleiben immer privat.",
+      arc_need_friend_sub:"Diese Person teilt ihre Momente mit Freunden. Sie erscheinen hier, sobald ihr euch gegenseitig folgt.",
+      arc_shared_with_you:"Mit dir geteilt",
       req_delete_q:"Diese Anfrage löschen von",
       r_sexual:"Sexueller Inhalt",
       r_violence:"Gewalt",
@@ -4680,6 +4722,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"Отправлять можно только тем, кто подписан в ответ",
       dm_edit:"Изменить сообщение:",
       klipsy_user:"Пользователь Klipsy",
+      arc_open_done:"Ваши моменты теперь видны друзьям",
+      arc_closed_done:"Архив снова скрыт",
+      arc_need_friend:"Появится, когда станете друзьями",
+      s_arc_title:"Пусть друзья видят мой архив",
+      s_arc_sub:"Те, с кем вы подписаны друг на друга, увидят ваши моменты в профиле. Сохранённое, черновики и календарь всегда остаются скрытыми.",
+      arc_need_friend_sub:"Этот человек делится моментами с друзьями. Они появятся здесь, когда вы подпишетесь друг на друга.",
+      arc_shared_with_you:"Доступно вам",
       req_delete_q:"Удалить этот запрос от",
       r_sexual:"Сексуальный контент",
       r_violence:"Насилие",
@@ -5326,6 +5375,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"Você só pode enviar a quem te segue de volta",
       dm_edit:"Editar mensagem:",
       klipsy_user:"Usuário do Klipsy",
+      arc_open_done:"Seus momentos agora aparecem para seus amigos",
+      arc_closed_done:"Seu arquivo voltou a ser privado",
+      arc_need_friend:"Visível quando forem amigos",
+      s_arc_title:"Deixar amigos verem meu arquivo",
+      s_arc_sub:"Quem se segue mutuamente pode ver seus momentos no seu perfil. Salvos, rascunhos e calendário sempre ficam privados.",
+      arc_need_friend_sub:"Esta pessoa compartilha seus momentos com amigos. Aparecerão aqui quando vocês se seguirem.",
+      arc_shared_with_you:"Compartilhado com você",
       req_delete_q:"Excluir este pedido de",
       r_sexual:"Conteúdo sexual",
       r_violence:"Violência",
@@ -5972,6 +6028,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"आप केवल उन्हें भेज सकते हैं जो आपको वापस फ़ॉलो करते हैं",
       dm_edit:"संदेश संपादित करें:",
       klipsy_user:"Klipsy उपयोगकर्ता",
+      arc_open_done:"आपके पल अब आपके दोस्तों को दिखते हैं",
+      arc_closed_done:"आपका संग्रह फिर निजी है",
+      arc_need_friend:"दोस्त बनने पर दिखेगा",
+      s_arc_title:"दोस्त मेरा संग्रह देख सकें",
+      s_arc_sub:"जिन्हें आप और वे एक-दूसरे को फ़ॉलो करते हैं, वे आपकी प्रोफ़ाइल पर पल देख सकते हैं। सहेजे गए, ड्राफ़्ट और कैलेंडर हमेशा निजी रहते हैं।",
+      arc_need_friend_sub:"यह व्यक्ति अपने पल दोस्तों के साथ साझा करता है। एक-दूसरे को फ़ॉलो करने पर यहाँ दिखेंगे।",
+      arc_shared_with_you:"आपके साथ साझा",
       req_delete_q:"क्या यह अनुरोध हटाएँ",
       r_sexual:"यौन सामग्री",
       r_violence:"हिंसा",
@@ -6618,6 +6681,13 @@ document.title = "Klipsy " + KLIPSY_SURUM;
       dm_mutual_send:"Kamu hanya bisa mengirim ke yang mengikutimu balik",
       dm_edit:"Edit pesan:",
       klipsy_user:"Pengguna Klipsy",
+      arc_open_done:"Momenmu kini tampil di profil temanmu",
+      arc_closed_done:"Arsipmu privat lagi",
+      arc_need_friend:"Terlihat setelah berteman",
+      s_arc_title:"Teman boleh lihat arsipku",
+      s_arc_sub:"Orang yang saling mengikuti denganmu bisa melihat momenmu di profilmu. Tersimpan, draf, dan kalender selalu privat.",
+      arc_need_friend_sub:"Orang ini membagikan momennya dengan teman. Akan tampil di sini setelah saling mengikuti.",
+      arc_shared_with_you:"Dibagikan denganmu",
       req_delete_q:"Hapus permintaan ini dari",
       r_sexual:"Konten seksual",
       r_violence:"Kekerasan",
@@ -9461,9 +9531,21 @@ html.camNativeOn #cam > .camRoot{z-index:0}
 .arcTitle{flex:1;font-size:0.6875rem;font-weight:800;letter-spacing:.09em;
   text-transform:uppercase;color:var(--t3)}
 /* gizli göstergesi — kutusuz, sade */
-.arcLock{display:flex;align-items:center;gap:0.3125rem;height:auto;padding:0;
-  border-radius:0;background:none;border:0;
-  font-size:0.6875rem;font-weight:700;color:var(--t3);letter-spacing:.02em}
+/* Rozet artik bir anahtar: dokunulabilir oldugu icin hafif bir
+   zemini var, acik durumda ise renkle ayrisiyor. */
+/* Kapali hal bloksuz durur: zemin ve cerceve, sayfanin sade
+   dilinden kopuyordu. Hap yalnizca ACIK durumda beliriyor —
+   boylece renk, "bir sey paylasiliyor" demenin kendisi oluyor. */
+.arcLock{display:flex;align-items:center;gap:0.3125rem;height:1.5rem;
+  padding:0;border-radius:6.1875rem;background:none;border:0;
+  font:inherit;font-size:0.6875rem;font-weight:700;color:var(--t3);
+  letter-spacing:.02em;transition:all .18s;flex:none;max-width:11rem;
+  white-space:nowrap;overflow:hidden}
+.arcLock svg{width:0.75rem;height:0.75rem;flex:none}
+.arcLock:active{transform:scale(.95)}
+.arcLock:disabled{opacity:.5}
+.arcLock.acik{color:#fff;padding:0 0.625rem;
+  background:linear-gradient(135deg,#FF3B6B,#7B5BFF)}
 
 /* segment kutusu */
 /* ══════════ BLOKSUZ SERIT ══════════
@@ -13185,6 +13267,12 @@ function paintFeedNames(){
         ? (ilkAd(adi)+" "+t("co_and_others"))
         : (ok ? (ilkAd(adi)+" "+t("co_and")+" "+ilkAd(ok)) : adi);
     }
+    /* Bolunmus avatarin dilimleri de tazelenir. Kart cizildiginde
+       gercek avatar henuz gelmemis olabiliyor; bu fonksiyon veriler
+       oturunca calistigi icin dogru an burasi. */
+    el.querySelectorAll(".pav.ortakDaire .oy[data-av-name]").forEach(y=>{
+      try{ paintAv(y, y.getAttribute("data-av-name")); }catch(e){}
+    });
   });
 }
 
@@ -13223,6 +13311,12 @@ function ortakDaireCiz(av, adlar){
 
   av.classList.add("ortakDaire");
   av.textContent = "";
+  /* ══════════ TOPLU YENILEMEDEN KORUMA ══════════
+     paintAllAvatars, "data-av-name" tasiyan her ogeyi yeniden
+     boyuyor ve paintAv icinde textContent temizleniyor. Ust daire bu
+     niteligi tasidigi surece avatarlar sonradan geldiginde dilimler
+     silinip yerine tek avatar basiliyordu. Nitelik dilimlere tasinir. */
+  av.removeAttribute("data-av-name");
   /* Dilimler kendi kabinda kirpilir: rozet daire disina tasabilsin
      diye kirpma avatarin kendisine verilemiyor. */
   const kap = document.createElement("span");
@@ -13233,10 +13327,11 @@ function ortakDaireCiz(av, adlar){
     y.className = "oy";
     y.style.clipPath = ortakDilimYolu(i, dilim);
     y.style.webkitClipPath = y.style.clipPath;
-    try{
-      const s = avSrc(adlar[i]);
-      if(s) y.style.backgroundImage = 'url("' + s + '")';
-    }catch(e){}
+    /* paintAv dilime "data-av-name" yazar: gercek avatar sonradan
+       ulasinca toplu yenileme onu da bulup boyar. Eskiden adres bir
+       kez okunuyordu ve avatar hazir degilse kare, akis yenilenene
+       kadar bos kaliyordu. */
+    try{ paintAv(y, adlar[i]); }catch(e){}
     if(i > 0){
       const kim = adlar[i];
       y.addEventListener("click",(e)=>{
@@ -16366,7 +16461,9 @@ async function openPlaceLayers(g){
      dokununca altında açılır. */
   const kisiler = new Map();
   near.forEach(x=>{
-    const anahtar = x.who || "?";
+    /* Ad cozulemezse satirlar birbirine karismasin diye kimlikle
+       gruplanir; ekranda gosterilecek metin asagida ayrica secilir. */
+    const anahtar = x.who || ("#" + (x.author_id || "?"));
     if(!kisiler.has(anahtar)) kisiler.set(anahtar, []);
     kisiler.get(anahtar).push(x);
   });
@@ -16394,7 +16491,7 @@ async function openPlaceLayers(g){
 
       satir.innerHTML = th +
         '<div class="plMeta">'+
-          '<b>'+esc(adiniGoster(kim))+'</b>'+
+          '<b>'+esc(kim.charAt(0)==="#" ? t("klipsy_user") : adiniGoster(kim))+'</b>'+
           '<span>'+altYazi+'</span>'+
         '</div>'+
         '<span class="plGo"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>';
@@ -17378,11 +17475,31 @@ async function fetchMomentGeos(){
             }
           }catch(e){}
           out.push({id:r.id,lat:Number(r.geo_lat),lng:Number(r.geo_lng),label:r.place_label,
-            mediaPath:r.media_path, who:r.username||null,
+            mediaPath:r.media_path, who:null,
             moodEmoji:mo?mo.em:"📍", thumb:thumb, poster:poster, kind:r.media_kind,
             ts:new Date(r.created_at).getTime(), author_id:r.author_id});
         }
       });
+
+      /* ══════════ PIN SAHIBININ ADI ══════════
+         Sorgu yalnizca author_id cekiyor ama kod r.username okuyordu;
+         oyle bir sutun secilmedigi icin ad HER ZAMAN bos geliyor ve
+         harita panelinde kisi adi yerine "?" yaziyordu.
+         Adlar ayri bir istekle alinip eslenir. */
+      const kimlikler = [...new Set(out.map(x=>x.author_id).filter(Boolean))];
+      if(kimlikler.length){
+        const pr = await window.__sb.from('profiles')
+          .select('id, username, display_name')
+          .in('id', kimlikler);
+        const har = {};
+        (pr.data||[]).forEach(p=>{
+          har[p.id] = p.username;
+          /* Gorunen ad onbellege yazilir: liste kullanici adini degil
+             kisinin gercek adini gosterir. */
+          try{ if(p.username && p.display_name) setDisplayName(p.username, p.display_name); }catch(e){}
+        });
+        out.forEach(x=>{ x.who = har[x.author_id] || null; });
+      }
     }catch(e){ console.warn('geo:',e); }
   }
   _geoCache=out;return out;
@@ -18881,11 +18998,13 @@ async function loadProfileData(name){
   if(!window.__sb) return null;
   try{
     const {data}=await window.__sb.from('profiles')
-      .select('id, username, avatar_url, bio, moment_count, follower_count, following_count, created_at, display_name, city, education, job, zodiac, interests, link, gender')
+      .select('id, username, avatar_url, bio, moment_count, follower_count, following_count, created_at, display_name, city, education, job, zodiac, interests, link, gender, archive_friends')
       .eq('username',name).single();
     if(data){
       _idCache[name]=data.id;
       if(data.avatar_url) setRealAvatar(data.username, data.avatar_url);
+      /* Kendi arsiv gorunurlugum: rozetin durumu buradan geliyor */
+      if(name===ME) window.__arsivArkadaslara = !!data.archive_friends;
       const extra={ display_name:data.display_name||null, city:data.city||null, education:data.education||null,
         job:data.job||null, zodiac:data.zodiac||null, interests:data.interests||null, link:data.link||null,
         gender:data.gender||null };
@@ -20193,6 +20312,54 @@ function renderSettings(){
       if(alt) alt.classList.toggle("kapali", !on);
     }));
 
+  /* ══════════ ARSIV GORUNURLUGU ══════════
+     Ayni anahtar profildeki rozette de var. Kullanicilarin cogu
+     gizlilik ayarini profilde degil ayarlarda ariyor; ikisi tek
+     degeri paylasiyor, hangisinden degistirilirse digeri de
+     guncelleniyor. */
+  (function(){
+    const satir = toggleRow(
+      '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.6"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.3A4 4 0 0 1 16 11"/></svg>',
+      t("s_arc_title"), t("s_arc_sub"), !!window.__arsivArkadaslara,
+      async (on)=>{
+        const sw = satir.querySelector(".setSwitch");
+        try{
+          const r = await window.__sb.from("profiles")
+            .update({ archive_friends: on }).eq("id", window.__me.id);
+          if(r.error) throw r.error;
+          window.__arsivArkadaslara = on;
+          toast(on ? t("arc_open_done") : t("arc_closed_done"));
+          /* Profil aciksa rozet de ayni anda degissin */
+          try{
+            if(document.getElementById("profile").classList.contains("open")
+               && profName===ME) renderProfile();
+          }catch(e){}
+        }catch(e){
+          console.warn("arsiv gorunurlugu:", e && e.message);
+          /* Yazilamadiysa anahtar geri alinir: kullanici kaydedildigini
+             sanmasin. */
+          if(sw) sw.classList.toggle("on", !on);
+          toast(t("err_generic"));
+        }
+      });
+    g2.appendChild(satir);
+
+    /* Deger henuz bilinmiyorsa (profil hic acilmadiysa) sunucudan
+       okunup anahtar duzeltilir. */
+    if(window.__arsivArkadaslara === undefined && window.__sb && window.__me){
+      (async ()=>{
+        try{
+          const r = await window.__sb.from("profiles")
+            .select("archive_friends").eq("id", window.__me.id).maybeSingle();
+          if(r.error || !r.data) return;
+          window.__arsivArkadaslara = !!r.data.archive_friends;
+          const sw = satir.querySelector(".setSwitch");
+          if(sw) sw.classList.toggle("on", window.__arsivArkadaslara);
+        }catch(e){}
+      })();
+    }
+  })();
+
   /* Tur bazinda secim AYRI SAYFADA: ayarlar listesi alt alta
      anahtarlarla dolunca okunmaz hale geliyordu. */
   g2.appendChild(settingsRow(
@@ -20899,6 +21066,72 @@ function renderProfile(){
      Profilin alt kismi bostu. Konum ya da gecmis gostermek yerine
      uygulamanin DURUSUNU anlatiyoruz: burada birikim yok, iz yok.
      Bu hem bosluğu degerlendirir hem kullaniciya guven verir. */
+  /* ══════════ BASKASININ ARSIVI ══════════
+     Kisi arsivini arkadaslarina acmissa ve karsilikli takiplesiyorsak
+     anlari burada izgara olarak gorunur. Karari sunucu veriyor;
+     burasi yalnizca gelen sonucu ciziyor.
+
+     Uc durum var ve ucu de ayri anlatiliyor: kapali, acik ama henuz
+     arkadas degiliz, ve gorulebilir. Ikisini ayni bos ekranla
+     gostermek kullaniciyi yaniltiyordu. */
+  if(!own){
+    const yer=document.createElement("div");
+    box.appendChild(yer);
+    (async ()=>{
+      /* Istek donene kadar kullanici baska profile gecmis olabilir;
+         o zaman bu sonuc yanlis sayfaya cizilirdi. */
+      const hedef = profName;
+      try{
+        const uid = await idOfUsername(hedef);
+        if(!uid || !window.__sb) return;
+        const r = await window.__sb.rpc("profil_arsivi", { p_user: uid });
+        if(r.error) throw r.error;
+        if(profName !== hedef) return;
+        const c = r.data || {};
+        if(c.durum === "arkadas_degil"){
+          yer.innerHTML='<div class="arcHead"><span class="arcTitle">'+esc(t("archive"))+'</span></div>'+
+            '<div class="arcEmpty"><b>'+esc(t("arc_need_friend"))+'</b>'+
+            '<span>'+esc(t("arc_need_friend_sub"))+'</span></div>';
+          return;
+        }
+        if(c.durum !== "acik") return;
+        const anlar = Array.isArray(c.anlar) ? c.anlar : [];
+        yer.innerHTML='<div class="arcHead"><span class="arcTitle">'+esc(t("archive"))+'</span>'+
+          '<span class="arcLock acik">'+IC.lock+esc(t("arc_shared_with_you"))+'</span></div>';
+        if(!anlar.length){
+          yer.insertAdjacentHTML("beforeend",
+            '<div class="arcEmpty"><b>'+esc(t("no_moments_own"))+'</b></div>');
+          return;
+        }
+        /* Gizlilik blogu artik yaniltici olurdu: anlar gorunuyor */
+        const gizEl = box.querySelector(".profGiz");
+        if(gizEl) gizEl.remove();
+
+        const grid=document.createElement("div"); grid.className="arcGrid";
+        applyGalleryDensity(grid, anlar.length);
+        anlar.forEach(m=>{
+          const g = (m.media_kind==="video")
+            ? (medyaAdres(m.poster_path)||medyaAdres(m.thumb_path))
+            : (medyaAdres(m.media_path)||medyaAdres(m.poster_path));
+          const k=document.createElement("div"); k.className="arc";
+          k.setAttribute("role","button");
+          if(g) k.setAttribute("data-bg", g);
+          else if(m.media_kind==="video") k.appendChild(makeArcPlaceholder());
+          if(m.mood && MOOD_BY_KEY[m.mood]){
+            const em=document.createElement("div"); em.className="em";
+            em.textContent=MOOD_BY_KEY[m.mood].em; k.appendChild(em);
+          }
+          k.addEventListener("click",()=>{
+            try{ anSayfasiAc(m.id); }catch(e){}
+          });
+          grid.appendChild(k);
+        });
+        yer.appendChild(grid);
+        lazyLoadArcImages(grid);
+      }catch(e){ console.warn("profil arsivi:", e && e.message); }
+    })();
+  }
+
   if(!own){
     const giz=document.createElement("div"); giz.className="profGiz";
     giz.innerHTML=
@@ -20933,8 +21166,44 @@ function renderProfile(){
   const arcHead=document.createElement("div");arcHead.className="arcHead";
   arcHead.innerHTML=
     '<span class="arcTitle" id="arcTitle">'+t("archive")+'</span>'+
-    '<span class="arcLock">'+IC.lock+t("private2")+'</span>';
+    '<button type="button" class="arcLock" id="arcLock"></button>';
   box.appendChild(arcHead);
+
+  /* ══════════ ARSIVI ARKADASLARA ACMA ══════════
+     "Gizli" bir bilgi etiketiydi; artik bir anahtar. Acildiginda
+     YALNIZCA karsilikli takiplesilen kisiler anlari profilde gorur —
+     karari sunucu veriyor, burasi sadece gosteriyor.
+
+     Kaydedilenler, taslaklar ve takvim hicbir kosulda acilmaz. */
+  (function(){
+    const dg = document.getElementById("arcLock");
+    if(!dg) return;
+    const ACIK_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.6"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.3A4 4 0 0 1 16 11"/></svg>';
+    let acik = !!window.__arsivArkadaslara;
+    const ciz = ()=>{
+      dg.classList.toggle("acik", acik);
+      dg.innerHTML = (acik ? ACIK_IC : IC.lock) +
+                     (acik ? t("vis_friends") : t("private2"));
+    };
+    ciz();
+    dg.addEventListener("click", async ()=>{
+      const yeniDeger = !acik;
+      dg.disabled = true;
+      try{
+        const r = await window.__sb.from("profiles")
+          .update({ archive_friends: yeniDeger })
+          .eq("id", window.__me.id);
+        if(r.error) throw r.error;
+        acik = yeniDeger;
+        window.__arsivArkadaslara = acik;
+        ciz();
+        toast(acik ? t("arc_open_done") : t("arc_closed_done"));
+      }catch(e){
+        console.warn("arsiv gorunurlugu:", e && e.message);
+        toast(t("err_generic"));
+      }finally{ dg.disabled = false; }
+    });
+  })();
 
   /* Sekmeler: kayan göstergeli segment kutusu */
   const tabs=document.createElement("div");tabs.className="arcSeg";
